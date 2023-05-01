@@ -19,7 +19,8 @@ class Db:
     @sync
     async def list_schema(self):
         async with async_session() as session:
-            rows = await session.execute("select * from information_schema.tables")
+            statement = text("select * from information_schema.tables")
+            rows = await session.execute(statement)
             for row in rows:
                 print(row)
 

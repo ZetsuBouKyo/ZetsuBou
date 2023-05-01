@@ -13,6 +13,7 @@ bcrypt = ">=3.2.0"
 celery = ">=5.1.2"
 click = ">=8.0.4"
 cryptography = "==35.0.0"
+elasticsearch = ">=7.0.0,<8.0.0"
 email-validator = ">=1.1.1,<2.0.0"
 fastapi = ">=0.70.0"
 fire = ">=0.4.0"
@@ -37,9 +38,9 @@ requests = ">=2.26.0"
 Scrapy = "==2.5.1"
 SQLAlchemy = ">=1.4.29"
 tqdm = ">=4.62.3"
+typer = {extras = ["all"], version = "^0.7.0"}
 uvicorn = ">=0.15.0"
 youtube_dl = ">=2021.12.17"
-elasticsearch = ">=7.0.0,<8.0.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"

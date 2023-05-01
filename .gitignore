@@ -1,0 +1,17 @@
+__pycache__
+.env
+.git
+.pytest_cache
+.python-version
+.venv
+*.code-workspace
+*.db
+dags/.venv
+dags/plugins.py
+dev
+etc
+front/package-lock.json
+node_modules
+plugins
+poetry.lock*
+statics

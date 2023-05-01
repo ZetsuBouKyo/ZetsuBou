@@ -1,0 +1,8 @@
+FROM colesbury/python-nogil
+
+WORKDIR /workspace
+
+RUN apt-get update
+RUN apt-get install ffmpeg libsm6 libxext6 wget cargo -y
+
+COPY . .

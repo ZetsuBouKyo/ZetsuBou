@@ -1,0 +1,11 @@
+@layer utilities {
+  .table-head {
+    @apply rounded-t-lg tracking-wider font-medium text-white text-sm bg-black;
+  }
+  .table-row {
+    @apply border-b-2 border-gray-700 hover:bg-gray-700 hover:text-white;
+  }
+  .table-data {
+    @apply px-4 py-3 truncate;
+  }
+}

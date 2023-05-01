@@ -1,0 +1,56 @@
+<template>
+  <crud-table
+    class="lg:w-2/3 mt-4"
+    :state="table"
+    :editor-title="'Tag Attribute'"
+    :headers="headers"
+    :colspan="'3'"
+    :on-crud-create="onCrudCreate"
+    :on-crud-get="onCrudGet"
+    :on-crud-get-total="onCrudGetTotal"
+    :on-crud-update="onCrudUpdate"
+    :on-crud-delete="onCrudDelete"
+    :delete-confirm-message="'Are you sure you want to permanently delete this row? This might destroy the database.'"
+  >
+    <div class="modal-row">
+      <span class="w-32 mr-4">Name:</span>
+      <input class="w-1/2 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
+    </div>
+  </crud-table>
+</template>
+
+<script lang="ts">
+import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
+
+import {
+  getTagAttributeTotal,
+  getTagAttributes,
+  postTagAttribute,
+  putTagAttribute,
+  deleteTagAttribute,
+} from "@/api/v1/tag/attribute";
+
+export interface Row {
+  id?: number;
+  name: string;
+}
+
+export default {
+  components: { CrudTable },
+  setup() {
+    const table = CrudTable.initState() as CrudTableState<Row>;
+    const headers: Array<Header> = [
+      { title: "Id", key: "id" },
+      { title: "Name", key: "name" },
+    ];
+
+    const onCrudCreate = postTagAttribute;
+    const onCrudGet = getTagAttributes;
+    const onCrudGetTotal = getTagAttributeTotal;
+    const onCrudUpdate = putTagAttribute;
+    const onCrudDelete = deleteTagAttribute;
+
+    return { table, headers, onCrudCreate, onCrudGet, onCrudGetTotal, onCrudUpdate, onCrudDelete };
+  },
+};
+</script>

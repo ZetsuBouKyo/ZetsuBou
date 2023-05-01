@@ -1,0 +1,16 @@
+{
+    "semi": true,
+    "trailingComma": "all",
+    "arrowParens": "always",
+    "tabWidth": 4,
+    "printWidth": 120,
+    "overrides": [
+        {
+            "files": "*.{css,js,ts,vue,html,md}",
+            "options": {
+                "singleQuote": false,
+                "tabWidth": 2
+            }
+        }
+    ]
+}

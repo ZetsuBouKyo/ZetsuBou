@@ -1,0 +1,8 @@
+@layer utilities {
+  .chip {
+    @apply text-base 3xl:text-xl border-0 py-1 px-4 rounded-full cursor-default;
+  }
+  .chip-dark {
+    @apply text-white bg-gray-700;
+  }
+}

@@ -1,0 +1,34 @@
+@import "tailwindcss/base";
+
+@import "tailwindcss/components";
+
+@import "tailwindcss/utilities";
+
+@import "@/elements/Button/button.css";
+@import "@/elements/Chip/chip.css";
+@import "@/elements/Modal/modal.css";
+@import "@/elements/Table/table.css";
+
+@layer utilities {
+  .scrollbar-gray-900-2::-webkit-scrollbar {
+    @apply w-2 h-full bg-gray-900 rounded-md;
+  }
+  .scrollbar-gray-900-2::-webkit-scrollbar-thumb {
+    background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+    @apply bg-gray-800 rounded-md;
+  }
+  .scrollbar-gray-900-2::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+  }
+
+  .scrollbar-gray-100-2::-webkit-scrollbar {
+    @apply w-2 h-full bg-gray-100 rounded-md;
+  }
+  .scrollbar-gray-100-2::-webkit-scrollbar-thumb {
+    background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+    @apply bg-gray-500 rounded-md;
+  }
+  .scrollbar-gray-100-2::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-900;
+  }
+}

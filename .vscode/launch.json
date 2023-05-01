@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "pytest",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["-s", "${file}"],
+            "showReturnValue": true
+        },
+        {
+            "name": "Python: App",
+            "type": "python",
+            "request": "launch",
+            "program": "app.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}

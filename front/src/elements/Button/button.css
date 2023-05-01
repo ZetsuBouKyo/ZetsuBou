@@ -1,0 +1,22 @@
+@layer utilities {
+  .btn {
+    @apply text-base 3xl:text-xl border-0 py-1 px-4 focus:outline-none rounded;
+  }
+
+  .btn-icon {
+    @apply text-base 3xl:text-xl border-0 py-1 focus:outline-none rounded;
+    @apply flex flex-row items-center;
+  }
+
+  .btn-primary {
+    @apply text-white bg-indigo-500 hover:bg-indigo-700;
+  }
+
+  .btn-danger {
+    @apply text-white bg-red-700 hover:bg-red-900;
+  }
+
+  .btn-dark {
+    @apply text-white bg-gray-700 hover:bg-gray-900 focus:bg-gray-900;
+  }
+}

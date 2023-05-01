@@ -1,0 +1,25 @@
+FROM apache/airflow:2.2.3-python3.8
+
+USER root
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    build-essential libopenmpi-dev \
+    ffmpeg libsm6 libxext6 \
+    && apt-get autoremove -yqq --purge \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --chown=airflow:root poetry.toml pyproject.toml /opt/airflow/zetsubou-venv/
+
+RUN chmod 755 /opt/airflow/zetsubou-venv/
+
+USER airflow
+
+RUN pip install --no-cache-dir poetry pydantic
+
+WORKDIR /opt/airflow/zetsubou-venv
+
+RUN PIP_USER=false poetry install
+
+WORKDIR /opt/airflow

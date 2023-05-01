@@ -1,0 +1,22 @@
+@layer utilities {
+  .modal-row {
+    @apply flex flex-row items-center mx-4 my-1;
+  }
+  .modal-row-h-full {
+    @apply flex flex-row items-center mx-4 my-1 h-full;
+  }
+  .modal-input {
+    @apply bg-gray-600  placeholder-gray-400;
+    @apply text-white text-base 3xl:text-xl;
+    @apply rounded;
+    @apply border-0;
+    @apply focus:outline-none;
+    @apply px-3 h-10;
+  }
+  .modal-textarea {
+    @apply bg-black text-white;
+    @apply rounded;
+    @apply w-full;
+    @apply resize-none scrollbar-gray-100-2;
+  }
+}

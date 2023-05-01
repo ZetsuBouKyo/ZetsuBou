@@ -1,0 +1,144 @@
+import json
+from urllib.parse import unquote
+
+from back.crud.video import CrudElasticVideo
+from back.db.crud import CrudUserElasticSearchQuery
+from back.db.model import ScopeEnum
+from back.dependency.security import Token, api_security, extract_token
+from back.model.elastic import AnalyzerEnum, QueryBoolean
+from back.model.video import VideoOrderedFieldEnum, Videos
+from back.settings import setting
+from fastapi import APIRouter, Depends, Request
+
+from ..utils import get_tags_and_labels_by_query_params
+
+router = APIRouter()
+
+elastic_size = setting.elastic_size
+
+
+@router.get(
+    "/random",
+    response_model=Videos,
+    dependencies=[api_security([ScopeEnum.video_query_random_get.name])],
+)
+def get_random(
+    analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    seed: int = 1048596,
+    keywords: str = "",
+    page: int = 1,
+    fuzziness: int = 0,
+    size: int = elastic_size,
+    boolean: QueryBoolean = QueryBoolean.SHOULD,
+) -> Videos:
+    keywords = unquote(keywords)
+    crud = CrudElasticVideo(size=size, analyzer=analyzer)
+    return crud.random(page, keywords, fuzziness=fuzziness, seed=seed, boolean=boolean)
+
+
+@router.get(
+    "/advanced-search",
+    response_model=Videos,
+    dependencies=[api_security([ScopeEnum.video_query_advanced_search_get.name])],
+)
+def get_advanced_search(
+    request: Request,
+    page: int = 1,
+    size: int = elastic_size,
+    keywords: str = None,
+    keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    keywords_fuzziness: int = 0,
+    keywords_bool: QueryBoolean = QueryBoolean.SHOULD,
+    name: str = None,
+    name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    name_fuzziness: int = 0,
+    name_bool: QueryBoolean = QueryBoolean.SHOULD,
+    other_names: str = None,
+    other_names_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    other_names_fuzziness: int = 0,
+    other_names_bool: QueryBoolean = QueryBoolean.SHOULD,
+    category: str = None,
+    rating_gte: int = None,
+    rating_lte: int = None,
+    height_gte: int = None,
+    height_lte: int = None,
+    width_gte: int = None,
+    width_lte: int = None,
+    duration_gte: int = None,
+    duration_lte: int = None,
+    tag_field_1: str = None,
+    tag_value_1: str = None,
+    label_1: str = None,
+    order_by: VideoOrderedFieldEnum = None,
+    is_desc: bool = True,
+) -> Videos:
+    tags, labels = get_tags_and_labels_by_query_params(request)
+
+    if keywords is not None:
+        keywords = unquote(keywords)
+    if name is not None:
+        name = unquote(name)
+    if other_names is not None:
+        other_names = unquote(other_names)
+    crud = CrudElasticVideo(size=size)
+
+    return crud.advanced_search(
+        page=page,
+        keywords=keywords,
+        keywords_analyzer=keywords_analyzer,
+        keywords_fuzziness=keywords_fuzziness,
+        keywords_bool=keywords_bool,
+        name=name,
+        name_analyzer=name_analyzer,
+        name_fuzziness=name_fuzziness,
+        name_bool=name_bool,
+        other_names=other_names,
+        other_names_analyzer=other_names_analyzer,
+        other_names_fuzziness=other_names_fuzziness,
+        other_names_bool=other_names_bool,
+        category=category,
+        rating_gte=rating_gte,
+        rating_lte=rating_lte,
+        height_gte=height_gte,
+        height_lte=height_lte,
+        width_gte=width_gte,
+        width_lte=width_lte,
+        duration_gte=duration_gte,
+        duration_lte=duration_lte,
+        order_by=order_by,
+        is_desc=is_desc,
+        labels=labels,
+        tags=tags,
+    )
+
+
+@router.get(
+    "/search",
+    response_model=Videos,
+    dependencies=[api_security([ScopeEnum.video_query_search_get.name])],
+)
+async def get_search(
+    analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    token: Token = Depends(extract_token),
+    query_id: int = None,
+    keywords: str = "",
+    page: int = 1,
+    fuzziness: int = 0,
+    size: int = elastic_size,
+    boolean: QueryBoolean = QueryBoolean.SHOULD,
+) -> Videos:
+    user_id = token.sub
+    keywords = unquote(keywords)
+
+    crud = CrudElasticVideo(size=size, analyzer=analyzer)
+    if query_id is not None:
+        user_es_query = await CrudUserElasticSearchQuery.get_row_by_id_and_user_id(
+            query_id, user_id
+        )
+        query = json.loads(user_es_query.query)
+        body = query.get("body", None)
+        if body is None:
+            return []
+        return crud.match_by_query(body, page)
+
+    return crud.match(page, keywords, fuzziness=fuzziness, boolean=boolean)

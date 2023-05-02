@@ -3,6 +3,8 @@ import os
 import subprocess
 from pathlib import Path
 
+import typer
+
 reserved_symbols = ["#"]
 
 
@@ -28,64 +30,95 @@ def remove_reserved_symbols(fpath: Path):
     fpath.rename(new_path)
 
 
-class Video:
-    """Operations for Video in ZetsuBou."""
+_help = """
+Manipulate the video.
+"""
 
-    def remove_reserved_symbols(self, home: str):
-        home = Path(home)
-        for fpath in home.glob("**/*"):
-            if fpath.is_dir():
-                for symbol in reserved_symbols:
-                    if symbol in str(fpath):
-                        print(fpath)
-                continue
-            remove_reserved_symbols(fpath)
+app = typer.Typer(name="video", help=_help)
 
-    def remove_broken(self, home: str):
-        home = Path(home)
-        for fpath in home.glob("**/*"):
-            if fpath.is_dir():
-                continue
 
-            if fpath.stat().st_size == 0:
-                fpath.unlink()
+@app.command(name="remove-reserved-symbols")
+def _remove_reserved_symbols(
+    home: str = typer.Argument(..., help="The path for the upper layer of the videos")
+):
+    """
+    Remove the reserved symbols in video file name for minio.
+    """
 
-    def to_h264(self, src: str, dest: str, limit: int = None):
-        root = Path(src)
-        root_h264 = Path(dest)
+    home = Path(home)
+    for fpath in home.glob("**/*"):
+        if fpath.is_dir():
+            for symbol in reserved_symbols:
+                if symbol in str(fpath):
+                    print(fpath)
+            continue
+        remove_reserved_symbols(fpath)
 
-        c = 0
-        for f in root.rglob("**/*"):
-            f_h264 = root_h264 / f.relative_to(root).parent / f"{f.name}.h264.mp4"
-            if f_h264.exists():
-                continue
 
-            f_mimetypes = mimetypes.guess_type(f.absolute())[0]
+@app.command()
+def remove_broken(
+    home: str = typer.Argument(..., help="The path for the upper layer of the videos")
+):
+    """
+    Remove broken videos.
+    """
 
-            # f_ext = f.suffix.lower()
-            # if not f_ext:
-            #     print(f.stem)
+    home = Path(home)
+    for fpath in home.glob("**/*"):
+        if fpath.is_dir():
+            continue
 
-            if f_mimetypes and (
-                f_mimetypes.startswith("video") or f_mimetypes == "audio/x-pn-realaudio"
-            ):
-                print(f)
-                c += 1
-                os.makedirs(f_h264.parent, exist_ok=True)
-                subprocess.run(
-                    [
-                        "ffmpeg",
-                        "-i",
-                        str(f),
-                        "-vcodec",
-                        "libx264",
-                        "-movflags",
-                        "faststart",
-                        str(f_h264),
-                    ]
-                )
+        if fpath.stat().st_size == 0:
+            fpath.unlink()
 
-                if c >= limit:
-                    break
 
-        print(f"convert: {c}")
+@app.command()
+def to_h264(
+    src: str = typer.Argument(..., help="The repository of the origin videos."),
+    dest: str = typer.Argument(..., help="The repository of the output h264 videos."),
+    limit: int = typer.Option(
+        default=None,
+        help="The number of videos for converting. If this is None, all videos would be converted.",  # noqa
+    ),
+):
+    """
+    Convert the videos into h264 video through ffmpeg.
+    """
+    root = Path(src)
+    root_h264 = Path(dest)
+
+    c = 0
+    for f in root.rglob("**/*"):
+        f_h264 = root_h264 / f.relative_to(root).parent / f"{f.name}.h264.mp4"
+        if f_h264.exists():
+            continue
+
+        f_mimetypes = mimetypes.guess_type(f.absolute())[0]
+
+        # f_ext = f.suffix.lower()
+        # if not f_ext:
+        #     print(f.stem)
+
+        if f_mimetypes and (
+            f_mimetypes.startswith("video") or f_mimetypes == "audio/x-pn-realaudio"
+        ):
+            print(f)
+            c += 1
+            os.makedirs(f_h264.parent, exist_ok=True)
+            subprocess.run(
+                [
+                    "ffmpeg",
+                    "-i",
+                    str(f),
+                    "-vcodec",
+                    "libx264",
+                    "-movflags",
+                    "faststart",
+                    str(f_h264),
+                ]
+            )
+
+            if c >= limit:
+                break
+
+    print(f"convert: {c}")

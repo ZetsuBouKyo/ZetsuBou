@@ -1,5 +1,6 @@
 from typing import List
 
+import typer
 from back.db.crud.base import (
     get_dependent_tables,
     get_seqs,
@@ -8,54 +9,135 @@ from back.db.crud.base import (
     reset_auto_increment,
 )
 from back.session.async_db import async_engine, async_session
+from rich.console import Console
+from rich.table import Table
 from sqlalchemy import text
 
 from command.utils import sync
 
+_help = """
+Manipulate the SQL databases.
+"""
+app = typer.Typer(name="db", help=_help)
 
-class Db:
-    """Operations for RDBMS in ZetsuBou."""
 
-    @sync
-    async def list_schema(self):
-        async with async_session() as session:
-            statement = text("select * from information_schema.tables")
-            rows = await session.execute(statement)
-            for row in rows:
-                print(row)
+@app.command()
+@sync
+async def list_schemas():
+    """
+    List the schemas.
+    """
 
-    # TODO: deprecated
-    @sync
-    async def drop_permission_tables(self):
-        async with async_engine.begin() as conn:
-            statement = text(
-                "DROP TABLE IF EXISTS group_permission, permission CASCADE;"
-            )
-            await conn.execute(statement)
-            await conn.commit()
+    async with async_session() as session:
+        statement = text("select * from information_schema.tables")
+        rows = await session.execute(statement)
 
-    def list(self, total: bool = False) -> List[str]:
-        tables = list_tables()
-        for table in tables:
-            print(table)
+        table = Table(title="ZetsuBou's SQL database schemas")
+        table.add_column("table_catalog")
+        table.add_column("table_schema")
+        table.add_column("table_name")
+        table.add_column("table_type")
+        table.add_column("self_referencing_column_name")
+        table.add_column("reference_generation")
+        table.add_column("user_defined_type_catalog")
+        table.add_column("user_defined_type_schema")
+        table.add_column("user_defined_type_name")
+        table.add_column("is_insertable_into")
+        table.add_column("is_typed")
+        table.add_column("commit_action")
+
+        for row in rows:
+            _row = list(row.tuple())
+            table.add_row(*_row)
+
+    console = Console()
+    console.print(table)
+
+
+# TODO: To make this general
+@app.command()
+@sync
+async def drop_permission_tables():
+    async with async_engine.begin() as conn:
+        statement = text("DROP TABLE IF EXISTS group_permission, permission CASCADE;")
+        await conn.execute(statement)
+        await conn.commit()
+
+
+@app.command(name="list-tables")
+def _list_tables(
+    total: bool = typer.Option(
+        default=False, help="Show the total number of tables in the last line."
+    ),
+    rich: bool = typer.Option(default=True, help="Show the tables in Rich mode."),
+) -> List[str]:
+    """
+    List the SQL databases.
+    """
+    tables = list_tables()
+    if rich:
+        table = Table(title="ZetsuBou's SQL database tables")
+        table.add_column("Name")
+        for name in tables:
+            table.add_row(name)
         if total:
-            print(f"\ntotal: {len(tables)}")
-        return tables
+            table.add_row("")
+            table.add_row(f"\ntotal: {len(tables)}")
+        console = Console()
+        console.print(table)
+        return
+    for table in tables:
+        print(table)
+    if total:
+        print(f"\ntotal: {len(tables)}")
 
-    def tree(self):
-        table_instances = get_table_instances()
-        for table_name, table_instance in table_instances.items():
-            print(f"table: {table_name}")
-            print(get_dependent_tables(table_instance))
 
-    @sync
-    async def reset_auto_increment(self, table_name: str):
-        await reset_auto_increment(table_name)
+@app.command()
+def tree():
+    """
+    Show the depentencies between tables.
+    """
+    table_instances = get_table_instances()
+    for table_name, table_instance in table_instances.items():
+        table = Table()
+        table.add_column("Parents")
+        table.add_column("Child")
+        parents = get_dependent_tables(table_instance)
+        parents = list(parents)
+        parents.sort()
 
-    @sync
-    async def list_seqs(self):
-        seqs = await get_seqs()
-        if not seqs:
-            return
-        for seq in seqs:
-            print(seq)
+        if len(parents) > 0:
+            for i, parent in enumerate(parents):
+                if i == 0:
+                    table.add_row(parent, table_name)
+                else:
+                    table.add_row(parent, "")
+        else:
+            table.add_row("", table_name)
+
+        console = Console()
+        console.print(table)
+
+
+@app.command(name="reset-auto-increment")
+@sync
+async def _reset_auto_increment(
+    table_name: str = typer.Argument(..., help="The table name.")
+):
+    """
+    Reset the auto increment in PostgreSQL.
+    """
+    await reset_auto_increment(table_name)
+
+
+@app.command()
+@sync
+async def list_seqs():
+    """
+    List the sequences.
+    """
+    seqs = await get_seqs()
+    if not seqs:
+        return
+    for seq in seqs:
+        print(seq)

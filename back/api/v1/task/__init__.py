@@ -1,7 +1,7 @@
 from back.db.model import ScopeEnum
 from back.dependency.security import api_security
 from back.settings import AppMode, setting
-from cli import Cmd  # noqa: to load the modules
+from cli import app  # noqa
 from command.router import router as cmd_tasks
 from fastapi import APIRouter
 

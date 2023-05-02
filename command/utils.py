@@ -1,15 +1,18 @@
-import asyncio
+import inspect
+from asyncio import run
 from pathlib import Path
 from typing import Union
 
-loop = asyncio.get_event_loop()
 
+def sync(async_func):
+    def magic(*args, **kwargs):
+        return run(async_func(*args, **kwargs))
 
-def sync(func):
-    def wrap(*args, **kwargs):
-        return loop.run_until_complete(func(*args, **kwargs))
+    magic.__signature__ = inspect.signature(async_func)
+    magic.__name__ = async_func.__name__
+    magic.__doc__ = async_func.__doc__
 
-    return wrap
+    return magic
 
 
 def is_empty_dir(path: Union[str, Path]) -> bool:

@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from typing import List, Union
 
+import typer
 from back.crud.elastic import CrudElasticBase
 from back.db.crud.base import (
     flatten_dependent_tables,
@@ -75,117 +76,140 @@ async def loads_from_json_file(fpath: Union[str, Path]):
     await loads_from_json_with_instance(table_instance, rows)
 
 
-class Backup:
-    """Backup the databases in ZetsuBou."""
+_help = """
+Backup the databases.
 
-    @sync
-    @register("backup-dump", "backup dump")
-    async def dump(self, encoding: str = "utf-8"):
-        root_object_name = get_now().replace(":", "-").replace(".", "-")
+Export the SQL databases and Elasticsearch indices into minio repository in the form of
+ JSON.
+"""
 
-        table_names = list_tables()
-        table_instances = get_table_instances()
+app = typer.Typer(name="backup", help=_help)
 
-        for table_name in tqdm(table_names):
-            table_class = table_instances[table_name]
-            rows = await get_all_rows(table_class)
-            rows = json.dumps(rows).encode(encoding=encoding)
 
-            data = io.BytesIO(rows)
-            object_name = "/".join(
-                [root_object_name, db_object_name, f"{table_name}.json"]
-            )
-            minio_client.put_object(
-                backup_bucket_name,
-                object_name,
-                data,
-                len(data.getvalue()),
-                content_type="application/json",
-            )
+@app.command()
+@sync
+@register("backup-dump", "backup dump")
+async def dump(
+    encoding: str = typer.Option(
+        default="utf-8", help="The encoding of the output JSON files."
+    )
+):
+    """
+    Dump the SQL databases and elasticsearch indices into JSON in minio.
+    """
 
-        for index in tqdm(indices):
-            print(f"index: {index}")
-            if index == setting.elastic_index_tag:
-                sorting = ["_score", {"id": "asc"}]
-            else:
-                sorting = ["_score", {"id.keyword": "asc"}]
-            crud = CrudElasticBase(index=index, size=1000, sorting=sorting)
-            page = 1
-            try:
-                results = crud.match(page, "")
-            except RequestError:
-                continue
-            rows = []
-            while results.hits.hits:
-                for hit in results.hits.hits:
-                    source = hit.source
-                    if type(source) is dict:
-                        rows.append(source)
-                    else:
-                        rows.append(source.dict())
-                page += 1
-                results = crud.match_all(page)
+    root_object_name = get_now().replace(":", "-").replace(".", "-")
 
-            rows = json.dumps(rows).encode(encoding=encoding)
+    table_names = list_tables()
+    table_instances = get_table_instances()
 
-            data = io.BytesIO(rows)
-            object_name = "/".join(
-                [root_object_name, elastic_object_name, f"{index}.json"]
-            )
-            minio_client.put_object(
-                backup_bucket_name,
-                object_name,
-                data,
-                len(data.getvalue()),
-                content_type="application/json",
-            )
+    for table_name in tqdm(table_names):
+        table_class = table_instances[table_name]
+        rows = await get_all_rows(table_class)
+        rows = json.dumps(rows).encode(encoding=encoding)
 
-    @sync
-    @register("backup-load", "backup load")
-    async def load(self, date: str):
-        await create_tables()
+        data = io.BytesIO(rows)
+        object_name = "/".join([root_object_name, db_object_name, f"{table_name}.json"])
+        minio_client.put_object(
+            backup_bucket_name,
+            object_name,
+            data,
+            len(data.getvalue()),
+            content_type="application/json",
+        )
 
-        table_instances = get_table_instances()
-        table_dependents = {
-            table_name: get_dependent_tables(table_instance)
-            for table_name, table_instance in table_instances.items()
-        }
-        table_names = flatten_dependent_tables(table_dependents)
+    for index in tqdm(indices):
+        print(f"index: {index}")
+        if index == setting.elastic_index_tag:
+            sorting = ["_score", {"id": "asc"}]
+        else:
+            sorting = ["_score", {"id.keyword": "asc"}]
+        crud = CrudElasticBase(index=index, size=1000, sorting=sorting)
+        page = 1
+        try:
+            results = crud.match(page, "")
+        except RequestError:
+            continue
+        rows = []
+        while results.hits.hits:
+            for hit in results.hits.hits:
+                source = hit.source
+                if type(source) is dict:
+                    rows.append(source)
+                else:
+                    rows.append(source.dict())
+            page += 1
+            results = crud.match_all(page)
 
-        for table_name in tqdm(table_names):
-            object_name = "/".join([date, db_object_name, f"{table_name}.json"])
+        rows = json.dumps(rows).encode(encoding=encoding)
+
+        data = io.BytesIO(rows)
+        object_name = "/".join([root_object_name, elastic_object_name, f"{index}.json"])
+        minio_client.put_object(
+            backup_bucket_name,
+            object_name,
+            data,
+            len(data.getvalue()),
+            content_type="application/json",
+        )
+
+
+@app.command()
+@sync
+@register("backup-load", "backup load")
+async def load(
+    date: str = typer.Argument(
+        ...,
+        help="The dumping date which could be found under the path [root-to-minio-data]/backup .",  # noqa
+    )
+):
+    """
+    Load the SQL databases and elasticsearch indices from JSON in minio.
+    """
+
+    await create_tables()
+
+    table_instances = get_table_instances()
+    table_dependents = {
+        table_name: get_dependent_tables(table_instance)
+        for table_name, table_instance in table_instances.items()
+    }
+    table_names = flatten_dependent_tables(table_dependents)
+
+    for table_name in tqdm(table_names):
+        object_name = "/".join([date, db_object_name, f"{table_name}.json"])
+        rows = minio_client.get_object(backup_bucket_name, object_name)
+        rows = json.load(rows)
+
+        table_instance = table_instances.get(table_name, None)
+        if table_instance is None:
+            print(f"table: {table_name} not found")
+            return
+
+        await loads_from_json_with_instance(table_instance, rows)
+        pk_names = get_primary_key_names_by_table_instance(table_instance)
+        for pk_name in pk_names:
+            seq = f"{table_name}_{pk_name}_seq"
+            await reset_auto_increment(table_name, seq=seq)
+
+    init_index()
+    size = 1000
+    for index in tqdm(indices):
+        object_name = "/".join([date, elastic_object_name, f"{index}.json"])
+        try:
             rows = minio_client.get_object(backup_bucket_name, object_name)
-            rows = json.load(rows)
+        except S3Error:
+            continue
 
-            table_instance = table_instances.get(table_name, None)
-            if table_instance is None:
-                print(f"table: {table_name} not found")
-                return
+        rows = json.load(rows)
 
-            await loads_from_json_with_instance(table_instance, rows)
-            pk_names = get_primary_key_names_by_table_instance(table_instance)
-            for pk_name in pk_names:
-                seq = f"{table_name}_{pk_name}_seq"
-                await reset_auto_increment(table_name, seq=seq)
-
-        init_index()
-        size = 1000
-        for index in tqdm(indices):
-            object_name = "/".join([date, elastic_object_name, f"{index}.json"])
-            try:
-                rows = minio_client.get_object(backup_bucket_name, object_name)
-            except S3Error:
-                continue
-
-            rows = json.load(rows)
-
-            i = 0
+        i = 0
+        batch = rows[i * size : (i + 1) * size]
+        while batch:
+            actions = [
+                {"_index": index, "_id": source["id"], "_source": source}
+                for source in batch
+            ]
+            helpers.bulk(elastic_client, actions)
+            i += 1
             batch = rows[i * size : (i + 1) * size]
-            while batch:
-                actions = [
-                    {"_index": index, "_id": source["id"], "_source": source}
-                    for source in batch
-                ]
-                helpers.bulk(elastic_client, actions)
-                i += 1
-                batch = rows[i * size : (i + 1) * size]

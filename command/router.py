@@ -7,6 +7,7 @@ from back.session.airflow import get_dag_runs, trigger_new_dag_run
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.dependencies.utils import get_typed_signature
 from pydantic import BaseModel
+from typer.models import ArgumentInfo, OptionInfo
 
 dags = defaultdict(lambda: None)
 
@@ -75,20 +76,26 @@ def register(dag_id: str, sub_command: str):
             dag_id=dag_id, sub_command=sub_command, doc=endpoint.__doc__
         )
         typed_signature = get_typed_signature(endpoint)
-        parameters = [(k, v) for k, v in typed_signature.parameters.items()][1:]
+        parameters = [(k, v) for k, v in typed_signature.parameters.items()]
         for name, parameter in parameters:
             parameter_type = get_parameter_type(parameter)
 
-            if parameter.default is inspect._empty:
+            if isinstance(parameter.default, ArgumentInfo):
                 schema.args.append(Argument(name=name, type=parameter_type))
-            else:
+            elif isinstance(parameter.default, OptionInfo):
                 schema.kwargs.append(
                     KeywordArgument(
-                        name=name, type=parameter_type, default=parameter.default
+                        name=name,
+                        type=parameter_type,
+                        default=parameter.default.default,
                     )
                 )
 
         dags[dag_id] = schema
+
+        second_wrap.__signature__ = inspect.signature(endpoint)
+        second_wrap.__name__ = endpoint.__name__
+        second_wrap.__doc__ = endpoint.__doc__
         return second_wrap
 
     return wrap

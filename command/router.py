@@ -83,6 +83,7 @@ def register(dag_id: str, sub_command: str):
             if isinstance(parameter.default, ArgumentInfo):
                 schema.args.append(Argument(name=name, type=parameter_type))
             elif isinstance(parameter.default, OptionInfo):
+                name = name.replace("_", "-")
                 schema.kwargs.append(
                     KeywordArgument(
                         name=name,
@@ -116,7 +117,13 @@ async def trigger_dag_run(
         for kwarg in fire_command.kwargs:
             if kwarg.value is None:
                 continue
-            _kwargs.append(f"--{kwarg.name}={kwarg.value}")
+            if kwarg.type == "string" or kwarg.type == "number":
+                _kwargs.append(f"--{kwarg.name} {kwarg.value}")
+            elif kwarg.type == "boolean":
+                if kwarg.value:
+                    _kwargs.append(f"--{kwarg.name}")
+                else:
+                    _kwargs.append(f"--no-{kwarg.name}")
         args = " ".join(_args + _kwargs)
 
     conf["args"] = args

@@ -1,5 +1,7 @@
 import typer
+from back.model.elastic import AnalyzerEnum
 from back.session.elastic import elastic_client, init_index
+from rich import print_json
 
 _help = """
 Manipulate the Elasticsearch.
@@ -39,3 +41,20 @@ def init():
     """
 
     init_index()
+
+
+@app.command()
+def analyze(
+    text: str = typer.Argument(..., help="Text for analyzing."),
+    analyzer: AnalyzerEnum = typer.Option(
+        default=AnalyzerEnum.DEFAULT.value, help="Analyzer name."
+    ),
+):
+    """
+    Analyze the text string and return the resulting tokens.
+    """
+    print(f"analyzer: {analyzer}")
+    print(f"text: {text}")
+    body = {"text": text, "analyzer": analyzer}
+    resp = elastic_client.indices.analyze(body=body)
+    print_json(data=resp)

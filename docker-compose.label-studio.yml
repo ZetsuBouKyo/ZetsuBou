@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  label-studio:
+    stdin_open: true
+    tty: true
+    build: .
+    image: heartexlabs/label-studio:latest
+    network_mode: host
+    environment:
+      - LABEL_STUDIO_PORT=8090
+    expose:
+      - 8090
+    volumes:
+      - ${ZETSUBOU_LABEL_STUDIO_DATA_VOLUME:-./dev/volumes/label-studio/data}:/label-studio/data:rw
+    command: label-studio --log-level DEBUG

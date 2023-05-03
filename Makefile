@@ -9,6 +9,9 @@ ZETSUBOU_APP_MINIO ?= ./dev/minio
 ZETSUBOU_APP_MINIO_GALLERIES ?= ./dev/minio/galleries
 ZETSUBOU_APP_MINIO_GALLERIES_SIMPLE ?= ./dev/minio/galleries/simple
 ZETSUBOU_ELASTICSEARCH_VOLUME ?= ./dev/volumes/elasticsearch
+ZETSUBOU_LABEL_STUDIO_DATA_VOLUME ?= ./dev/volumes/label-studio/data
+ZETSUBOU_LABEL_STUDIO_DEPLOY_VOLUME ?= ./dev/volumes/label-studio/deploy
+ZETSUBOU_LABEL_STUDIO_DATA_POSTGRES_DB_VOLUME ?= ./dev/volumes/label-studio/postgres
 ZETSUBOU_REDIS_VOLUME ?= ./dev/volumes/redis
 ZETSUBOU_POSTGRES_DB_VOLUME ?= ./dev/volumes/postgres
 
@@ -68,10 +71,14 @@ init-airflow:
 	chown -R $(AIRFLOW_UID):$(AIRFLOW_UID) $(AIRFLOW_PLUGINS_VOLUME)
 
 	docker-compose -f docker-compose.host.yml up airflow-init
+init-label-studio:
+	mkdir -p $(ZETSUBOU_LABEL_STUDIO_DATA_VOLUME)
+	mkdir -p $(ZETSUBOU_LABEL_STUDIO_DEPLOY_VOLUME)
+	mkdir -p $(ZETSUBOU_LABEL_STUDIO_DATA_POSTGRES_DB_VOLUME)
 init-redis:
 	mkdir -p $(ZETSUBOU_REDIS_VOLUME)
 	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
-init: init-app-postgres init-airflow init-app-elastic init-redis
+init: init-app-postgres init-airflow init-app-elastic init-label-studio init-redis
 
 .PHONY: clean clean-all clean-airflow clean-app-elastic clean-app-postgres clean-docker
 clean-airflow:
@@ -99,6 +106,8 @@ reset-app: reset-app-elastic reset-app-postgres
 .PHONY: up up-airflow up-app-dev
 up-airflow:
 	docker-compose -f docker-compose.host.yml up -d $(AIRFLOW_SERVICES)
+up-label-studio:
+	docker-compose -f docker-compose.label-studio.yml up -d
 up-app-dev:
 	docker-compose -f docker-compose.host.yml up -d $(APP_DEV_SERVICES)
 up-dev: up-airflow up-app-dev

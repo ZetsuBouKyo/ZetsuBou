@@ -61,6 +61,7 @@ class CrudElasticVideo(CrudElasticBase[Video]):
                 "other_names",
                 "attributes.uploader",
                 "attributes.category",
+                "attributes.src",
                 "labels",
                 "tags.*",
             ]
@@ -70,6 +71,7 @@ class CrudElasticVideo(CrudElasticBase[Video]):
                 "other_names.ngram",
                 "attributes.uploader",
                 "attributes.category",
+                "attributes.src.ngram",
                 "labels",
                 "tags.*",
             ]
@@ -79,6 +81,7 @@ class CrudElasticVideo(CrudElasticBase[Video]):
                 "other_names.standard",
                 "attributes.uploader",
                 "attributes.category",
+                "attributes.src.standard",
                 "labels",
                 "tags.*",
             ]
@@ -87,6 +90,7 @@ class CrudElasticVideo(CrudElasticBase[Video]):
             "other_names",
             "attributes.uploader",
             "attributes.category",
+            "attributes.src",
             "labels",
             "tags.*",
         ]

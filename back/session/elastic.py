@@ -149,6 +149,28 @@ def create_video():
                         "ngram": {"type": "text", "analyzer": AnalyzerEnum.NGRAM.value},
                     },
                 },
+                "attributes": {
+                    "properties": {
+                        "src": {
+                            "type": "text",
+                            "fields": {
+                                "keyword": {"type": "keyword", "ignore_above": 256},
+                                "default": {
+                                    "type": "text",
+                                    "analyzer": AnalyzerEnum.DEFAULT.value,
+                                },
+                                "standard": {
+                                    "type": "text",
+                                    "analyzer": AnalyzerEnum.STANDARD.value,
+                                },
+                                "ngram": {
+                                    "type": "text",
+                                    "analyzer": AnalyzerEnum.NGRAM.value,
+                                },
+                            },
+                        },
+                    }
+                },
             }
         },
     }

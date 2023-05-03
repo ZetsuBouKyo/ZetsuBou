@@ -73,6 +73,8 @@ class CrudElasticGallery(CrudElasticBase[Gallery]):
                 "attributes.raw_name",
                 "attributes.uploader",
                 "attributes.category",
+                "attributes.src",
+                "labels",
                 "tags.*",
             ]
         elif self.analyzer == AnalyzerEnum.NGRAM.value:
@@ -81,6 +83,8 @@ class CrudElasticGallery(CrudElasticBase[Gallery]):
                 "attributes.raw_name.ngram",
                 "attributes.uploader",
                 "attributes.category",
+                "attributes.src.ngram",
+                "labels",
                 "tags.*",
             ]
         elif self.analyzer == AnalyzerEnum.STANDARD.value:
@@ -89,6 +93,8 @@ class CrudElasticGallery(CrudElasticBase[Gallery]):
                 "attributes.raw_name.standard",
                 "attributes.uploader",
                 "attributes.category",
+                "attributes.src.standard",
+                "labels",
                 "tags.*",
             ]
         return [
@@ -96,6 +102,8 @@ class CrudElasticGallery(CrudElasticBase[Gallery]):
             "attributes.raw_name",
             "attributes.uploader",
             "attributes.category",
+            "attributes.src",
+            "labels",
             "tags.*",
         ]
 

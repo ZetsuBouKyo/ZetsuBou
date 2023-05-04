@@ -39,12 +39,12 @@
             Last updated on {{ galleryState.getTimestamp() }}
           </h3>
           <labels
-            class="mb-2 h-1/4 rounded-lg border-2 border-gray-600 lg:overflow-y-scroll lg:scrollbar-gray-100-2"
+            class="mb-2 lg:h-1/4 rounded-lg border-2 border-gray-600 lg:overflow-y-scroll lg:scrollbar-gray-100-2"
             :labels="galleryState.data.labels"
             :searchBaseUrl="'/gallery/advanced-search'"
           />
           <tags
-            class="px-2 lg:overflow-y-scroll lg:scrollbar-gray-100-2 h-full rounded-lg border-2 border-gray-600"
+            class="px-2 lg:overflow-y-scroll lg:scrollbar-gray-100-2 lg:h-full rounded-lg border-2 border-gray-600"
             :tags="galleryState.data.tags"
             :searchBaseUrl="'/gallery/advanced-search'"
           />

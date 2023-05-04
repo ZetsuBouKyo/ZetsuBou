@@ -37,7 +37,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[yaml]": {
-        "editor.tabSize": 4,
+        "editor.tabSize": 2,
         "editor.quickSuggestions": {
             "other": true,
             "comments": false,
@@ -46,7 +46,7 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[yml]": {
-        "editor.tabSize": 4,
+        "editor.tabSize": 2,
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[vue]": {

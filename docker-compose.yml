@@ -1,14 +1,14 @@
 version: "3.3"
 
 services:
-    zetsubou-app:
-        image: zetsubou-dev/app/python-3.11.0-slim-buster:0.0.1
-        container_name: zetsubou-app
-        stdin_open: true
-        tty: true
-        network_mode: host
-        expose:
-            - 3000
-        volumes:
-            - ./etc:/workspace/etc
-            - ./.env:/workspace/.env
+  zetsubou-app:
+    image: zetsubou-dev/app/python-3.11.0-slim-buster:0.0.1
+    container_name: zetsubou-app
+    stdin_open: true
+    tty: true
+    network_mode: host
+    expose:
+      - 3000
+    volumes:
+      - ./etc:/workspace/etc
+      - ./.env:/workspace/.env

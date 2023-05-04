@@ -107,8 +107,10 @@ module.exports = {
       maxWidth: {
         "1/4": "25%",
         "1/2": "50%",
+        48: "12rem",
         72: "18rem",
         80: "20rem",
+        96: "24rem",
       },
       boxShadow: {
         black: "0 4px 14px 0 rgba(0, 0, 0, 1)",

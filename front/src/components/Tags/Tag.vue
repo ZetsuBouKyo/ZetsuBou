@@ -3,7 +3,7 @@
     <span class="w-min my-1 3xl:py-2 py-1 text-gray-100">{{ fieldKey }}:&nbsp;&nbsp;</span>
     <div class="flex flex-wrap w-full text-gray-900">
       <ripple-anchor
-        class="transition-colors duration-200 ease-in m-1 3xl:px-4 3xl:py-2 px-3 py-1 bg-gray-200 rounded-full max-w-full"
+        class="truncate transition-colors duration-200 ease-in m-1 3xl:px-4 3xl:py-2 px-3 py-1 bg-gray-200 rounded-full max-w-48 lg:max-w-96"
         :class="
           searchable ? 'cursor-pointer hover:bg-indigo-500 hover:text-gray-100 hover:border-white' : 'cursor-default'
         "

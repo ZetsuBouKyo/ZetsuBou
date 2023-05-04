@@ -1,7 +1,7 @@
 <template>
   <span class="chip chip-dark">
+    <button v-if="onDelete" class="mr-4 rounded-full" @click="remove">✕</button>
     <span>{{ title }}</span>
-    <button v-if="onDelete" class="ml-4 rounded-full" @click="remove">✕</button>
   </span>
 </template>
 

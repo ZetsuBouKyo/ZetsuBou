@@ -38,9 +38,13 @@
           <h3 class="text-gray-500 3xl:text-xl text-xs tracking-widest ml-auto mb-4" v-if="galleryState.data.timestamp">
             Last updated on {{ galleryState.getTimestamp() }}
           </h3>
-          <labels class="mb-2" :labels="galleryState.data.labels" :searchBaseUrl="'/gallery/advanced-search'" />
+          <labels
+            class="mb-2 h-1/4 rounded-lg border-2 border-gray-600 lg:overflow-y-scroll lg:scrollbar-gray-100-2"
+            :labels="galleryState.data.labels"
+            :searchBaseUrl="'/gallery/advanced-search'"
+          />
           <tags
-            class="lg:overflow-y-scroll lg:scrollbar-gray-100-2 h-full"
+            class="px-2 lg:overflow-y-scroll lg:scrollbar-gray-100-2 h-full rounded-lg border-2 border-gray-600"
             :tags="galleryState.data.tags"
             :searchBaseUrl="'/gallery/advanced-search'"
           />

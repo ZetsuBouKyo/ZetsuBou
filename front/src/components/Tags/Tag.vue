@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row my-6">
+  <div class="flex flex-row my-2">
     <span class="w-min my-1 3xl:py-2 py-1 text-gray-100">{{ fieldKey }}:&nbsp;&nbsp;</span>
     <div class="flex flex-wrap w-full text-gray-900">
       <ripple-anchor

@@ -1,4 +1,5 @@
 <template>
+  <text-editor ref="textEditor" :title="'Video JSON Editor'" :state="videoState" :on-overwrite="onOverwrite" />
   <editor ref="editor" />
   <section class="body-font overflow-hidden lg:mx-8 mx-2">
     <div class="px-2 py-6 mx-auto" v-if="videoState.data">
@@ -28,16 +29,32 @@
             }}</a>
           </div>
           <div class="flex flex-col divide-y divide-gray-500">
-            <div class="flex flex-row my-4 justify-center items-center">
-              <star-rating :filled="videoState.data.attributes.rating" />
-              <ripple-button class="ml-auto btn">
-                <div class="inline-flex items-center" @click="openEditor">
-                  <icon-ic-outline-edit class="m-2" style="font-size: 1.2rem; color: white" />
-                  <span class="mr-4 text-white">Edit</span>
-                </div>
-              </ripple-button>
+            <div class="flex flex-col">
+              <div class="flex flex-row my-4 mr-auto">
+                <star-rating :filled="videoState.data.attributes.rating" />
+              </div>
+              <div class="flex flex-row-reverse">
+                <ripple-button class="flex btn hover:opacity-50 hover:bg-gray-500">
+                  <div class="inline-flex items-center" @click="openEditor">
+                    <icon-ic-outline-edit class="m-1" style="font-size: 1.2rem; color: white" />
+                    <span class="mr-2 text-white">Edit</span>
+                  </div>
+                </ripple-button>
+                <ripple-button class="flex btn hover:opacity-50 hover:bg-gray-500">
+                  <div class="inline-flex items-center" @click="openTextEditor">
+                    <icon-mdi-code-json class="my-1 ml-1 mr-2" style="font-size: 1.2rem; color: white" />
+                    <span class="mr-2 text-white">JSON</span>
+                  </div>
+                </ripple-button>
+              </div>
+              <labels
+                v-if="videoState.data.labels && videoState.data.labels.length > 0"
+                class="mb-2"
+                :labels="videoState.data.labels"
+                :searchBaseUrl="'/video/advanced-search'"
+              />
+              <tags class="ml-2" :tags="videoState.data.tags" :searchBaseUrl="'/video/advanced-search'" />
             </div>
-            <tags :tags="videoState.data.tags" :searchBaseUrl="'/video/advanced-search'" />
           </div>
         </div>
         <div class="lg:flex lg:flex-col hidden w-80 ml-4">
@@ -75,15 +92,18 @@ import { useRoute } from "vue-router";
 import { reactive, ref, onBeforeMount, watch } from "vue";
 
 import { SearchBase } from "@/interface/search";
+import { SourceState } from "@/interface/source";
 import { Video } from "@/interface/video";
 
 import { userState } from "@/state/user";
 import { videoState } from "@/state/video";
 
-import { getTag } from "@/api/v1/video/tag";
 import { getAdvancedSearch, getRandom, getSearch, SearchQuery } from "@/api/v1/video/query";
+import { getTag } from "@/api/v1/video/tag";
 
+import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";
+import TextEditor from "@/components/TextEditor/index.vue";
 
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
@@ -103,7 +123,7 @@ interface State {
 }
 
 export default {
-  components: { StarRating, Editor, ConfirmModal, Tags, RippleButton },
+  components: { ConfirmModal, Editor, Labels, RippleButton, StarRating, Tags, TextEditor },
   setup() {
     const route = useRoute();
     const id = route.params.video as string;
@@ -152,13 +172,35 @@ export default {
       },
     );
 
-    const editor = ref();
+    const textEditor = ref();
+    function openTextEditor() {
+      textEditor.value.open();
+    }
 
+    const editor = ref();
     function openEditor() {
       editor.value.open();
     }
 
-    return { state, videoState, editor, openEditor };
+    function onOverwrite(state: SourceState<Video>, data: Video) {
+      if (data.name !== undefined) {
+        state.data.name = data.name;
+      }
+      if (data.attributes !== undefined) {
+        state.data.attributes = data.attributes;
+      }
+      if (data.tags !== undefined) {
+        state.data.tags = data.tags;
+      }
+      if (data.labels !== undefined) {
+        state.data.labels = data.labels;
+      }
+      if (data.other_names !== undefined && data.other_names.length > 0) {
+        state.data.other_names = data.other_names;
+      }
+    }
+
+    return { state, videoState, textEditor, editor, openTextEditor, openEditor, onOverwrite };
   },
 };
 </script>

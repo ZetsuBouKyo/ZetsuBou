@@ -75,14 +75,13 @@ import { reactive, ref, onBeforeMount } from "vue";
 import { getOpenGallery, deleteGalleryByID } from "@/api/v1/gallery/operation";
 
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
-
 import StarRating from "@/elements/Rating/StarRating.vue";
 
+import ControlPanel from "./ControlPanel.vue";
+import Editor from "./Editor.vue";
 import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";
-import ControlPanel from "./ControlPanel.vue";
 import TextEditor from "@/components/TextEditor/index.vue";
-import Editor from "./Editor.vue";
 
 import { galleryState } from "@/state/gallery";
 

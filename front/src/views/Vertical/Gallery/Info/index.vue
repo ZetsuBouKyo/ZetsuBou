@@ -39,6 +39,7 @@
             Last updated on {{ galleryState.getTimestamp() }}
           </h3>
           <labels
+            v-if="galleryState.data.labels && galleryState.data.labels.length > 0"
             class="mb-2 lg:h-1/4 rounded-lg border-2 border-gray-600 lg:overflow-y-scroll lg:scrollbar-gray-100-2"
             :labels="galleryState.data.labels"
             :searchBaseUrl="'/gallery/advanced-search'"

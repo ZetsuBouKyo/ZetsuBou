@@ -327,10 +327,7 @@ class CrudMinioVideo(CrudMinio):
             content_type="image/png",
         )
 
-    def generate_video_cache(
-        self,
-        video: Video,
-    ) -> None:
+    def generate_video_cache(self, video: Video, frame: int = 1) -> None:
         if video.id is None:
             return
         if video.attributes.frames is None:
@@ -340,17 +337,21 @@ class CrudMinioVideo(CrudMinio):
         v = cv2.VideoCapture(url)
         frames = 0
         while True:
-            _, frame = v.read()
+            _, current_frame_obj = v.read()
 
-            if frame is not None:
+            if current_frame_obj is not None:
                 frames += 1
             else:
                 break
 
-            if frames == 1:
-                cover = cv2.imencode(".png", frame)[1].tostring()
+            if frames == frame:
+                cover = cv2.imencode(".png", current_frame_obj)[1].tostring()
                 self.put_cover(video, cover)
                 break
+
+        if frame > frames:
+            # TODO: raise error
+            return
 
 
 def get_video_attrs(
@@ -560,7 +561,7 @@ class CrudVideo:
         cache_bucket_name: str = cache_bucket_name,
         cover_object_name_prefix: str = cover_object_name_prefix,
     ):
-        self.video = get_video_by_id(
+        self.video: Video = get_video_by_id(
             video_id, elastic_client=elastic_client, index=index
         )
         self.crud_minio_storage = crud_minio_storage
@@ -585,6 +586,23 @@ class CrudVideo:
 
     def get_video(self) -> str:
         return self.crud_minio.get_video(self.video)
+
+    def set_cover(self, time: float = None, frame: int = None):
+        if time is None and frame is None:
+            HTTPException(
+                status_code=422,
+                detail="Time and frame are empty. You must choose one.",
+            )
+        if time is not None and frame is not None:
+            HTTPException(
+                status_code=422,
+                detail="Time and frame only one are needed.",
+            )
+
+        if time is not None:
+            frame = time / self.video.attributes.duration * self.video.attributes.frames
+
+        self.crud_minio.generate_video_cache(self.video, frame)
 
     def get_cover(self) -> str:
         return self.crud_minio.get_cover(self.video.id)

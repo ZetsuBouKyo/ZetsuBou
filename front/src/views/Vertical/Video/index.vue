@@ -5,7 +5,7 @@
     <div class="px-2 py-6 mx-auto" v-if="videoState.data">
       <div class="flex flex-row">
         <div class="flex flex-col flex-1">
-          <video class="h-70v w-full mb-4" controls v-if="videoState.data.id">
+          <video ref="video" class="h-70v w-full mb-4" controls v-if="videoState.data.id">
             <source :src="`/api/v1/video/v/${videoState.data.id}`" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
@@ -44,6 +44,12 @@
                   <div class="inline-flex items-center" @click="openTextEditor">
                     <icon-mdi-code-json class="my-1 ml-1 mr-2" style="font-size: 1.2rem; color: white" />
                     <span class="mr-2 text-white">JSON</span>
+                  </div>
+                </ripple-button>
+                <ripple-button class="flex btn hover:opacity-50 hover:bg-gray-500">
+                  <div class="inline-flex items-center" @click="makeCover">
+                    <icon-ic-baseline-photo-camera class="my-1 ml-1 mr-2" style="font-size: 1.2rem; color: white" />
+                    <span class="mr-2 text-white">Make Cover</span>
                   </div>
                 </ripple-button>
               </div>
@@ -99,7 +105,7 @@ import { userState } from "@/state/user";
 import { videoState } from "@/state/video";
 
 import { getAdvancedSearch, getRandom, getSearch, SearchQuery } from "@/api/v1/video/query";
-import { getTag } from "@/api/v1/video/tag";
+import { setCover } from "@/api/v1/video/video";
 
 import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";
@@ -172,6 +178,25 @@ export default {
       },
     );
 
+    const video = ref();
+    function makeCover() {
+      const currentTime = video.value.currentTime;
+
+      const videoID = videoState.data.id;
+      const fps = videoState.data.attributes.fps;
+      const frames = videoState.data.attributes.frames;
+      const duration = frames / fps;
+      let currentFrame = Math.floor((currentTime / duration) * frames);
+
+      if (currentFrame === 0) {
+        currentFrame = 1;
+      }
+
+      setCover(videoID, currentFrame).then((response: any) => {
+        return response.data;
+      });
+    }
+
     const textEditor = ref();
     function openTextEditor() {
       textEditor.value.open();
@@ -200,7 +225,7 @@ export default {
       }
     }
 
-    return { state, videoState, textEditor, editor, openTextEditor, openEditor, onOverwrite };
+    return { state, videoState, textEditor, editor, makeCover, openTextEditor, openEditor, onOverwrite, video };
   },
 };
 </script>

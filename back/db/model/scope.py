@@ -137,6 +137,7 @@ class ScopeEnum(int, Enum):
     video: int = auto()
     video_get: int = auto()
     video_cover_get: int = auto()
+    video_cover_set: int = auto()
     video_query_random_get: int = auto()
     video_query_advanced_search_get: int = auto()
     video_query_search_get: int = auto()

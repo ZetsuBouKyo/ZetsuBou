@@ -4,6 +4,9 @@ import subprocess
 from pathlib import Path
 
 import typer
+from back.crud.video import get_crud_video
+
+from command.utils import sync
 
 reserved_symbols = ["#"]
 
@@ -122,3 +125,21 @@ def to_h264(
                 break
 
     print(f"convert: {c}")
+
+
+@app.command()
+@sync
+async def create_cover(
+    video_id: str = typer.Argument(..., help="Video ID."),
+    time: float = typer.Option(default=None, help="Current time in seconds."),
+    frame: int = typer.Option(default=None, help="Current frame count."),
+):
+    """
+    Create cover for video.
+    """
+
+    if time is None and frame is None:
+        return
+
+    crud = await get_crud_video(video_id)
+    crud.set_cover(time=time, frame=frame)

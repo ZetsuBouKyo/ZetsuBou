@@ -28,3 +28,12 @@ async def get_cover(video_id: str) -> FileResponse:
     crud = await get_crud_video(video_id)
     cover = crud.get_cover()
     return RedirectResponse(url=cover)
+
+
+@router.get(
+    "/v/{video_id}/set-cover",
+    dependencies=[view_security([ScopeEnum.video_cover_set.name])],
+)
+async def set_cover(video_id: str, frame: int = None):
+    crud = await get_crud_video(video_id)
+    crud.set_cover(frame=frame)

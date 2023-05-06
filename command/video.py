@@ -6,6 +6,7 @@ from pathlib import Path
 import typer
 from back.crud.video import get_crud_video
 
+from command.router import register
 from command.utils import sync
 
 reserved_symbols = ["#"]
@@ -129,6 +130,7 @@ def to_h264(
 
 @app.command()
 @sync
+@register("video-create-cover", "video create-cover")
 async def create_cover(
     video_id: str = typer.Argument(..., help="Video ID."),
     time: float = typer.Option(default=None, help="Current time in seconds."),

@@ -15,7 +15,7 @@ cwd = "/opt/airflow/zetsubou"
 tasks = [
     Task(
         dag_id="sync-minio-storages",
-        sub_command="sync sync_minio_storages",
+        sub_command="sync sync-minio-storages",
         dag_kwargs={
             "start_date": datetime(2021, 1, 1),
             "schedule_interval": None,
@@ -26,7 +26,7 @@ tasks = [
     ),
     Task(
         dag_id="sync-minio-storage",
-        sub_command="sync sync_minio_storage",
+        sub_command="sync sync-minio-storage",
         dag_kwargs={
             "start_date": datetime(2021, 1, 1),
             "schedule_interval": None,
@@ -53,6 +53,17 @@ tasks = [
             "schedule_interval": None,
             "catchup": False,
             "tags": ["backup"],
+            "max_active_runs": 1,
+        },
+    ),
+    Task(
+        dag_id="video-create-cover",
+        sub_command="video create-cover",
+        dag_kwargs={
+            "start_date": datetime(2021, 1, 1),
+            "schedule_interval": None,
+            "catchup": False,
+            "tags": ["video"],
             "max_active_runs": 1,
         },
     ),

@@ -105,7 +105,7 @@ import { userState } from "@/state/user";
 import { videoState } from "@/state/video";
 
 import { getAdvancedSearch, getRandom, getSearch, SearchQuery } from "@/api/v1/video/query";
-import { setCover } from "@/api/v1/video/video";
+import { postCover } from "@/api/v1/video/video";
 
 import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";
@@ -188,7 +188,7 @@ export default {
       const duration = frames / fps;
       let currentFrame = Math.floor((currentTime / duration) * frames);
 
-      setCover(videoID, currentFrame).then((response: any) => {
+      postCover(videoID, currentFrame).then((response: any) => {
         return response.data;
       });
     }

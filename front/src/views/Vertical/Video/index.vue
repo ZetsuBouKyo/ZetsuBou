@@ -188,10 +188,6 @@ export default {
       const duration = frames / fps;
       let currentFrame = Math.floor((currentTime / duration) * frames);
 
-      if (currentFrame === 0) {
-        currentFrame = 1;
-      }
-
       setCover(videoID, currentFrame).then((response: any) => {
         return response.data;
       });

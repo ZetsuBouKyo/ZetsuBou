@@ -327,7 +327,7 @@ class CrudMinioVideo(CrudMinio):
             content_type="image/png",
         )
 
-    def generate_video_cache(self, video: Video, frame: int = 1) -> None:
+    def generate_video_cache(self, video: Video, frame: int = 0) -> None:
         if video.id is None:
             return
         if video.attributes.frames is None:
@@ -336,22 +336,18 @@ class CrudMinioVideo(CrudMinio):
         url = self.get_video(video)
         v = cv2.VideoCapture(url)
         frames = 0
-        while True:
-            _, current_frame_obj = v.read()
-
-            if current_frame_obj is not None:
-                frames += 1
-            else:
-                break
-
+        while frames < video.attributes.frames:
+            v.grab()
             if frames == frame:
+                _, current_frame_obj = v.retrieve()
                 cover = cv2.imencode(".png", current_frame_obj)[1].tostring()
                 self.put_cover(video, cover)
-                break
+                return
+            frames += 1
 
-        if frame > frames:
-            # TODO: raise error
-            return
+        _, current_frame_obj = v.retrieve()
+        cover = cv2.imencode(".png", current_frame_obj)[1].tostring()
+        self.put_cover(video, cover)
 
 
 def get_video_attrs(

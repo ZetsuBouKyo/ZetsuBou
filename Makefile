@@ -49,6 +49,10 @@ build-dev: build-docker-airflow-dev
 	source ./.venv/bin/activate; pre-commit install
 build: build-docker-airflow-dev
 
+lint:
+	pre-commit run --all-files
+	npx commitlint --from "HEAD~1" --to "HEAD" --verbose
+
 .PHONY: init init-app init-app-postgres init-airflow init-app-elastic init-redis
 init-app-elastic:
 	mkdir -p $(ZETSUBOU_ELASTICSEARCH_VOLUME)

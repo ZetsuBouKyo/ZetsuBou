@@ -43,7 +43,7 @@ check:
 build-docker-app:
 	docker build --force-rm -f Dockerfile.app -t zetsubou-dev/app:${ZETSUBOU_APP_VERSION:-latest} .
 build-docker-airflow-dev:
-	docker build --force-rm -f Dockerfile.airflow -t zetsubou-dev/airflow:2.2.3-python3.8 .
+	docker build --force-rm -f Dockerfile.airflow -t zetsubou-dev/airflow:2.6.0-python3.8 .
 build-dev: build-docker-airflow-dev
 	poetry install
 	source ./.venv/bin/activate; pre-commit install

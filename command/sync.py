@@ -6,8 +6,7 @@ from back.crud.video import CrudSyncVideoMinioStorage
 from back.db.crud import CrudMinioStorage
 from back.db.model import MinioStorageCategoryEnum
 
-from command.router import register
-from command.utils import sync
+from command.utils import airflow_dag_register, sync
 
 _help = """
 Synchronize the information of Gallery and Video from Minio storages.
@@ -25,7 +24,7 @@ app = typer.Typer(name="sync", help=_help)
 
 @app.command()
 @sync
-@register("sync-minio-storage", "sync sync-minio-storage")
+@airflow_dag_register("sync-minio-storage", "sync sync-minio-storage")
 async def sync_minio_storage(
     id: int = typer.Argument(..., help="The id of the minio storage.")
 ):
@@ -49,7 +48,7 @@ async def sync_minio_storage(
 
 @app.command()
 @sync
-@register("sync-gallery-minio-storages", "sync sync-gallery-minio-storages")
+@airflow_dag_register("sync-gallery-minio-storages", "sync sync-gallery-minio-storages")
 async def sync_gallery_minio_storages():
     """
     Synchronize all minio storages with Gallery type.
@@ -66,7 +65,7 @@ async def sync_gallery_minio_storages():
 
 @app.command()
 @sync
-@register("sync-minio-storages", "sync sync-minio-storages")
+@airflow_dag_register("sync-minio-storages", "sync sync-minio-storages")
 async def sync_minio_storages():
     """
     Synchronize all minio storages.

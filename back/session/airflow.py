@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 from datetime import datetime, timezone
 from typing import List
 from urllib.parse import urljoin
@@ -17,6 +18,8 @@ headers = {
     "accept": "application/json",
     "Content-Type": "application/json",
 }
+
+dags = defaultdict(lambda: None)
 
 
 async def trigger_new_dag_run(

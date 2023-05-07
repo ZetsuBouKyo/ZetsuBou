@@ -15,6 +15,7 @@ from back.session.init_db import init_table
 from back.session.minio import init_minio
 from back.settings import setting
 from back.utils.exceptions import RequiresLoginException
+from cli import app  # noqa
 
 title = setting.app_title
 host = setting.app_host

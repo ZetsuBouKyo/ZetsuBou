@@ -26,8 +26,7 @@ from minio.error import S3Error
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 from tqdm import tqdm
 
-from command.router import register
-from command.utils import sync
+from command.utils import airflow_dag_register, sync
 
 backup_bucket_name = setting.minio_backup_bucket_name
 db_object_name = "db"
@@ -88,7 +87,7 @@ app = typer.Typer(name="backup", help=_help)
 
 @app.command()
 @sync
-@register("backup-dump", "backup dump")
+@airflow_dag_register("backup-dump", "backup dump")
 async def dump(
     encoding: str = typer.Option(
         default="utf-8", help="The encoding of the output JSON files."
@@ -156,7 +155,7 @@ async def dump(
 
 @app.command()
 @sync
-@register("backup-load", "backup load")
+@airflow_dag_register("backup-load", "backup load")
 async def load(
     date: str = typer.Argument(
         ...,

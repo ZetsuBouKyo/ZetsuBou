@@ -2,7 +2,9 @@ from typing import List
 
 from back.api.model.task.airflow import CommandRequest, CommandSchema
 from back.model.airflow import AirflowDagRunResponse, AirflowDagRunsResponse
-from back.session.airflow import dags, get_dag_runs, trigger_new_dag_run
+from back.session.airflow import dags
+from back.session.airflow import get_dag_run as _get_dag_run
+from back.session.airflow import get_dag_runs, trigger_new_dag_run
 from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
@@ -55,6 +57,11 @@ async def trigger_dag_run(
 )
 def get_schema(dag_id: str) -> CommandSchema:
     return dags[dag_id]
+
+
+@router.get("/dag-run/{dag_id}/{dag_run_id}", response_model=AirflowDagRunResponse)
+async def get_dag_run(dag_id: str, dag_run_id: str) -> AirflowDagRunResponse:
+    return await _get_dag_run(dag_id, dag_run_id)
 
 
 @router.get("/dag-runs", response_model=AirflowDagRunsResponse)

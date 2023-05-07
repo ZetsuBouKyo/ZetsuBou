@@ -97,7 +97,7 @@
 import { useRoute } from "vue-router";
 import { reactive, ref, onBeforeMount, watch } from "vue";
 
-import { AirflowDagRunResponse, AirflowDagRunStateEnum } from "@/interface/airflow";
+import { AirflowDagRunResponse, AirflowDagRunStateEnum, AirflowTask } from "@/interface/airflow";
 import { SearchBase } from "@/interface/search";
 import { SourceState } from "@/interface/source";
 import { Video } from "@/interface/video";
@@ -193,7 +193,14 @@ export default {
       postCover(videoID, currentFrame).then((response: any) => {
         const resp: AirflowDagRunResponse = response.data;
         if (resp.state === AirflowDagRunStateEnum.Queued) {
-          messageState.push("Make Cover");
+          const task: AirflowTask = {
+            dagID: resp.dag_id,
+            dagRunID: resp.dag_run_id,
+            state: resp.state,
+            successMessage: "Successfully made cover",
+          };
+          messageState.push("Making Cover");
+          messageState.pushAirflowTask(task);
         } else {
           messageState.push("Failed to make Cover");
         }

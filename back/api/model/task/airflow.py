@@ -16,16 +16,16 @@ class KeywordArgument(BaseModel):
     value: Any = None
 
 
-class FireCommand(BaseModel):
+class Command(BaseModel):
     args: List[Argument] = []
     kwargs: List[KeywordArgument] = []
 
 
-class CommandRequest(FireCommand):
+class CommandRequest(Command):
     logical_date: str = None
 
 
-class CommandSchema(FireCommand):
+class CommandSchema(Command):
     dag_id: str = None
     sub_command: str = None
     doc: str = None

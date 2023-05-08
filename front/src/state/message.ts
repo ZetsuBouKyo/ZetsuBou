@@ -109,4 +109,4 @@ setInterval(() => {
     }
     messageState.pushAirflowTasks(tasks);
   });
-}, 1000);
+}, 3000);

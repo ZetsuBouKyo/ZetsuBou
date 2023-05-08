@@ -10,13 +10,13 @@ import { defineComponent, PropType } from "vue";
 
 import { ButtonColorEnum } from "@/elements/Button/button.ts";
 
-export interface Row {
+export interface CrudTableButtonRow {
   id?: number;
   [key: string]: any;
 }
 
 export interface OnClick {
-  (row: Row): void;
+  (row: CrudTableButtonRow): void;
 }
 
 export default defineComponent({
@@ -26,7 +26,7 @@ export default defineComponent({
       default: undefined,
     },
     row: {
-      type: Object as PropType<Row>,
+      type: Object as PropType<CrudTableButtonRow>,
       default: undefined,
     },
     color: { type: Object as PropType<ButtonColorEnum>, default: ButtonColorEnum.Primary },

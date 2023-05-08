@@ -26,14 +26,14 @@ def get_dags() -> List[CommandSchema]:
     dependencies=[Depends(is_dag_id)],
 )
 async def trigger_dag_run(
-    dag_id: str, fire_command: CommandRequest = None
+    dag_id: str, command_request: CommandRequest = None
 ) -> AirflowDagRunResponse:
     conf = {}
     args = ""
-    if fire_command is not None:
-        _args = [arg.value for arg in fire_command.args if arg is not None]
+    if command_request is not None:
+        _args = [arg.value for arg in command_request.args if arg is not None]
         _kwargs = []
-        for kwarg in fire_command.kwargs:
+        for kwarg in command_request.kwargs:
             if kwarg.value is None:
                 continue
             if kwarg.type == "string" or kwarg.type == "number":
@@ -48,7 +48,7 @@ async def trigger_dag_run(
     conf["args"] = args
 
     return await trigger_new_dag_run(
-        dag_id, logical_date=fire_command.logical_date, conf=conf
+        dag_id, logical_date=command_request.logical_date, conf=conf
     )
 
 

@@ -54,7 +54,7 @@
               {{ header.handler ? header.handler(row[header.key]) : row[header.key] }}
             </td>
             <td class="table-data flex flex-row items-center">
-              <slot name="buttons"></slot>
+              <slot name="buttons" :row="row"></slot>
               <crud-table-button :text="'Edit'" :color="ButtonColorEnum.Primary" :row="row" :onClick="update">
                 <template v-slot:icon><icon-mdi-file-edit-outline /></template>
               </crud-table-button>

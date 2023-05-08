@@ -13,6 +13,11 @@
     :on-open-editor="onOpenEditor"
     :on-close-editor="onCloseEditor"
   >
+    <template v-slot:buttons="slot">
+      <crud-table-button :text="'Sync'" :color="ButtonColorEnum.Primary" :row="slot.row" :onClick="sync">
+        <template v-slot:icon><icon-mdi-file-edit-outline /></template>
+      </crud-table-button>
+    </template>
     <template v-slot:editor>
       <div class="modal-row">
         <span class="w-32 mr-4">Name:</span>
@@ -111,9 +116,14 @@ import {
   putMinioStorage,
   deleteMinioStorage,
 } from "@/api/v1/minio/storage";
+import { postSyncMinioStorage } from "@/api/v1/task/airflow";
+
+import { ButtonColorEnum } from "@/elements/Button/button.ts";
+import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
+import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 import SelectDropdown, { SelectDropdownState, reset } from "@/elements/Dropdown/SelectDropdown.vue";
 
-import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
+import { messageState } from "@/state/message";
 
 export interface Row {
   id?: number;
@@ -128,7 +138,7 @@ export interface Row {
 }
 
 export default {
-  components: { CrudTable, SelectDropdown },
+  components: { CrudTable, CrudTableButton, SelectDropdown },
   setup() {
     const table = CrudTable.initState() as CrudTableState<Row>;
 
@@ -335,7 +345,23 @@ export default {
       reset(bucketsDropdown);
     }
 
+    function sync(row: Row) {
+      if (row === undefined || row.id === undefined) {
+        return;
+      }
+      const id = row.id;
+      postSyncMinioStorage(id).then((response: any) => {
+        messageState.sendAirflowMessage(
+          response,
+          `Synchronizing storage: ${id}`,
+          `Successfully synchronized storage: ${id}`,
+          "Failed to synchronize",
+        );
+      });
+    }
+
     return {
+      ButtonColorEnum,
       table,
       headers,
       categoriesDropdown,
@@ -350,6 +376,7 @@ export default {
       onCrudDelete,
       onOpenEditor,
       onCloseEditor,
+      sync,
     };
   },
 };

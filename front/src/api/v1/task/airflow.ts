@@ -28,3 +28,10 @@ export function postVideoCreateCover(id: string, frame: number) {
   };
   return runAirflowDag("video-create-cover", data);
 }
+
+export function postSyncMinioStorage(id: number) {
+  const data = {
+    args: [{ type: "number", value: id }],
+  };
+  return runAirflowDag("sync-minio-storage", data);
+}

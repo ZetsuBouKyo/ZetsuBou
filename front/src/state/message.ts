@@ -1,5 +1,7 @@
 import { reactive } from "vue";
 
+import { AxiosResponse } from "axios";
+
 import { AirflowDagRunResponse, AirflowDagRunStateEnum, AirflowTask } from "@/interface/airflow";
 import { localStorageKey } from "@/interface/localStorage";
 
@@ -16,6 +18,12 @@ export interface MessageState {
   getAirflowTasks: () => Array<AirflowTask>;
   pushAirflowTask: (task: AirflowTask) => void;
   pushAirflowTasks: (tasks: Array<AirflowTask>) => void;
+  sendAirflowMessage: (
+    response: AxiosResponse,
+    queuedMessage: string,
+    successMessage: string,
+    failedMessage: string,
+  ) => void;
 }
 
 export const messageState = reactive<MessageState>({
@@ -44,6 +52,32 @@ export const messageState = reactive<MessageState>({
   },
   pushAirflowTasks: (tasks: Array<AirflowTask>) => {
     localStorage.setItem(localStorageKey.AirflowTasks, JSON.stringify(tasks));
+  },
+  sendAirflowMessage: (
+    response: AxiosResponse,
+    queuedMessage: string,
+    successMessage: string,
+    failedMessage: string,
+  ) => {
+    const data: AirflowDagRunResponse = response.data;
+
+    switch (data.state) {
+      case AirflowDagRunStateEnum.Queued:
+        const task: AirflowTask = {
+          dagID: data.dag_id,
+          dagRunID: data.dag_run_id,
+          state: data.state,
+          successMessage: successMessage,
+        };
+        messageState.push(queuedMessage);
+        messageState.pushAirflowTask(task);
+        break;
+      case AirflowDagRunStateEnum.Failed:
+        messageState.push(failedMessage);
+        break;
+      default:
+        break;
+    }
   },
 });
 

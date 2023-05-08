@@ -191,19 +191,7 @@ export default {
       let currentFrame = Math.floor((currentTime / duration) * frames);
 
       postVideoCreateCover(videoID, currentFrame).then((response: any) => {
-        const resp: AirflowDagRunResponse = response.data;
-        if (resp.state === AirflowDagRunStateEnum.Queued) {
-          const task: AirflowTask = {
-            dagID: resp.dag_id,
-            dagRunID: resp.dag_run_id,
-            state: resp.state,
-            successMessage: "Successfully made cover",
-          };
-          messageState.push("Making Cover");
-          messageState.pushAirflowTask(task);
-        } else {
-          messageState.push("Failed to make Cover");
-        }
+        messageState.sendAirflowMessage(response, "Making Cover", "Successfully made cover", "Failed to make Cover");
       });
     }
 

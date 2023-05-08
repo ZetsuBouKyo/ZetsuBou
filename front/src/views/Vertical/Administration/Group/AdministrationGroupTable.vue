@@ -13,10 +13,12 @@
     :on-open-editor="onOpenEditor"
     :on-close-editor="onCloseEditor"
   >
-    <div class="modal-row">
-      <span class="w-32 mr-4">Name:</span>
-      <input class="flex-1 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
-    </div>
+    <template v-slot:editor>
+      <div class="modal-row">
+        <span class="w-32 mr-4">Name:</span>
+        <input class="flex-1 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
+      </div>
+    </template>
   </crud-table>
 </template>
 

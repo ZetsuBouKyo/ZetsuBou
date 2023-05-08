@@ -32,7 +32,7 @@
       :on-close="onCloseEditor"
       :class="editorClass"
     >
-      <slot></slot>
+      <slot name="editor"></slot>
       <div class="modal-row">
         <button class="flex ml-auto btn btn-primary" @click="editor.close">Cancel</button>
         <button class="flex ml-2 btn btn-primary" @click="state.editor.handler">Save</button>
@@ -54,14 +54,13 @@
               {{ header.handler ? header.handler(row[header.key]) : row[header.key] }}
             </td>
             <td class="table-data flex flex-row items-center">
-              <ripple-button class="mr-2 btn-icon btn-primary" @click="update(row)">
-                <icon-mdi-file-edit-outline class="mx-2" />
-                <span class="mr-3">Edit</span>
-              </ripple-button>
-              <ripple-button class="btn-icon btn-danger" @click="confirmRemove(row)">
-                <icon-mdi-trash-can-outline class="mx-2" style="font-size: 1.2rem" />
-                <span class="mr-3">Delete</span>
-              </ripple-button>
+              <slot name="buttons"></slot>
+              <crud-table-button :text="'Edit'" :color="ButtonColorEnum.Primary" :row="row" :onClick="update">
+                <template v-slot:icon><icon-mdi-file-edit-outline /></template>
+              </crud-table-button>
+              <crud-table-button :text="'Delete'" :color="ButtonColorEnum.Danger" :row="row" :onClick="confirmRemove">
+                <template v-slot:icon><icon-mdi-trash-can-outline /></template>
+              </crud-table-button>
             </td>
           </tr>
           <tr :class="state.pagination ? 'table-row' : ''">
@@ -83,7 +82,9 @@ import { useRoute } from "vue-router";
 
 import { isEmpty } from "@/utils/obj";
 
+import { ButtonColorEnum } from "@/elements/Button/button.ts";
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
+import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 import PaginationBase from "@/elements/Pagination/index.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
@@ -197,7 +198,7 @@ function initState(row?: Row): CrudTableState<Row> {
 }
 
 export default defineComponent({
-  components: { ConfirmModal, Modal, PaginationBase, RippleButton, SelectDropdown },
+  components: { ConfirmModal, CrudTableButton, Modal, PaginationBase, RippleButton, SelectDropdown },
   initState,
   props: {
     state: {
@@ -398,6 +399,7 @@ export default defineComponent({
     }
 
     return {
+      ButtonColorEnum,
       SelectDropdownMode,
       Origin,
       isEmpty,

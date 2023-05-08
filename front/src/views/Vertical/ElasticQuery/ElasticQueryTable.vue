@@ -11,24 +11,26 @@
     :on-crud-update="onCrudUpdate"
     :on-crud-delete="onCrudDelete"
   >
-    <div class="modal-row">
-      <span class="w-24 mr-4">Name:</span>
-      <input class="flex-1 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
-    </div>
-    <div class="modal-row">
-      <span class="w-24 mr-4">Template:</span>
-      <select-dropdown
-        class="h-10 w-64"
-        :options-width-class="'w-64'"
-        :origin="Origin.BottomLeft"
-        :state="examples"
-        :on-select="onSelect"
-        :enable-input-chips-enter-event="false"
-      />
-    </div>
-    <div class="modal-row h-56">
-      <textarea v-model="table.row.query" class="modal-textarea h-full" />
-    </div>
+    <template v-slot:editor>
+      <div class="modal-row">
+        <span class="w-24 mr-4">Name:</span>
+        <input class="flex-1 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
+      </div>
+      <div class="modal-row">
+        <span class="w-24 mr-4">Template:</span>
+        <select-dropdown
+          class="h-10 w-64"
+          :options-width-class="'w-64'"
+          :origin="Origin.BottomLeft"
+          :state="examples"
+          :on-select="onSelect"
+          :enable-input-chips-enter-event="false"
+        />
+      </div>
+      <div class="modal-row h-56">
+        <textarea v-model="table.row.query" class="modal-textarea h-full" />
+      </div>
+    </template>
   </crud-table>
 </template>
 

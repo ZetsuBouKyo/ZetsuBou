@@ -13,87 +13,89 @@
     :on-open-editor="onOpenEditor"
     :on-close-editor="onCloseEditor"
   >
-    <div class="modal-row">
-      <span class="w-32 mr-4">Name:</span>
-      <input class="flex-1 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
-    </div>
-    <div class="modal-row">
-      <span class="w-32 mr-4">Endpoint:</span>
-      <input
-        class="flex-1 modal-input"
-        type="text"
-        :placeholder="table.row.endpoint"
-        v-model="table.row.endpoint"
-        autocomplete="new-password"
-      />
-    </div>
-    <div class="modal-row">
-      <span class="w-32 mr-4">Access key:</span>
-      <input
-        class="flex-1 modal-input"
-        type="password"
-        :placeholder="table.row.access_key"
-        v-model="table.row.access_key"
-        autocomplete="new-password"
-      />
-    </div>
-    <div class="modal-row">
-      <span class="w-32 mr-4">Secret key:</span>
-      <input
-        class="flex-1 modal-input"
-        type="password"
-        :placeholder="table.row.secret_key"
-        v-model="table.row.secret_key"
-        autocomplete="new-password"
-      />
-    </div>
-    <div class="modal-row">
-      <span class="w-32 mr-4">Category:</span>
-      <select-dropdown
-        class="h-10 w-64"
-        :options-width-class="'w-64'"
-        :state="categoriesDropdown"
-        :on-select="onSelectCategory"
-      ></select-dropdown>
-    </div>
-    <div class="modal-row">
-      <span class="w-32 mr-4">Bucket Name:</span>
-      <select-dropdown
-        class="h-10 w-64"
-        :options-width-class="'w-64'"
-        :state="bucketsDropdown"
-        :on-select="onSelectBucket"
-      ></select-dropdown>
-      <span class="ml-4 text-blue-500" v-if="bucketsDropdown.options.length > 0">Connected</span>
-      <span class="ml-4 text-red-500" v-else>Failed</span>
-    </div>
-    <div class="modal-row">
-      <span class="w-32 mr-4">Prefix:</span>
-      <input
-        class="flex-1 modal-input"
-        type="text"
-        list="admin-minio-storage-prefix"
-        :placeholder="table.row.prefix"
-        v-model="table.row.prefix"
-        :disabled="!bucketsDropdown.title"
-      />
-      <datalist id="admin-minio-storage-prefix">
-        <option v-for="(p, i) in prefix.options" :value="p" :key="i" />
-      </datalist>
-    </div>
-    <div class="modal-row">
-      <span class="w-32 mr-4">Depth:</span>
-      <input
-        class="flex-1 modal-input"
-        type="number"
-        list="admin-minio-storage-depth"
-        :placeholder="table.row.depth"
-        v-model="table.row.depth"
-      />
-      <datalist id="admin-minio-storage-depth">
-        <option v-for="(p, i) in [1, 2, 3, 4, 5, 6, 7]" :value="p" :key="i" />
-      </datalist>
-    </div>
+    <template v-slot:editor>
+      <div class="modal-row">
+        <span class="w-32 mr-4">Name:</span>
+        <input class="flex-1 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
+      </div>
+      <div class="modal-row">
+        <span class="w-32 mr-4">Endpoint:</span>
+        <input
+          class="flex-1 modal-input"
+          type="text"
+          :placeholder="table.row.endpoint"
+          v-model="table.row.endpoint"
+          autocomplete="new-password"
+        />
+      </div>
+      <div class="modal-row">
+        <span class="w-32 mr-4">Access key:</span>
+        <input
+          class="flex-1 modal-input"
+          type="password"
+          :placeholder="table.row.access_key"
+          v-model="table.row.access_key"
+          autocomplete="new-password"
+        />
+      </div>
+      <div class="modal-row">
+        <span class="w-32 mr-4">Secret key:</span>
+        <input
+          class="flex-1 modal-input"
+          type="password"
+          :placeholder="table.row.secret_key"
+          v-model="table.row.secret_key"
+          autocomplete="new-password"
+        />
+      </div>
+      <div class="modal-row">
+        <span class="w-32 mr-4">Category:</span>
+        <select-dropdown
+          class="h-10 w-64"
+          :options-width-class="'w-64'"
+          :state="categoriesDropdown"
+          :on-select="onSelectCategory"
+        ></select-dropdown>
+      </div>
+      <div class="modal-row">
+        <span class="w-32 mr-4">Bucket Name:</span>
+        <select-dropdown
+          class="h-10 w-64"
+          :options-width-class="'w-64'"
+          :state="bucketsDropdown"
+          :on-select="onSelectBucket"
+        ></select-dropdown>
+        <span class="ml-4 text-blue-500" v-if="bucketsDropdown.options.length > 0">Connected</span>
+        <span class="ml-4 text-red-500" v-else>Failed</span>
+      </div>
+      <div class="modal-row">
+        <span class="w-32 mr-4">Prefix:</span>
+        <input
+          class="flex-1 modal-input"
+          type="text"
+          list="admin-minio-storage-prefix"
+          :placeholder="table.row.prefix"
+          v-model="table.row.prefix"
+          :disabled="!bucketsDropdown.title"
+        />
+        <datalist id="admin-minio-storage-prefix">
+          <option v-for="(p, i) in prefix.options" :value="p" :key="i" />
+        </datalist>
+      </div>
+      <div class="modal-row">
+        <span class="w-32 mr-4">Depth:</span>
+        <input
+          class="flex-1 modal-input"
+          type="number"
+          list="admin-minio-storage-depth"
+          :placeholder="table.row.depth"
+          v-model="table.row.depth"
+        />
+        <datalist id="admin-minio-storage-depth">
+          <option v-for="(p, i) in [1, 2, 3, 4, 5, 6, 7]" :value="p" :key="i" />
+        </datalist>
+      </div>
+    </template>
   </crud-table>
 </template>
 

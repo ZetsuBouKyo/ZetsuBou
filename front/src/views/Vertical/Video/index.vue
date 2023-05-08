@@ -107,7 +107,7 @@ import { userState } from "@/state/user";
 import { videoState } from "@/state/video";
 
 import { getAdvancedSearch, getRandom, getSearch, SearchQuery } from "@/api/v1/video/query";
-import { postCover } from "@/api/v1/video/video";
+import { postVideoCreateCover } from "@/api/v1/task/airflow";
 
 import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";
@@ -190,7 +190,7 @@ export default {
       const duration = frames / fps;
       let currentFrame = Math.floor((currentTime / duration) * frames);
 
-      postCover(videoID, currentFrame).then((response: any) => {
+      postVideoCreateCover(videoID, currentFrame).then((response: any) => {
         const resp: AirflowDagRunResponse = response.data;
         if (resp.state === AirflowDagRunStateEnum.Queued) {
           const task: AirflowTask = {

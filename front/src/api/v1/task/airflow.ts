@@ -6,3 +6,25 @@ export function getAirflowDagRun(dagID: string, dagRunID: string) {
     method: "get",
   });
 }
+
+function runAirflowDag(dagID: string, data: any) {
+  return request({
+    url: `/api/v1/task/cmd/run/${dagID}`,
+    method: "post",
+    data: data,
+  });
+}
+
+export function postVideoCreateCover(id: string, frame: number) {
+  const data = {
+    args: [{ type: "string", value: id }],
+    kwargs: [
+      {
+        name: "frame",
+        value: frame,
+        type: "number",
+      },
+    ],
+  };
+  return runAirflowDag("video-create-cover", data);
+}

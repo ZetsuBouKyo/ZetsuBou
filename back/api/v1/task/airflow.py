@@ -31,7 +31,9 @@ async def trigger_dag_run(
     conf = {}
     args = ""
     if command_request is not None:
-        _args = [arg.value for arg in command_request.args if arg is not None]
+        _args = [
+            str(arg.value) for arg in command_request.args if arg.value is not None
+        ]
         _kwargs = []
         for kwarg in command_request.kwargs:
             if kwarg.value is None:

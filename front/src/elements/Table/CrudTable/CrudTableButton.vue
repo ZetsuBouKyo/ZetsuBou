@@ -10,6 +10,8 @@ import { defineComponent, PropType } from "vue";
 
 import { ButtonColorEnum } from "@/elements/Button/button.ts";
 
+import RippleButton from "@/elements/Button/RippleButton.vue";
+
 export interface CrudTableButtonRow {
   id?: number;
   [key: string]: any;
@@ -20,6 +22,7 @@ export interface OnClick {
 }
 
 export default defineComponent({
+  components: { RippleButton },
   props: {
     text: {
       type: Object as PropType<string>,

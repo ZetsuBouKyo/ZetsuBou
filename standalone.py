@@ -133,7 +133,7 @@ async def open_folder(request: Request, gallery_id: str):
 
     preferred_app = "nautilus"
     if which(preferred_app) is not None:
-        cmd = f"{preferred_app} {str(path_at_host)}"
+        cmd = f'{preferred_app} "{str(path_at_host)}"'
         await asyncio.create_subprocess_shell(
             cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
         )

@@ -16,6 +16,7 @@ from command.build import app as build
 from command.db import app as db
 from command.elastic import app as elastic
 from command.gallery import app as gallery
+from command.s3 import app as s3
 from command.sync import app as sync
 from command.tag import app as tag
 from command.utils import is_empty_dir
@@ -32,12 +33,14 @@ tag_fname = setting.gallery_tag_fname
 _help = """
 The CLI for ZetsuBou
 """
-app = typer.Typer(rich_markup_mode="markdown", help=_help)
+
+app = typer.Typer(rich_markup_mode="rich", help=_help)
 app.add_typer(backup)
 app.add_typer(build)
 app.add_typer(db)
 app.add_typer(elastic)
 app.add_typer(gallery)
+app.add_typer(s3)
 app.add_typer(sync)
 app.add_typer(tag)
 app.add_typer(video)

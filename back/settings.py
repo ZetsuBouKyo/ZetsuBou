@@ -114,6 +114,10 @@ class Setting(BaseSettings):
             return True
         return False
 
+    s3_aws_access_key_id: str = "admin"
+    s3_aws_secret_access_key: str = "wJalrXUtnFEMI"
+    s3_endpoint_url: str = "http://localhost:9000"
+
     airflow_host: str = "http://localhost:8080/api/v1"
     airflow_username: str = "airflow"
     airflow_password: str = "airflow"

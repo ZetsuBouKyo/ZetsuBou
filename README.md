@@ -63,8 +63,8 @@ pre-commit install
 ```bash
 # To initialize the folders and airflow
 make init
-# To up the services
-make up
+# To run the services
+make up-dev
 # To run the app
 poetry run python app.py
 # (Optional) To run standalone
@@ -75,7 +75,7 @@ poetry run python standalone.py
 
 ```bash
 # To format the files
-pre-commit run --all-files
+make lint
 ```
 
 ## Contact

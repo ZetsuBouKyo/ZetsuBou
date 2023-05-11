@@ -4,7 +4,7 @@ from datetime import timedelta
 from typing import List
 
 from back.db.crud import CrudMinioStorage
-from back.model.base import ExBaseModel
+from back.model.base import SourceBaseModel
 from back.model.minio import MinioObject
 from back.session.minio import get_minio_client, minio_client
 from back.settings import setting
@@ -105,7 +105,7 @@ class CrudMinio:
 
 
 async def get_minio_client_by_source(
-    source: ExBaseModel, crud_minio_storage: CrudMinioStorage
+    source: SourceBaseModel, crud_minio_storage: CrudMinioStorage
 ) -> Minio:
     minio_storage_id = source.minio_storage_id
     minio_storage = await crud_minio_storage.get_row_by_id(minio_storage_id)

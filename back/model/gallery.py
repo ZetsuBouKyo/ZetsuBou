@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Dict, List
 
-from back.model.base import ExBaseModel
+from back.model.base import SourceBaseModel
 from back.model.elastic import SearchResult
 from back.utils.model import DatetimeStr
 from pydantic import BaseModel
@@ -23,7 +23,7 @@ class Attributes(BaseModel):
     src: str = None
 
 
-class Gallery(ExBaseModel):
+class Gallery(SourceBaseModel):
     id: str = None
     path: str = None
     group: str = None

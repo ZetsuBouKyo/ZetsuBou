@@ -2,7 +2,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8-yellow.svg)](https://www.python.org/downloads/release/python-3811/)
 [![Vue](https://img.shields.io/badge/Vue-3.0.11-yellow.svg)](https://v3.vuejs.org/)
-[![chrome](https://img.shields.io/badge/Chrome-92.0.4515.107-yellow.svg)](https://www.google.com/intl/en_us/chrome/)
+[![chrome](https://img.shields.io/badge/Chrome-102.0.5005.63-yellow.svg)](https://www.google.com/intl/en_us/chrome/)
 [![license](https://img.shields.io/badge/License-MIT-yellow.svg)](https://www.google.com/intl/en_us/chrome/)
 
 ZetsuBou is a web-based app to serve your own image galleries and videos.
@@ -77,6 +77,10 @@ poetry run python standalone.py
 # To format the files
 pre-commit run --all-files
 ```
+
+## Contact
+
+[My twitch channel](https://www.twitch.tv/demonic22)
 
 ## Reference
 

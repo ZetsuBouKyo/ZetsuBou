@@ -3,6 +3,7 @@ from .minio.storage import CrudMinioStorage
 from .scope import CrudScope
 from .setting.front.gallery import CrudSettingFrontGallery
 from .setting.front.video import CrudSettingFrontVideo
+from .storage.minio import CrudStorageMinio
 from .tag.attribute import CrudTagAttribute
 from .tag.category import CrudTagCategory
 from .tag.synonym import CrudTagSynonym
@@ -23,6 +24,7 @@ __all__ = [
     "CrudScope",
     "CrudSettingFrontGallery",
     "CrudSettingFrontVideo",
+    "CrudStorageMinio",
     "CrudTagAttribute",
     "CrudTagCategory",
     "CrudTagSynonym",

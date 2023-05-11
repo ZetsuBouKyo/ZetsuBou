@@ -34,6 +34,12 @@ from .setting.front.video import (
 )
 from .setting.front.video.category import SettingFrontVideoCategory
 from .setting.front.video.tag_field import SettingFrontVideoTagField
+from .storage.minio import (
+    StorageMinio,
+    StorageMinioCreate,
+    StorageMinioCreated,
+    StorageMinioUpdate,
+)
 from .tag.attribute import (
     TagAttribute,
     TagAttributeCreate,
@@ -125,6 +131,10 @@ __all__ = [
     "SettingFrontVideoInterpretation",
     "SettingFrontVideoTagField",
     "SettingFrontVideoUpdate",
+    "StorageMinio",
+    "StorageMinioCreate",
+    "StorageMinioCreated",
+    "StorageMinioUpdate",
     "TagAttribute",
     "TagAttributeCreate",
     "TagAttributeCreated",

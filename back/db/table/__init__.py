@@ -7,6 +7,7 @@ from .setting.front.gallery.category import SettingFrontGalleryCategoryBase
 from .setting.front.gallery.tag_field import SettingFrontGalleryTagFieldBase
 from .setting.front.video.category import SettingFrontVideoCategoryBase
 from .setting.front.video.tag_field import SettingFrontVideoTagFieldBase
+from .storage.minio import StorageMinioBase
 from .tag.attribute import TagAttributeBase
 from .tag.category import TagCategoryBase
 from .tag.representative import TagRepresentativeBase
@@ -31,6 +32,7 @@ __all__ = [
     "SettingFrontGalleryTagFieldBase",
     "SettingFrontVideoCategoryBase",
     "SettingFrontVideoTagFieldBase",
+    "StorageMinioBase",
     "TagAttributeBase",
     "TagCategoryBase",
     "TagRepresentativeBase",

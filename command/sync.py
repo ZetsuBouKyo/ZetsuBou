@@ -12,12 +12,11 @@ _help = """
 Synchronize the information of Gallery and Video from Minio storages.
 
 * Gallery:
-
 The synchronization would be based on the `[gallery]/.tag/gallery.json` if it exists.
 
 * Video:
-
-The synchronization would be based on video file (file name, first frame of video, and so on).
+The synchronization would be based on video file (file name, first frame of video, and
+so on).
 """  # noqa
 app = typer.Typer(name="sync", help=_help)
 

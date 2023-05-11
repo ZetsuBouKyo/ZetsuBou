@@ -19,6 +19,7 @@ from command.gallery import app as gallery
 from command.s3 import app as s3
 from command.sync import app as sync
 from command.tag import app as tag
+from command.test import app as test
 from command.utils import is_empty_dir
 from command.video import app as video
 
@@ -43,6 +44,7 @@ app.add_typer(gallery)
 app.add_typer(s3)
 app.add_typer(sync)
 app.add_typer(tag)
+app.add_typer(test)
 app.add_typer(video)
 
 if plugin is not None:

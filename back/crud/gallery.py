@@ -508,7 +508,7 @@ class CrudSyncGalleryMinioStorage:
         tag_fname: str = tag_fname,
     ):
         self.minio_storage = minio_storage
-        self.minio_path_prefix = f"{Protocol.MINIO.value}{self.minio_storage.id}://"
+        self.minio_path_prefix = f"{Protocol.MINIO.value}-{self.minio_storage.id}://"
         self.minio_client = get_minio_client(
             self.minio_storage.endpoint,
             access_key=self.minio_storage.access_key,

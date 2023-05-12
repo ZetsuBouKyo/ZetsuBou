@@ -200,7 +200,7 @@ def get_minio_path(gallery_path, minio_volume):
         and gallery_path_relative_to_minio_volume[-1] != "/"
     ):
         gallery_path_relative_to_minio_volume += "/"
-    return f"{Protocol.MINIO.value}{minio_storage_id}://{gallery_path_relative_to_minio_volume}"
+    return f"{Protocol.MINIO.value}-{minio_storage_id}://{gallery_path_relative_to_minio_volume}"
 
 
 def sync_new_galleries():

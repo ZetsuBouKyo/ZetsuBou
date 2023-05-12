@@ -16,6 +16,7 @@ from command.build import app as build
 from command.db import app as db
 from command.elastic import app as elastic
 from command.gallery import app as gallery
+from command.migrate import app as migrate
 from command.s3 import app as s3
 from command.sync import app as sync
 from command.tag import app as tag
@@ -41,6 +42,7 @@ app.add_typer(build)
 app.add_typer(db)
 app.add_typer(elastic)
 app.add_typer(gallery)
+app.add_typer(migrate)
 app.add_typer(s3)
 app.add_typer(sync)
 app.add_typer(tag)

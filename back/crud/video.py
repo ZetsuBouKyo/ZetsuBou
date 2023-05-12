@@ -4,6 +4,7 @@ from typing import Dict, List
 from uuid import uuid4
 
 import cv2
+from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.crud.elastic import CrudElasticBase, get_source_by_id
 from back.crud.minio import CrudMinio, exists, expires, get_minio_client_by_source
 from back.db.crud import CrudMinioStorage
@@ -30,6 +31,30 @@ es_size = setting.elastic_size
 
 cache_bucket_name = setting.minio_cache_bucket_name
 cover_object_name_prefix = "video/cover"
+
+
+class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
+    def __init__(
+        self,
+        hosts: List[str] = None,
+        size: int = 10,
+        index: str = None,
+        analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        is_from_setting_if_none: bool = False,
+    ):
+        super().__init__(
+            hosts=hosts,
+            size=size,
+            index=index,
+            analyzer=analyzer,
+            sorting=[
+                "_score",
+                {"timestamp": {"order": "desc", "unmapped_type": "long"}},
+                {"mtime": {"order": "desc", "unmapped_type": "long"}},
+                {"name.keyword": {"order": "desc"}},
+            ],
+            is_from_setting_if_none=is_from_setting_if_none,
+        )
 
 
 class CrudElasticVideo(CrudElasticBase[Video]):
@@ -403,7 +428,7 @@ class CrudSyncVideoMinioStorage:
         **kwargs,
     ):
         self.minio_storage = minio_storage
-        self.minio_path_prefix = f"{Protocol.MINIO.value}{self.minio_storage.id}://"
+        self.minio_path_prefix = f"{Protocol.MINIO.value}-{self.minio_storage.id}://"
         self.minio_client = get_minio_client(
             self.minio_storage.endpoint,
             access_key=self.minio_storage.access_key,

@@ -54,6 +54,7 @@ class SourceBaseModel(BaseModel):
     @property
     def minio_storage_id(cls) -> int:
         if cls.protocol == Protocol.MINIO.value:
-            id = cls._scheme[len(Protocol.MINIO.value) :]
+            if cls._scheme[5] == "-":
+                id = cls._scheme[len(Protocol.MINIO.value) + 1 :]
             return int(id)
         return None

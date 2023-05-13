@@ -75,30 +75,44 @@ app = typer.Typer(name="gallery")
 @app.command()
 def generate(
     root: str = typer.Argument(..., help="Parent of the generated gallery."),
-    gallery_name: str = typer.Option(
-        default=generate_gallery_name,
-        help="Gallery name. Default value comes from uuid4.",
+    num_gallery: int = typer.Option(
+        default=0, help="Number of galleries. Gallery names come from uuid4."
     ),
-    num_img: int = typer.Option(default=5, help="Number of image in gallery."),
+    gallery_names: str = typer.Option(
+        default=None,
+        help="Gallery names. This value is split by `--separator`.",  # noqa
+    ),
+    num_img: int = typer.Option(default=0, help="Number of images in the gallery."),
     img_names: str = typer.Option(
         default=None,
-        help="Image names without extensions. This value should be split by `,`.",
+        help="Image names without extensions. This value is split by `--separator`.",
+    ),
+    separator: str = typer.Option(
+        default=",", help="Separator for `--gallery-names` and `--img-names`."
     ),
 ):
     """
     Generate the gallery.
 
-    Image name: `--img-names` has higher priority than `--num-img`.
+    Gallery names: `--gallery-names` has higher priority than `--num-gallery`.
+    Image names: `--img-names` has higher priority than `--num-img`.
     """
+
+    if gallery_names is None:
+        gallery_names = [generate_gallery_name() for _ in range(num_gallery)]
+    else:
+        gallery_names = gallery_names.split(separator)
 
     if img_names is None:
         img_names = [str(i) for i in range(1, num_img + 1)]
     else:
-        img_names = img_names.split(",")
-    generate_galleries(
-        root,
-        [
-            gallery_name,
-        ],
-        img_names,
-    )
+        img_names = img_names.split(separator)
+
+    for gallery_name in gallery_names:
+        generate_galleries(
+            root,
+            [
+                gallery_name,
+            ],
+            img_names,
+        )

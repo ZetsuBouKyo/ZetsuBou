@@ -3,6 +3,7 @@ from typing import Generic, List, Optional, TypeVar
 
 from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
+from rich import print_json
 
 SourceT = TypeVar("SourceT")
 
@@ -37,6 +38,9 @@ class Hits(GenericModel, Generic[SourceT]):
 class SearchResult(GenericModel, Generic[SourceT]):
     scroll_id: Optional[str] = Field(default=None, alias="_scroll_id")
     hits: Hits[SourceT] = Hits[SourceT]()
+
+    def print(self):
+        print_json(data=self.dict())
 
 
 class Count(BaseModel):

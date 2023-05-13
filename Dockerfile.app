@@ -1,4 +1,4 @@
-FROM python:3.11.0-slim-buster
+FROM python:3.8.16-slim-buster
 LABEL maintainer="ZetsuBouKyo"
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
@@ -15,6 +15,7 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 RUN python3 -m pip install --no-cache-dir --upgrade pip
-RUN python3 -m pip install --no-cache-dir poetry
 
 COPY . .
+
+RUN python3 -m pip install --no-cache-dir -r requirements.txt

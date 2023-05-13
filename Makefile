@@ -41,7 +41,7 @@ check:
 
 .PHONY: build build-docker-app build-docker-airflow-dev build-docker-minio-dev build-dev
 build-docker-app:
-	docker build --force-rm -f Dockerfile.app -t zetsubou-dev/app:${ZETSUBOU_APP_VERSION:-latest} .
+	docker build --force-rm -f Dockerfile.app -t zetsubou-dev/app:0.0.1-python-3.8.16-slim-buster .
 build-docker-airflow-dev:
 	docker build --force-rm -f Dockerfile.airflow -t zetsubou-dev/airflow:2.6.0-python3.8 .
 build-dev: build-docker-airflow-dev
@@ -108,6 +108,8 @@ reset-app-postgres: clean-app-postgres init-app-postgres
 reset-app: reset-app-elastic reset-app-postgres
 
 .PHONY: up up-airflow up-app-dev
+up-app:
+	docker-compose -f docker-compose.host.app.yml up -d
 up-airflow:
 	docker-compose -f docker-compose.host.yml up -d $(AIRFLOW_SERVICES)
 up-label-studio:
@@ -115,6 +117,9 @@ up-label-studio:
 up-app-dev:
 	docker-compose -f docker-compose.host.yml up -d $(APP_DEV_SERVICES)
 up-dev: up-airflow up-app-dev
+
+log-app:
+	docker-compose -f docker-compose.host.app.yml logs
 
 .PHONY: start-airflow start-app-dev
 start-airflow:
@@ -129,6 +134,8 @@ stop-app-dev:
 	docker-compose -f docker-compose.host.yml stop $(APP_DEV_SERVICES)
 
 .PHONY: down
+down-app:
+	docker-compose -f docker-compose.host.app.yml down
 down:
 	docker-compose -f docker-compose.host.yml down
 

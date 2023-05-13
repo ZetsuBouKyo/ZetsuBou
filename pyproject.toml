@@ -5,7 +5,7 @@ description = "ZetsuBou is a web-based app to serve your own image galleries and
 authors = ["ZetsuBouKyo <116266262+ZetsuBouKyo@users.noreply.github.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.9"
+python = ">=3.8,<4.0"
 aiobotocore = "^2.5.0"
 aiofiles = ">=0.7.0"
 aiosqlite = ">=0.17.0"

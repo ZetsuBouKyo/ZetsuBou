@@ -2,10 +2,11 @@ version: "3.3"
 
 services:
   zetsubou-app:
-    image: zetsubou-dev/app/python-3.11.0-slim-buster:0.0.1
+    image: zetsubou-dev/app:0.0.1-python-3.8.16-slim-buster
     container_name: zetsubou-app
     stdin_open: true
     tty: true
+    command: dockerize -wait tcp://localhost:9200 python app.py
     network_mode: host
     expose:
       - 3000

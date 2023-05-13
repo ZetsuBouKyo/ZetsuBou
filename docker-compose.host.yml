@@ -109,17 +109,6 @@ x-airflow-common:
       condition: service_healthy
 
 services:
-  zetsubou-app:
-    image: zetsubou-dev/app:${ZETSUBOU_APP_VERSION:-latest}
-    container_name: zetsubou-app
-    stdin_open: true
-    tty: true
-    command: dockerize -wait tcp://localhost:9200 python app.py
-    network_mode: host
-    expose:
-      - 3000
-    depends_on:
-      - zetsubou-elastic
   zetsubou-postgres:
     image: postgres:13
     environment:

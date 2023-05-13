@@ -6,7 +6,7 @@ from rich import print_json
 _help = """
 Manipulate the Elasticsearch.
 """
-app = typer.Typer(name="elastic", help=_help)
+app = typer.Typer(name="elasticsearch", help=_help)
 
 
 @app.command()

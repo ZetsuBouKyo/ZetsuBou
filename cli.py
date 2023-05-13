@@ -14,7 +14,7 @@ from back.utils.dt import get_now
 from command.backup import app as backup
 from command.build import app as build
 from command.db import app as db
-from command.elastic import app as elastic
+from command.elasticsearch import app as elasticsearch
 from command.gallery import app as gallery
 from command.migrate import app as migrate
 from command.s3 import app as s3
@@ -40,7 +40,7 @@ app = typer.Typer(rich_markup_mode="rich", help=_help)
 app.add_typer(backup)
 app.add_typer(build)
 app.add_typer(db)
-app.add_typer(elastic)
+app.add_typer(elasticsearch)
 app.add_typer(gallery)
 app.add_typer(migrate)
 app.add_typer(s3)

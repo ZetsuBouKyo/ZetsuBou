@@ -1,7 +1,7 @@
 import json
 from urllib.parse import unquote
 
-from back.crud.gallery import CrudElasticGallery
+from back.crud.gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserElasticSearchQuery
 from back.db.model import ScopeEnum
 from back.dependency.security import Token, api_security, extract_token
@@ -31,10 +31,10 @@ def get_body(query: CustomQuery):
     response_model=Count,
     dependencies=[api_security([ScopeEnum.gallery_query_count_field_value_get.name])],
 )
-def get_count_field(field: str, value: str):
+async def get_count_field(field: str, value: str):
     body = {"query": {"terms": {field: [value]}}}
-    crud = CrudElasticGallery()
-    return crud.count(body)
+    crud = CrudAsyncElasticsearchGallery()
+    return await crud.count(body)
 
 
 @router.post(
@@ -42,10 +42,10 @@ def get_count_field(field: str, value: str):
     response_model=Count,
     dependencies=[api_security([ScopeEnum.gallery_query_count_post.name])],
 )
-def post_count(query: CustomQuery = Body(..., examples=query_examples)) -> Count:
+async def post_count(query: CustomQuery = Body(..., examples=query_examples)) -> Count:
     body = get_body(query)
-    crud = CrudElasticGallery()
-    return crud.count(body)
+    crud = CrudAsyncElasticsearchGallery
+    return await crud.count(body)
 
 
 @router.get(
@@ -53,7 +53,7 @@ def post_count(query: CustomQuery = Body(..., examples=query_examples)) -> Count
     response_model=Galleries,
     dependencies=[api_security([ScopeEnum.gallery_query_random_get.name])],
 )
-def get_random(
+async def get_random(
     analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     seed: int = 1048596,
     keywords: str = "",
@@ -63,8 +63,12 @@ def get_random(
     boolean: QueryBoolean = QueryBoolean.SHOULD,
 ) -> Galleries:
     keywords = unquote(keywords)
-    crud = CrudElasticGallery(size=size, analyzer=analyzer)
-    return crud.random(page, keywords, fuzziness=fuzziness, seed=seed, boolean=boolean)
+    crud = CrudAsyncElasticsearchGallery(
+        size=size, analyzer=analyzer, is_from_setting_if_none=True
+    )
+    return await crud.random(
+        page, keywords, fuzziness=fuzziness, boolean=boolean, seed=seed
+    )
 
 
 @router.post(
@@ -72,10 +76,10 @@ def get_random(
     response_model=dict,
     dependencies=[api_security([ScopeEnum.gallery_query_custom_search_post.name])],
 )
-def post_custom_search(query: CustomQuery = Body(..., examples=query_examples)):
+async def post_custom_search(query: CustomQuery = Body(..., examples=query_examples)):
     body = get_body(query)
-    crud = CrudElasticGallery()
-    return crud.custom(body)
+    crud = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
+    return await crud.custom(body)
 
 
 @router.get(
@@ -83,7 +87,7 @@ def post_custom_search(query: CustomQuery = Body(..., examples=query_examples)):
     response_model=Galleries,
     dependencies=[api_security([ScopeEnum.gallery_query_advanced_search_get.name])],
 )
-def get_advanced_search(
+async def get_advanced_search(
     request: Request,
     page: int = 1,
     size: int = elastic_size,
@@ -120,9 +124,9 @@ def get_advanced_search(
         name = unquote(name)
     if raw_name is not None:
         raw_name = unquote(raw_name)
-    crud = CrudElasticGallery(size=size)
+    crud = CrudAsyncElasticsearchGallery(size=size)
 
-    return crud.advanced_search(
+    return await crud.advanced_search(
         page=page,
         keywords=keywords,
         keywords_analyzer=keywords_analyzer,
@@ -168,7 +172,7 @@ async def get_search(
     user_id = token.sub
     keywords = unquote(keywords)
 
-    crud = CrudElasticGallery(size=size, analyzer=analyzer)
+    crud = CrudAsyncElasticsearchGallery(size=size, analyzer=analyzer)
     if query_id is not None:
         user_es_query = await CrudUserElasticSearchQuery.get_row_by_id_and_user_id(
             query_id, user_id
@@ -177,6 +181,6 @@ async def get_search(
         body = query.get("body", None)
         if body is None:
             return []
-        return crud.match_by_query(body, page)
+        return await crud.match_by_query(body, page)
 
-    return crud.match(page, keywords, fuzziness=fuzziness, boolean=boolean)
+    return await crud.match(page, keywords, fuzziness=fuzziness, boolean=boolean)

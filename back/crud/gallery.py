@@ -1,9 +1,10 @@
 import json
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 from uuid import uuid4
 
+from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.crud.elastic import CrudElasticBase, get_source_by_id
 from back.crud.minio import CrudMinio, get_minio_client_by_source
 from back.db.crud import CrudMinioStorage
@@ -28,9 +29,9 @@ from minio.error import S3Error
 
 ES_INDEX_MAX_RESULT_WINDOW = 10000
 
-index = setting.elastic_index_gallery
+INDEX = setting.elastic_index_gallery
 batch_size = 300
-es_size = setting.elastic_size
+ELASTICSEARCH_SIZE = setting.elastic_size
 
 dir_fname = setting.gallery_dir_fname
 tag_fname = setting.gallery_tag_fname
@@ -44,12 +45,272 @@ def alphanum_sorting(text) -> List[int]:
     return [convert(c) for c in re.split("([0-9]+)", text)]
 
 
+class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
+    def __init__(
+        self,
+        hosts: List[str] = None,
+        size: int = None,
+        index: str = INDEX,
+        analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        sorting: List[Any] = [
+            "_score",
+            {"timestamp": {"order": "desc", "unmapped_type": "long"}},
+            {"mtime": {"order": "desc", "unmapped_type": "long"}},
+            {"attributes.name.keyword": {"order": "desc"}},
+        ],
+        is_from_setting_if_none: bool = False,
+    ):
+        super().__init__(
+            hosts=hosts,
+            size=size,
+            index=index,
+            analyzer=analyzer,
+            sorting=sorting,
+            is_from_setting_if_none=is_from_setting_if_none,
+        )
+
+    @property
+    def fields(self):
+        if self.analyzer == AnalyzerEnum.DEFAULT.value:
+            return [
+                "attributes.name",
+                "attributes.raw_name",
+                "attributes.uploader",
+                "attributes.category",
+                "attributes.src",
+                "labels",
+                "tags.*",
+            ]
+        elif self.analyzer == AnalyzerEnum.NGRAM.value:
+            return [
+                "attributes.name.ngram",
+                "attributes.raw_name.ngram",
+                "attributes.uploader",
+                "attributes.category",
+                "attributes.src.ngram",
+                "labels",
+                "tags.*",
+            ]
+        elif self.analyzer == AnalyzerEnum.STANDARD.value:
+            return [
+                "attributes.name.standard",
+                "attributes.raw_name.standard",
+                "attributes.uploader",
+                "attributes.category",
+                "attributes.src.standard",
+                "labels",
+                "tags.*",
+            ]
+        return [
+            "attributes.name",
+            "attributes.raw_name",
+            "attributes.uploader",
+            "attributes.category",
+            "attributes.src",
+            "labels",
+            "tags.*",
+        ]
+
+    async def get_by_id(self, id: str) -> Gallery:
+        return await Gallery(**await self.get_source_by_id(id))
+
+    async def advanced_search(
+        self,
+        page: int = 1,
+        keywords: str = None,
+        keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        keywords_fuzziness: int = 0,
+        keywords_bool: QueryBoolean = QueryBoolean.SHOULD,
+        name: str = None,
+        name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        name_fuzziness: int = 0,
+        name_bool: QueryBoolean = QueryBoolean.SHOULD,
+        raw_name: str = None,
+        raw_name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        raw_name_fuzziness: int = 0,
+        raw_name_bool: QueryBoolean = QueryBoolean.SHOULD,
+        src: str = None,
+        src_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        src_fuzziness: int = 0,
+        src_bool: QueryBoolean = QueryBoolean.SHOULD,
+        category: str = None,
+        rating_gte: int = None,
+        rating_lte: int = None,
+        order_by: GalleryOrderedFieldEnum = None,
+        is_desc: bool = True,
+        labels: List[str] = [],
+        tags: Dict[str, List[str]] = {},
+    ):
+        dsl = {
+            "query": {"bool": {"must": [], "should": []}},
+            "size": self.size,
+            "track_total_hits": True,
+        }
+
+        sorting = ["_score"]
+        if order_by is None:
+            sorting.append({"timestamp": {"order": "desc", "unmapped_type": "long"}})
+            sorting.append({"attributes.name.keyword": {"order": "desc"}})
+        elif is_desc:
+            sorting.append({order_by: {"order": "desc"}})
+        else:
+            sorting.append({order_by: {"order": "asc"}})
+
+        dsl["sort"] = sorting
+
+        if keywords is not None:
+            keywords = keywords.split()
+            for keyword in keywords:
+                dsl["query"]["bool"][keywords_bool].append(
+                    {
+                        "constant_score": {
+                            "filter": {
+                                "multi_match": {
+                                    "query": keyword,
+                                    "fuzziness": keywords_fuzziness,
+                                    "fields": self.fields,
+                                    "analyzer": keywords_analyzer,
+                                }
+                            }
+                        }
+                    }
+                )
+        if name is not None:
+            name_field = "attributes.name"
+            if name_analyzer == AnalyzerEnum.DEFAULT.value:
+                name_field = "attributes.name"
+            elif name_analyzer == AnalyzerEnum.NGRAM.value:
+                name_field = "attributes.name.ngram"
+            elif name_analyzer == AnalyzerEnum.STANDARD.value:
+                name_field = "attributes.name.standard"
+            name = name.split()
+            for n in name:
+                dsl["query"]["bool"][name_bool].append(
+                    {
+                        "constant_score": {
+                            "filter": {
+                                "multi_match": {
+                                    "query": n,
+                                    "fuzziness": name_fuzziness,
+                                    "fields": [name_field],
+                                    "analyzer": name_analyzer,
+                                }
+                            }
+                        }
+                    }
+                )
+
+        if raw_name is not None:
+            raw_name_field = "attributes.raw_name"
+            if raw_name_analyzer == AnalyzerEnum.DEFAULT.value:
+                raw_name_field = "attributes.raw_name"
+            elif raw_name_analyzer == AnalyzerEnum.NGRAM.value:
+                raw_name_field = "attributes.raw_name.ngram"
+            elif raw_name_analyzer == AnalyzerEnum.STANDARD.value:
+                raw_name_field = "attributes.raw_name.standard"
+            raw_name = raw_name.split()
+            for n in raw_name:
+                dsl["query"]["bool"][raw_name_bool].append(
+                    {
+                        "constant_score": {
+                            "filter": {
+                                "multi_match": {
+                                    "query": n,
+                                    "fuzziness": raw_name_fuzziness,
+                                    "fields": [raw_name_field],
+                                    "analyzer": raw_name_analyzer,
+                                }
+                            }
+                        }
+                    }
+                )
+
+        if src is not None:
+            src_field = "attributes.src"
+            if src_analyzer == AnalyzerEnum.DEFAULT.value:
+                src_field = "attributes.src"
+            elif src_analyzer == AnalyzerEnum.NGRAM.value:
+                src_field = "attributes.src.ngram"
+            elif src_analyzer == AnalyzerEnum.STANDARD.value:
+                src_field = "attributes.src.standard"
+            src = src.split()
+            for n in src:
+                dsl["query"]["bool"][src_bool].append(
+                    {
+                        "constant_score": {
+                            "filter": {
+                                "multi_match": {
+                                    "query": n,
+                                    "fuzziness": src_fuzziness,
+                                    "fields": [src_field],
+                                    "analyzer": src_analyzer,
+                                }
+                            }
+                        }
+                    }
+                )
+
+        if category is not None:
+            dsl["query"]["bool"]["must"].append(
+                {
+                    "constant_score": {
+                        "filter": {
+                            "multi_match": {
+                                "query": category,
+                                "fields": ["attributes.category"],
+                            }
+                        }
+                    }
+                }
+            )
+
+        if rating_gte is not None:
+            dsl["query"]["bool"]["must"].append(
+                {"range": {"attributes.rating": {"gte": rating_gte}}}
+            )
+        if rating_lte is not None:
+            dsl["query"]["bool"]["must"].append(
+                {"range": {"attributes.rating": {"lte": rating_lte}}}
+            )
+
+        for label in labels:
+            dsl["query"]["bool"]["must"].append(
+                {
+                    "constant_score": {
+                        "filter": {
+                            "multi_match": {
+                                "query": label,
+                                "fields": ["labels"],
+                            }
+                        }
+                    }
+                }
+            )
+
+        for tag_field, tag_values in tags.items():
+            for tag_value in tag_values:
+                dsl["query"]["bool"]["must"].append(
+                    {
+                        "constant_score": {
+                            "filter": {
+                                "multi_match": {
+                                    "query": tag_value,
+                                    "fields": [f"tags.{tag_field}"],
+                                }
+                            }
+                        }
+                    }
+                )
+
+        return await self.query(page, dsl)
+
+
 class CrudElasticGallery(CrudElasticBase[Gallery]):
     def __init__(
         self,
         elastic_client: Elasticsearch = elastic_client,
-        size: int = es_size,
-        index: str = index,
+        size: int = ELASTICSEARCH_SIZE,
+        index: str = INDEX,
         analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     ):
         super().__init__(
@@ -368,7 +629,7 @@ class CrudMinioGallery(CrudMinio):
 
 
 def get_gallery_by_id(
-    gallery_id: str, elastic_client: Elasticsearch = elastic_client, index: str = index
+    gallery_id: str, elastic_client: Elasticsearch = elastic_client, index: str = INDEX
 ) -> Gallery:
     return get_source_by_id(
         gallery_id, Gallery, elastic_client=elastic_client, index=index
@@ -381,7 +642,7 @@ class CrudGallery:
         gallery_id: str,
         elastic_client: Elasticsearch = elastic_client,
         crud_minio_storage: CrudMinioStorage = CrudMinioStorage,
-        index: str = index,
+        index: str = INDEX,
     ):
         self.gallery = get_gallery_by_id(
             gallery_id, elastic_client=elastic_client, index=index
@@ -501,8 +762,8 @@ class CrudSyncGalleryMinioStorage:
         self,
         minio_storage: MinioStorage,
         elastic_client: Elasticsearch = elastic_client,
-        index: str = index,
-        size: int = es_size,
+        index: str = INDEX,
+        size: int = ELASTICSEARCH_SIZE,
         batch_size: int = batch_size,
         dir_fname: str = dir_fname,
         tag_fname: str = tag_fname,

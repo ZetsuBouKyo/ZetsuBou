@@ -1,6 +1,6 @@
 import json
 
-from back.crud.gallery import CrudElasticGallery
+from back.crud.gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserElasticCountQuery
 from fastapi import HTTPException
 
@@ -15,5 +15,6 @@ class CrudElasticCount:
             )
         query_json = json.loads(query.query)
 
-        crud_es = CrudElasticGallery()
-        return crud_es.count(query_json["body"]).count
+        crud = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
+        c = await crud.count(query_json["body"])
+        return c.count

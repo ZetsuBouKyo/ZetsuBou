@@ -193,9 +193,8 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         return await self.advanced_search.search(index=self.index, body=body)
 
     async def count(self, body: dict) -> Count:
-        return Count(
-            **await self.async_elasticsearch.count(index=self.index, body=body)
-        )
+        _resp = await self.async_elasticsearch.count(index=self.index, body=body)
+        return Count(**_resp)
 
     async def random(
         self,

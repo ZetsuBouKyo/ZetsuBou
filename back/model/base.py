@@ -1,7 +1,7 @@
 from enum import Enum
 from urllib.parse import urlparse
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 
 class Protocol(str, Enum):
@@ -19,11 +19,7 @@ class Pagination(BaseModel):
 
 
 class SourceBaseModel(BaseModel):
-    @validator("path", check_fields=False)
-    def validate_path(cls, v):
-        if cls.protocol == Protocol.MINIO.value:
-            cls.minio_storage_id
-        return v
+    path: str
 
     @property
     def _url(cls):

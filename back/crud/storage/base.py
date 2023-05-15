@@ -4,6 +4,17 @@ from back.model.base import SourceBaseModel
 
 
 class CrudAsyncStorageBase:
+    def get_joined_source(
+        self, base_source: SourceBaseModel, relative_path: str
+    ) -> SourceBaseModel:
+        _base_path = base_source.path
+        _relative_path = relative_path
+        if not _base_path.endswith("/"):
+            _base_path += "/"
+        if _relative_path.startswith("/"):
+            _relative_path = _relative_path[1:]
+        return SourceBaseModel(path=_base_path + "/" + _relative_path)
+
     async def get_url(self, source: SourceBaseModel) -> str:
         raise NotImplementedError
 

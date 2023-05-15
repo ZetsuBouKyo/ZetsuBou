@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 from pydantic import BaseModel
 
@@ -25,18 +25,27 @@ class S3GetPaginatorResponse(BaseModel):
     KeyCount: int
 
 
-class S3PutObjectResponseMetadata(BaseModel):
+class S3ResponseMetadata(BaseModel):
     RequestId: str
     HTTPStatusCode: int
 
 
+class S3GetObjectResponse(BaseModel):
+    ResponseMetadata: S3ResponseMetadata
+    ContentLength: int
+    ETag: str
+    ContentType: str
+    Metadata: dict
+    Body: Any
+
+
 class S3PutObjectResponse(BaseModel):
-    ResponseMetadata: S3PutObjectResponseMetadata
+    ResponseMetadata: S3ResponseMetadata
     ETag: str
 
 
 class S3DeleteObjectResponse(BaseModel):
-    ResponseMetadata: S3PutObjectResponseMetadata
+    ResponseMetadata: S3ResponseMetadata
 
 
 class S3DeleteObjectsResponseDeleted(BaseModel):

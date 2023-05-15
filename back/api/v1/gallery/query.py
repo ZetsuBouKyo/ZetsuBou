@@ -33,7 +33,7 @@ def get_body(query: CustomQuery):
 )
 async def get_count_field(field: str, value: str):
     body = {"query": {"terms": {field: [value]}}}
-    crud = CrudAsyncElasticsearchGallery()
+    crud = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
     return await crud.count(body)
 
 
@@ -44,7 +44,7 @@ async def get_count_field(field: str, value: str):
 )
 async def post_count(query: CustomQuery = Body(..., examples=query_examples)) -> Count:
     body = get_body(query)
-    crud = CrudAsyncElasticsearchGallery
+    crud = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
     return await crud.count(body)
 
 

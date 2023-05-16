@@ -999,7 +999,7 @@ class CrudAsyncGallerySync:
             self._storage_to_elasticsearch_batches = []
 
     async def sync_gallery(self, source: SourceBaseModel):
-        tag_source = await self.crud_async_storage_gallery.get_tag_source(source)
+        tag_source = self.crud_async_storage_gallery.get_tag_source(source)
         if not await self.crud_async_storage_gallery.storage.exists(tag_source):
             tag = await self.crud_async_storage_gallery.create_gallery_tag(source)
         else:
@@ -1046,16 +1046,21 @@ class CrudAsyncGallerySync:
         ):
             if source is None:
                 continue
-            self.sync_gallery(source)
+
+            await self.sync_gallery(source)
 
         await self.send_bulk(self._storage_to_elasticsearch_batches)
 
     async def _sync_elasticsearch_to_storage_batch(self, galleries: Galleries):
         for hit in galleries.hits.hits:
+            if hit.source._scheme != self.root_source._scheme:
+                continue
+
             if not isinstance(hit.source, Gallery):
                 source = Gallery(**hit.source.dict())
             else:
                 source = hit.source
+
             exists = await self.crud_async_storage_gallery.storage.exists(source)
             if not exists or hit.id not in self.cache:
                 data = {
@@ -1122,7 +1127,9 @@ async def get_crud_sync_gallery(
 
         root_source = get_root_source_by_storage_minio(storage_minio)
 
-        return CrudAsyncGallerySync(storage, root_source, storage_minio.depth)
+        return CrudAsyncGallerySync(
+            storage, root_source, storage_minio.depth, is_from_setting_if_none=True
+        )
 
 
 # TODO: deprecated

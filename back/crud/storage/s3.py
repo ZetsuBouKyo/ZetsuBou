@@ -63,7 +63,12 @@ class CrudAsyncS3(CrudAsyncStorageBase):
             self.session, source.bucket_name, source.object_name, depth
         ):
             if obj is not None:
-                yield obj
+                obj_prefix = obj.prefix
+                if obj_prefix.startswith("/"):
+                    obj_prefix = obj_prefix[1:]
+                obj_path = f"{source.protocol}-{source.storage_minio_id}://{source.bucket_name}/{obj_prefix}"  # noqa
+                obj_source = SourceBaseModel(path=obj_path)
+                yield obj_source
 
     async def exists(self, source: SourceBaseModel) -> bool:
         return await exists(self.session, source.bucket_name, source.object_name)

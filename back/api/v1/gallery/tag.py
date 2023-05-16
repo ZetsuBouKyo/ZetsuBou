@@ -1,4 +1,4 @@
-from back.crud.gallery import get_crud_gallery
+from back.crud.gallery import get_crud_async_gallery, get_gallery_by_gallery_id
 from back.db.model import ScopeEnum
 from back.dependency.security import api_security
 from back.model.gallery import Gallery
@@ -13,8 +13,8 @@ router = APIRouter()
     dependencies=[api_security([ScopeEnum.gallery_tag_get.name])],
 )
 async def get_tag(gallery_id: str) -> Gallery:
-    crud = await get_crud_gallery(gallery_id)
-    return crud.gallery
+    gallery = await get_gallery_by_gallery_id(gallery_id)
+    return gallery
 
 
 @router.post(
@@ -28,5 +28,5 @@ async def post_tag(gallery_id: str, gallery: Gallery) -> Gallery:
             status_code=409, detail="Conflict between post body and url parameter"
         )
 
-    crud = await get_crud_gallery(gallery_id)
-    return crud.update(gallery)
+    crud = await get_crud_async_gallery(gallery_id)
+    return await crud.update(gallery)

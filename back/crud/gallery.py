@@ -946,13 +946,6 @@ def iter_gallery(minio_client: Minio, bucket_name: str, prefix: str, depth: int)
     yield None
 
 
-# TODO: deprecated
-async def get_crud_gallery(*args, **kwargs) -> CrudGallery:
-    crud = CrudGallery(*args, **kwargs)
-    await crud.init()
-    return crud
-
-
 class CrudAsyncGallerySync:
     def __init__(
         self,

@@ -1,4 +1,4 @@
-from back.crud.gallery import get_crud_gallery
+from back.crud.gallery import get_crud_async_gallery
 from back.db.model import ScopeEnum
 from back.dependency.security import api_security
 from back.schema.basic import Message
@@ -16,8 +16,9 @@ app_mode = setting.app_mode
     dependencies=[api_security([ScopeEnum.gallery_delete.name])],
 )
 async def delete(gallery_id: str) -> Message:
-    crud = await get_crud_gallery(gallery_id)
-    return Message(detail=crud.delete())
+    crud = await get_crud_async_gallery(gallery_id)
+    detail = await crud.delete()
+    return Message(detail=detail)
 
 
 @router.get(

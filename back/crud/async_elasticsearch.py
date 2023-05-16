@@ -1,7 +1,7 @@
 from typing import Any, Generic, List
 
 from back.model.elastic import AnalyzerEnum, Count, QueryBoolean, SearchResult, SourceT
-from back.session.async_elasticsearch import async_elastic
+from back.session.async_elasticsearch import async_elasticsearch
 from back.settings import setting
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import NotFoundError
@@ -39,7 +39,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
     def init_from_setting(self):
         if self.hosts is None:
-            self.async_elasticsearch = async_elastic
+            self.async_elasticsearch = async_elasticsearch
         if self.size is None:
             self.size = ELASTICSEARCH_SIZE
 

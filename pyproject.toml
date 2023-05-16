@@ -37,7 +37,7 @@ PyYAML = ">=5.4.1"
 redis = ">=3.5.3"
 requests = ">=2.26.0"
 Scrapy = "==2.5.1"
-SQLAlchemy = ">=1.4.29"
+SQLAlchemy = ">=2.0.13"
 tqdm = ">=4.62.3"
 typer = {extras = ["all"], version = "^0.7.0"}
 uvicorn = ">=0.15.0"

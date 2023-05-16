@@ -24,6 +24,9 @@ class CrudAsyncStorageBase:
     async def list_filenames(self, source: SourceBaseModel) -> List[str]:
         raise NotImplementedError
 
+    async def iter(self, source: SourceBaseModel, depth: int):
+        raise NotImplementedError
+
     async def exists(self, source: SourceBaseModel) -> bool:
         raise NotImplementedError
 

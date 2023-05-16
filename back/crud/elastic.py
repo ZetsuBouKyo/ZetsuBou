@@ -12,7 +12,7 @@ index = setting.elastic_index_gallery
 batch_size = 300
 es_size = setting.elastic_size
 
-ES_INDEX_MAX_RESULT_WINDOW = 10000
+ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000
 
 
 class CrudElasticBase(Generic[SourceT]):
@@ -66,9 +66,9 @@ class CrudElasticBase(Generic[SourceT]):
 
     def query(self, page: int, dsl: dict) -> SearchResult[SourceT]:
         target_idx = page * self.size
-        max_page = ES_INDEX_MAX_RESULT_WINDOW // self.size
+        max_page = ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW // self.size
 
-        if target_idx > ES_INDEX_MAX_RESULT_WINDOW:
+        if target_idx > ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW:
             current_page = max_page
 
             dsl["from"] = self.get_from(current_page)

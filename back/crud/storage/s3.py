@@ -1,6 +1,7 @@
 from typing import List
 
 from back.crud.storage.base import CrudAsyncStorageBase
+from back.db.model import StorageMinio
 from back.model.base import Protocol, SourceBaseModel
 from back.session.aioboto import (
     S3Session,
@@ -9,6 +10,7 @@ from back.session.aioboto import (
     generate_presigned_url,
     get_object,
     get_session_from_setting_if_none,
+    iter,
     list_filenames,
     put_json,
     put_object,
@@ -18,17 +20,12 @@ from back.session.aioboto import (
 class CrudAsyncS3(CrudAsyncStorageBase):
     def __init__(
         self,
-        storage_id: int = 0,
-        protocol: Protocol = None,
         aws_access_key_id: str = None,
         aws_secret_access_key: str = None,
         endpoint_url: str = None,
         region_name: str = "ap-northeast-1-tpe-1",
         is_from_setting_if_none: bool = False,
     ):
-        self.storage_id = storage_id
-        self.protocol = protocol
-
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key
         self.endpoint_url = endpoint_url
@@ -60,6 +57,13 @@ class CrudAsyncS3(CrudAsyncStorageBase):
         return await list_filenames(
             self.session, source.bucket_name, source.object_name
         )
+
+    async def iter(self, source: SourceBaseModel, depth: int):
+        async for obj in iter(
+            self.session, source.bucket_name, source.object_name, depth
+        ):
+            if obj is not None:
+                yield obj
 
     async def exists(self, source: SourceBaseModel) -> bool:
         return await exists(self.session, source.bucket_name, source.object_name)
@@ -95,3 +99,15 @@ class CrudAsyncS3(CrudAsyncStorageBase):
 
     async def delete(self, source: SourceBaseModel) -> bool:
         return await delete(self.session, source.bucket_name, source.object_name)
+
+
+def get_root_source_by_storage_minio(storage_minio: StorageMinio) -> SourceBaseModel:
+    bucket_name = storage_minio.bucket_name
+    if bucket_name.endswith("/"):
+        bucket_name = bucket_name[:-1]
+    prefix = storage_minio.prefix
+    if prefix.startswith("/"):
+        prefix = prefix[1:]
+
+    root_path = f"{Protocol.MINIO.value}-{storage_minio.id}://{bucket_name}/{prefix}"
+    return SourceBaseModel(path=root_path)

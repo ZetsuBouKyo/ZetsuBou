@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List
 
 from aiobotocore.session import AioSession, ClientCreatorContext
-from back.model.base import SourceBaseModel
 from back.model.s3 import (
     S3DeleteObjectResponse,
     S3DeleteObjectsResponse,
@@ -101,24 +100,6 @@ async def list_all(session: S3Session, bucket_name: str, prefix: str) -> List[S3
     return prefixes
 
 
-# TODO:
-async def list_sources(
-    session: S3Session, storage_id: int, bucket_name: str, prefix: str
-) -> List[SourceBaseModel]:
-    prefixes = []
-    async with session.create_s3_client() as client:
-        paginator = client.get_paginator("list_objects_v2")
-        async for page in paginator.paginate(
-            Bucket=bucket_name, Prefix=prefix, Delimiter="/"
-        ):
-            _page = S3GetPaginatorResponse(**page)
-            for c in _page.Contents:
-                prefixes.append(S3Object(bucket_name=_page.Name, prefix=c.Key))
-            for p in _page.CommonPrefixes:
-                prefixes.append(S3Object(bucket_name=_page.Name, prefix=p.Prefix))
-    return prefixes
-
-
 async def list_filenames(
     session: S3Session, bucket_name: str, prefix: str
 ) -> List[str]:
@@ -140,6 +121,21 @@ async def list_filenames(
     return filenames
 
 
+async def list_prefixes(
+    session: S3Session, bucket_name: str, prefix: str
+) -> List[S3Object]:
+    prefixes = []
+    async with session.create_s3_client() as client:
+        paginator = client.get_paginator("list_objects_v2")
+        async for page in paginator.paginate(
+            Bucket=bucket_name, Prefix=prefix, Delimiter="/"
+        ):
+            _page = S3GetPaginatorResponse(**page)
+            for p in _page.CommonPrefixes:
+                prefixes.append(S3Object(bucket_name=_page.Name, prefix=p.Prefix))
+    return prefixes
+
+
 async def list_objects_v2(
     session: S3Session,
     bucket_name: str,
@@ -152,6 +148,22 @@ async def list_objects_v2(
             Bucket=bucket_name, Prefix=prefix, Delimiter=Delimiter, MaxKeys=MaxKeys
         )
         return S3GetPaginatorResponse(**resp)
+
+
+async def iter(session: S3Session, bucket_name: str, prefix: str, depth: int):
+    if len(prefix) > 0 and prefix[-1] != "/":
+        yield None
+    depth -= 1
+    objs = await list_prefixes(session, bucket_name, prefix)
+    for obj in objs:
+        if obj.bucket_name == bucket_name and obj.prefix == prefix:
+            continue
+        if depth == 0:
+            yield obj
+        else:
+            async for obj in iter(session, bucket_name, obj.prefix, depth):
+                yield obj
+    yield None
 
 
 async def exists(session: S3Session, bucket_name: str, object_name: str) -> bool:

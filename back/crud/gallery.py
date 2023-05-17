@@ -26,7 +26,7 @@ from back.utils.dt import (
 )
 from back.utils.fs import is_image
 from elasticsearch import AsyncElasticsearch, Elasticsearch, helpers
-from elasticsearch.helpers import async_bulk
+from elasticsearch.helpers import async_bulk, async_scan
 from fastapi import HTTPException
 
 from minio import Minio
@@ -966,18 +966,25 @@ class CrudAsyncGallerySync:
         self.root_source = root_source
         self.depth = depth
 
-        self.async_elasticsearch = AsyncElasticsearch(hosts)
+        self.hosts = hosts
         self.index = index
+        self.size = size
+        self.batch_size = batch_size
+        self.dir_fname = dir_fname
+        self.tag_fname = tag_fname
+
+        self.async_elasticsearch = AsyncElasticsearch(self.hosts)
+
         if is_from_setting_if_none:
-            if hosts is None:
+            if self.hosts is None:
                 self.async_elasticsearch = async_elasticsearch
-            if index is None:
+            if self.index is None:
                 self.index = ELASTICSEARCH_INDEX_GALLERY
-            if size is None:
+            if self.size is None:
                 self.size = ELASTICSEARCH_SIZE
-            if batch_size is None:
+            if self.batch_size is None:
                 self.batch_size = BATCH_SIZE
-            if dir_fname is None:
+            if self.dir_fname is None:
                 self.dir_fname = DIR_FNAME
             if tag_fname is None:
                 self.tag_fname = TAG_FNAME
@@ -991,12 +998,9 @@ class CrudAsyncGallerySync:
             yield batch
 
     async def send_bulk(self, batches: List[dict]):
-        if len(batches) > self.batch_size:
-            await async_bulk(
-                self.async_elasticsearch, self.iter_elasticsearch_batches(batches)
-            )
-            self._elasticsearch_to_storage_batches = []
-            self._storage_to_elasticsearch_batches = []
+        await async_bulk(self.async_elasticsearch, batches)
+        self._elasticsearch_to_storage_batches = []
+        self._storage_to_elasticsearch_batches = []
 
     async def sync_gallery(self, source: SourceBaseModel):
         tag_source = self.crud_async_storage_gallery.get_tag_source(source)
@@ -1037,7 +1041,9 @@ class CrudAsyncGallerySync:
         self._storage_to_elasticsearch_batches.append(action)
 
         self.cache.add(tag.id)
-        await self.send_bulk(self._storage_to_elasticsearch_batches)
+
+        if len(self._storage_to_elasticsearch_batches) > self.batch_size:
+            await self.send_bulk(self._storage_to_elasticsearch_batches)
 
     async def _sync_storage_to_elasticsearch(self):
         self._storage_to_elasticsearch_batches = []
@@ -1049,7 +1055,8 @@ class CrudAsyncGallerySync:
 
             await self.sync_gallery(source)
 
-        await self.send_bulk(self._storage_to_elasticsearch_batches)
+        if len(self._storage_to_elasticsearch_batches) > 0:
+            await self.send_bulk(self._storage_to_elasticsearch_batches)
 
     async def _sync_elasticsearch_to_storage_batch(self, galleries: Galleries):
         for hit in galleries.hits.hits:
@@ -1063,45 +1070,48 @@ class CrudAsyncGallerySync:
 
             exists = await self.crud_async_storage_gallery.storage.exists(source)
             if not exists or hit.id not in self.cache:
-                data = {
-                    "_index": self.index,
-                    "_id": hit.id,
-                    "_op_type": "delete",
-                }
-                self._elasticsearch_to_storage_batches.append(data)
+                self._elasticsearch_to_storage_batches.append(
+                    {
+                        "_index": self.index,
+                        "_id": hit.id,
+                        "_op_type": "delete",
+                    }
+                )
 
-            await self.send_bulk(self._elasticsearch_to_storage_batches)
+            if len(self._elasticsearch_to_storage_batches) > self.batch_size:
+                await self.send_bulk(self._elasticsearch_to_storage_batches)
 
     async def _sync_elasticsearch_to_storage(self):
-        count = 0
+        query = {"query": {"match_all": {}}}
+        c = 0
 
-        dsl = {
-            "size": self.size,
-            "query": {"match_all": {}},
-            "track_total_hits": True,
-            "sort": [
-                "_score",
-                {"timestamp": {"order": "desc", "unmapped_type": "long"}},
-            ],
-        }
-        hits = await self.async_elasticsearch.search(
-            index=self.index, body=dsl, scroll="1m"
-        )
-        galleries = Galleries(**hits)
+        async for doc in async_scan(
+            client=self.async_elasticsearch, query=query, index=self.index
+        ):
+            source = doc.get("_source", None)
+            if source is None:
+                continue
+            c += 1
+            gallery = Gallery(**source)
 
-        count += len(galleries.hits.hits)
-        await self._sync_elasticsearch_to_storage_batch(galleries)
+            if gallery._scheme != self.root_source._scheme:
+                continue
 
-        while galleries.hits.hits:
-            hits = await self.async_elasticsearch.scroll(
-                scroll_id=galleries.scroll_id, scroll="1m"
-            )
-            galleries = Galleries(**hits)
+            exists = await self.crud_async_storage_gallery.storage.exists(gallery)
+            if not exists or gallery.id not in self.cache:
+                self._elasticsearch_to_storage_batches.append(
+                    {
+                        "_index": self.index,
+                        "_id": gallery.id,
+                        "_op_type": "delete",
+                    }
+                )
 
-            count += len(galleries.hits.hits)
-            await self._sync_elasticsearch_to_storage_batch(galleries)
+            if len(self._elasticsearch_to_storage_batches) > self.batch_size:
+                await self.send_bulk(self._elasticsearch_to_storage_batches)
 
-        await self.send_bulk(self._elasticsearch_to_storage_batches)
+        if len(self._elasticsearch_to_storage_batches) > 0:
+            await self.send_bulk(self._elasticsearch_to_storage_batches)
 
     async def sync(self):
         await self._sync_storage_to_elasticsearch()

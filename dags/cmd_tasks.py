@@ -25,6 +25,17 @@ tasks = [
         },
     ),
     Task(
+        dag_id="sync-storages",
+        sub_command="sync storages",
+        dag_kwargs={
+            "start_date": datetime(2021, 1, 1),
+            "schedule_interval": None,
+            "catchup": False,
+            "tags": ["sync", "storage"],
+            "max_active_runs": 1,
+        },
+    ),
+    Task(
         dag_id="sync-minio-storage",
         sub_command="sync sync-minio-storage",
         dag_kwargs={
@@ -32,6 +43,16 @@ tasks = [
             "schedule_interval": None,
             "catchup": False,
             "tags": ["sync", "minio"],
+        },
+    ),
+    Task(
+        dag_id="sync-storage",
+        sub_command="sync storage",
+        dag_kwargs={
+            "start_date": datetime(2021, 1, 1),
+            "schedule_interval": None,
+            "catchup": False,
+            "tags": ["sync", "storage"],
         },
     ),
     Task(

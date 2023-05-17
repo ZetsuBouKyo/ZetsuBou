@@ -116,7 +116,7 @@ import {
   putMinioStorage,
   deleteMinioStorage,
 } from "@/api/v1/minio/storage";
-import { postSyncMinioStorage } from "@/api/v1/task/airflow";
+import { postSyncStorageMinio } from "@/api/v1/task/airflow";
 
 import { ButtonColorEnum } from "@/elements/Button/button.ts";
 import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
@@ -350,7 +350,7 @@ export default {
         return;
       }
       const id = row.id;
-      postSyncMinioStorage(id).then((response: any) => {
+      postSyncStorageMinio(id).then((response: any) => {
         messageState.sendAirflowMessage(
           response,
           `Synchronizing storage: ${id}`,

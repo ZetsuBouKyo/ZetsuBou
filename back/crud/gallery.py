@@ -7,17 +7,16 @@ from uuid import uuid4
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.crud.elastic import CrudElasticBase, get_source_by_id
 from back.crud.minio import CrudMinio, get_minio_client_by_source
-from back.crud.storage import get_storage_by_source
-from back.crud.storage.base import CrudAsyncStorageBase
-from back.crud.storage.s3 import CrudAsyncS3, get_root_source_by_storage_minio
 from back.db.crud import CrudMinioStorage
-from back.db.model import MinioStorage
+from back.db.model import MinioStorage, StorageMinio
 from back.model.base import Protocol, SourceBaseModel
 from back.model.elastic import AnalyzerEnum, QueryBoolean
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
 from back.session.async_elasticsearch import async_elasticsearch
 from back.session.elastic import elastic_client
 from back.session.minio import get_minio_client
+from back.session.storage import get_storage_session_by_source
+from back.session.storage.async_s3 import AsyncS3Session
 from back.settings import setting
 from back.utils.dt import (
     get_isoformat_with_timezone,
@@ -570,15 +569,66 @@ class CrudElasticGallery(CrudElasticBase[Gallery]):
         return self.query(page, dsl)
 
 
+def _get_tag_source(
+    storage_session: AsyncS3Session,
+    source: SourceBaseModel,
+    dir_fname: str,
+    tag_fname: str,
+) -> SourceBaseModel:
+    relative_path = dir_fname + "/" + tag_fname
+    return storage_session.get_joined_source(source, relative_path)
+
+
+async def _create_gallery_tag_in_storage(
+    storage_session: AsyncS3Session,
+    source: SourceBaseModel,
+    tag_source: SourceBaseModel,
+) -> Gallery:
+    now = get_now()
+    gallery = Gallery(
+        **{
+            "id": str(uuid4()),
+            "path": source.path,
+            "group": "",
+            "timestamp": now,
+            "mtime": now,
+            "attributes": {"name": Path(source.path).name},
+        }
+    )
+
+    await storage_session.put_json(tag_source, gallery.dict())
+
+    return gallery
+
+
+async def _get_gallery_tag_from_storage(
+    storage_session: AsyncS3Session,
+    tag_source: SourceBaseModel,
+) -> Gallery:
+    response = await storage_session.get_object(tag_source)
+    tag = json.loads(response)
+    tag = Gallery(**tag)
+    return tag
+
+
+async def _put_gallery_tag_in_storage(
+    storage_session: AsyncS3Session,
+    gallery: Gallery,
+    tag_source: SourceBaseModel,
+) -> Gallery:
+    await storage_session.put_json(tag_source, gallery.dict())
+    return gallery
+
+
 class CrudAsyncStorageGallery:
     def __init__(
         self,
-        storage: CrudAsyncStorageBase,
+        storage_session: AsyncS3Session,
         dir_fname: str = None,
         tag_fname: str = None,
         is_from_setting_if_none: bool = False,
     ):
-        self.storage = storage
+        self.storage_session = storage_session
 
         if is_from_setting_if_none:
             if dir_fname is None:
@@ -587,41 +637,37 @@ class CrudAsyncStorageGallery:
                 self.tag_fname = TAG_FNAME
 
     def get_tag_source(self, gallery: Gallery) -> SourceBaseModel:
-        relative_path = self.dir_fname + "/" + self.tag_fname
-        return self.storage.get_joined_source(gallery, relative_path)
-
-    async def create_gallery_tag(self, source: SourceBaseModel) -> Gallery:
-        now = get_now()
-        gallery = Gallery(
-            **{
-                "id": str(uuid4()),
-                "path": source.path,
-                "group": "",
-                "timestamp": now,
-                "mtime": now,
-                "attributes": {"name": Path(source.path).name},
-            }
+        return _get_tag_source(
+            self.storage_session, gallery, self.dir_fname, self.tag_fname
         )
 
-        tag_source = self.get_tag_source(gallery)
-        await self.storage.put_json(tag_source, gallery.dict())
+    async def create_gallery_tag(self, source: SourceBaseModel) -> Gallery:
+        tag_source = self.get_tag_source(source)
+        async with self.storage_session:
+            gallery = await _create_gallery_tag_in_storage(
+                self.storage_session, source, tag_source
+            )
 
         return gallery
 
     async def get_gallery_tag(self, gallery: Gallery) -> Gallery:
         tag_source = self.get_tag_source(gallery)
-        response = await self.storage.get_object(tag_source)
-        tag = json.loads(response)
-        tag = Gallery(**tag)
+        async with self.storage_session:
+            tag = await _get_gallery_tag_from_storage(self.storage_session, tag_source)
         return tag
 
     async def put_gallery_tag(self, gallery: Gallery) -> Gallery:
         tag_source = self.get_tag_source(gallery)
-        await self.storage.put_json(tag_source, gallery.dict())
+        async with self.storage_session:
+            gallery = await _put_gallery_tag_in_storage(
+                self.storage_session, gallery, tag_source
+            )
         return gallery
 
     async def get_image_filenames(self, gallery: Gallery) -> List[str]:
-        filenames = await self.storage.list_filenames(gallery)
+        async with self.storage_session:
+            filenames = await self.storage_session.list_filenames(gallery)
+
         images = [filename for filename in filenames if is_image(Path(filename))]
         images.sort(key=alphanum_sorting)
         return images
@@ -634,22 +680,26 @@ class CrudAsyncStorageGallery:
         return await self.get_image(gallery, cover_filename)
 
     async def get_image(self, gallery: Gallery, image_name: str) -> str:
-        image_source = self.storage.get_joined_source(gallery, image_name)
-        return await self.storage.get_url(image_source)
+        async with self.storage_session:
+            image_source = self.storage_session.get_joined_source(gallery, image_name)
+            return await self.storage_session.get_url(image_source)
+
+    async def exists(self, gallery: Gallery) -> bool:
+        async with self.storage_session:
+            return await self.storage_session.exists(gallery)
+
+    async def delete(self, gallery: Gallery) -> str:
+        async with self.storage_session:
+            return await self.storage_session.delete(gallery)
 
 
 async def get_crud_async_storage_gallery_by_gallery(
     gallery: Gallery,
 ) -> CrudAsyncStorageGallery:
-    storage = await get_storage_by_source(gallery)
-    return CrudAsyncStorageGallery(storage=storage, is_from_setting_if_none=True)
-
-
-async def get_crud_async_storage_gallery_by_gallery_id(
-    gallery_id: str,
-) -> CrudAsyncStorageGallery:
-    gallery = await get_gallery_by_gallery_id(gallery_id)
-    return await get_crud_async_storage_gallery_by_gallery(gallery)
+    storage_session = await get_storage_session_by_source(gallery)
+    return CrudAsyncStorageGallery(
+        storage_session=storage_session, is_from_setting_if_none=True
+    )
 
 
 # TODO: deprecated
@@ -773,7 +823,7 @@ class CrudAsyncGallery:
 
         crud_async_storage_gallery = self.crud_async_storage_gallery
 
-        if not await crud_async_storage_gallery.storage.exists(old_gallery):
+        if not await crud_async_storage_gallery.exists(old_gallery):
             raise HTTPException(
                 status_code=404, detail=f"Gallery ID: {self.gallery.id} not found"
             )
@@ -819,7 +869,7 @@ class CrudAsyncGallery:
 
     async def delete(self) -> str:
         await self.async_elasticsearch.delete(index=self.index, id=self.gallery.id)
-        await self.crud_async_storage_gallery.storage.delete(self.gallery)
+        await self.crud_async_storage_gallery.delete(self.gallery)
         return "ok"
 
 
@@ -949,7 +999,7 @@ def iter_gallery(minio_client: Minio, bucket_name: str, prefix: str, depth: int)
 class CrudAsyncGallerySync:
     def __init__(
         self,
-        storage: CrudAsyncStorageBase,
+        storage_session: AsyncS3Session,
         root_source: SourceBaseModel,
         depth: int,
         hosts: List[str] = None,
@@ -960,9 +1010,9 @@ class CrudAsyncGallerySync:
         tag_fname: str = None,
         is_from_setting_if_none: bool = False,
     ):
-        self.crud_async_storage_gallery = CrudAsyncStorageGallery(
-            storage=storage, is_from_setting_if_none=True
-        )
+
+        self.storage_session = storage_session
+
         self.root_source = root_source
         self.depth = depth
 
@@ -986,7 +1036,7 @@ class CrudAsyncGallerySync:
                 self.batch_size = BATCH_SIZE
             if self.dir_fname is None:
                 self.dir_fname = DIR_FNAME
-            if tag_fname is None:
+            if self.tag_fname is None:
                 self.tag_fname = TAG_FNAME
 
         self.cache = set()
@@ -1002,12 +1052,17 @@ class CrudAsyncGallerySync:
         self._elasticsearch_to_storage_batches = []
         self._storage_to_elasticsearch_batches = []
 
-    async def sync_gallery(self, source: SourceBaseModel):
-        tag_source = self.crud_async_storage_gallery.get_tag_source(source)
-        if not await self.crud_async_storage_gallery.storage.exists(tag_source):
-            tag = await self.crud_async_storage_gallery.create_gallery_tag(source)
+    async def _sync_gallery(self, source: SourceBaseModel) -> Gallery:
+        tag_source = _get_tag_source(
+            self.storage_session, source, self.dir_fname, self.tag_fname
+        )
+        if not await self.storage_session.exists(tag_source):
+            tag = await _create_gallery_tag_in_storage(
+                self.storage_session, source, tag_source
+            )
+
         else:
-            tag = await self.crud_async_storage_gallery.get_gallery_tag(source)
+            tag = await _get_gallery_tag_from_storage(self.storage_session, tag_source)
 
         now = get_now()
 
@@ -1035,7 +1090,7 @@ class CrudAsyncGallerySync:
             tag.path = source.path
 
         if need_to_update:
-            await self.crud_async_storage_gallery.put_gallery_tag(tag)
+            await _put_gallery_tag_in_storage(self.storage_session, tag, tag_source)
 
         action = {"_index": self.index, "_id": tag.id, "_source": tag.dict()}
         self._storage_to_elasticsearch_batches.append(action)
@@ -1045,15 +1100,15 @@ class CrudAsyncGallerySync:
         if len(self._storage_to_elasticsearch_batches) > self.batch_size:
             await self.send_bulk(self._storage_to_elasticsearch_batches)
 
+        return tag
+
     async def _sync_storage_to_elasticsearch(self):
         self._storage_to_elasticsearch_batches = []
-        async for source in self.crud_async_storage_gallery.storage.iter(
-            self.root_source, self.depth
-        ):
+        async for source in self.storage_session.iter(self.root_source, self.depth):
             if source is None:
                 continue
 
-            await self.sync_gallery(source)
+            await self._sync_gallery(source)
 
         if len(self._storage_to_elasticsearch_batches) > 0:
             await self.send_bulk(self._storage_to_elasticsearch_batches)
@@ -1068,7 +1123,7 @@ class CrudAsyncGallerySync:
             else:
                 source = hit.source
 
-            exists = await self.crud_async_storage_gallery.storage.exists(source)
+            exists = await self.storage_session.exists(source)
             if not exists or hit.id not in self.cache:
                 self._elasticsearch_to_storage_batches.append(
                     {
@@ -1097,7 +1152,7 @@ class CrudAsyncGallerySync:
             if gallery._scheme != self.root_source._scheme:
                 continue
 
-            exists = await self.crud_async_storage_gallery.storage.exists(gallery)
+            exists = await self.storage_session.exists(gallery)
             if not exists or gallery.id not in self.cache:
                 self._elasticsearch_to_storage_batches.append(
                     {
@@ -1114,8 +1169,28 @@ class CrudAsyncGallerySync:
             await self.send_bulk(self._elasticsearch_to_storage_batches)
 
     async def sync(self):
-        await self._sync_storage_to_elasticsearch()
-        await self._sync_elasticsearch_to_storage()
+        import time
+
+        async with self.storage_session:
+            t1 = time.time()
+            await self._sync_storage_to_elasticsearch()
+            t2 = time.time()
+            print(t2 - t1)
+            await self._sync_elasticsearch_to_storage()
+            t3 = time.time()
+            print(t3 - t2)
+
+
+def get_root_source_by_storage_minio(storage_minio: StorageMinio) -> SourceBaseModel:
+    bucket_name = storage_minio.bucket_name
+    if bucket_name.endswith("/"):
+        bucket_name = bucket_name[:-1]
+    prefix = storage_minio.prefix
+    if prefix.startswith("/"):
+        prefix = prefix[1:]
+
+    root_path = f"{Protocol.MINIO.value}-{storage_minio.id}://{bucket_name}/{prefix}"
+    return SourceBaseModel(path=root_path)
 
 
 async def get_crud_sync_gallery(
@@ -1129,7 +1204,7 @@ async def get_crud_sync_gallery(
                 detail=f"Storage MinIO ID: {storage_id} not found",
             )
 
-        storage = CrudAsyncS3(
+        storage_session = AsyncS3Session(
             aws_access_key_id=storage_minio.access_key,
             aws_secret_access_key=storage_minio.secret_key,
             endpoint_url=storage_minio.endpoint,
@@ -1138,7 +1213,10 @@ async def get_crud_sync_gallery(
         root_source = get_root_source_by_storage_minio(storage_minio)
 
         return CrudAsyncGallerySync(
-            storage, root_source, storage_minio.depth, is_from_setting_if_none=True
+            storage_session,
+            root_source,
+            storage_minio.depth,
+            is_from_setting_if_none=True,
         )
 
 
@@ -1284,8 +1362,15 @@ class CrudSyncGalleryMinioStorage:
             helpers.bulk(self.elastic_client, self._elastic_to_minio_batches)
 
     def sync(self):
+        import time
+
+        t1 = time.time()
         self._sync_minio_to_elastic()
+        t2 = time.time()
+        print(t2 - t1)
         self._sync_elastic_to_minio()
+        t3 = time.time()
+        print(t3 - t2)
 
 
 async def clean_redundant_elastic(crud: MinioStorage):

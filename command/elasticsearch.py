@@ -10,7 +10,7 @@ app = typer.Typer(name="elasticsearch", help=_help)
 
 
 @app.command()
-def delete(index: str = typer.Option(default=None, help="The name of the index.")):
+def delete(index: str = typer.Option(default=None, help="Index name.")):
     """
     Delete the index.
     """

@@ -1,10 +1,11 @@
 import time
 
 import typer
-from back.crud.gallery import CrudSyncGalleryMinioStorage
+from back.crud.gallery import CrudSyncGalleryMinioStorage, get_crud_sync_gallery
 from back.crud.video import CrudSyncVideoMinioStorage
 from back.db.crud import CrudMinioStorage
 from back.db.model import MinioStorageCategoryEnum
+from back.model.base import Protocol
 
 from command.utils import airflow_dag_register, sync
 
@@ -31,7 +32,7 @@ async def sync_minio_storage(
     Synchronize specific minio storages by id.
     """
 
-    print(f"Minio storage id: {id}")
+    print(f"Storage MinIO ID: {id}")
     ti = time.time()
     minio_storage = await CrudMinioStorage.get_row_by_id(id)
     if minio_storage.category == MinioStorageCategoryEnum.gallery.value:
@@ -85,3 +86,52 @@ async def sync_minio_storages():
         minio_storages = await CrudMinioStorage.get_rows_order_by_id(
             skip=skip, limit=limit
         )
+
+
+@app.command(name="storage")
+@sync
+@airflow_dag_register("sync-storage", "sync storage")
+async def _storage(
+    protocol: Protocol = typer.Argument(..., help="Storage protocol."),
+    storage_id: int = typer.Argument(..., help="Storage ID."),
+):
+    ti = time.time()
+
+    crud = await get_crud_sync_gallery(protocol, storage_id)
+    await crud.sync()
+
+    tf = time.time()
+    td = tf - ti
+    print(f"total time: {td}(s)")
+
+
+@app.command(name="storages")
+@sync
+@airflow_dag_register("sync-storages", "sync storages")
+async def _storages():
+    """
+    Synchronize all storages.
+    """
+    ti = time.time()
+
+    skip = 0
+    limit = 100
+
+    protocol = Protocol.MINIO.value
+    minio_storages = await CrudMinioStorage.get_rows_order_by_id(skip=skip, limit=limit)
+    while len(minio_storages) > 0:
+        for minio_storage in minio_storages:
+            if minio_storage.category == MinioStorageCategoryEnum.gallery.value:
+                crud = await get_crud_sync_gallery(protocol, minio_storage.id)
+                await crud.sync()
+            elif minio_storage.category == MinioStorageCategoryEnum.video.value:
+                crud = CrudSyncVideoMinioStorage(minio_storage)
+                crud.sync()
+        skip += limit
+        minio_storages = await CrudMinioStorage.get_rows_order_by_id(
+            skip=skip, limit=limit
+        )
+
+    tf = time.time()
+    td = tf - ti
+    print(f"total time: {td}(s)")

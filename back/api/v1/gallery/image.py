@@ -16,7 +16,7 @@ router = APIRouter()
 )
 async def get_imgages(gallery_id: str) -> List[str]:
     crud = await get_crud_async_gallery(gallery_id)
-    return await crud.get_images()
+    return await crud.get_image_filenames()
 
 
 @router.get(

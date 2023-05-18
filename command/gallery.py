@@ -5,12 +5,11 @@ import typer
 from back.crud.async_gallery import (
     CrudAsyncElasticsearchGallery,
     CrudAsyncGallery,
-    CrudAsyncStorageGallery,
+    get_crud_async_gallery,
     get_gallery_by_gallery_id,
 )
 from back.model.elastic import AnalyzerEnum, QueryBoolean
 from back.model.gallery import Gallery
-from back.session.storage import get_storage_session_by_source
 from back.settings import setting
 from rich import print_json
 
@@ -57,16 +56,16 @@ def clone_tags(
 @app.command()
 @sync
 async def get_gallery_tag(gallery_id: str = typer.Argument(..., help="Gallery ID.")):
-    crud = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
-    gallery_dict = await crud.get_source_by_id(gallery_id)
-    gallery = Gallery(**gallery_dict)
+    crud_elastic = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
+    elastic_gallery_dict = await crud_elastic.get_source_by_id(gallery_id)
+    elastic_gallery = Gallery(**elastic_gallery_dict)
+    print("Gallery from Elasticsearch")
+    print_json(data=elastic_gallery.dict())
 
-    storage_session = await get_storage_session_by_source(gallery)
-    crud = CrudAsyncStorageGallery(
-        storage_session=storage_session, is_from_setting_if_none=True
-    )
-    gallery_tag = await crud.get_gallery_tag(gallery)
-    print(gallery_tag)
+    crud = await get_crud_async_gallery(gallery_id)
+    storage_gallery = await crud.get_gallery_tag_from_storage()
+    print("Gallery from Storage")
+    print_json(data=storage_gallery.dict())
 
 
 @app.command()
@@ -139,27 +138,9 @@ async def random(
 async def get_image_filenames(
     gallery_id: str = typer.Argument(..., help="Gallery ID.")
 ):
-    gallery = await get_gallery_by_gallery_id(gallery_id)
-    storage_session = await get_storage_session_by_source(gallery)
-    crud = CrudAsyncStorageGallery(
-        storage_session=storage_session, is_from_setting_if_none=True
-    )
-    resp = await crud.get_image_filenames(gallery)
+    crud = await get_crud_async_gallery(gallery_id)
+    resp = await crud.get_image_filenames()
     print_json(data=resp)
-
-
-@app.command()
-@sync
-async def get_gallery_tag_in_storage(
-    gallery_id: str = typer.Argument(..., help="Gallery ID.")
-):
-    gallery = await get_gallery_by_gallery_id(gallery_id)
-    storage_session = await get_storage_session_by_source(gallery)
-    crud = CrudAsyncStorageGallery(
-        storage_session=storage_session, is_from_setting_if_none=True
-    )
-    resp = await crud.get_gallery_tag(gallery)
-    print_json(data=resp.dict())
 
 
 @app.command()

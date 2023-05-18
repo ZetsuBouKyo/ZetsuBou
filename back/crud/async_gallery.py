@@ -359,175 +359,138 @@ async def _put_gallery_tag_in_storage(
     return gallery
 
 
-class CrudAsyncStorageGallery:
-    def __init__(
-        self,
-        storage_session: AsyncS3Session,
-        dir_fname: str = None,
-        tag_fname: str = None,
-        is_from_setting_if_none: bool = False,
-    ):
-        self.storage_session = storage_session
-
-        if is_from_setting_if_none:
-            if dir_fname is None:
-                self.dir_fname = DIR_FNAME
-            if tag_fname is None:
-                self.tag_fname = TAG_FNAME
-
-    def get_tag_source(self, gallery: Gallery) -> SourceBaseModel:
-        return _get_tag_source(
-            self.storage_session, gallery, self.dir_fname, self.tag_fname
-        )
-
-    async def create_gallery_tag(self, source: SourceBaseModel) -> Gallery:
-        tag_source = self.get_tag_source(source)
-        async with self.storage_session:
-            gallery = await _create_gallery_tag_in_storage(
-                self.storage_session, source, tag_source
-            )
-
-        return gallery
-
-    async def get_gallery_tag(self, gallery: Gallery) -> Gallery:
-        tag_source = self.get_tag_source(gallery)
-        async with self.storage_session:
-            tag = await _get_gallery_tag_from_storage(self.storage_session, tag_source)
-        return tag
-
-    async def put_gallery_tag(self, gallery: Gallery) -> Gallery:
-        tag_source = self.get_tag_source(gallery)
-        async with self.storage_session:
-            gallery = await _put_gallery_tag_in_storage(
-                self.storage_session, gallery, tag_source
-            )
-        return gallery
-
-    async def get_image_filenames(self, gallery: Gallery) -> List[str]:
-        async with self.storage_session:
-            filenames = await self.storage_session.list_filenames(gallery)
-
-        images = [filename for filename in filenames if is_image(Path(filename))]
-        images.sort(key=alphanum_sorting)
-        return images
-
-    async def get_cover(self, gallery: Gallery) -> str:
-        images = await self.get_image_filenames(gallery)
-        if len(images) == 0:
-            raise HTTPException(status_code=404, detail="Cover not found")
-        cover_filename = images[0]
-        return await self.get_image(gallery, cover_filename)
-
-    async def get_image(self, gallery: Gallery, image_name: str) -> str:
-        async with self.storage_session:
-            image_source = self.storage_session.get_joined_source(gallery, image_name)
-            return await self.storage_session.get_url(image_source)
-
-    async def exists(self, gallery: Gallery) -> bool:
-        async with self.storage_session:
-            return await self.storage_session.exists(gallery)
-
-    async def delete(self, gallery: Gallery) -> str:
-        async with self.storage_session:
-            return await self.storage_session.delete(gallery)
-
-
-async def get_crud_async_storage_gallery_by_gallery(
-    gallery: Gallery,
-) -> CrudAsyncStorageGallery:
-    storage_session = await get_storage_session_by_source(gallery)
-    return CrudAsyncStorageGallery(
-        storage_session=storage_session, is_from_setting_if_none=True
-    )
-
-
 class CrudAsyncGallery:
     def __init__(
         self,
         gallery_id: str,
         hosts: List[str] = None,
         index: str = None,
+        dir_fname: str = None,
+        tag_fname: str = None,
         is_from_setting_if_none: bool = False,
     ):
         self.gallery_id = gallery_id
-        self.async_elasticsearch = AsyncElasticsearch(hosts)
+        self.hosts = hosts
+        self.async_elasticsearch = AsyncElasticsearch(self.hosts)
         self.index = index
+        self.dir_fname = dir_fname
+        self.tag_fname = tag_fname
+        self.storage_session = None
+
         if is_from_setting_if_none:
-            if hosts is None:
+            if self.hosts is None:
                 self.async_elasticsearch = async_elasticsearch
-            if index is None:
+            if self.index is None:
                 self.index = ELASTICSEARCH_INDEX_GALLERY
+            if dir_fname is None:
+                self.dir_fname = DIR_FNAME
+            if tag_fname is None:
+                self.tag_fname = TAG_FNAME
 
     async def init(self):
         self.gallery = await get_gallery_by_gallery_id(self.gallery_id)
-        self.crud_async_storage_gallery = (
-            await get_crud_async_storage_gallery_by_gallery(self.gallery)
+        self.storage_session = await get_storage_session_by_source(self.gallery)
+
+    def get_tag_source(self, gallery: Gallery) -> SourceBaseModel:
+        return _get_tag_source(
+            self.storage_session, gallery, self.dir_fname, self.tag_fname
         )
 
     async def update(self, new_gallery: Gallery) -> Gallery:
-        old_gallery = self.gallery
+        async with self.storage_session:
+            old_gallery = self.gallery
 
-        if new_gallery.id != old_gallery.id:
-            raise HTTPException(
-                status_code=409,
-                detail="Conflict between elastic gallery and new gallery ID",
+            if new_gallery.id != old_gallery.id:
+                raise HTTPException(
+                    status_code=409,
+                    detail="Conflict between elastic gallery and new gallery ID",
+                )
+
+            if new_gallery.path != old_gallery.path:
+                raise HTTPException(
+                    status_code=409,
+                    detail="Conflict between elastic gallery and new gallery path",
+                )
+
+            if not await self.storage_session.exists(old_gallery):
+                raise HTTPException(
+                    status_code=404, detail=f"Gallery ID: {self.gallery.id} not found"
+                )
+
+            old_gallery_tag_source = self.get_tag_source(old_gallery)
+            old_gallery_from_storage = await _get_gallery_tag_from_storage(
+                self.storage_session, old_gallery_tag_source
             )
 
-        if new_gallery.path != old_gallery.path:
-            raise HTTPException(
-                status_code=409,
-                detail="Conflict between elastic gallery and new gallery path",
+            if new_gallery.id != old_gallery_from_storage.id:
+                raise HTTPException(
+                    status_code=409,
+                    detail="Conflict between storage gallery and elastic gallery id",
+                )
+
+            if new_gallery.path != old_gallery_from_storage.path:
+                raise HTTPException(
+                    status_code=409,
+                    detail="Conflict between minio gallery and elastic gallery path",
+                )
+
+            if not is_isoformat_with_timezone(new_gallery.mtime):
+                new_gallery.mtime = get_isoformat_with_timezone(new_gallery.mtime)
+
+            new_gallery.timestamp = get_now()
+            new_gallery.labels.sort()
+            for key in new_gallery.tags.keys():
+                new_gallery.tags[key].sort()
+
+            new_gallery_tag_source = self.get_tag_source(new_gallery)
+            new_gallery = await _put_gallery_tag_in_storage(
+                self.storage_session, new_gallery, new_gallery_tag_source
             )
 
-        crud_async_storage_gallery = self.crud_async_storage_gallery
-
-        if not await crud_async_storage_gallery.exists(old_gallery):
-            raise HTTPException(
-                status_code=404, detail=f"Gallery ID: {self.gallery.id} not found"
+            await self.async_elasticsearch.index(
+                index=self.index, id=new_gallery.id, body=new_gallery.dict()
             )
 
-        old_gallery_from_storage = await crud_async_storage_gallery.get_gallery_tag(
-            old_gallery
-        )
-        if new_gallery.id != old_gallery_from_storage.id:
-            raise HTTPException(
-                status_code=409,
-                detail="Conflict between storage gallery and elastic gallery id",
-            )
+            return new_gallery
 
-        if new_gallery.path != old_gallery_from_storage.path:
-            raise HTTPException(
-                status_code=409,
-                detail="Conflict between minio gallery and elastic gallery path",
-            )
+    async def get_gallery_tag_from_storage(self) -> Gallery:
+        tag_source = self.get_tag_source(self.gallery)
+        async with self.storage_session:
+            tag = await _get_gallery_tag_from_storage(self.storage_session, tag_source)
+        return tag
 
-        if not is_isoformat_with_timezone(new_gallery.mtime):
-            new_gallery.mtime = get_isoformat_with_timezone(new_gallery.mtime)
+    async def get_image_filenames(self) -> List[str]:
+        async with self.storage_session:
+            filenames = await self.storage_session.list_filenames(self.gallery)
 
-        new_gallery.timestamp = get_now()
-        new_gallery.labels.sort()
-        for key in new_gallery.tags.keys():
-            new_gallery.tags[key].sort()
-
-        await crud_async_storage_gallery.put_gallery_tag(new_gallery)
-        await self.async_elasticsearch.index(
-            index=self.index, id=new_gallery.id, body=new_gallery.dict()
-        )
-
-        return new_gallery
-
-    async def get_images(self) -> List[str]:
-        return await self.crud_async_storage_gallery.get_image_filenames(self.gallery)
+        images = [filename for filename in filenames if is_image(Path(filename))]
+        images.sort(key=alphanum_sorting)
+        return images
 
     async def get_cover(self) -> str:
-        return await self.crud_async_storage_gallery.get_cover(self.gallery)
+        images = await self.get_image_filenames()
+        if len(images) == 0:
+            raise HTTPException(status_code=404, detail="Cover not found")
+        cover_filename = images[0]
+        return await self.get_image(cover_filename)
 
     async def get_image(self, image_name: str) -> str:
-        return await self.crud_async_storage_gallery.get_image(self.gallery, image_name)
+        async with self.storage_session:
+            image_source = self.storage_session.get_joined_source(
+                self.gallery, image_name
+            )
+            return await self.storage_session.get_url(image_source)
+
+    async def exists(
+        self,
+    ) -> bool:
+        async with self.storage_session:
+            return await self.storage_session.exists(self.gallery)
 
     async def delete(self) -> str:
+        async with self.storage_session:
+            await self.storage_session.delete(self.gallery)
         await self.async_elasticsearch.delete(index=self.index, id=self.gallery.id)
-        await self.crud_async_storage_gallery.delete(self.gallery)
         return "ok"
 
 

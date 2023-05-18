@@ -1,7 +1,8 @@
 import time
 
 import typer
-from back.crud.gallery import CrudSyncGalleryMinioStorage, get_crud_sync_gallery
+from back.crud.async_gallery import get_crud_sync_gallery
+from back.crud.gallery import CrudSyncGalleryMinioStorage
 from back.crud.video import CrudSyncVideoMinioStorage
 from back.db.crud import CrudMinioStorage
 from back.db.model import MinioStorageCategoryEnum

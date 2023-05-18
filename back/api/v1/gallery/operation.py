@@ -1,4 +1,4 @@
-from back.crud.gallery import get_crud_async_gallery
+from back.crud.async_gallery import get_crud_async_gallery
 from back.db.model import ScopeEnum
 from back.dependency.security import api_security
 from back.schema.basic import Message

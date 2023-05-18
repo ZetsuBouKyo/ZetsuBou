@@ -1,6 +1,6 @@
 from typing import List
 
-from back.crud.gallery import get_crud_async_gallery
+from back.crud.async_gallery import get_crud_async_gallery
 from back.db.model import ScopeEnum
 from back.dependency.security import api_security, view_security
 from fastapi import APIRouter

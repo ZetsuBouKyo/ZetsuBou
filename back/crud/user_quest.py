@@ -1,6 +1,6 @@
 import json
 
-from back.crud.gallery import CrudAsyncElasticsearchGallery
+from back.crud.async_gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserElasticCountQuery
 from fastapi import HTTPException
 

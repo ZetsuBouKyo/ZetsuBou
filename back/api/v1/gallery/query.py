@@ -1,7 +1,7 @@
 import json
 from urllib.parse import unquote
 
-from back.crud.gallery import CrudAsyncElasticsearchGallery
+from back.crud.async_gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserElasticSearchQuery
 from back.db.model import ScopeEnum
 from back.dependency.security import Token, api_security, extract_token

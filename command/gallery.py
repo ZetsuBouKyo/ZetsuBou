@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 
 import typer
-from back.crud.gallery import (
+from back.crud.async_gallery import (
     CrudAsyncElasticsearchGallery,
     CrudAsyncGallery,
     CrudAsyncStorageGallery,

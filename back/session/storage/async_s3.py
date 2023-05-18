@@ -15,9 +15,9 @@ from back.model.s3 import (
 )
 from back.settings import setting
 
-AWS_ACCESS_KEY_ID = setting.s3_aws_access_key_id
-AWS_SECRET_ACCESS_KEY = setting.s3_aws_secret_access_key
-ENDPOINT_URL = setting.s3_endpoint_url
+STORAGE_S3_AWS_ACCESS_KEY_ID = setting.storage_s3_aws_access_key_id
+STORAGE_S3_AWS_SECRET_ACCESS_KEY = setting.storage_s3_aws_secret_access_key
+STORAGE_S3_ENDPOINT_URL = setting.storage_s3_endpoint_url
 
 
 async def generate_presigned_url(
@@ -258,11 +258,11 @@ class AsyncS3Session(AioSession):
 
         if is_from_setting_if_none:
             if self.aws_access_key_id is None:
-                self.aws_access_key_id = AWS_ACCESS_KEY_ID
+                self.aws_access_key_id = STORAGE_S3_AWS_ACCESS_KEY_ID
             if self.aws_secret_access_key is None:
-                self.aws_secret_access_key = AWS_SECRET_ACCESS_KEY
+                self.aws_secret_access_key = STORAGE_S3_AWS_SECRET_ACCESS_KEY
             if self.endpoint_url is None:
-                self.endpoint_url = ENDPOINT_URL
+                self.endpoint_url = STORAGE_S3_ENDPOINT_URL
 
     async def __aenter__(self):
         await self.open()

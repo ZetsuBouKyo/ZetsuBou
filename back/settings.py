@@ -4,6 +4,8 @@ from pathlib import Path
 from pydantic import BaseSettings
 from pydantic.networks import EmailStr
 
+from back.model.base import Protocol
+
 default_setting_path = Path("etc", "settings.env")
 elastic_index_prefix = "zetsubou"
 
@@ -98,6 +100,15 @@ class Setting(BaseSettings):
             return []
         return cls.elastic_urls.split(",")
 
+    storage_protocol: Protocol = Protocol.MINIO.value
+    storage_expires_in_minutes: int = 7 * 24 * 60
+    storage_cache: str = "zetsubou"
+    storage_backup: str = "backup"
+
+    storage_s3_aws_access_key_id: str = "admin"
+    storage_s3_aws_secret_access_key: str = "wJalrXUtnFEMI"
+    storage_s3_endpoint_url: str = "http://localhost:9000"
+
     minio_user: str = "admin"
     minio_password: str = "wJalrXUtnFEMI"
     minio_endpoint: str = "localhost:9000"
@@ -113,10 +124,6 @@ class Setting(BaseSettings):
         elif cls.minio_is_secure.lower() == "true":
             return True
         return False
-
-    s3_aws_access_key_id: str = "admin"
-    s3_aws_secret_access_key: str = "wJalrXUtnFEMI"
-    s3_endpoint_url: str = "http://localhost:9000"
 
     airflow_host: str = "http://localhost:8080/api/v1"
     airflow_username: str = "airflow"

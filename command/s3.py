@@ -22,9 +22,9 @@ Manipulate the S3 service.
 To prevent the keys from showing in the terminal, the default value of following options
  show `None` in help section.
 
-* --aws-access-key-id: Default value is `setting.s3_aws_access_key_id`.
-* --aws-secret-access-key: Default value is `setting.s3_aws_secret_access_key`.
-* --endpoint-url: Default value is `setting.s3_endpoint_url`.
+* --aws-access-key-id: Default value is `setting.storage_s3_aws_access_key_id`.
+* --aws-secret-access-key: Default value is `setting.storage_s3_aws_secret_access_key`.
+* --endpoint-url: Default value is `setting.storage_s3_endpoint_url`.
 
 """  # noqa
 
@@ -38,15 +38,15 @@ async def _generate_presigned_url(
     object_name: str = typer.Argument(..., help="Object name or key."),
     aws_access_key_id: str = typer.Option(
         default=None,
-        help="AWS access key id or MinIO user name. Default value is `setting.s3_aws_access_key_id`.",  # noqa
+        help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa
     ),
     aws_secret_access_key: str = typer.Option(
         default=None,
-        help="AWS secret access key or MinIO user password. Default value is `setting.s3_aws_secret_access_key`.",  # noqa
+        help="AWS secret access key or MinIO user password. Default value is `setting.storage_s3_aws_secret_access_key`.",  # noqa
     ),
     endpoint_url: str = typer.Option(
         default=None,
-        help="Endpoint url. Default value is `setting.s3_endpoint_url`.",
+        help="Endpoint url. Default value is `setting.storage_s3_endpoint_url`.",
     ),
     region_name: str = typer.Option(
         default="ap-northeast-1-tpe-1", help="Region name."
@@ -76,15 +76,15 @@ async def _list(
     prefix: str = typer.Argument(..., help="Prefix, object name or key."),
     aws_access_key_id: str = typer.Option(
         default=None,
-        help="AWS access key id or MinIO user name. Default value is `setting.s3_aws_access_key_id`.",  # noqa
+        help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa
     ),
     aws_secret_access_key: str = typer.Option(
         default=None,
-        help="AWS secret access key or MinIO user password. Default value is `setting.s3_aws_secret_access_key`.",  # noqa
+        help="AWS secret access key or MinIO user password. Default value is `setting.storage_s3_aws_secret_access_key`.",  # noqa
     ),
     endpoint_url: str = typer.Option(
         default=None,
-        help="Endpoint url. Default value is `setting.s3_endpoint_url`.",
+        help="Endpoint url. Default value is `setting.storage_s3_endpoint_url`.",
     ),
     region_name: str = typer.Option(
         default="ap-northeast-1-tpe-1", help="Region name."
@@ -109,15 +109,15 @@ async def _list_filenames(
     prefix: str = typer.Argument(..., help="Prefix, object name or key."),
     aws_access_key_id: str = typer.Option(
         default=None,
-        help="AWS access key id or MinIO user name. Default value is `setting.s3_aws_access_key_id`.",  # noqa
+        help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa
     ),
     aws_secret_access_key: str = typer.Option(
         default=None,
-        help="AWS secret access key or MinIO user password. Default value is `setting.s3_aws_secret_access_key`.",  # noqa
+        help="AWS secret access key or MinIO user password. Default value is `setting.storage_s3_aws_secret_access_key`.",  # noqa
     ),
     endpoint_url: str = typer.Option(
         default=None,
-        help="Endpoint url. Default value is `setting.s3_endpoint_url`.",
+        help="Endpoint url. Default value is `setting.storage_s3_endpoint_url`.",
     ),
     region_name: str = typer.Option(
         default="ap-northeast-1-tpe-1", help="Region name."
@@ -142,15 +142,15 @@ async def _exists(
     prefix: str = typer.Argument(..., help="Prefix, object name or key."),
     aws_access_key_id: str = typer.Option(
         default=None,
-        help="AWS access key id or MinIO user name. Default value is `setting.s3_aws_access_key_id`.",  # noqa
+        help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa
     ),
     aws_secret_access_key: str = typer.Option(
         default=None,
-        help="AWS secret access key or MinIO user password. Default value is `setting.s3_aws_secret_access_key`.",  # noqa
+        help="AWS secret access key or MinIO user password. Default value is `setting.storage_s3_aws_secret_access_key`.",  # noqa
     ),
     endpoint_url: str = typer.Option(
         default=None,
-        help="Endpoint url. Default value is `setting.s3_endpoint_url`.",
+        help="Endpoint url. Default value is `setting.storage_s3_endpoint_url`.",
     ),
     region_name: str = typer.Option(
         default="ap-northeast-1-tpe-1", help="Region name."
@@ -174,15 +174,15 @@ async def _get_object(
     object_name: str = typer.Argument(..., help="Prefix, object name or key."),
     aws_access_key_id: str = typer.Option(
         default=None,
-        help="AWS access key id or MinIO user name. Default value is `setting.s3_aws_access_key_id`.",  # noqa
+        help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa
     ),
     aws_secret_access_key: str = typer.Option(
         default=None,
-        help="AWS secret access key or MinIO user password. Default value is `setting.s3_aws_secret_access_key`.",  # noqa
+        help="AWS secret access key or MinIO user password. Default value is `setting.storage_s3_aws_secret_access_key`.",  # noqa
     ),
     endpoint_url: str = typer.Option(
         default=None,
-        help="Endpoint url. Default value is `setting.s3_endpoint_url`.",
+        help="Endpoint url. Default value is `setting.storage_s3_endpoint_url`.",
     ),
     region_name: str = typer.Option(
         default="ap-northeast-1-tpe-1", help="Region name."
@@ -207,15 +207,15 @@ async def _put_json(
     json_string: str = typer.Argument(..., help="JSON string."),
     aws_access_key_id: str = typer.Option(
         default=None,
-        help="AWS access key id or MinIO user name. Default value is `setting.s3_aws_access_key_id`.",  # noqa
+        help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa
     ),
     aws_secret_access_key: str = typer.Option(
         default=None,
-        help="AWS secret access key or MinIO user password. Default value is `setting.s3_aws_secret_access_key`.",  # noqa
+        help="AWS secret access key or MinIO user password. Default value is `setting.storage_s3_aws_secret_access_key`.",  # noqa
     ),
     endpoint_url: str = typer.Option(
         default=None,
-        help="Endpoint url. Default value is `setting.s3_endpoint_url`.",
+        help="Endpoint url. Default value is `setting.storage_s3_endpoint_url`.",
     ),
     region_name: str = typer.Option(
         default="ap-northeast-1-tpe-1", help="Region name."
@@ -242,15 +242,15 @@ async def _delete(
     prefix: str = typer.Argument(..., help="Prefix, object name or key."),
     aws_access_key_id: str = typer.Option(
         default=None,
-        help="AWS access key id or MinIO user name. Default value is `setting.s3_aws_access_key_id`.",  # noqa
+        help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa
     ),
     aws_secret_access_key: str = typer.Option(
         default=None,
-        help="AWS secret access key or MinIO user password. Default value is `setting.s3_aws_secret_access_key`.",  # noqa
+        help="AWS secret access key or MinIO user password. Default value is `setting.storage_s3_aws_secret_access_key`.",  # noqa
     ),
     endpoint_url: str = typer.Option(
         default=None,
-        help="Endpoint url. Default value is `setting.s3_endpoint_url`.",
+        help="Endpoint url. Default value is `setting.storage_s3_endpoint_url`.",
     ),
     region_name: str = typer.Option(
         default="ap-northeast-1-tpe-1", help="Region name."
@@ -275,15 +275,15 @@ async def _iter(
     depth: int = typer.Argument(..., help="Depth of path."),
     aws_access_key_id: str = typer.Option(
         default=None,
-        help="AWS access key id or MinIO user name. Default value is `setting.s3_aws_access_key_id`.",  # noqa
+        help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa
     ),
     aws_secret_access_key: str = typer.Option(
         default=None,
-        help="AWS secret access key or MinIO user password. Default value is `setting.s3_aws_secret_access_key`.",  # noqa
+        help="AWS secret access key or MinIO user password. Default value is `setting.storage_s3_aws_secret_access_key`.",  # noqa
     ),
     endpoint_url: str = typer.Option(
         default=None,
-        help="Endpoint url. Default value is `setting.s3_endpoint_url`.",
+        help="Endpoint url. Default value is `setting.storage_s3_endpoint_url`.",
     ),
     region_name: str = typer.Option(
         default="ap-northeast-1-tpe-1", help="Region name."

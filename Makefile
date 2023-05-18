@@ -113,7 +113,7 @@ up-app:
 up-airflow:
 	docker-compose -f docker-compose.host.yml up -d $(AIRFLOW_SERVICES)
 up-label-studio:
-	docker-compose -f docker-compose.label-studio.yml up -d
+	docker-compose -f docker-compose.host.label-studio.yml up -d
 up-app-dev:
 	docker-compose -f docker-compose.host.yml up -d $(APP_DEV_SERVICES)
 up-dev: up-airflow up-app-dev
@@ -136,6 +136,8 @@ stop-app-dev:
 .PHONY: down
 down-app:
 	docker-compose -f docker-compose.host.app.yml down
+down-label-studio:
+	docker-compose -f docker-compose.host.label-studio.yml down
 down:
 	docker-compose -f docker-compose.host.yml down
 

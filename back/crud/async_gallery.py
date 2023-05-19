@@ -304,8 +304,7 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
 
 async def get_gallery_by_gallery_id(id: str) -> Gallery:
     crud = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
-    source = await crud.get_source_by_id(id)
-    return Gallery(**source)
+    return await crud.get_by_id(id)
 
 
 def _get_tag_source(

@@ -9,7 +9,6 @@ from back.crud.async_gallery import (
     get_gallery_by_gallery_id,
 )
 from back.model.elastic import AnalyzerEnum, QueryBoolean
-from back.model.gallery import Gallery
 from back.settings import setting
 from rich import print_json
 
@@ -57,8 +56,7 @@ def clone_tags(
 @sync
 async def get_gallery_tag(gallery_id: str = typer.Argument(..., help="Gallery ID.")):
     crud_elastic = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
-    elastic_gallery_dict = await crud_elastic.get_source_by_id(gallery_id)
-    elastic_gallery = Gallery(**elastic_gallery_dict)
+    elastic_gallery = await crud_elastic.get_by_id(gallery_id)
     print("Gallery from Elasticsearch")
     print_json(data=elastic_gallery.dict())
 

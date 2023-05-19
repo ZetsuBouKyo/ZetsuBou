@@ -49,7 +49,9 @@ async def list_all(client, bucket_name: str, prefix: str) -> List[S3Object]:
     return prefixes
 
 
-async def list_filenames(client, bucket_name: str, prefix: str) -> List[str]:
+async def list_filenames(
+    client, bucket_name: str, prefix: str, delimiter: str = "/"
+) -> List[str]:
     _predix = prefix
     if not prefix.endswith("/"):
         _predix += "/"
@@ -58,7 +60,7 @@ async def list_filenames(client, bucket_name: str, prefix: str) -> List[str]:
 
     paginator = client.get_paginator("list_objects_v2")
     async for page in paginator.paginate(
-        Bucket=bucket_name, Prefix=_predix, Delimiter="/"
+        Bucket=bucket_name, Prefix=_predix, Delimiter=delimiter
     ):
         _page = S3GetPaginatorResponse(**page)
         for c in _page.Contents:
@@ -308,6 +310,33 @@ class AsyncS3Session(AioSession):
     async def get_object(self, source: SourceBaseModel) -> bytes:
         return await get_object(self.client, source.bucket_name, source.object_name)
 
+    async def list_nested_sources(
+        self, source: SourceBaseModel
+    ) -> List[SourceBaseModel]:
+        _bucket_name = source.bucket_name
+        _predix = source.object_name
+        if not _predix.endswith("/"):
+            _predix += "/"
+
+        sources = []
+
+        paginator = self.client.get_paginator("list_objects_v2")
+        async for page in paginator.paginate(
+            Bucket=_bucket_name, Prefix=_predix, Delimiter=""
+        ):
+            _page = S3GetPaginatorResponse(**page)
+            for c in _page.Contents:
+                p = c.Key
+                if source.storage_id is None:
+                    _protocol = source.protocol
+                else:
+                    _protocol = f"{source.protocol}-{source.storage_id}"
+                obj_path = f"{_protocol}://{source.bucket_name}/{p}"  # noqa
+                obj_source = SourceBaseModel(path=obj_path)
+                sources.append(obj_source)
+
+        return sources
+
     async def list_filenames(self, source: SourceBaseModel) -> List[str]:
         return await list_filenames(self.client, source.bucket_name, source.object_name)
 
@@ -316,7 +345,7 @@ class AsyncS3Session(AioSession):
             self.client, source.bucket_name, source.object_name, depth
         ):
             if obj is not None:
-                obj_path = f"{source.protocol}-{source.storage_minio_id}://{source.bucket_name}/{obj.prefix}"  # noqa
+                obj_path = f"{source.protocol}-{source.storage_id}://{source.bucket_name}/{obj.prefix}"  # noqa
                 obj_source = SourceBaseModel(path=obj_path)
                 yield obj_source
 

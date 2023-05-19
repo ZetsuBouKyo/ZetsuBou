@@ -1,6 +1,7 @@
 import json
 
 import typer
+from back.model.base import SourceBaseModel
 from back.session.storage.async_s3 import (
     AsyncS3Session,
     delete,
@@ -132,6 +133,47 @@ async def _list_filenames(
     ) as session:
         resp = await list_filenames(session.client, bucket_name, prefix)
         print_json(data=resp)
+        print(f"total: {len(resp)}")
+
+
+@app.command(name="list-nested-sources")
+@sync
+async def _list_nested_sources(
+    bucket_name: str = typer.Argument(..., help="Bucket name."),
+    prefix: str = typer.Argument(..., help="Prefix, object name or key."),
+    aws_access_key_id: str = typer.Option(
+        default=None,
+        help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa
+    ),
+    aws_secret_access_key: str = typer.Option(
+        default=None,
+        help="AWS secret access key or MinIO user password. Default value is `setting.storage_s3_aws_secret_access_key`.",  # noqa
+    ),
+    endpoint_url: str = typer.Option(
+        default=None,
+        help="Endpoint url. Default value is `setting.storage_s3_endpoint_url`.",
+    ),
+    region_name: str = typer.Option(
+        default="ap-northeast-1-tpe-1", help="Region name."
+    ),
+):
+    async with AsyncS3Session(
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key,
+        endpoint_url=endpoint_url,
+        region_name=region_name,
+        is_from_setting_if_none=True,
+    ) as session:
+        if bucket_name[-1] == "/":
+            bucket_name = bucket_name[:-1]
+        if prefix[0] == "/":
+            prefix = prefix[1:]
+
+        path = f"minio://{bucket_name}/{prefix}"
+        source = SourceBaseModel(path=path)
+        resp = await session.list_nested_sources(source)
+        for s in resp:
+            print(s)
         print(f"total: {len(resp)}")
 
 

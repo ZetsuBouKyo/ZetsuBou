@@ -57,9 +57,12 @@ class SourceBaseModel(BaseModel):
         return None
 
     @property
-    def storage_minio_id(cls) -> int:
+    def storage_id(cls) -> int:
         if cls.protocol == Protocol.MINIO.value:
-            if cls._scheme[5] == "-":
-                id = cls._scheme[len(Protocol.MINIO.value) + 1 :]
-                return int(id)
+            try:
+                if cls._scheme[5] == "-":
+                    id = cls._scheme[len(Protocol.MINIO.value) + 1 :]
+                    return int(id)
+            except IndexError:
+                return None
         return None

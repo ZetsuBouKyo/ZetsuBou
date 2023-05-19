@@ -5,9 +5,7 @@ from typing import Any, Dict, List
 from uuid import uuid4
 
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
-from back.db.crud import CrudMinioStorage
-from back.db.model import StorageMinio
-from back.model.base import Protocol, SourceBaseModel
+from back.model.base import SourceBaseModel
 from back.model.elastic import AnalyzerEnum, QueryBoolean
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
 from back.session.async_elasticsearch import async_elasticsearch
@@ -672,52 +670,6 @@ class CrudAsyncGallerySync:
             await self.send_bulk(self._elasticsearch_to_storage_batches)
 
     async def sync(self):
-        import time
-
         async with self.storage_session:
-            t1 = time.time()
             await self._sync_storage_to_elasticsearch()
-            t2 = time.time()
-            print(t2 - t1)
             await self._sync_elasticsearch_to_storage()
-            t3 = time.time()
-            print(t3 - t2)
-
-
-def get_root_source_by_storage_minio(storage_minio: StorageMinio) -> SourceBaseModel:
-    bucket_name = storage_minio.bucket_name
-    if bucket_name.endswith("/"):
-        bucket_name = bucket_name[:-1]
-    prefix = storage_minio.prefix
-    if prefix.startswith("/"):
-        prefix = prefix[1:]
-
-    root_path = f"{Protocol.MINIO.value}-{storage_minio.id}://{bucket_name}/{prefix}"
-    return SourceBaseModel(path=root_path)
-
-
-async def get_crud_sync_gallery(
-    protocol: Protocol, storage_id: int
-) -> CrudAsyncGallerySync:
-    if protocol == Protocol.MINIO.value:
-        storage_minio = await CrudMinioStorage.get_row_by_id(storage_id)
-        if storage_minio is None:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Storage MinIO ID: {storage_id} not found",
-            )
-
-        storage_session = AsyncS3Session(
-            aws_access_key_id=storage_minio.access_key,
-            aws_secret_access_key=storage_minio.secret_key,
-            endpoint_url=storage_minio.endpoint,
-        )
-
-        root_source = get_root_source_by_storage_minio(storage_minio)
-
-        return CrudAsyncGallerySync(
-            storage_session,
-            root_source,
-            storage_minio.depth,
-            is_from_setting_if_none=True,
-        )

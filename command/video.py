@@ -4,6 +4,7 @@ import subprocess
 from pathlib import Path
 
 import typer
+from back.crud.async_video import get_crud_async_video
 from back.crud.video import get_crud_video
 
 from command.utils import airflow_dag_register, sync
@@ -144,3 +145,22 @@ async def create_cover(
 
     crud = await get_crud_video(video_id)
     crud.set_cover(time=time, frame=frame)
+
+
+@app.command()
+@sync
+@airflow_dag_register("video-generate-cover", "video generate-cover")
+async def generate_cover(
+    video_id: str = typer.Argument(..., help="Video ID."),
+    time: float = typer.Option(default=None, help="Current time in seconds."),
+    frame: int = typer.Option(default=None, help="Current frame count."),
+):
+    """
+    Generate cover for video.
+    """
+
+    if time is None and frame is None:
+        return
+
+    crud = await get_crud_async_video(video_id)
+    await crud.generate_cover(frame=frame)

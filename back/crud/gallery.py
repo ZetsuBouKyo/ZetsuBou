@@ -650,16 +650,5 @@ class CrudSyncGalleryMinioStorage:
             helpers.bulk(self.elastic_client, self._elastic_to_minio_batches)
 
     def sync(self):
-        import time
-
-        t1 = time.time()
         self._sync_minio_to_elastic()
-        t2 = time.time()
-        print(t2 - t1)
         self._sync_elastic_to_minio()
-        t3 = time.time()
-        print(t3 - t2)
-
-
-async def clean_redundant_elastic(crud: MinioStorage):
-    pass

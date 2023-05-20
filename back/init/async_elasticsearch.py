@@ -1,4 +1,4 @@
-from back.model.elastic import AnalyzerEnum
+from back.model.elasticsearch import AnalyzerEnum
 from back.session.async_elasticsearch import async_elasticsearch
 from back.settings import setting
 from elasticsearch import AsyncElasticsearch

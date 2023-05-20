@@ -1,6 +1,6 @@
 from typing import List
 
-from back.crud.elastic import CrudElasticBase
+from back.crud.elasticsearch import CrudElasticBase
 from back.db.crud import CrudTagAttribute, CrudTagToken
 from back.db.model import TagRepresentative
 from back.db.table import (
@@ -10,7 +10,7 @@ from back.db.table import (
     TagSynonymBase,
     TagTokenBase,
 )
-from back.model.elastic import AnalyzerEnum, SearchResult
+from back.model.elasticsearch import AnalyzerEnum, SearchResult
 from back.model.tag import (
     Tag,
     TagAttribute,
@@ -21,14 +21,15 @@ from back.model.tag import (
     TagUpdate,
 )
 from back.session.async_db import async_session
-from back.session.elastic import elastic_client
+from back.session.elasticsearch import elastic_client
 from back.settings import setting
-from elasticsearch import Elasticsearch, helpers
-from elasticsearch.exceptions import NotFoundError
 from fastapi import HTTPException
 from sqlalchemy import and_, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
+from elasticsearch import Elasticsearch, helpers
+from elasticsearch.exceptions import NotFoundError
 
 index = setting.elastic_index_tag
 batch_size = 300

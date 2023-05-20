@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Union
 
 import typer
-from back.crud.elastic import CrudElasticBase
+from back.crud.elasticsearch import CrudElasticBase
 from back.db.crud.base import (
     flatten_dependent_tables,
     get_dependent_tables,

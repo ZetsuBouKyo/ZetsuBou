@@ -1,11 +1,18 @@
 from typing import Any, Generic, List
 
-from back.model.elastic import AnalyzerEnum, Count, QueryBoolean, SearchResult, SourceT
+from back.model.elasticsearch import (
+    AnalyzerEnum,
+    Count,
+    QueryBoolean,
+    SearchResult,
+    SourceT,
+)
 from back.session.async_elasticsearch import async_elasticsearch
 from back.settings import setting
+from fastapi import HTTPException
+
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import NotFoundError
-from fastapi import HTTPException
 
 ELASTICSEARCH_SIZE = setting.elastic_size
 ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000

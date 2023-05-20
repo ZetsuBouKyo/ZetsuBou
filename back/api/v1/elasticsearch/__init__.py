@@ -2,7 +2,7 @@ from typing import List
 
 from back.db.model import ScopeEnum
 from back.dependency.security import api_security
-from back.model.elastic import AnalyzerEnum
+from back.model.elasticsearch import AnalyzerEnum
 from fastapi import APIRouter
 
 from ...model.elasticsearch import ElasticsearchAnalyzer, ElasticsearchQueryExample

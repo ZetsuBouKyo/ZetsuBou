@@ -5,7 +5,7 @@ from back.crud.video import CrudElasticVideo
 from back.db.crud import CrudUserElasticSearchQuery
 from back.db.model import ScopeEnum
 from back.dependency.security import Token, api_security, extract_token
-from back.model.elastic import AnalyzerEnum, QueryBoolean
+from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.video import VideoOrderedFieldEnum, Videos
 from back.settings import setting
 from fastapi import APIRouter, Depends, Request

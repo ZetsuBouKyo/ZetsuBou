@@ -6,7 +6,7 @@ from uuid import uuid4
 import cv2
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.model.base import Protocol, SourceBaseModel
-from back.model.elastic import AnalyzerEnum, QueryBoolean
+from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.video import Video, VideoOrderedFieldEnum
 from back.session.async_elasticsearch import async_elasticsearch
 from back.session.storage import get_app_storage_session, get_storage_session_by_source
@@ -17,9 +17,10 @@ from back.utils.dt import (
     get_now,
     is_isoformat_with_timezone,
 )
+from fastapi import HTTPException
+
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk, async_scan
-from fastapi import HTTPException
 
 ELASTICSEARCH_INDEX_VIDEO = setting.elastic_index_video
 ELASTICSEARCH_SIZE = setting.elastic_size

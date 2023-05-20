@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Dict, List
 
 from back.model.base import SourceBaseModel
-from back.model.elastic import SearchResult
+from back.model.elasticsearch import SearchResult
 from back.utils.model import DatetimeStr
 from pydantic import BaseModel
 

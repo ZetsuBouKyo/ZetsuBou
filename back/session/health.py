@@ -2,7 +2,7 @@ from urllib.parse import urljoin
 
 import httpx
 from back.model.airflow import AirflowHealthResponse
-from back.model.elastic import ElasticsearchHealthResponse
+from back.model.elasticsearch import ElasticsearchHealthResponse
 from back.settings import setting
 from back.utils.url import get_host
 

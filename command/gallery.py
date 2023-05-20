@@ -8,7 +8,7 @@ from back.crud.async_gallery import (
     get_crud_async_gallery,
     get_gallery_by_gallery_id,
 )
-from back.model.elastic import AnalyzerEnum, QueryBoolean
+from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.settings import setting
 from rich import print_json
 

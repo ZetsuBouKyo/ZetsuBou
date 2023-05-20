@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.model.base import SourceBaseModel
-from back.model.elastic import AnalyzerEnum, QueryBoolean
+from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
 from back.session.async_elasticsearch import async_elasticsearch
 from back.session.storage import get_storage_session_by_source
@@ -17,9 +17,10 @@ from back.utils.dt import (
     is_isoformat_with_timezone,
 )
 from back.utils.fs import is_image
+from fastapi import HTTPException
+
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk, async_scan
-from fastapi import HTTPException
 
 ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000
 ELASTICSEARCH_INDEX_GALLERY = setting.elastic_index_gallery

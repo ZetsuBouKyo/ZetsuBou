@@ -3,10 +3,10 @@ from urllib.parse import urlparse
 import typer
 from back.crud.video import CrudAsyncElasticsearchVideo
 from back.model.video import Video
-from back.session.elastic import elastic_client
-from elasticsearch import helpers
+from back.session.elasticsearch import elastic_client
 
 from command.utils import sync
+from elasticsearch import helpers
 
 app = typer.Typer(name="migrate")
 

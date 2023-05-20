@@ -1,5 +1,5 @@
 from back.dependency.security import view_security
-from back.model.elastic import AnalyzerEnum, QueryBoolean
+from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.gallery import GalleryOrderedFieldEnum
 from back.model.video import VideoOrderedFieldEnum
 from back.settings import setting

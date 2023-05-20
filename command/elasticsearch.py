@@ -1,6 +1,6 @@
 import typer
 from back.init.async_elasticsearch import init_indices
-from back.model.elastic import AnalyzerEnum
+from back.model.elasticsearch import AnalyzerEnum
 from back.session.async_elasticsearch import async_elasticsearch
 from rich import print_json
 

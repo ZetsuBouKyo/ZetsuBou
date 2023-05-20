@@ -1,4 +1,3 @@
-import json
 import re
 from pathlib import Path
 from typing import Any, Dict, List
@@ -341,9 +340,8 @@ async def _get_gallery_tag_from_storage(
     storage_session: AsyncS3Session,
     tag_source: SourceBaseModel,
 ) -> Gallery:
-    response = await storage_session.get_object(tag_source)
-    tag = json.loads(response)
-    tag = Gallery(**tag)
+    tag_dict = await storage_session.get_json(tag_source)
+    tag = Gallery(**tag_dict)
     return tag
 
 

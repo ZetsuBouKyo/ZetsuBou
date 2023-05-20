@@ -310,6 +310,10 @@ class AsyncS3Session(AioSession):
     async def get_object(self, source: SourceBaseModel) -> bytes:
         return await get_object(self.client, source.bucket_name, source.object_name)
 
+    async def get_json(self, source: SourceBaseModel) -> dict:
+        obj = await self.get_object(source)
+        return json.loads(obj)
+
     async def list_nested_sources(
         self, source: SourceBaseModel
     ) -> List[SourceBaseModel]:

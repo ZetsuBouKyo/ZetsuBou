@@ -98,7 +98,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
         ]
 
     async def get_by_id(self, id: str) -> Video:
-        return await Video(**await self.get_source_by_id(id))
+        return Video(**await self.get_source_by_id(id))
 
     async def advanced_search(
         self,
@@ -297,8 +297,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
 
 async def get_video_by_video_id(id: str) -> Video:
     crud = CrudAsyncElasticsearchVideo(is_from_setting_if_none=True)
-    source = await crud.get_source_by_id(id)
-    return Video(**source)
+    return await crud.get_by_id(id)
 
 
 def _get_cover_source(
@@ -399,7 +398,7 @@ class CrudAsyncVideo:
             self.video = await get_video_by_video_id(self.video_id)
         if self.is_from_setting_if_none:
             if self.app_storage_session is None:
-                self.app_storage_session = await get_app_storage_session(
+                self.app_storage_session = get_app_storage_session(
                     is_from_setting_if_none=True
                 )
             if self.storage_session is None:
@@ -576,7 +575,7 @@ class CrudAsyncVideoSync:
 
     async def init(self):
         if self.is_from_setting_if_none and self.app_storage_session is None:
-            self.app_storage_session = await get_app_storage_session(
+            self.app_storage_session = get_app_storage_session(
                 is_from_setting_if_none=True
             )
 

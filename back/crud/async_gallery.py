@@ -106,7 +106,7 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
         ]
 
     async def get_by_id(self, id: str) -> Gallery:
-        return await Gallery(**await self.get_source_by_id(id))
+        return Gallery(**await self.get_source_by_id(id))
 
     async def advanced_search(
         self,

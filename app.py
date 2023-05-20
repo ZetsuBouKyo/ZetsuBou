@@ -9,8 +9,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import JSONResponse
 
 from back.api import router as api
+from back.init.async_elasticsearch import init_indices
 from back.route import router as views
-from back.session.elastic import init_index
 from back.session.init_db import init_table
 from back.session.minio import init_minio
 from back.settings import setting
@@ -33,7 +33,7 @@ This is written in Python 3 and Vue 3.
 app = FastAPI(title=title, description=description, docs_url=None, redoc_url=None)
 
 app.add_event_handler("startup", init_table)
-app.add_event_handler("startup", init_index)
+app.add_event_handler("startup", init_indices)
 app.add_event_handler("startup", init_minio)
 
 app.mount("/statics", StaticFiles(directory=f"{statics}"), name="statics")

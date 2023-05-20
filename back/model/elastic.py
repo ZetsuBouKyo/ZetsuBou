@@ -10,8 +10,10 @@ SourceT = TypeVar("SourceT")
 
 class AnalyzerEnum(str, Enum):
     DEFAULT: str = "default"
+    KEYWORD: str = "keyword"
     STANDARD: str = "standard"
     NGRAM: str = "ngram"
+    URL: str = "url"
 
 
 class QueryBoolean(str, Enum):

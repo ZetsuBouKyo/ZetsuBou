@@ -14,23 +14,28 @@ from back.db.crud.base import (
     list_tables,
     reset_auto_increment,
 )
+from back.init.async_elasticsearch import indices, init_indices
+from back.model.base import SourceBaseModel
 from back.session.async_db import async_session
-from back.session.elastic import elastic_client, indices, init_index
+from back.session.async_elasticsearch import async_elasticsearch
 from back.session.init_db import create_tables
 from back.session.minio import minio_client
+from back.session.storage import get_app_storage_session
 from back.settings import setting
 from back.utils.dt import get_now
-from elasticsearch import helpers
-from elasticsearch.exceptions import RequestError
-from minio.error import S3Error
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 from tqdm import tqdm
 
 from command.utils import airflow_dag_register, sync
+from elasticsearch.exceptions import RequestError
+from elasticsearch.helpers import async_bulk
 
 backup_bucket_name = setting.minio_backup_bucket_name
 db_object_name = "db"
 elastic_object_name = "elastic"
+
+STORAGE_PROTOCOL = setting.storage_protocol
+STORAGE_BACKUP = setting.storage_backup
 
 
 # TODO:
@@ -191,16 +196,15 @@ async def load(
             seq = f"{table_name}_{pk_name}_seq"
             await reset_auto_increment(table_name, seq=seq)
 
-    init_index()
+    await init_indices()
     size = 1000
     for index in tqdm(indices):
-        object_name = "/".join([date, elastic_object_name, f"{index}.json"])
-        try:
-            rows = minio_client.get_object(backup_bucket_name, object_name)
-        except S3Error:
-            continue
+        data_path = f"{STORAGE_PROTOCOL}://{STORAGE_BACKUP}/{date}/{elastic_object_name}/{index}.json"  # noqa
+        data_source = SourceBaseModel(path=data_path)
+        storage_session = get_app_storage_session(is_from_setting_if_none=True)
 
-        rows = json.load(rows)
+        async with storage_session:
+            rows = await storage_session.get_json(data_source)
 
         i = 0
         batch = rows[i * size : (i + 1) * size]
@@ -209,6 +213,7 @@ async def load(
                 {"_index": index, "_id": source["id"], "_source": source}
                 for source in batch
             ]
-            helpers.bulk(elastic_client, actions)
+            await async_bulk(async_elasticsearch, actions)
+
             i += 1
             batch = rows[i * size : (i + 1) * size]

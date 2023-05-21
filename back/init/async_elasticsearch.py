@@ -200,25 +200,25 @@ async def safe_create(session: AsyncElasticsearch, index: str, body: dict):
         await session.indices.create(index=index, body=body)
 
 
-async def create_gallery(session: AsyncElasticsearch):
+async def create_gallery(session: AsyncElasticsearch, index: str):
     body = {
         "settings": settings,
         "mappings": gallery_mappings,
     }
-    await safe_create(session, setting.elastic_index_gallery, body)
+    await safe_create(session, index, body)
 
 
-async def create_video(session: AsyncElasticsearch):
+async def create_video(session: AsyncElasticsearch, index: str):
     body = {
         "settings": settings,
         "mappings": video_mappings,
     }
-    await safe_create(session, setting.elastic_index_video, body)
+    await safe_create(session, index, body)
 
 
-async def create_tag(session: AsyncElasticsearch):
+async def create_tag(session: AsyncElasticsearch, index):
     body = {"settings": settings}
-    await safe_create(session, setting.elastic_index_tag, body)
+    await safe_create(session, index, body)
 
 
 async def init_indices(session: AsyncElasticsearch = async_elasticsearch):
@@ -226,6 +226,6 @@ async def init_indices(session: AsyncElasticsearch = async_elasticsearch):
         print("Elasticsearch not found")
         return
 
-    await create_gallery(session)
-    await create_video(session)
-    await create_tag(session)
+    await create_gallery(session, setting.elastic_index_gallery)
+    await create_video(session, setting.elastic_index_video)
+    await create_tag(session, setting.elastic_index_tag)

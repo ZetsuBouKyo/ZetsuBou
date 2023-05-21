@@ -4,12 +4,11 @@ from pathlib import Path
 from typing import List, Union
 
 import typer
-from back.crud.elasticsearch import CrudElasticBase
 from back.db.crud.base import (
     flatten_dependent_tables,
+    get_all_rows_order_by_id,
     get_dependent_tables,
     get_primary_key_names_by_table_instance,
-    get_rows_order_by,
     get_table_instances,
     list_tables,
     reset_auto_increment,
@@ -19,7 +18,6 @@ from back.model.base import SourceBaseModel
 from back.session.async_db import async_session
 from back.session.async_elasticsearch import async_elasticsearch
 from back.session.init_db import create_tables
-from back.session.minio import minio_client
 from back.session.storage import get_app_storage_session
 from back.settings import setting
 from back.utils.dt import get_now
@@ -27,29 +25,15 @@ from sqlalchemy.orm.decl_api import DeclarativeMeta
 from tqdm import tqdm
 
 from command.utils import airflow_dag_register, sync
-from elasticsearch.exceptions import RequestError
-from elasticsearch.helpers import async_bulk
+from elasticsearch.helpers import async_bulk, async_scan
 
-backup_bucket_name = setting.minio_backup_bucket_name
-db_object_name = "db"
-elastic_object_name = "elastic"
+STORAGE_BACKUP = setting.storage_backup
+
+BACKUP_DATABASE = "db"
+BACKUP_ELASTICSEARCH = "elastic"
 
 STORAGE_PROTOCOL = setting.storage_protocol
 STORAGE_BACKUP = setting.storage_backup
-
-
-# TODO:
-async def get_all_rows(instance: DeclarativeMeta) -> List[dict]:
-    out = []
-    skip = 0
-    limit = 1000
-    rows = await get_rows_order_by(instance, instance.id, skip=skip, limit=limit)
-    while rows:
-        out += rows
-        skip += limit
-        rows = await get_rows_order_by(instance, instance.id, skip=skip, limit=limit)
-
-    return out
 
 
 async def loads_from_json_with_instance(instance: DeclarativeMeta, rows: List[dict]):
@@ -80,6 +64,21 @@ async def loads_from_json_file(fpath: Union[str, Path]):
     await loads_from_json_with_instance(table_instance, rows)
 
 
+def get_database_table_source(backup_date: str, table_name: str):
+    data_path = f"{STORAGE_PROTOCOL}://{STORAGE_BACKUP}/{backup_date}/{BACKUP_DATABASE}/{table_name}.json"  # noqa
+    return SourceBaseModel(path=data_path)
+
+
+def get_elasticsearch_index_source(backup_date: str, index: str):
+    data_path = f"{STORAGE_PROTOCOL}://{STORAGE_BACKUP}/{backup_date}/{BACKUP_ELASTICSEARCH}/{index}.json"  # noqa
+    return SourceBaseModel(path=data_path)
+
+
+def get_body(data: dict, encoding: str = "utf-8"):
+    json_str = json.dumps(data).encode(encoding=encoding)
+    return io.BytesIO(json_str)
+
+
 _help = """
 Backup the databases.
 
@@ -102,60 +101,43 @@ async def dump(
     Dump the SQL databases and elasticsearch indices into JSON in minio.
     """
 
-    root_object_name = get_now().replace(":", "-").replace(".", "-")
+    backup_date = get_now().replace(":", "-").replace(".", "-")
 
     table_names = list_tables()
     table_instances = get_table_instances()
 
-    for table_name in tqdm(table_names):
-        table_class = table_instances[table_name]
-        rows = await get_all_rows(table_class)
-        rows = json.dumps(rows).encode(encoding=encoding)
+    storage_session = get_app_storage_session(is_from_setting_if_none=True)
+    async with storage_session:
+        for table_name in tqdm(table_names):
+            table_class = table_instances[table_name]
+            rows = await get_all_rows_order_by_id(table_class)
 
-        data = io.BytesIO(rows)
-        object_name = "/".join([root_object_name, db_object_name, f"{table_name}.json"])
-        minio_client.put_object(
-            backup_bucket_name,
-            object_name,
-            data,
-            len(data.getvalue()),
-            content_type="application/json",
-        )
+            body = get_body(rows, encoding=encoding)
+            table_source = get_database_table_source(backup_date, table_name)
 
-    for index in tqdm(indices):
-        print(f"index: {index}")
-        if index == setting.elastic_index_tag:
-            sorting = ["_score", {"id": "asc"}]
-        else:
-            sorting = ["_score", {"id.keyword": "asc"}]
-        crud = CrudElasticBase(index=index, size=1000, sorting=sorting)
-        page = 1
-        try:
-            results = crud.match(page, "")
-        except RequestError:
-            continue
-        rows = []
-        while results.hits.hits:
-            for hit in results.hits.hits:
-                source = hit.source
-                if type(source) is dict:
-                    rows.append(source)
-                else:
-                    rows.append(source.dict())
-            page += 1
-            results = crud.match_all(page)
+            await storage_session.put_object(
+                table_source, body, content_type="application/json"
+            )
 
-        rows = json.dumps(rows).encode(encoding=encoding)
+        for index in tqdm(indices):
+            print(f"index: {index}")
 
-        data = io.BytesIO(rows)
-        object_name = "/".join([root_object_name, elastic_object_name, f"{index}.json"])
-        minio_client.put_object(
-            backup_bucket_name,
-            object_name,
-            data,
-            len(data.getvalue()),
-            content_type="application/json",
-        )
+            rows = []
+            query = {"query": {"match_all": {}}}
+            async for doc in async_scan(
+                client=async_elasticsearch, query=query, index=index
+            ):
+                source = doc.get("_source", None)
+                if source is None:
+                    continue
+                rows.append(source)
+
+            body = get_body(rows, encoding=encoding)
+            index_source = get_elasticsearch_index_source(backup_date, index)
+
+            await storage_session.put_object(
+                index_source, body, content_type="application/json"
+            )
 
 
 @app.command()
@@ -180,40 +162,37 @@ async def load(
     }
     table_names = flatten_dependent_tables(table_dependents)
 
-    for table_name in tqdm(table_names):
-        object_name = "/".join([date, db_object_name, f"{table_name}.json"])
-        rows = minio_client.get_object(backup_bucket_name, object_name)
-        rows = json.load(rows)
+    storage_session = get_app_storage_session(is_from_setting_if_none=True)
+    async with storage_session:
+        for table_name in tqdm(table_names):
+            table_source = get_database_table_source(date, table_name)
+            rows = await storage_session.get_json(table_source)
 
-        table_instance = table_instances.get(table_name, None)
-        if table_instance is None:
-            print(f"table: {table_name} not found")
-            return
+            table_instance = table_instances.get(table_name, None)
+            if table_instance is None:
+                print(f"table: {table_name} not found")
+                return
 
-        await loads_from_json_with_instance(table_instance, rows)
-        pk_names = get_primary_key_names_by_table_instance(table_instance)
-        for pk_name in pk_names:
-            seq = f"{table_name}_{pk_name}_seq"
-            await reset_auto_increment(table_name, seq=seq)
+            await loads_from_json_with_instance(table_instance, rows)
+            pk_names = get_primary_key_names_by_table_instance(table_instance)
+            for pk_name in pk_names:
+                seq = f"{table_name}_{pk_name}_seq"
+                await reset_auto_increment(table_name, seq=seq)
 
-    await init_indices()
-    size = 1000
-    for index in tqdm(indices):
-        data_path = f"{STORAGE_PROTOCOL}://{STORAGE_BACKUP}/{date}/{elastic_object_name}/{index}.json"  # noqa
-        data_source = SourceBaseModel(path=data_path)
-        storage_session = get_app_storage_session(is_from_setting_if_none=True)
+        await init_indices()
+        size = 1000
+        for index in tqdm(indices):
+            index_source = get_elasticsearch_index_source(date, index)
+            rows = await storage_session.get_json(index_source)
 
-        async with storage_session:
-            rows = await storage_session.get_json(data_source)
-
-        i = 0
-        batch = rows[i * size : (i + 1) * size]
-        while batch:
-            actions = [
-                {"_index": index, "_id": source["id"], "_source": source}
-                for source in batch
-            ]
-            await async_bulk(async_elasticsearch, actions)
-
-            i += 1
+            i = 0
             batch = rows[i * size : (i + 1) * size]
+            while batch:
+                actions = [
+                    {"_index": index, "_id": source["id"], "_source": source}
+                    for source in batch
+                ]
+                await async_bulk(async_elasticsearch, actions)
+
+                i += 1
+                batch = rows[i * size : (i + 1) * size]

@@ -223,6 +223,19 @@ async def get_all_rows_by_condition_order_by_id(
     )
 
 
+async def get_all_rows_order_by_id(instance: DeclarativeMeta) -> List[dict]:
+    out = []
+    skip = 0
+    limit = 1000
+    rows = await get_rows_order_by(instance, instance.id, skip=skip, limit=limit)
+    while rows:
+        out += rows
+        skip += limit
+        rows = await get_rows_order_by(instance, instance.id, skip=skip, limit=limit)
+
+    return out
+
+
 async def update_by_instance(
     instance: DeclarativeMeta, condition, data: Union[BaseModel, dict]
 ) -> bool:

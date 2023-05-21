@@ -4,7 +4,7 @@ from pathlib import Path
 from pydantic import BaseSettings
 from pydantic.networks import EmailStr
 
-from back.model.base import Protocol
+from back.model.base import SourceProtocolEnum
 
 default_setting_path = Path("etc", "settings.env")
 elastic_index_prefix = "zetsubou"
@@ -100,7 +100,7 @@ class Setting(BaseSettings):
             return []
         return cls.elastic_urls.split(",")
 
-    storage_protocol: Protocol = Protocol.MINIO.value
+    storage_protocol: SourceProtocolEnum = SourceProtocolEnum.MINIO.value
     storage_expires_in_minutes: int = 7 * 24 * 60
     storage_cache: str = "zetsubou"
     storage_backup: str = "backup"

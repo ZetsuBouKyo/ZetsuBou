@@ -19,7 +19,7 @@ from starlette.responses import JSONResponse
 from urllib3.exceptions import NewConnectionError
 
 from back.db.model import MinioStorage
-from back.model.base import Protocol
+from back.model.base import SourceProtocolEnum
 from back.model.gallery import Gallery
 from back.schema.basic import Message
 from back.settings import setting
@@ -125,7 +125,7 @@ async def open_folder(request: Request, gallery_id: str):
     if len(relative_path) > 0 and relative_path[0] == "/":
         raise HTTPException(
             status_code=409,
-            detail=f"Path in Minio path after removing '{Protocol.MINIO.value}' should not start with '/'",
+            detail=f"Path in Minio path after removing '{SourceProtocolEnum.MINIO.value}' should not start with '/'",  # noqa
         )
 
     path_at_host = Path(minio_volume, relative_path)
@@ -197,10 +197,10 @@ def get_minio_path(gallery_path, minio_volume):
     gallery_path_relative_to_minio_volume = str(gallery_path.relative_to(minio_volume))
     if (
         len(gallery_path_relative_to_minio_volume) > 0
-        and gallery_path_relative_to_minio_volume[-1] != "/"
+        and gallery_path_relative_to_minio_volume[-1] != "/"  # noqa
     ):
         gallery_path_relative_to_minio_volume += "/"
-    return f"{Protocol.MINIO.value}-{minio_storage_id}://{gallery_path_relative_to_minio_volume}"
+    return f"{SourceProtocolEnum.MINIO.value}-{minio_storage_id}://{gallery_path_relative_to_minio_volume}"  # noqa
 
 
 def sync_new_galleries():

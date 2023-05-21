@@ -6,7 +6,7 @@ from back.crud.gallery import CrudSyncGalleryMinioStorage
 from back.crud.video import CrudSyncVideoMinioStorage
 from back.db.crud import CrudMinioStorage
 from back.db.model import MinioStorageCategoryEnum
-from back.model.base import Protocol
+from back.model.base import SourceProtocolEnum
 
 from command.utils import airflow_dag_register, sync
 
@@ -104,7 +104,7 @@ async def sync_minio_storages():
 @sync
 @airflow_dag_register("sync-storage", "sync storage")
 async def _storage(
-    protocol: Protocol = typer.Argument(..., help="Storage protocol."),
+    protocol: SourceProtocolEnum = typer.Argument(..., help="Storage protocol."),
     storage_id: int = typer.Argument(..., help="Storage ID."),
 ):
     ti = time.time()
@@ -129,7 +129,7 @@ async def _storages():
     limit = 100
     t = 0
 
-    protocol = Protocol.MINIO.value
+    protocol = SourceProtocolEnum.MINIO.value
     minio_storages = await CrudMinioStorage.get_rows_order_by_id(skip=skip, limit=limit)
     while len(minio_storages) > 0:
         for minio_storage in minio_storages:

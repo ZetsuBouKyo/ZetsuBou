@@ -2,7 +2,7 @@ from back.crud.async_gallery import CrudAsyncGallerySync
 from back.crud.async_video import CrudAsyncVideoSync
 from back.db.crud import CrudMinioStorage
 from back.db.model import StorageMinio
-from back.model.base import Protocol, SourceBaseModel
+from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.storage import StorageCategoryEnum
 from back.session.storage import get_app_storage_session
 from back.session.storage.async_s3 import AsyncS3Session
@@ -17,12 +17,16 @@ def get_root_source_by_storage_minio(storage_minio: StorageMinio) -> SourceBaseM
     if prefix.startswith("/"):
         prefix = prefix[1:]
 
-    root_path = f"{Protocol.MINIO.value}-{storage_minio.id}://{bucket_name}/{prefix}"
+    root_path = (
+        f"{SourceProtocolEnum.MINIO.value}-{storage_minio.id}://{bucket_name}/{prefix}"
+    )
     return SourceBaseModel(path=root_path)
 
 
-async def get_crud_sync(protocol: Protocol, storage_id: int) -> CrudAsyncGallerySync:
-    if protocol == Protocol.MINIO.value:
+async def get_crud_sync(
+    protocol: SourceProtocolEnum, storage_id: int
+) -> CrudAsyncGallerySync:
+    if protocol == SourceProtocolEnum.MINIO.value:
         storage_minio = await CrudMinioStorage.get_row_by_id(storage_id)
         if storage_minio is None:
             raise HTTPException(

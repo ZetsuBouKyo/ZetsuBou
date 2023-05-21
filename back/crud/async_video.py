@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import cv2
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
-from back.model.base import Protocol, SourceBaseModel
+from back.model.base import SourceProtocolEnum, SourceBaseModel
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.video import Video, VideoOrderedFieldEnum
 from back.session.async_elasticsearch import async_elasticsearch
@@ -302,7 +302,7 @@ async def get_video_by_video_id(id: str) -> Video:
 
 
 def _get_cover_source(
-    protocol: Protocol, cache_home: str, cover_home: str, video_id: str
+    protocol: SourceProtocolEnum, cache_home: str, cover_home: str, video_id: str
 ) -> SourceBaseModel:
     return SourceBaseModel(
         path=f"{protocol}://{cache_home}/{cover_home}/{video_id}.png"
@@ -320,7 +320,7 @@ async def _put_cover(
 
 
 async def _generate_cover(
-    app_storage_protocol: Protocol,
+    app_storage_protocol: SourceProtocolEnum,
     app_storage_session: AsyncS3Session,
     storage_session: AsyncS3Session,
     video: Video,
@@ -364,7 +364,7 @@ class CrudAsyncVideo:
         index: str = None,
         cache_home: str = None,
         cover_home: str = None,
-        app_storage_protocol: Protocol = None,
+        app_storage_protocol: SourceProtocolEnum = None,
         app_storage_session: AsyncS3Session = None,
         storage_session: AsyncS3Session = None,
         is_from_setting_if_none: bool = False,
@@ -529,7 +529,7 @@ class CrudAsyncVideoSync:
         force: bool = False,
         cache_home: str = None,
         cover_home: str = None,
-        app_storage_protocol: Protocol = None,
+        app_storage_protocol: SourceProtocolEnum = None,
         app_storage_session: AsyncS3Session = None,
         is_from_setting_if_none: bool = False,
     ):

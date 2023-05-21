@@ -8,7 +8,7 @@ from back.crud.elasticsearch import CrudElasticBase, get_source_by_id
 from back.crud.minio import CrudMinio, get_minio_client_by_source
 from back.db.crud import CrudMinioStorage
 from back.db.model import MinioStorage, StorageMinio
-from back.model.base import Protocol, SourceBaseModel
+from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
 from back.session.elasticsearch import elastic_client
@@ -504,7 +504,9 @@ def get_root_source_by_storage_minio(storage_minio: StorageMinio) -> SourceBaseM
     if prefix.startswith("/"):
         prefix = prefix[1:]
 
-    root_path = f"{Protocol.MINIO.value}-{storage_minio.id}://{bucket_name}/{prefix}"
+    root_path = (
+        f"{SourceProtocolEnum.MINIO.value}-{storage_minio.id}://{bucket_name}/{prefix}"
+    )
     return SourceBaseModel(path=root_path)
 
 
@@ -521,7 +523,9 @@ class CrudSyncGalleryMinioStorage:
         tag_fname: str = TAG_FNAME,
     ):
         self.minio_storage = minio_storage
-        self.minio_path_prefix = f"{Protocol.MINIO.value}-{self.minio_storage.id}://"
+        self.minio_path_prefix = (
+            f"{SourceProtocolEnum.MINIO.value}-{self.minio_storage.id}://"
+        )
         self.minio_client = get_minio_client(
             self.minio_storage.endpoint,
             access_key=self.minio_storage.access_key,

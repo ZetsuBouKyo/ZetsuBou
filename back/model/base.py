@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 from pydantic import BaseModel
 
 
-class Protocol(str, Enum):
+class SourceProtocolEnum(str, Enum):
     MINIO: str = "minio"
 
 
@@ -31,37 +31,37 @@ class SourceBaseModel(BaseModel):
 
     @property
     def protocol(cls):
-        if cls._scheme.startswith(Protocol.MINIO.value):
-            return Protocol.MINIO.value
+        if cls._scheme.startswith(SourceProtocolEnum.MINIO.value):
+            return SourceProtocolEnum.MINIO.value
         return None
 
     @property
     def bucket_name(cls):
-        if cls.protocol == Protocol.MINIO.value:
+        if cls.protocol == SourceProtocolEnum.MINIO.value:
             return cls._url.netloc
         return None
 
     @property
     def object_name(cls):
-        if cls.protocol == Protocol.MINIO.value:
+        if cls.protocol == SourceProtocolEnum.MINIO.value:
             return cls._url.path
         return None
 
     # TODO: deprecated
     @property
     def minio_storage_id(cls) -> int:
-        if cls.protocol == Protocol.MINIO.value:
+        if cls.protocol == SourceProtocolEnum.MINIO.value:
             if cls._scheme[5] == "-":
-                id = cls._scheme[len(Protocol.MINIO.value) + 1 :]
+                id = cls._scheme[len(SourceProtocolEnum.MINIO.value) + 1 :]
             return int(id)
         return None
 
     @property
     def storage_id(cls) -> int:
-        if cls.protocol == Protocol.MINIO.value:
+        if cls.protocol == SourceProtocolEnum.MINIO.value:
             try:
                 if cls._scheme[5] == "-":
-                    id = cls._scheme[len(Protocol.MINIO.value) + 1 :]
+                    id = cls._scheme[len(SourceProtocolEnum.MINIO.value) + 1 :]
                     return int(id)
             except IndexError:
                 return None

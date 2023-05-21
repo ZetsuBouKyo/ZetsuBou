@@ -9,7 +9,7 @@ from back.crud.elasticsearch import CrudElasticBase, get_source_by_id
 from back.crud.minio import CrudMinio, exists, expires, get_minio_client_by_source
 from back.db.crud import CrudMinioStorage
 from back.db.model import MinioStorage
-from back.model.base import Protocol
+from back.model.base import SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.video import Video, VideoOrderedFieldEnum, Videos
 from back.session.elasticsearch import elastic_client
@@ -428,7 +428,9 @@ class CrudSyncVideoMinioStorage:
         **kwargs,
     ):
         self.minio_storage = minio_storage
-        self.minio_path_prefix = f"{Protocol.MINIO.value}-{self.minio_storage.id}://"
+        self.minio_path_prefix = (
+            f"{SourceProtocolEnum.MINIO.value}-{self.minio_storage.id}://"
+        )
         self.minio_client = get_minio_client(
             self.minio_storage.endpoint,
             access_key=self.minio_storage.access_key,

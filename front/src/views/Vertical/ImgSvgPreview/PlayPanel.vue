@@ -6,7 +6,7 @@
       @click="tagger.toggleTagger"
     />
   </div>
-  <div class="fixed left-0 bottom-3 bg-opacity-50 rounded-lg m-2 flex">
+  <div class="fixed left-0 bottom-3 bg-gray-900 bg-opacity-50 rounded-lg m-1 p-1 flex">
     <icon-ri-arrow-go-back-fill
       class="cursor-pointer hover:opacity-50 opacity-100"
       style="font-size: 1.5rem; color: white"

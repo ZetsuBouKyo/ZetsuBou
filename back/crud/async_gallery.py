@@ -642,29 +642,6 @@ class CrudAsyncGallerySync:
         if len(self._storage_to_elasticsearch_batches) > 0:
             await self.send_bulk(self._storage_to_elasticsearch_batches)
 
-    async def _sync_elasticsearch_to_storage_batch(self, galleries: Galleries):
-        for hit in galleries.hits.hits:
-            if hit.source._scheme != self.root_source._scheme:
-                continue
-
-            if not isinstance(hit.source, Gallery):
-                source = Gallery(**hit.source.dict())
-            else:
-                source = hit.source
-
-            exists = await self.storage_session.exists(source)
-            if not exists or hit.id not in self.cache:
-                self._elasticsearch_to_storage_batches.append(
-                    {
-                        "_index": self.index,
-                        "_id": hit.id,
-                        "_op_type": "delete",
-                    }
-                )
-
-            if len(self._elasticsearch_to_storage_batches) > self.batch_size:
-                await self.send_bulk(self._elasticsearch_to_storage_batches)
-
     async def _sync_elasticsearch_to_storage(self):
         query = {"query": {"match_all": {}}}
         c = 0

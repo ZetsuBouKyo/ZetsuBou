@@ -25,7 +25,7 @@
       @keypress.enter="search"
       :list="state.autocomplete"
     />
-    <search-auto-complete :id="state.autocomplete" />
+    <search-auto-complete :id="state.autocomplete" :search-state="state" />
     <div class="absolute right-0 h-full inline-flex text-left">
       <button type="button" class="flex flex-row items-center w-full mr-1 font-medium text-gray-700 focus:outline-none">
         <icon-ic-baseline-search class="hover:opacity-50" style="font-size: 1.5rem; color: white" @click="search" />
@@ -111,7 +111,7 @@
 import { useRoute } from "vue-router";
 import { reactive, ref, watch } from "vue";
 
-import { SearchAnalyzer, SearchBase, SearchCategory } from "@/interface/search";
+import { SearchAnalyzer, SearchBase, SearchCategory, SearchState } from "@/interface/search";
 
 import { userState } from "@/state/user";
 
@@ -146,7 +146,7 @@ export default {
       advancedSearch.value.open();
     }
 
-    const state = reactive({
+    const state: SearchState = reactive({
       query: {
         analyzer: undefined,
         query_id: undefined,

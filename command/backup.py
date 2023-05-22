@@ -150,7 +150,8 @@ async def load(
     )
 ):
     """
-    Load the SQL databases and elasticsearch indices from JSON in minio.
+    Load the SQL databases and elasticsearch indices from JSON in minio. Be careful, We
+    must run this command before running the ZetsuBou webapp.
     """
 
     await create_tables()

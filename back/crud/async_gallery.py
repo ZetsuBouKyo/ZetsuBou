@@ -305,6 +305,29 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
 
         return await self.query(page, dsl)
 
+    async def match_phrase_prefix(self, keywords: str, size: int = 5) -> Galleries:
+        query = {
+            "bool": {
+                "should": [
+                    {
+                        "match_phrase_prefix": {
+                            "attributes.name.ngram": {"query": keywords}
+                        }
+                    },
+                    {
+                        "match_phrase_prefix": {
+                            "attributes.raw_name.ngram": {"query": keywords}
+                        }
+                    },
+                ]
+            }
+        }
+        _resp = await self.async_elasticsearch.search(
+            index=self.index, query=query, size=size
+        )
+        sources = Galleries(**_resp)
+        return sources
+
 
 async def get_gallery_by_gallery_id(id: str) -> Gallery:
     crud = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)

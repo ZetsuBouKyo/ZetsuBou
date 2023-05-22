@@ -7,7 +7,7 @@ import cv2
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
-from back.model.video import Video, VideoOrderedFieldEnum
+from back.model.video import Video, VideoOrderedFieldEnum, Videos
 from back.session.async_elasticsearch import async_elasticsearch
 from back.session.storage import get_app_storage_session, get_storage_session_by_source
 from back.session.storage.async_s3 import AsyncS3Session
@@ -314,6 +314,29 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
                 )
 
         return await self.query(page, dsl)
+
+    async def match_phrase_prefix(self, keywords: str, size: int = 5) -> Videos:
+        query = {
+            "bool": {
+                "should": [
+                    {
+                        "match_phrase_prefix": {
+                            "attributes.name.ngram": {"query": keywords}
+                        }
+                    },
+                    {
+                        "match_phrase_prefix": {
+                            "attributes.raw_name.ngram": {"query": keywords}
+                        }
+                    },
+                ]
+            }
+        }
+        _resp = await self.async_elasticsearch.search(
+            index=self.index, query=query, size=size
+        )
+        sources = Videos(**_resp)
+        return sources
 
 
 async def get_video_by_video_id(id: str) -> Video:

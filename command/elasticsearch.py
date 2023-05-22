@@ -1,3 +1,5 @@
+from typing import List
+
 import typer
 from back.init.async_elasticsearch import create_gallery, create_video, init_indices
 from back.model.elasticsearch import AnalyzerEnum
@@ -125,4 +127,29 @@ async def match_all(index: str = typer.Argument(..., help="Index name.")):
     _resp = await async_elasticsearch.search(
         index=index, query=query, track_total_hits=True
     )
+    print_json(data=_resp)
+
+
+@app.command()
+@sync
+async def match_phrase_prefix(
+    index: str = typer.Argument(..., help="Index name."),
+    field: List[str] = typer.Option(default=..., help="Field name."),
+    text: List[str] = typer.Option(default=..., help="Keywords."),
+    size: int = typer.Option(default=10, help="Size."),
+):
+    if len(field) != len(text):
+        print("The number of fields and text do not correspond to each other.")
+        return
+
+    query = {
+        "bool": {
+            "should": [
+                {"match_phrase_prefix": {field[i]: {"query": text[i]}}}
+                for i in range(len(field))
+            ]
+        }
+    }
+
+    _resp = await async_elasticsearch.search(index=index, query=query, size=size)
     print_json(data=_resp)

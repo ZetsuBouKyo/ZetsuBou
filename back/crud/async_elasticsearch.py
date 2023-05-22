@@ -60,6 +60,11 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
     async def advanced_search(self, *args, **kwargs):
         raise NotImplementedError()
 
+    async def match_phrase_prefix(
+        self, keywords: str, size: int = 5
+    ) -> SearchResult[SourceT]:
+        raise NotImplementedError()
+
     async def iter(self) -> SearchResult[SourceT]:
         dsl = {
             "size": self.size,

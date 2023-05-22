@@ -1,5 +1,4 @@
 from .group.group import CrudGroup
-from .minio.storage import CrudMinioStorage
 from .scope import CrudScope
 from .setting.front.gallery import CrudSettingFrontGallery
 from .setting.front.video import CrudSettingFrontVideo
@@ -20,7 +19,6 @@ from .user.user import CrudUser
 __all__ = [
     "CrudGroup",
     "CrudGroupPermission",
-    "CrudMinioStorage",
     "CrudScope",
     "CrudSettingFrontGallery",
     "CrudSettingFrontVideo",

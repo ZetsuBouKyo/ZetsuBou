@@ -10,6 +10,7 @@ from back.model.s3 import (
     S3DeleteObjectsResponse,
     S3GetObjectResponse,
     S3GetPaginatorResponse,
+    S3ListBucketsResponse,
     S3Object,
     S3PutObjectResponse,
 )
@@ -36,6 +37,13 @@ async def generate_presigned_url(
 
 async def list_all(client, bucket_name: str, prefix: str) -> List[S3Object]:
     prefixes = []
+
+    if not bucket_name or bucket_name == "/":
+        _resp = await client.list_buckets()
+        resp = S3ListBucketsResponse(**_resp)
+        for b in resp.Buckets:
+            prefixes.append(S3Object(bucket_name=b.Name))
+        return prefixes
 
     paginator = client.get_paginator("list_objects_v2")
     async for page in paginator.paginate(

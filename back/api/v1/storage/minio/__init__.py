@@ -5,4 +5,4 @@ from .storage import router as storage
 
 router = APIRouter()
 router.include_router(storage, tags=["Minio Storage"])
-router.include_router(operation, tags=["Minio Operation"], prefix="/operation")
+router.include_router(operation, tags=["Minio Operation"])

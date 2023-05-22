@@ -4,8 +4,8 @@ from pydantic import BaseModel
 
 
 class S3Object(BaseModel):
-    bucket_name: str
-    prefix: str
+    bucket_name: str = ""
+    prefix: str = ""
 
 
 class S3GetPaginatorResponseContent(BaseModel):
@@ -28,6 +28,15 @@ class S3GetPaginatorResponse(BaseModel):
 class S3ResponseMetadata(BaseModel):
     RequestId: str
     HTTPStatusCode: int
+
+
+class S3ResponseBucket(BaseModel):
+    Name: str
+
+
+class S3ListBucketsResponse(BaseModel):
+    ResponseMetadata: S3ResponseMetadata
+    Buckets: List[S3ResponseBucket] = []
 
 
 class S3GetObjectResponse(BaseModel):

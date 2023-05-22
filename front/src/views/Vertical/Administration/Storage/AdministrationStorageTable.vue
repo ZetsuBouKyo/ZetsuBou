@@ -107,15 +107,15 @@
 <script lang="ts">
 import { reactive, watch } from "vue";
 
-import { getMinioList } from "@/api/v1/minio/operation";
+import { getStorageMinioList } from "@/api/v1/storage/minio/operation";
 import {
-  getMinioStorageCategories,
-  getMinioTotalStorages,
-  getMinioStorages,
-  postMinioStorage,
-  putMinioStorage,
-  deleteMinioStorage,
-} from "@/api/v1/minio/storage";
+  getStorageMinioCategories,
+  getStorageMinioTotalStorages,
+  getStorageMinios,
+  postStorageMinio,
+  putStorageMinio,
+  deleteStorageMinio,
+} from "@/api/v1/storage/minio/storage";
 import { postSyncStorageMinio } from "@/api/v1/task/airflow";
 
 import { ButtonColorEnum } from "@/elements/Button/button.ts";
@@ -166,7 +166,7 @@ export default {
       params.endpoint = table.row.endpoint;
       params.access_key = table.row.access_key;
       params.secret_key = table.row.secret_key;
-      getMinioList(params)
+      getStorageMinioList(params)
         .then((response) => {
           const data = response.data;
           if (data) {
@@ -248,7 +248,7 @@ export default {
           access_key: table.row.access_key,
           secret_key: table.row.secret_key,
         };
-        getMinioList(params)
+        getStorageMinioList(params)
           .then((response) => {
             if (response.status !== 200) {
               minioConnectError();
@@ -291,7 +291,7 @@ export default {
     function getCategoryName(id: number) {
       return categories[id];
     }
-    getMinioStorageCategories().then((response) => {
+    getStorageMinioCategories().then((response) => {
       const data = response.data;
       if (data) {
         for (let key in data) {
@@ -301,7 +301,7 @@ export default {
     });
 
     function load() {
-      getMinioStorageCategories().then((response) => {
+      getStorageMinioCategories().then((response) => {
         const data = response.data;
         if (data) {
           for (let key in data) {
@@ -320,11 +320,11 @@ export default {
       { title: "Depth", key: "depth" },
     ];
 
-    const onCrudCreate = postMinioStorage;
-    const onCrudGet = getMinioStorages;
-    const onCrudGetTotal = getMinioTotalStorages;
-    const onCrudUpdate = putMinioStorage;
-    const onCrudDelete = deleteMinioStorage;
+    const onCrudCreate = postStorageMinio;
+    const onCrudGet = getStorageMinios;
+    const onCrudGetTotal = getStorageMinioTotalStorages;
+    const onCrudUpdate = putStorageMinio;
+    const onCrudDelete = deleteStorageMinio;
 
     function onOpenEditor() {
       load();

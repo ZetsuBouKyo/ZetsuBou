@@ -1,4 +1,4 @@
-from back.db.crud import CrudMinioStorage  # TODO: refactor
+from back.db.crud import CrudStorageMinio
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.session.storage.async_s3 import AsyncS3Session
 from back.settings import setting
@@ -12,7 +12,7 @@ async def get_storage_session_by_source(
 ) -> AsyncS3Session:
     if source.protocol == SourceProtocolEnum.MINIO.value:
         storage_id = source.storage_id
-        storage_minio = await CrudMinioStorage.get_row_by_id(storage_id)
+        storage_minio = await CrudStorageMinio.get_row_by_id(storage_id)
         if storage_minio is None:
             raise HTTPException(
                 status_code=404,

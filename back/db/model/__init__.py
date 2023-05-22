@@ -8,13 +8,6 @@ from .group.group import (
     GroupUpdateWithScopes,
     GroupWithScopes,
 )
-from .minio.storage import (
-    MinioStorage,
-    MinioStorageCategoryEnum,
-    MinioStorageCreate,
-    MinioStorageCreated,
-    MinioStorageUpdate,
-)
 from .scope import Scope, ScopeCreate, ScopeEnum, ScopeUpdate
 from .setting.front.gallery import (
     SettingFrontGallery,
@@ -108,11 +101,6 @@ __all__ = [
     "GroupUpdatedWithScopes",
     "GroupUpdateWithScopes",
     "GroupWithScopes",
-    "MinioStorage",
-    "MinioStorageCategoryEnum",
-    "MinioStorageCreate",
-    "MinioStorageCreated",
-    "MinioStorageUpdate",
     "Scope",
     "ScopeCreate",
     "ScopeEnum",

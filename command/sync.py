@@ -2,11 +2,11 @@ import time
 
 import typer
 from back.crud.async_sync import get_crud_sync
-from back.crud.gallery import CrudSyncGalleryMinioStorage
-from back.crud.video import CrudSyncVideoMinioStorage
-from back.db.crud import CrudMinioStorage
-from back.db.model import MinioStorageCategoryEnum
+from back.crud.gallery import CrudSyncGalleryStorageMinio
+from back.crud.video import CrudSyncVideoStorageMinio
+from back.db.crud import CrudStorageMinio
 from back.model.base import SourceProtocolEnum
+from back.model.storage import StorageCategoryEnum
 
 from command.utils import airflow_dag_register, sync
 
@@ -35,12 +35,12 @@ async def sync_minio_storage(
 
     print(f"Storage MinIO ID: {id}")
     ti = time.time()
-    minio_storage = await CrudMinioStorage.get_row_by_id(id)
-    if minio_storage.category == MinioStorageCategoryEnum.gallery.value:
-        crud = CrudSyncGalleryMinioStorage(minio_storage)
+    minio_storage = await CrudStorageMinio.get_row_by_id(id)
+    if minio_storage.category == StorageCategoryEnum.gallery.value:
+        crud = CrudSyncGalleryStorageMinio(minio_storage)
         crud.sync()
-    elif minio_storage.category == MinioStorageCategoryEnum.video.value:
-        crud = CrudSyncVideoMinioStorage(minio_storage)
+    elif minio_storage.category == StorageCategoryEnum.video.value:
+        crud = CrudSyncVideoStorageMinio(minio_storage)
         crud.sync()
     tf = time.time()
     td = tf - ti
@@ -55,12 +55,12 @@ async def sync_gallery_minio_storages():
     Synchronize all minio storages with Gallery type.
     """
 
-    category = MinioStorageCategoryEnum.gallery.value
-    async for minio_storages in await CrudMinioStorage.iter_by_category_order_by_id(
+    category = StorageCategoryEnum.gallery.value
+    async for minio_storages in await CrudStorageMinio.iter_by_category_order_by_id(
         category
     ):
         for minio_storage in minio_storages:
-            crud = CrudSyncGalleryMinioStorage(minio_storage)
+            crud = CrudSyncGalleryStorageMinio(minio_storage)
             crud.sync()
 
 
@@ -75,16 +75,16 @@ async def sync_minio_storages():
     skip = 0
     limit = 100
     t = 0
-    minio_storages = await CrudMinioStorage.get_rows_order_by_id(skip=skip, limit=limit)
+    minio_storages = await CrudStorageMinio.get_rows_order_by_id(skip=skip, limit=limit)
     while len(minio_storages) > 0:
         for minio_storage in minio_storages:
             ti = time.time()
 
-            if minio_storage.category == MinioStorageCategoryEnum.gallery.value:
-                crud = CrudSyncGalleryMinioStorage(minio_storage)
+            if minio_storage.category == StorageCategoryEnum.gallery.value:
+                crud = CrudSyncGalleryStorageMinio(minio_storage)
                 crud.sync()
-            elif minio_storage.category == MinioStorageCategoryEnum.video.value:
-                crud = CrudSyncVideoMinioStorage(minio_storage)
+            elif minio_storage.category == StorageCategoryEnum.video.value:
+                crud = CrudSyncVideoStorageMinio(minio_storage)
                 crud.sync()
 
             tf = time.time()
@@ -93,7 +93,7 @@ async def sync_minio_storages():
             print(td)
 
         skip += limit
-        minio_storages = await CrudMinioStorage.get_rows_order_by_id(
+        minio_storages = await CrudStorageMinio.get_rows_order_by_id(
             skip=skip, limit=limit
         )
 
@@ -130,7 +130,7 @@ async def _storages():
     t = 0
 
     protocol = SourceProtocolEnum.MINIO.value
-    minio_storages = await CrudMinioStorage.get_rows_order_by_id(skip=skip, limit=limit)
+    minio_storages = await CrudStorageMinio.get_rows_order_by_id(skip=skip, limit=limit)
     while len(minio_storages) > 0:
         for minio_storage in minio_storages:
             ti = time.time()
@@ -144,7 +144,7 @@ async def _storages():
             print(f"Protocol: {protocol} Storage ID: {minio_storage.id} Time: {td}")
 
         skip += limit
-        minio_storages = await CrudMinioStorage.get_rows_order_by_id(
+        minio_storages = await CrudStorageMinio.get_rows_order_by_id(
             skip=skip, limit=limit
         )
 

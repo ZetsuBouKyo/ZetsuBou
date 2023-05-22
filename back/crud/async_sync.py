@@ -1,6 +1,6 @@
 from back.crud.async_gallery import CrudAsyncGallerySync
 from back.crud.async_video import CrudAsyncVideoSync
-from back.db.crud import CrudMinioStorage
+from back.db.crud import CrudStorageMinio
 from back.db.model import StorageMinio
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.storage import StorageCategoryEnum
@@ -27,7 +27,7 @@ async def get_crud_sync(
     protocol: SourceProtocolEnum, storage_id: int
 ) -> CrudAsyncGallerySync:
     if protocol == SourceProtocolEnum.MINIO.value:
-        storage_minio = await CrudMinioStorage.get_row_by_id(storage_id)
+        storage_minio = await CrudStorageMinio.get_row_by_id(storage_id)
         if storage_minio is None:
             raise HTTPException(
                 status_code=404,

@@ -1,7 +1,6 @@
 from .base import Base
 from .group.group import GroupBase
 from .image import ImageBase
-from .minio.storage import MinioStorageBase
 from .scope import ScopeBase
 from .setting.front.gallery.category import SettingFrontGalleryCategoryBase
 from .setting.front.gallery.tag_field import SettingFrontGalleryTagFieldBase
@@ -26,7 +25,6 @@ __all__ = [
     "Base",
     "GroupBase",
     "ImageBase",
-    "MinioStorageBase",
     "ScopeBase",
     "SettingFrontGalleryCategoryBase",
     "SettingFrontGalleryTagFieldBase",

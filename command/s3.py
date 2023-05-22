@@ -73,8 +73,8 @@ async def _generate_presigned_url(
 @app.command(name="list")
 @sync
 async def _list(
-    bucket_name: str = typer.Argument(..., help="Bucket name."),
-    prefix: str = typer.Argument(..., help="Prefix, object name or key."),
+    bucket_name: str = typer.Argument(default="", help="Bucket name."),
+    prefix: str = typer.Option(default="", help="Prefix, object name or key."),
     aws_access_key_id: str = typer.Option(
         default=None,
         help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa

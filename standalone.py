@@ -18,7 +18,7 @@ from sqlalchemy.engine import Engine
 from starlette.responses import JSONResponse
 from urllib3.exceptions import NewConnectionError
 
-from back.db.model import MinioStorage
+from back.db.model import StorageMinio
 from back.model.base import SourceProtocolEnum
 from back.model.gallery import Gallery
 from back.schema.basic import Message
@@ -170,10 +170,10 @@ def request_minio_galleries(token: str, page: int, size: int):
     headers = {"Authorization": f"Bearer {token}"}
     params = {"size": size, "page": page}
     resp = requests.get(
-        f"{app_root_url}/api/v1/minio/storages", params=params, headers=headers
+        f"{app_root_url}/api/v1/storage/minio/storages", params=params, headers=headers
     )
     rows = resp.json()
-    return [MinioStorage(**row) for row in rows]
+    return [StorageMinio(**row) for row in rows]
 
 
 def get_minio_galleries(token: str):

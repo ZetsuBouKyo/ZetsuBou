@@ -3,8 +3,8 @@ from fastapi import APIRouter
 from .elasticsearch import router as elasticsearch
 from .gallery import router as gallery
 from .group import router as group
-from .minio import router as minio
 from .setting import router as setting
+from .storage import router as storage
 from .sys import router as sys
 from .tag import router as tag
 from .task import router as task
@@ -29,4 +29,4 @@ router.include_router(gallery, tags=["Gallery"], prefix="/gallery")
 router.include_router(video, tags=["Video"], prefix="/video")
 
 router.include_router(elasticsearch, tags=["Elasticsearch"], prefix="/elasticsearch")
-router.include_router(minio, tags=["Minio"], prefix="/minio")
+router.include_router(storage, tags=["Storage"], prefix="/storage")

@@ -1,8 +1,8 @@
 import request from "@/utils/request";
 
-export function getMinioList(params: any) {
+export function getStorageMinioList(params: any) {
   return request({
-    url: `/api/v1/minio/operation/list`,
+    url: `/api/v1/storage/minio/list`,
     method: "get",
     params: params,
   });

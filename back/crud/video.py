@@ -7,8 +7,8 @@ import cv2
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.crud.elasticsearch import CrudElasticBase, get_source_by_id
 from back.crud.minio import CrudMinio, exists, expires, get_minio_client_by_source
-from back.db.crud import CrudMinioStorage
-from back.db.model import MinioStorage
+from back.db.crud import CrudStorageMinio
+from back.db.model import StorageMinio
 from back.model.base import SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.video import Video, VideoOrderedFieldEnum, Videos
@@ -413,10 +413,10 @@ def get_video_attrs(
     )
 
 
-class CrudSyncVideoMinioStorage:
+class CrudSyncVideoStorageMinio:
     def __init__(
         self,
-        minio_storage: MinioStorage,
+        minio_storage: StorageMinio,
         cache_minio_client: Minio = minio_client,
         elastic_client: Elasticsearch = elastic_client,
         index: str = index,
@@ -578,7 +578,7 @@ class CrudVideo:
         self,
         video_id: str,
         elastic_client: Elasticsearch = elastic_client,
-        crud_minio_storage: CrudMinioStorage = CrudMinioStorage,
+        crud_minio_storage: CrudStorageMinio = CrudStorageMinio,
         index: str = index,
         cache_minio_client: Minio = minio_client,
         cache_bucket_name: str = cache_bucket_name,

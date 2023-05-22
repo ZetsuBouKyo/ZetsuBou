@@ -6,8 +6,8 @@ from uuid import uuid4
 
 from back.crud.elasticsearch import CrudElasticBase, get_source_by_id
 from back.crud.minio import CrudMinio, get_minio_client_by_source
-from back.db.crud import CrudMinioStorage
-from back.db.model import MinioStorage, StorageMinio
+from back.db.crud import CrudStorageMinio
+from back.db.model import StorageMinio
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
@@ -385,7 +385,7 @@ class CrudGallery:
         self,
         gallery_id: str,
         elastic_client: Elasticsearch = elastic_client,
-        crud_minio_storage: CrudMinioStorage = CrudMinioStorage,
+        crud_minio_storage: CrudStorageMinio = CrudStorageMinio,
         index: str = ELASTICSEARCH_INDEX_GALLERY,
     ):
         self.gallery = get_gallery_by_id(
@@ -511,10 +511,10 @@ def get_root_source_by_storage_minio(storage_minio: StorageMinio) -> SourceBaseM
 
 
 # TODO: deprecated
-class CrudSyncGalleryMinioStorage:
+class CrudSyncGalleryStorageMinio:
     def __init__(
         self,
-        minio_storage: MinioStorage,
+        minio_storage: StorageMinio,
         elastic_client: Elasticsearch = elastic_client,
         index: str = ELASTICSEARCH_INDEX_GALLERY,
         size: int = ELASTICSEARCH_SIZE,

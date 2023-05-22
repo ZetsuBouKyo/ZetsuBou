@@ -2,6 +2,7 @@ from typing import List
 
 import typer
 from back.db.crud.base import (
+    get_all_rows_order_by_id,
     get_dependent_tables,
     get_seqs,
     get_table_instances,
@@ -9,6 +10,7 @@ from back.db.crud.base import (
     reset_auto_increment,
 )
 from back.session.async_db import async_engine, async_session
+from rich import print_json
 from rich.console import Console
 from rich.table import Table
 from sqlalchemy import text
@@ -141,3 +143,12 @@ async def list_seqs():
         return
     for seq in seqs:
         print(seq)
+
+
+@app.command(name="list")
+@sync
+async def _list(table_name: str = typer.Argument(..., help="Table name.")):
+    table_instances = get_table_instances()
+    table_class = table_instances[table_name]
+    rows = await get_all_rows_order_by_id(table_class)
+    print_json(data=rows)

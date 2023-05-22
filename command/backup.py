@@ -79,6 +79,18 @@ def get_body(data: dict, encoding: str = "utf-8"):
     return io.BytesIO(json_str)
 
 
+async def _load_table(table_name: str, table_instance, rows: List[dict]):
+    if table_instance is None:
+        print(f"table: {table_name} not found")
+        return
+
+    await loads_from_json_with_instance(table_instance, rows)
+    pk_names = get_primary_key_names_by_table_instance(table_instance)
+    for pk_name in pk_names:
+        seq = f"{table_name}_{pk_name}_seq"
+        await reset_auto_increment(table_name, seq=seq)
+
+
 _help = """
 Backup the databases.
 
@@ -168,17 +180,9 @@ async def load(
         for table_name in tqdm(table_names):
             table_source = get_database_table_source(date, table_name)
             rows = await storage_session.get_json(table_source)
-
             table_instance = table_instances.get(table_name, None)
-            if table_instance is None:
-                print(f"table: {table_name} not found")
-                return
 
-            await loads_from_json_with_instance(table_instance, rows)
-            pk_names = get_primary_key_names_by_table_instance(table_instance)
-            for pk_name in pk_names:
-                seq = f"{table_name}_{pk_name}_seq"
-                await reset_auto_increment(table_name, seq=seq)
+            await _load_table(table_name, table_instance, rows)
 
         await init_indices()
         size = 1000
@@ -197,3 +201,23 @@ async def load(
 
                 i += 1
                 batch = rows[i * size : (i + 1) * size]
+
+
+@app.command()
+@sync
+@airflow_dag_register("backup-load", "backup load")
+async def load_table(
+    table: str = typer.Argument(..., help="Table JSON path."),
+    table_name: str = typer.Option(default=None, help="Table JSON path."),
+):
+    table_path = Path(table)
+    if table_name is None:
+        table_name = table_path.stem
+
+    with table_path.open(mode="r") as fp:
+        rows = json.load(fp)
+
+    table_instances = get_table_instances()
+    table_instance = table_instances.get(table_name, None)
+
+    await _load_table(table_name, table_instance, rows)

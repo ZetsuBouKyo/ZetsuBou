@@ -70,7 +70,7 @@
           :state="bucketsDropdown"
           :on-select="onSelectBucket"
         ></select-dropdown>
-        <span class="ml-4 text-blue-500" v-if="bucketsDropdown.options.length > 0">Connected</span>
+        <span class="ml-4 text-blue-500" v-if="table.connected">Connected</span>
         <span class="ml-4 text-red-500" v-else>Failed</span>
       </div>
       <div class="modal-row">
@@ -141,6 +141,7 @@ export default {
   components: { CrudTable, CrudTableButton, SelectDropdown },
   setup() {
     const table = CrudTable.initState() as CrudTableState<Row>;
+    table.connected = false;
 
     const prefix = reactive({
       options: [],
@@ -169,11 +170,16 @@ export default {
       getStorageMinioList(params)
         .then((response) => {
           const data = response.data;
+          if (response.status !== 200) {
+            table.connected = false;
+            return;
+          }
+          table.connected = true;
           if (data) {
             for (let i = 0; i < data.length; i++) {
-              const objectName = data[i].object_name;
-              if (objectName.slice(-1) === "/") {
-                prefix.options.push(objectName);
+              const _prefix = data[i].prefix;
+              if (_prefix.slice(-1) === "/") {
+                prefix.options.push(_prefix);
               }
             }
           }
@@ -183,7 +189,12 @@ export default {
         });
     }
     watch(
-      () => table.row,
+      () => {
+        if (!table.row) {
+          return undefined;
+        }
+        return table.row.prefix;
+      },
       () => {
         const bucketName = bucketsDropdown.selectedValue as string;
         const prefixName = table.row.prefix as string;
@@ -202,6 +213,7 @@ export default {
       prefix.options = [];
       table.row.prefix = undefined;
       table.row.bucket_name = undefined;
+      table.connected = false;
     }
     function onSelectBucket() {
       table.row.prefix = "";
@@ -254,6 +266,7 @@ export default {
               minioConnectError();
               return;
             }
+            table.connected = true;
             const data = response.data;
             if (data) {
               for (let i = 0; i < data.length; i++) {
@@ -341,6 +354,7 @@ export default {
         access_key: undefined,
         secret_key: undefined,
       };
+      table.connected = false;
       reset(categoriesDropdown);
       reset(bucketsDropdown);
     }

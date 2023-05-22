@@ -134,6 +134,7 @@ export interface CrudTableState<Row> {
     handler: () => void;
     title: string;
   };
+  [key: string]: any;
 }
 
 export interface Editor {

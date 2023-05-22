@@ -6,7 +6,12 @@ from back.dependency.security import api_security
 from back.model.s3 import S3Object
 from back.session.storage.async_s3 import AsyncS3Session, list_all
 from back.settings import setting
-from fastapi import APIRouter
+from botocore.exceptions import (
+    ClientError,
+    EndpointConnectionError,
+    EndpointResolutionError,
+)
+from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 
 router = APIRouter()
@@ -39,7 +44,13 @@ async def get_minio_list(
             aws_secret_access_key=secret_key,
             endpoint_url=endpoint,
         )
-        async with session:
-            client = session.client
-            return await list_all(client, bucket_name, prefix)
+        try:
+            async with session:
+                client = session.client
+                return await list_all(client, bucket_name, prefix)
+        except (EndpointConnectionError, ClientError, EndpointResolutionError):
+            raise HTTPException(
+                status_code=401,
+                detail="Failed to login MinIO.",
+            )
     return []

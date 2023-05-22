@@ -1,7 +1,9 @@
 export enum SearchAnalyzer {
   default = "default",
-  standard = "standard",
+  keyword = "keyword",
   ngram = "ngram",
+  standard = "standard",
+  url = "url",
 }
 
 export enum SearchBase {

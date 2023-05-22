@@ -31,6 +31,50 @@ BATCH_SIZE = 300
 DIR_FNAME = setting.gallery_dir_fname
 TAG_FNAME = setting.gallery_tag_fname
 
+elasticsearch_gallery_analyzer = {
+    AnalyzerEnum.DEFAULT.value: [
+        "path.url",
+        "attributes.name.default",
+        "attributes.raw_name.default",
+        "attributes.uploader",
+        "attributes.category",
+        "attributes.src.url",
+        "labels",
+        "tags.*",
+    ],
+    AnalyzerEnum.KEYWORD.value: [
+        "path.keyword",
+        "attributes.name.keyword",
+        "attributes.raw_name.keyword",
+        "attributes.uploader",
+        "attributes.category",
+        "attributes.src.keyword",
+        "labels",
+        "tags.*",
+    ],
+    AnalyzerEnum.NGRAM.value: [
+        "path.ngram",
+        "attributes.name.ngram",
+        "attributes.raw_name.ngram",
+        "attributes.uploader",
+        "attributes.category",
+        "attributes.src.ngram",
+        "labels",
+        "tags.*",
+    ],
+    AnalyzerEnum.STANDARD.value: [
+        "path.standard",
+        "attributes.name.standard",
+        "attributes.raw_name.standard",
+        "attributes.uploader",
+        "attributes.category",
+        "attributes.src.standard",
+        "labels",
+        "tags.*",
+    ],
+    AnalyzerEnum.URL.value: ["path.url", "attributes.src.url"],
+}
+
 
 def convert(text) -> int:
     return int(text) if text.isdigit() else text
@@ -66,45 +110,7 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
 
     @property
     def fields(self):
-        if self.analyzer == AnalyzerEnum.DEFAULT.value:
-            return [
-                "attributes.name",
-                "attributes.raw_name",
-                "attributes.uploader",
-                "attributes.category",
-                "attributes.src",
-                "labels",
-                "tags.*",
-            ]
-        elif self.analyzer == AnalyzerEnum.NGRAM.value:
-            return [
-                "attributes.name.ngram",
-                "attributes.raw_name.ngram",
-                "attributes.uploader",
-                "attributes.category",
-                "attributes.src.ngram",
-                "labels",
-                "tags.*",
-            ]
-        elif self.analyzer == AnalyzerEnum.STANDARD.value:
-            return [
-                "attributes.name.standard",
-                "attributes.raw_name.standard",
-                "attributes.uploader",
-                "attributes.category",
-                "attributes.src.standard",
-                "labels",
-                "tags.*",
-            ]
-        return [
-            "attributes.name",
-            "attributes.raw_name",
-            "attributes.uploader",
-            "attributes.category",
-            "attributes.src",
-            "labels",
-            "tags.*",
-        ]
+        return elasticsearch_gallery_analyzer.get(self.analyzer, None)
 
     async def get_by_id(self, id: str) -> Gallery:
         return Gallery(**await self.get_source_by_id(id))

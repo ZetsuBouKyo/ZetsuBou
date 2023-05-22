@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import cv2
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
-from back.model.base import SourceProtocolEnum, SourceBaseModel
+from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.video import Video, VideoOrderedFieldEnum
 from back.session.async_elasticsearch import async_elasticsearch
@@ -30,6 +30,50 @@ BATCH_SIZE = 300
 STORAGE_PROTOCOL = setting.storage_protocol
 STORAGE_CACHE = setting.storage_cache
 VIDEO_COVER_HOME = "video/cover"
+
+elasticsearch_video_analyzer = {
+    AnalyzerEnum.DEFAULT.value: [
+        "path.url",
+        "name.default",
+        "other_names.default",
+        "attributes.uploader",
+        "attributes.category",
+        "attributes.src.url",
+        "labels",
+        "tags.*",
+    ],
+    AnalyzerEnum.KEYWORD.value: [
+        "path.keyword",
+        "attributes.name.keyword",
+        "attributes.raw_name.keyword",
+        "attributes.uploader",
+        "attributes.category",
+        "attributes.src.keyword",
+        "labels",
+        "tags.*",
+    ],
+    AnalyzerEnum.NGRAM.value: [
+        "path.ngram",
+        "name.ngram",
+        "other_names.ngram",
+        "attributes.uploader",
+        "attributes.category",
+        "attributes.src.ngram",
+        "labels",
+        "tags.*",
+    ],
+    AnalyzerEnum.STANDARD.value: [
+        "path.standard",
+        "name.standard",
+        "other_names.standard",
+        "attributes.uploader",
+        "attributes.category",
+        "attributes.src.standard",
+        "labels",
+        "tags.*",
+    ],
+    AnalyzerEnum.URL.value: ["path.url", "attributes.src.url"],
+}
 
 
 class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
@@ -59,35 +103,11 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
     @property
     def fields(self):
         if self.analyzer == AnalyzerEnum.DEFAULT.value:
-            return [
-                "name",
-                "other_names",
-                "attributes.uploader",
-                "attributes.category",
-                "attributes.src",
-                "labels",
-                "tags.*",
-            ]
+            return
         elif self.analyzer == AnalyzerEnum.NGRAM.value:
-            return [
-                "name.ngram",
-                "other_names.ngram",
-                "attributes.uploader",
-                "attributes.category",
-                "attributes.src.ngram",
-                "labels",
-                "tags.*",
-            ]
+            return
         elif self.analyzer == AnalyzerEnum.STANDARD.value:
-            return [
-                "name.standard",
-                "other_names.standard",
-                "attributes.uploader",
-                "attributes.category",
-                "attributes.src.standard",
-                "labels",
-                "tags.*",
-            ]
+            return
         return [
             "name",
             "other_names",

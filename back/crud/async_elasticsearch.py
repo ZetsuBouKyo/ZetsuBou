@@ -115,7 +115,6 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
                                     "query": keyword,
                                     "fuzziness": fuzziness,
                                     "fields": self.fields,
-                                    "analyzer": self.analyzer,
                                 }
                             }
                         }
@@ -137,7 +136,6 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
                                     "query": keyword,
                                     "fuzziness": fuzziness,
                                     "fields": self.fields,
-                                    "analyzer": self.analyzer,
                                 }
                             }
                         }

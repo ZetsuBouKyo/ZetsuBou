@@ -125,7 +125,7 @@ class Setting(BaseSettings):
             return True
         return False
 
-    airflow_host: str = "http://localhost:8080/api/v1"
+    airflow_host: str = "http://localhost:8080"
     airflow_username: str = "airflow"
     airflow_password: str = "airflow"
 

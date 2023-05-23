@@ -70,7 +70,8 @@
           :state="bucketsDropdown"
           :on-select="onSelectBucket"
         ></select-dropdown>
-        <span class="ml-4 text-blue-500" v-if="table.connected">Connected</span>
+        <span class="ml-4 text-blue-500" v-if="table.connected === ConnectionStatus.Connected">Connected</span>
+        <span class="ml-4 text-yellow-500" v-else-if="table.connected === ConnectionStatus.Connecting">Connecting</span>
         <span class="ml-4 text-red-500" v-else>Failed</span>
       </div>
       <div class="modal-row">
@@ -82,6 +83,7 @@
           :placeholder="table.row.prefix"
           v-model="table.row.prefix"
           :disabled="!bucketsDropdown.title"
+          @click="updatePrefixes"
         />
         <datalist id="admin-minio-storage-prefix">
           <option v-for="(p, i) in prefix.options" :value="p" :key="i" />
@@ -100,6 +102,9 @@
           <option v-for="(p, i) in [1, 2, 3, 4, 5, 6, 7]" :value="p" :key="i" />
         </datalist>
       </div>
+    </template>
+    <template v-slot:editor-buttons>
+      <button class="flex ml-2 btn btn-primary" @click="checkConnection()">Check Connection</button>
     </template>
   </crud-table>
 </template>
@@ -137,15 +142,82 @@ export interface Row {
   secret_key: string;
 }
 
+interface GetStorageMinioListParams {
+  bucket_name?: string;
+  prefix?: string;
+  endpoint: string;
+  access_key: string;
+  secret_key: string;
+}
+
+enum ConnectionStatus {
+  Connected = 1,
+  Failed = 0,
+  Connecting = -1,
+}
+
 export default {
   components: { CrudTable, CrudTableButton, SelectDropdown },
   setup() {
     const table = CrudTable.initState() as CrudTableState<Row>;
-    table.connected = false;
+    table.connected = ConnectionStatus.Failed;
 
     const prefix = reactive({
       options: [],
     });
+
+    const bucketsDropdown = SelectDropdown.initState() as SelectDropdownState;
+    const categoriesDropdown = SelectDropdown.initState() as SelectDropdownState;
+
+    function updateOptions(params) {
+      if (table.connected === ConnectionStatus.Connecting) {
+        return;
+      }
+      table.connected = ConnectionStatus.Connecting;
+      return getStorageMinioList(params)
+        .then((response) => {
+          const s3Objects = response.data;
+          if (response.status !== 200) {
+            minioConnectError();
+            return;
+          }
+          prefix.options = [];
+          table.connected = ConnectionStatus.Connected;
+          if (s3Objects) {
+            for (const s3Object of s3Objects) {
+              if (s3Object.prefix.slice(-1) === "/") {
+                prefix.options.push(s3Object.prefix);
+              }
+              bucketsDropdown.options.push({ title: s3Object.bucket_name, value: s3Object.bucket_name });
+            }
+          }
+        })
+        .catch(() => {
+          minioConnectError();
+        });
+    }
+
+    function updatePrefixes() {
+      const bucketName = table.row.bucket_name;
+      if (!bucketName) {
+        return;
+      }
+      let prefix = table.row.prefix;
+
+      if (!prefix) {
+        prefix = "";
+      } else if (!prefix.endsWith("/")) {
+        return;
+      }
+
+      const params: GetStorageMinioListParams = {};
+      params.bucket_name = bucketName;
+      params.prefix = prefix;
+      params.endpoint = table.row.endpoint;
+      params.access_key = table.row.access_key;
+      params.secret_key = table.row.secret_key;
+      updateOptions(params);
+    }
 
     function getPrefixAutoComplete(bucketName: string, prefixName: string) {
       prefix.options = [];
@@ -157,9 +229,7 @@ export default {
         return;
       }
 
-      const params = <
-        { bucket_name: string; prefix: string; endpoint: string; access_key: string; secret_key: string }
-      >{};
+      const params: GetStorageMinioListParams = {};
       params.bucket_name = bucketName;
       if (prefixName) {
         params.prefix = prefixName;
@@ -167,27 +237,18 @@ export default {
       params.endpoint = table.row.endpoint;
       params.access_key = table.row.access_key;
       params.secret_key = table.row.secret_key;
-      getStorageMinioList(params)
-        .then((response) => {
-          const data = response.data;
-          if (response.status !== 200) {
-            table.connected = false;
-            return;
-          }
-          table.connected = true;
-          if (data) {
-            for (let i = 0; i < data.length; i++) {
-              const _prefix = data[i].prefix;
-              if (_prefix.slice(-1) === "/") {
-                prefix.options.push(_prefix);
-              }
-            }
-          }
-        })
-        .catch(() => {
-          minioConnectError();
-        });
+      updateOptions(params);
     }
+
+    function checkConnection() {
+      const params = {
+        endpoint: table.row.endpoint,
+        access_key: table.row.access_key,
+        secret_key: table.row.secret_key,
+      };
+      updateOptions(params);
+    }
+
     watch(
       () => {
         if (!table.row) {
@@ -197,23 +258,27 @@ export default {
       },
       () => {
         const bucketName = bucketsDropdown.selectedValue as string;
-        const prefixName = table.row.prefix as string;
-        if (bucketName === undefined || prefixName === undefined) {
+        let prefixName = table.row.prefix as string;
+        if (table.connected !== ConnectionStatus.Connected || bucketName === undefined) {
           return;
         }
-        if (prefixName.slice(-1) === "/") {
+
+        if (prefixName === undefined) {
+          prefixName = "";
+        }
+
+        if (prefixName.slice(-1) === "/" || !prefixName) {
           getPrefixAutoComplete(bucketName, prefixName);
         }
       },
     );
 
-    const bucketsDropdown = SelectDropdown.initState() as SelectDropdownState;
     function minioConnectError() {
       bucketsDropdown.options = [];
       prefix.options = [];
       table.row.prefix = undefined;
       table.row.bucket_name = undefined;
-      table.connected = false;
+      table.connected = ConnectionStatus.Failed;
     }
     function onSelectBucket() {
       table.row.prefix = "";
@@ -221,6 +286,7 @@ export default {
       table.row.bucket_name = bucketName;
       getPrefixAutoComplete(bucketName, undefined);
     }
+
     watch(
       () => {
         if (table.row) {
@@ -249,38 +315,16 @@ export default {
         ) {
           return [table.row.endpoint, table.row.access_key, table.row.secret_key];
         }
-        return false;
+        return undefined;
       },
       (status, _) => {
         if (!status) {
           return;
         }
-        const params = {
-          endpoint: table.row.endpoint,
-          access_key: table.row.access_key,
-          secret_key: table.row.secret_key,
-        };
-        getStorageMinioList(params)
-          .then((response) => {
-            if (response.status !== 200) {
-              minioConnectError();
-              return;
-            }
-            table.connected = true;
-            const data = response.data;
-            if (data) {
-              for (let i = 0; i < data.length; i++) {
-                bucketsDropdown.options.push({ title: data[i].bucket_name, value: data[i].bucket_name });
-              }
-            }
-          })
-          .catch(() => {
-            minioConnectError();
-          });
+        checkConnection();
       },
     );
 
-    const categoriesDropdown = SelectDropdown.initState() as SelectDropdownState;
     function onSelectCategory() {
       table.row.prefix = "";
       const category = categoriesDropdown.selectedValue as number;
@@ -354,7 +398,7 @@ export default {
         access_key: undefined,
         secret_key: undefined,
       };
-      table.connected = false;
+      table.connected = ConnectionStatus.Failed;
       reset(categoriesDropdown);
       reset(bucketsDropdown);
     }
@@ -375,22 +419,25 @@ export default {
     }
 
     return {
-      ButtonColorEnum,
-      table,
-      headers,
-      categoriesDropdown,
       bucketsDropdown,
-      prefix,
-      onSelectCategory,
-      onSelectBucket,
+      ButtonColorEnum,
+      categoriesDropdown,
+      checkConnection,
+      ConnectionStatus,
+      headers,
+      onCloseEditor,
       onCrudCreate,
+      onCrudDelete,
       onCrudGet,
       onCrudGetTotal,
       onCrudUpdate,
-      onCrudDelete,
       onOpenEditor,
-      onCloseEditor,
+      onSelectBucket,
+      onSelectCategory,
+      prefix,
       sync,
+      table,
+      updatePrefixes,
     };
   },
 };

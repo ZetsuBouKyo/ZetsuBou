@@ -33,9 +33,10 @@
       :class="editorClass"
     >
       <slot name="editor"></slot>
-      <div class="modal-row">
-        <button class="flex ml-auto btn btn-primary" @click="editor.close">Cancel</button>
+      <div class="modal-row-reverse">
         <button class="flex ml-2 btn btn-primary" @click="state.editor.handler">Save</button>
+        <button class="flex ml-2 btn btn-primary" @click="editor.close">Cancel</button>
+        <slot name="editor-buttons"></slot>
       </div>
     </modal>
     <div class="overflow-x-auto scrollbar-gray-900-2 w-full" :class="isEmpty(search) ? 'rounded-lg' : ''">

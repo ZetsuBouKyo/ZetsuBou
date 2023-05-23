@@ -2,6 +2,10 @@
   .modal-row {
     @apply flex flex-row items-center mx-4 my-1;
   }
+  .modal-row-reverse {
+    @apply flex flex-row-reverse items-center mx-4 my-1;
+  }
+
   .modal-row-h-full {
     @apply flex flex-row items-center mx-4 my-1 h-full;
   }

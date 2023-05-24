@@ -1,7 +1,7 @@
 import json
 from urllib.parse import unquote
 
-from back.crud.video import CrudElasticVideo
+from back.crud.async_video import CrudAsyncElasticsearchVideo
 from back.db.crud import CrudUserElasticSearchQuery
 from back.db.model import ScopeEnum
 from back.dependency.security import Token, api_security, extract_token
@@ -22,7 +22,7 @@ elastic_size = setting.elastic_size
     response_model=Videos,
     dependencies=[api_security([ScopeEnum.video_query_random_get.name])],
 )
-def get_random(
+async def get_random(
     analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     seed: int = 1048596,
     keywords: str = "",
@@ -32,8 +32,12 @@ def get_random(
     boolean: QueryBoolean = QueryBoolean.SHOULD,
 ) -> Videos:
     keywords = unquote(keywords)
-    crud = CrudElasticVideo(size=size, analyzer=analyzer)
-    return crud.random(page, keywords, fuzziness=fuzziness, seed=seed, boolean=boolean)
+    crud = CrudAsyncElasticsearchVideo(
+        size=size, analyzer=analyzer, is_from_setting_if_none=True
+    )
+    return await crud.random(
+        page, keywords, fuzziness=fuzziness, boolean=boolean, seed=seed
+    )
 
 
 @router.get(
@@ -41,7 +45,7 @@ def get_random(
     response_model=Videos,
     dependencies=[api_security([ScopeEnum.video_query_advanced_search_get.name])],
 )
-def get_advanced_search(
+async def get_advanced_search(
     request: Request,
     page: int = 1,
     size: int = elastic_size,
@@ -80,9 +84,9 @@ def get_advanced_search(
         name = unquote(name)
     if other_names is not None:
         other_names = unquote(other_names)
-    crud = CrudElasticVideo(size=size)
+    crud = CrudAsyncElasticsearchVideo(size=size)
 
-    return crud.advanced_search(
+    return await crud.advanced_search(
         page=page,
         keywords=keywords,
         keywords_analyzer=keywords_analyzer,
@@ -130,7 +134,7 @@ async def get_search(
     user_id = token.sub
     keywords = unquote(keywords)
 
-    crud = CrudElasticVideo(size=size, analyzer=analyzer)
+    crud = CrudAsyncElasticsearchVideo(size=size, analyzer=analyzer)
     if query_id is not None:
         user_es_query = await CrudUserElasticSearchQuery.get_row_by_id_and_user_id(
             query_id, user_id
@@ -139,6 +143,6 @@ async def get_search(
         body = query.get("body", None)
         if body is None:
             return []
-        return crud.match_by_query(body, page)
+        return await crud.match_by_query(body, page)
 
-    return crud.match(page, keywords, fuzziness=fuzziness, boolean=boolean)
+    return await crud.match(page, keywords, fuzziness=fuzziness, boolean=boolean)

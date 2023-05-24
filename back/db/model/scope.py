@@ -41,6 +41,7 @@ class ScopeEnum(int, Enum):
 
     setting: int = auto()
     setting_front: int = auto()
+    setting_front_general_get: int = auto()
     setting_front_gallery: int = auto()
     setting_front_gallery_category_startswith_get: int = auto()
     setting_front_gallery_tag_field_startswith_get: int = auto()

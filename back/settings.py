@@ -88,7 +88,7 @@ class Setting(BaseSettings):
     database_url: str = "postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou"
     database_echo: bool = False
 
-    elastic_urls: str = ""
+    elastic_urls: str = "http://localhost:9200"
     elastic_size: int = 40
     elastic_index_gallery: str = f"{elastic_index_prefix}-gallery"
     elastic_index_video: str = f"{elastic_index_prefix}-video"

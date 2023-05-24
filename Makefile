@@ -74,7 +74,7 @@ init-airflow:
 	chown -R $(AIRFLOW_UID):$(AIRFLOW_UID) $(AIRFLOW_LOGS_VOLUME)
 	chown -R $(AIRFLOW_UID):$(AIRFLOW_UID) $(AIRFLOW_PLUGINS_VOLUME)
 
-	docker-compose -f docker-compose.host.yml up airflow-init
+	docker-compose -f docker-compose.host.airflow.yml up airflow-init
 init-label-studio:
 	mkdir -p $(ZETSUBOU_LABEL_STUDIO_DATA_VOLUME)
 	mkdir -p $(ZETSUBOU_LABEL_STUDIO_DEPLOY_VOLUME)
@@ -110,40 +110,43 @@ reset-app: reset-app-elastic reset-app-postgres
 .PHONY: up up-airflow up-app-dev
 up-app:
 	docker-compose -f docker-compose.host.app.yml up -d
+up-app-dev:
+	docker-compose -f docker-compose.host.app.yml up -d $(APP_DEV_SERVICES)
 up-airflow:
-	docker-compose -f docker-compose.host.yml up -d $(AIRFLOW_SERVICES)
+	docker-compose -f docker-compose.host.airflow.yml up -d $(AIRFLOW_SERVICES)
 up-label-studio:
 	docker-compose -f docker-compose.host.label-studio.yml up -d
-up-app-dev:
-	docker-compose -f docker-compose.host.yml up -d $(APP_DEV_SERVICES)
-up-dev: up-airflow up-app-dev
+up-dev: up-app-dev up-airflow up-label-studio
+up: up-app up-airflow up-label-studio
 
 log-app:
 	docker-compose -f docker-compose.host.app.yml logs
 
-.PHONY: start-airflow start-app-dev
-start-airflow:
-	docker-compose -f docker-compose.host.yml start $(AIRFLOW_SERVICES)
+.PHONY: start-app-dev start-airflow
 start-app-dev:
-	docker-compose -f docker-compose.host.yml start $(APP_DEV_SERVICES)
+	docker-compose -f docker-compose.host.app.yml start $(APP_DEV_SERVICES)
+start-airflow:
+	docker-compose -f docker-compose.host.airflow.yml start $(AIRFLOW_SERVICES)
 
-.PHONY: stop-airflow stop-app-dev
-stop-airflow:
-	docker-compose -f docker-compose.host.yml stop $(AIRFLOW_SERVICES)
+
+.PHONY: stop-app-dev stop-airflow
 stop-app-dev:
-	docker-compose -f docker-compose.host.yml stop $(APP_DEV_SERVICES)
+	docker-compose -f docker-compose.host.app.yml stop $(APP_DEV_SERVICES)
+stop-airflow:
+	docker-compose -f docker-compose.host.airflow.yml stop $(AIRFLOW_SERVICES)
 
 .PHONY: down
 down-app:
-	docker-compose -f docker-compose.host.app.yml down
+	docker-compose -f docker-compose.host.app.yml down --remove-orphans
+down-airflow:
+	docker-compose -f docker-compose.host.airflow.yml down --remove-orphans
 down-label-studio:
-	docker-compose -f docker-compose.host.label-studio.yml down
-down:
-	docker-compose -f docker-compose.host.yml down
+	docker-compose -f docker-compose.host.label-studio.yml down --remove-orphans
+down: down-app down-airflow down-label-studio
 
 .PHONY: logs
 logs:
-	docker-compose -f docker-compose.host.yml logs $(service)
+	docker-compose -f docker-compose.host.airflow.yml logs $(service)
 
 requirements.txt:
 	poetry export -f requirements.txt -o requirements.txt --without-hashes

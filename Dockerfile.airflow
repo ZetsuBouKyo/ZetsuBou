@@ -22,4 +22,8 @@ WORKDIR /opt/airflow/zetsubou-venv
 
 RUN PIP_USER=false poetry install
 
+COPY --chown=airflow:root . /opt/airflow/zetsubou
+
+COPY --chown=airflow:root ./dags /opt/airflow/dags
+
 WORKDIR /opt/airflow

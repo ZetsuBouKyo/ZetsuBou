@@ -13,3 +13,48 @@ services:
     volumes:
       - ./etc:/workspace/etc
       - ./.env:/workspace/.env
+    depends_on:
+      - zetsubou-postgres
+      - zetsubou-elastic
+      - zetsubou-minio
+  zetsubou-postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: zetsubou
+      POSTGRES_PASSWORD: zetsubou
+      POSTGRES_DB: zetsubou
+    ports:
+      - 5430:5432
+    volumes:
+      - ${ZETSUBOU_POSTGRES_DB_VOLUME:-./dev/volumes/postgres}:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "zetsubou"]
+      interval: 5s
+      retries: 5
+    restart: always
+  zetsubou-elastic:
+    image: elasticsearch:7.10.1
+    network_mode: host
+    expose:
+      - 9200
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - ${ZETSUBOU_ELASTICSEARCH_VOLUME:-./dev/volumes/elasticsearch}:/usr/share/elasticsearch/data
+  zetsubou-minio:
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9001"
+    network_mode: host
+    expose:
+      - 9000
+      - 9001
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-admin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-wJalrXUtnFEMI}
+    volumes:
+      # - postgres_data:/var/lib/postgresql/data
+      - ${MINIO_VOLUME:-./dev/volumes/minio}:/data

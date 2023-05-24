@@ -1,4 +1,7 @@
-from back.model.elasticsearch import AnalyzerEnum
+from collections import deque
+from typing import Dict, List
+
+from back.model.elasticsearch import AnalyzerEnum, ElasticsearchField
 from back.session.async_elasticsearch import async_elasticsearch
 from back.settings import setting
 from elasticsearch import AsyncElasticsearch
@@ -30,7 +33,7 @@ settings = {
             "zetsubou_default_tokenizer": {
                 "type": "pattern",
                 # Special Regex Characters: ., +, *, ?, ^, $, (, ), [, ], {, }, |, \
-                "pattern": "[ \(\)\{\}｛｝\[\]【】〔〕〖〗《》<>⟨⟩「」『』\|｜_\-\+~～：“”‘’'`\"；!！\?？\.,，/、\\\\。\^@#$%&=]",  # noqa
+                "pattern": r"[ \(\)\{\}｛｝\[\]【】〔〕〖〗《》<>⟨⟩「」『』\|｜_\-\+~～：“”‘’'`\"；!！\?？\.,，/、\\\\。\^@#$%&=]",  # noqa
             },
             "zetsubou_ngram_tokenizer": {
                 "type": "ngram",
@@ -201,6 +204,30 @@ video_mappings = {
         },
     }
 }
+
+
+def get_field_analyzer_from_mapping(
+    mapping: dict,
+) -> Dict[ElasticsearchField, List[AnalyzerEnum]]:
+    field_analyzer = {}
+    field_name = ""
+    stack = deque([(mapping, field_name)])
+    while stack:
+        _mapping, field_base_name = stack.popleft()
+        are_properties = _mapping.get("properties", None)
+        if are_properties is not None:
+            for field_name, field_properties in _mapping["properties"].items():
+                if field_base_name == "":
+                    next_field_name = field_name
+                else:
+                    next_field_name = f"{field_base_name}.{field_name}"
+                stack.append((field_properties, next_field_name))
+        else:
+            _fields = _mapping.get("fields", None)
+            if _fields is None:
+                continue
+            field_analyzer[field_base_name] = list(_fields.keys())
+    return field_analyzer
 
 
 async def safe_create(session: AsyncElasticsearch, index: str, body: dict):

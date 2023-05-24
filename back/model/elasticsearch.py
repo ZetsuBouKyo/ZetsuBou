@@ -1,11 +1,13 @@
 from enum import Enum
-from typing import Generic, List, Optional, TypeVar
+from typing import Generic, List, NewType, Optional, TypeVar
 
 from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
 from rich import print_json
 
 SourceT = TypeVar("SourceT")
+
+ElasticsearchField = NewType("ElasticsearchField", str)
 
 
 class AnalyzerEnum(str, Enum):

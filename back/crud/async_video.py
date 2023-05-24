@@ -102,21 +102,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
 
     @property
     def fields(self):
-        if self.analyzer == AnalyzerEnum.DEFAULT.value:
-            return
-        elif self.analyzer == AnalyzerEnum.NGRAM.value:
-            return
-        elif self.analyzer == AnalyzerEnum.STANDARD.value:
-            return
-        return [
-            "name",
-            "other_names",
-            "attributes.uploader",
-            "attributes.category",
-            "attributes.src",
-            "labels",
-            "tags.*",
-        ]
+        return elasticsearch_video_analyzer.get(self.analyzer, None)
 
     async def get_by_id(self, id: str) -> Video:
         return Video(**await self.get_source_by_id(id))
@@ -169,6 +155,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
 
         if keywords is not None:
             keywords = keywords.split()
+            self.analyzer = keywords_analyzer
             for keyword in keywords:
                 dsl["query"]["bool"][keywords_bool].append(
                     {
@@ -178,7 +165,6 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
                                     "query": keyword,
                                     "fuzziness": keywords_fuzziness,
                                     "fields": self.fields,
-                                    "analyzer": keywords_analyzer,
                                 }
                             }
                         }

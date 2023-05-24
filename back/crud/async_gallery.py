@@ -161,6 +161,7 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
 
         if keywords is not None:
             keywords = keywords.split()
+            self.analyzer = keywords_analyzer
             for keyword in keywords:
                 dsl["query"]["bool"][keywords_bool].append(
                     {
@@ -170,7 +171,6 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                                     "query": keyword,
                                     "fuzziness": keywords_fuzziness,
                                     "fields": self.fields,
-                                    "analyzer": keywords_analyzer,
                                 }
                             }
                         }

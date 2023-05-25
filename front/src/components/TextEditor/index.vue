@@ -91,6 +91,9 @@ export default {
 
     function open() {
       editor.value.open();
+      if (!privateState.json) {
+        privateState.json = JSON.stringify(state.data, null, 4);
+      }
     }
 
     return { ...props, editor, privateState, save, overwrite, reset, open };

@@ -59,12 +59,9 @@ export default {
         }
 
         let getQuery = getSearch;
-        searchQuery["search_base"] = SearchBase.Search;
         if (route.path === "/video/random") {
-          searchQuery["search_base"] = SearchBase.Random;
           getQuery = getRandom;
         } else if (route.path === "/video/advanced-search") {
-          searchQuery["search_base"] = SearchBase.AdvancedSearch;
           getQuery = getAdvancedSearch;
         }
 

@@ -101,7 +101,7 @@
 <script lang="ts">
 import { PropType, reactive, ref, watch } from "vue";
 
-import { SearchAnalyzer } from "@/interface/search";
+import { SearchCategory } from "@/interface/search";
 
 import { durationToSecond } from "@/utils/datetime";
 import { toTitle } from "@/utils/str";
@@ -113,10 +113,9 @@ import SelectDropdown, {
   SelectDropdownMode,
   SelectDropdownState,
   Origin,
-  reset,
 } from "@/elements/Dropdown/SelectDropdown.vue";
 
-import { messageState } from "@/state/message";
+import { settingState } from "@/state/setting";
 
 export enum AdvancedSearchFieldType {
   String,
@@ -124,9 +123,16 @@ export enum AdvancedSearchFieldType {
   Duration,
 }
 
+export enum AdvancedSearchFieldKeyEnum {
+  ElasticsearchField,
+  BuiltIn,
+}
+
 export interface AdvancedSearchField {
   name: string;
   type: AdvancedSearchFieldType;
+  key?: string;
+  keyType?: AdvancedSearchFieldKeyEnum;
   value?: string;
   fuzziness?: SelectDropdownState;
   analyzer?: SelectDropdownState;
@@ -136,7 +142,7 @@ export interface AdvancedSearchField {
 }
 
 export interface AdvancedSearchState {
-  baseUrl: string;
+  category: SearchCategory;
   fields: Array<AdvancedSearchField>;
 }
 
@@ -149,31 +155,49 @@ export default {
     },
   },
   setup(props) {
-    for (const field of props.state.fields) {
-      switch (field.type) {
-        case AdvancedSearchFieldType.String:
-          field.fuzziness = SelectDropdown.initState() as SelectDropdownState;
-          field.fuzziness.options = [
-            { title: 0, value: 0 },
-            { title: 1, value: 1 },
-            { title: 2, value: 2 },
-            { title: 3, value: 3 },
-          ];
+    watch(
+      () => settingState.setting,
+      () => {
+        for (const field of props.state.fields) {
+          switch (field.type) {
+            case AdvancedSearchFieldType.String:
+              field.fuzziness = SelectDropdown.initState() as SelectDropdownState;
+              field.fuzziness.options = [
+                { title: 0, value: 0 },
+                { title: 1, value: 1 },
+                { title: 2, value: 2 },
+                { title: 3, value: 3 },
+              ];
 
-          field.analyzer = SelectDropdown.initState() as SelectDropdownState;
-          const searchAnalyzers = Object.values(SearchAnalyzer);
-          for (let analyzer of searchAnalyzers) {
-            field.analyzer.options.push({ title: toTitle(analyzer), value: analyzer });
+              field.analyzer = SelectDropdown.initState() as SelectDropdownState;
+
+              let analyzers: any;
+
+              switch (field.keyType) {
+                case AdvancedSearchFieldKeyEnum.BuiltIn:
+                  analyzers = settingState.setting[props.state.category].analyzer.keyword as object;
+                  for (let analyzer in analyzers) {
+                    field.analyzer.options.push({ title: toTitle(analyzer), value: analyzer });
+                  }
+                  break;
+                case AdvancedSearchFieldKeyEnum.ElasticsearchField:
+                  analyzers = settingState.setting[props.state.category].analyzer.field[field.key] as Array<string>;
+                  for (let analyzer of analyzers) {
+                    field.analyzer.options.push({ title: toTitle(analyzer), value: analyzer });
+                  }
+                  break;
+              }
+
+              field.boolean = SelectDropdown.initState() as SelectDropdownState;
+              field.boolean.options = [
+                { title: "Should", value: "should" },
+                { title: "Must", value: "must" },
+              ];
+              break;
           }
-
-          field.boolean = SelectDropdown.initState() as SelectDropdownState;
-          field.boolean.options = [
-            { title: "Should", value: "should" },
-            { title: "Must", value: "must" },
-          ];
-          break;
-      }
-    }
+        }
+      },
+    );
 
     const category = reactive({ value: undefined });
 
@@ -285,7 +309,7 @@ export default {
       }
 
       const queriesStr = queriesArray.join("&");
-      const url = `${props.state.baseUrl}/advanced-search?${queriesStr}`;
+      const url = `/${props.state.category}/advanced-search?${queriesStr}`;
 
       window.open(url, "_self");
     }

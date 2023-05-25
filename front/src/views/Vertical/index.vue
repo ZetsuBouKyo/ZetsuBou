@@ -7,6 +7,7 @@
 <script>
 import { onBeforeMount } from "vue";
 
+import { settingState } from "@/state/setting";
 import { userState } from "@/state/user";
 
 import TopNav from "@/components/TopNav/index.vue";
@@ -17,6 +18,7 @@ export default {
   setup() {
     onBeforeMount(() => {
       userState.init();
+      settingState.init();
     });
   },
 };

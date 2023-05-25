@@ -111,7 +111,7 @@
 import { useRoute } from "vue-router";
 import { reactive, ref, watch } from "vue";
 
-import { SearchAnalyzer, SearchBase, SearchCategory, SearchState } from "@/interface/search";
+import { SearchAnalyzer, SearchBase, SearchBoolean, SearchCategory, SearchState } from "@/interface/search";
 
 import { userState } from "@/state/user";
 
@@ -131,6 +131,7 @@ import SelectDropdown, {
 
 import AdvancedSearch, {
   AdvancedSearchField,
+  AdvancedSearchFieldKeyEnum,
   AdvancedSearchFieldType,
   AdvancedSearchState,
 } from "./AdvancedSearch.vue";
@@ -146,22 +147,22 @@ export default {
       advancedSearch.value.open();
     }
 
-    const state: SearchState = reactive({
+    const state = reactive<SearchState>({
       query: {
         analyzer: undefined,
         query_id: undefined,
-        keywords: route.query.keywords,
+        keywords: route.query.keywords as string,
         page: 1,
         fuzziness: undefined,
         size: undefined,
-        boolean: "should",
+        boolean: SearchBoolean.Should,
         seed: undefined,
       },
       category: SearchCategory.Gallery,
       searchBase: SearchBase.Search,
-      defaultKeywords: route.query.keywords,
+      defaultKeywords: route.query.keywords as string,
       autocomplete: "tag",
-      advancedSearchState: { fields: [], baseUrl: `/${SearchCategory.Gallery}` },
+      advancedSearchState: { fields: [], category: SearchCategory.Gallery },
     });
 
     function updateByPath(path: string) {
@@ -170,19 +171,30 @@ export default {
       }
 
       state.category = SearchCategory.Gallery;
-      state.advancedSearchState = { fields: [], baseUrl: `/${state.category}` } as AdvancedSearchState;
+      state.advancedSearchState = { fields: [], category: state.category } as AdvancedSearchState;
 
       const p = path.split("/");
       if (p.length > 1 && (p[1] === SearchCategory.Video || p[1] === "v")) {
         state.category = SearchCategory.Video;
-        state.advancedSearchState.baseUrl = `/${state.category}`;
+        state.advancedSearchState.category = state.category;
         state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
           {
             name: "keywords",
+            keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
             type: AdvancedSearchFieldType.String,
           },
-          { name: "name", type: AdvancedSearchFieldType.String },
-          { name: "other_names", type: AdvancedSearchFieldType.String },
+          {
+            name: "name",
+            key: "name",
+            keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+            type: AdvancedSearchFieldType.String,
+          },
+          {
+            name: "other_names",
+            key: "other_names",
+            keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+            type: AdvancedSearchFieldType.String,
+          },
           { name: "rating", type: AdvancedSearchFieldType.Range },
           { name: "height", type: AdvancedSearchFieldType.Range },
           { name: "width", type: AdvancedSearchFieldType.Range },
@@ -194,11 +206,27 @@ export default {
       state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
         {
           name: "keywords",
+          keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
           type: AdvancedSearchFieldType.String,
         },
-        { name: "name", type: AdvancedSearchFieldType.String },
-        { name: "raw_name", type: AdvancedSearchFieldType.String },
-        { name: "src", type: AdvancedSearchFieldType.String },
+        {
+          name: "name",
+          key: "attributes.name",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
+        {
+          name: "raw_name",
+          key: "attributes.raw_name",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
+        {
+          name: "src",
+          key: "attributes.src",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
         { name: "rating", type: AdvancedSearchFieldType.Range },
       ];
     }
@@ -248,7 +276,7 @@ export default {
     watch(
       () => analyzerState.selectedValue,
       () => {
-        state.query.analyzer = analyzerState.selectedValue as string;
+        state.query.analyzer = analyzerState.selectedValue as SearchAnalyzer;
         if (analyzerState.selectedValue !== undefined) {
           clear(customSearchState);
         }
@@ -265,7 +293,7 @@ export default {
     watch(
       () => fuzzinessState.selectedValue,
       () => {
-        state.query.fuzziness = fuzzinessState.selectedValue;
+        state.query.fuzziness = fuzzinessState.selectedValue as number;
         if (fuzzinessState.selectedValue !== undefined) {
           clear(customSearchState);
         }
@@ -297,7 +325,7 @@ export default {
     watch(
       () => booleanTypeState.selectedValue,
       () => {
-        state.query.boolean = booleanTypeState.selectedValue as string;
+        state.query.boolean = booleanTypeState.selectedValue as SearchBoolean;
         if (booleanTypeState.selectedValue !== undefined) {
           clear(customSearchState);
         }
@@ -318,7 +346,7 @@ export default {
     watch(
       () => customSearchState.selectedValue,
       () => {
-        state.query.query_id = customSearchState.selectedValue;
+        state.query.query_id = customSearchState.selectedValue as number;
         if (customSearchState.selectedValue !== undefined) {
           clear(analyzerState);
           clear(queryTypeState);

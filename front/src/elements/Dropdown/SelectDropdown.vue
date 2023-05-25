@@ -363,7 +363,7 @@ export default defineComponent({
     }
 
     function createChip() {
-      if (!props.enableInputChipsEnterEvent) {
+      if (!props.enableInputChipsEnterEvent || !state.title) {
         return;
       }
       const title = state.title;

@@ -131,7 +131,7 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
         raw_name_fuzziness: int = 0,
         raw_name_bool: QueryBoolean = QueryBoolean.SHOULD,
         src: str = None,
-        src_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
         src_fuzziness: int = 0,
         src_bool: QueryBoolean = QueryBoolean.SHOULD,
         category: str = None,
@@ -177,13 +177,7 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                     }
                 )
         if name is not None:
-            name_field = "attributes.name"
-            if name_analyzer == AnalyzerEnum.DEFAULT.value:
-                name_field = "attributes.name"
-            elif name_analyzer == AnalyzerEnum.NGRAM.value:
-                name_field = "attributes.name.ngram"
-            elif name_analyzer == AnalyzerEnum.STANDARD.value:
-                name_field = "attributes.name.standard"
+            name_field = f"attributes.name.{name_analyzer}"
             name = name.split()
             for n in name:
                 dsl["query"]["bool"][name_bool].append(
@@ -194,7 +188,6 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                                     "query": n,
                                     "fuzziness": name_fuzziness,
                                     "fields": [name_field],
-                                    "analyzer": name_analyzer,
                                 }
                             }
                         }
@@ -202,13 +195,7 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                 )
 
         if raw_name is not None:
-            raw_name_field = "attributes.raw_name"
-            if raw_name_analyzer == AnalyzerEnum.DEFAULT.value:
-                raw_name_field = "attributes.raw_name"
-            elif raw_name_analyzer == AnalyzerEnum.NGRAM.value:
-                raw_name_field = "attributes.raw_name.ngram"
-            elif raw_name_analyzer == AnalyzerEnum.STANDARD.value:
-                raw_name_field = "attributes.raw_name.standard"
+            raw_name_field = f"attributes.raw_name.{raw_name_analyzer}"
             raw_name = raw_name.split()
             for n in raw_name:
                 dsl["query"]["bool"][raw_name_bool].append(
@@ -219,7 +206,6 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                                     "query": n,
                                     "fuzziness": raw_name_fuzziness,
                                     "fields": [raw_name_field],
-                                    "analyzer": raw_name_analyzer,
                                 }
                             }
                         }
@@ -227,13 +213,7 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                 )
 
         if src is not None:
-            src_field = "attributes.src"
-            if src_analyzer == AnalyzerEnum.DEFAULT.value:
-                src_field = "attributes.src"
-            elif src_analyzer == AnalyzerEnum.NGRAM.value:
-                src_field = "attributes.src.ngram"
-            elif src_analyzer == AnalyzerEnum.STANDARD.value:
-                src_field = "attributes.src.standard"
+            src_field = f"attributes.src.{src_analyzer}"
             src = src.split()
             for n in src:
                 dsl["query"]["bool"][src_bool].append(
@@ -244,7 +224,6 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                                     "query": n,
                                     "fuzziness": src_fuzziness,
                                     "fields": [src_field],
-                                    "analyzer": src_analyzer,
                                 }
                             }
                         }

@@ -171,13 +171,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
                     }
                 )
         if name is not None:
-            name_field = "name"
-            if name_analyzer == AnalyzerEnum.DEFAULT.value:
-                name_field = "name"
-            elif name_analyzer == AnalyzerEnum.NGRAM.value:
-                name_field = "name.ngram"
-            elif name_analyzer == AnalyzerEnum.STANDARD.value:
-                name_field = "name.standard"
+            name_field = f"name.{name_analyzer}"
             name = name.split()
             for n in name:
                 dsl["query"]["bool"][name_bool].append(
@@ -188,7 +182,6 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
                                     "query": n,
                                     "fuzziness": name_fuzziness,
                                     "fields": [name_field],
-                                    "analyzer": name_analyzer,
                                 }
                             }
                         }
@@ -196,13 +189,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
                 )
 
         if other_names is not None:
-            other_names_field = "other_names"
-            if other_names_analyzer == AnalyzerEnum.DEFAULT.value:
-                other_names_field = "other_names"
-            elif other_names_analyzer == AnalyzerEnum.NGRAM.value:
-                other_names_field = "other_names.ngram"
-            elif other_names_analyzer == AnalyzerEnum.STANDARD.value:
-                other_names_field = "other_names.standard"
+            other_names_field = f"other_names.{other_names_analyzer}"
             other_names = other_names.split()
             for n in other_names:
                 dsl["query"]["bool"][other_names_bool].append(
@@ -213,7 +200,6 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
                                     "query": n,
                                     "fuzziness": other_names_fuzziness,
                                     "fields": [other_names_field],
-                                    "analyzer": other_names_analyzer,
                                 }
                             }
                         }

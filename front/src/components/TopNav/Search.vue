@@ -195,6 +195,18 @@ export default {
             keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
             type: AdvancedSearchFieldType.String,
           },
+          {
+            name: "src",
+            key: "attributes.src",
+            keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+            type: AdvancedSearchFieldType.String,
+          },
+          {
+            name: "path",
+            key: "path",
+            keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+            type: AdvancedSearchFieldType.String,
+          },
           { name: "rating", type: AdvancedSearchFieldType.Range },
           { name: "height", type: AdvancedSearchFieldType.Range },
           { name: "width", type: AdvancedSearchFieldType.Range },

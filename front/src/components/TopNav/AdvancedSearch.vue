@@ -60,6 +60,10 @@
       <span class="w-28 mr-4 text-white">Category:</span>
       <input class="modal-input flex-1" type="text" :placeholder="category.value" v-model="category.value" />
     </div>
+    <div class="modal-row h-10">
+      <span class="w-28 mr-4 text-white">Uploader:</span>
+      <input class="modal-input flex-1" type="text" :placeholder="uploader.value" v-model="uploader.value" />
+    </div>
     <div class="modal-row" @keyup.enter.stop="">
       <span class="w-28 mr-4 text-white">Labels:</span>
       <select-dropdown
@@ -200,6 +204,7 @@ export default {
     );
 
     const category = reactive({ value: undefined });
+    const uploader = reactive({ value: undefined });
 
     const advancedSearch = ref();
     const labels = SelectDropdown.initState() as SelectDropdownState;
@@ -229,6 +234,10 @@ export default {
 
       if (category.value !== undefined) {
         queries["category"] = category.value;
+      }
+
+      if (uploader.value !== undefined) {
+        queries["uploader"] = uploader.value;
       }
 
       for (const field of props.state.fields) {
@@ -322,18 +331,19 @@ export default {
 
     return {
       ...props,
-      AdvancedSearchFieldType,
-      Origin,
-      SelectDropdownMode,
-      toTitle,
       advancedSearch,
+      AdvancedSearchFieldType,
       category,
       labels,
-      tags,
-      tagFields,
-      search,
-      reset,
       open,
+      Origin,
+      reset,
+      search,
+      SelectDropdownMode,
+      tagFields,
+      tags,
+      toTitle,
+      uploader,
     };
   },
 };

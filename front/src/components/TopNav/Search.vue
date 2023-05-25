@@ -227,6 +227,12 @@ export default {
           keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
           type: AdvancedSearchFieldType.String,
         },
+        {
+          name: "path",
+          key: "path",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
         { name: "rating", type: AdvancedSearchFieldType.Range },
       ];
     }

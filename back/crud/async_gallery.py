@@ -134,7 +134,12 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
         src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
         src_fuzziness: int = 0,
         src_bool: QueryBoolean = QueryBoolean.SHOULD,
+        path: str = None,
+        path_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
+        path_fuzziness: int = 0,
+        path_bool: QueryBoolean = QueryBoolean.SHOULD,
         category: str = None,
+        uploader: str = None,
         rating_gte: int = None,
         rating_lte: int = None,
         order_by: GalleryOrderedFieldEnum = None,
@@ -230,6 +235,24 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                     }
                 )
 
+        if path is not None:
+            path_field = f"path.{path_analyzer}"
+            path = path.split()
+            for n in path:
+                dsl["query"]["bool"][path_bool].append(
+                    {
+                        "constant_score": {
+                            "filter": {
+                                "multi_match": {
+                                    "query": n,
+                                    "fuzziness": path_fuzziness,
+                                    "fields": [path_field],
+                                }
+                            }
+                        }
+                    }
+                )
+
         if category is not None:
             dsl["query"]["bool"]["must"].append(
                 {
@@ -238,6 +261,20 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                             "multi_match": {
                                 "query": category,
                                 "fields": ["attributes.category"],
+                            }
+                        }
+                    }
+                }
+            )
+
+        if uploader is not None:
+            dsl["query"]["bool"]["must"].append(
+                {
+                    "constant_score": {
+                        "filter": {
+                            "multi_match": {
+                                "query": uploader,
+                                "fields": ["attributes.uploader"],
                             }
                         }
                     }

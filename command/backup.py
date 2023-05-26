@@ -17,7 +17,7 @@ from back.init.async_elasticsearch import indices, init_indices
 from back.model.base import SourceBaseModel
 from back.session.async_db import async_session
 from back.session.async_elasticsearch import async_elasticsearch
-from back.session.init_db import create_tables
+from back.init.database import create_tables
 from back.session.storage import get_app_storage_session
 from back.settings import setting
 from back.utils.dt import get_now

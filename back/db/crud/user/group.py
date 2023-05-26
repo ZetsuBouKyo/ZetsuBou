@@ -5,7 +5,13 @@ from sqlalchemy.future import select
 
 from ...model import UserGroup, UserGroupCreate
 from ...table import GroupBase, UserBase, UserGroupBase
-from ..base import create, delete_by_id, get_row_by, get_rows_order_by_id
+from ..base import (
+    create,
+    delete_by_id,
+    get_row_by,
+    get_rows_by_condition_order_by_id,
+    get_rows_order_by_id,
+)
 
 
 class CrudUserGroup(UserGroupBase):
@@ -44,6 +50,12 @@ class CrudUserGroup(UserGroupBase):
     @classmethod
     async def get_row_by_id(cls, id: int) -> UserGroup:
         return await get_row_by(cls, cls.id == id, UserGroup)
+
+    @classmethod
+    async def get_rows_by_group_id_order_by_id(cls, group_id: int) -> List[UserGroup]:
+        return await get_rows_by_condition_order_by_id(
+            cls, cls.group_id == group_id, UserGroup, limit=1
+        )
 
     @classmethod
     async def get_rows_order_by_id(

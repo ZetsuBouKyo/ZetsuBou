@@ -69,7 +69,7 @@ import {
   deleteUserQuest,
 } from "@/api/v1/user/quest/quest";
 
-import { getUserQuestCategories } from "@/api/v1/user/quest/category";
+import { getSettingUserQuestCategories } from "@/api/v1/setting/userQuestCategory";
 
 export interface Row {
   id?: number;
@@ -96,7 +96,7 @@ export default {
 
     const category = SelectDropdown.initState() as SelectDropdownState;
     function onGetCategory(params: GetParam) {
-      return getUserQuestCategories(params);
+      return getSettingUserQuestCategories(params);
     }
     function onGetCategoryToOptions(data: { name: string | number; id: number }) {
       return { title: data.name, value: data.id };
@@ -193,7 +193,7 @@ export default {
       size: 20,
     };
     function getCategories(params: any) {
-      getUserQuestCategories(params).then((response) => {
+      getSettingUserQuestCategories(params).then((response) => {
         const data = response.data;
         if (data) {
           for (let i = 0; i < data.length; i++) {

@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/quest/categories",
+    "/user-quest-categories",
     response_model=List[UserQuestCategory],
     dependencies=[api_security([ScopeEnum.user_quest_categories_get.name])],
 )
@@ -24,7 +24,7 @@ async def get_user_quest_categories(
 
 
 @router.get(
-    "/quest/category/{category_id}",
+    "/user-quest-category/{category_id}",
     response_model=UserQuestCategory,
     dependencies=[api_security([ScopeEnum.user_quest_category_get.name])],
 )

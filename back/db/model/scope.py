@@ -56,6 +56,8 @@ class ScopeEnum(int, Enum):
     setting_front_video_reset_get: int = auto()
     setting_front_video_get: int = auto()
     setting_front_video_put: int = auto()
+    setting_user_quest_categories_get: int = auto()
+    setting_user_quest_category_get: int = auto()
 
     tag: int = auto()
     tag_search_for_tag_attributes_get: int = auto()
@@ -120,8 +122,6 @@ class ScopeEnum(int, Enum):
     user_elastic_search_query_post: int = auto()
     user_elastic_search_query_put: int = auto()
     user_elastic_search_query_delete: int = auto()
-    user_quest_categories_get: int = auto()
-    user_quest_category_get: int = auto()
     user_total_elastic_count_quests_get: int = auto()
     user_elastic_count_quest_get: int = auto()
     user_elastic_count_quests_get: int = auto()

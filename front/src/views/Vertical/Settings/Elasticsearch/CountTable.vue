@@ -1,12 +1,14 @@
 <template>
-  <elastic-query-table
-    :editor-title="editorTitle"
-    :on-crud-create="onCrudCreate"
-    :on-crud-get="onCrudGet"
-    :on-crud-get-total="onCrudGetTotal"
-    :on-crud-update="onCrudUpdate"
-    :on-crud-delete="onCrudDelete"
-  />
+  <div class="views-setting-container">
+    <elastic-query-table
+      :editor-title="editorTitle"
+      :on-crud-create="onCrudCreate"
+      :on-crud-get="onCrudGet"
+      :on-crud-get-total="onCrudGetTotal"
+      :on-crud-update="onCrudUpdate"
+      :on-crud-delete="onCrudDelete"
+    />
+  </div>
 </template>
 
 <script lang="ts">

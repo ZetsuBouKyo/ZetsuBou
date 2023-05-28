@@ -1,6 +1,6 @@
 <template>
   <crud-table
-    class="lg:w-2/3 mt-4"
+    class="w-full"
     :state="table"
     :editor-title="editorTitle"
     :headers="headers"

@@ -1,45 +1,47 @@
 <template>
-  <crud-table
-    class="lg:w-2/3 mt-4"
-    :state="table"
-    :editor-title="'Elastic Count Quest'"
-    :headers="headers"
-    :colspan="'8'"
-    :on-crud-create="onCrudCreate"
-    :on-crud-get="onCrudGet"
-    :on-crud-get-total="onCrudGetTotal"
-    :on-crud-update="onCrudUpdate"
-    :on-crud-delete="onCrudDelete"
-    :on-close-editor="onCloseEditor"
-  >
-    <template v-slot:editor>
-      <div class="modal-row">
-        <span class="w-32 mr-4">Name:</span>
-        <input class="w-1/2 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
-      </div>
-      <div class="modal-row">
-        <span class="w-32 mr-4">Numerator Id:</span>
-        <select-dropdown
-          class="h-10 w-64"
-          :options-width-class="'w-64'"
-          :state="numerator"
-          :on-get="onGet"
-          :on-get-to-options="onGetToOptions"
-        ></select-dropdown>
-        <ripple-button class="ml-2 btn btn-primary" @click="openQueryPage"> Add </ripple-button>
-      </div>
-      <div class="modal-row">
-        <span class="w-32 mr-4">Denominator Id:</span>
-        <select-dropdown
-          class="h-10 w-64"
-          :options-width-class="'w-64'"
-          :state="denominator"
-          :on-get="onGet"
-          :on-get-to-options="onGetToOptions"
-        ></select-dropdown>
-      </div>
-    </template>
-  </crud-table>
+  <div class="views-setting-container">
+    <crud-table
+      class="w-full"
+      :state="table"
+      :editor-title="'Elastic Count Quest'"
+      :headers="headers"
+      :colspan="'8'"
+      :on-crud-create="onCrudCreate"
+      :on-crud-get="onCrudGet"
+      :on-crud-get-total="onCrudGetTotal"
+      :on-crud-update="onCrudUpdate"
+      :on-crud-delete="onCrudDelete"
+      :on-close-editor="onCloseEditor"
+    >
+      <template v-slot:editor>
+        <div class="modal-row">
+          <span class="w-32 mr-4">Name:</span>
+          <input class="w-1/2 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
+        </div>
+        <div class="modal-row">
+          <span class="w-32 mr-4">Numerator Id:</span>
+          <select-dropdown
+            class="h-10 w-64"
+            :options-width-class="'w-64'"
+            :state="numerator"
+            :on-get="onGet"
+            :on-get-to-options="onGetToOptions"
+          ></select-dropdown>
+          <ripple-button class="ml-2 btn btn-primary" @click="openQueryPage"> Add </ripple-button>
+        </div>
+        <div class="modal-row">
+          <span class="w-32 mr-4">Denominator Id:</span>
+          <select-dropdown
+            class="h-10 w-64"
+            :options-width-class="'w-64'"
+            :state="denominator"
+            :on-get="onGet"
+            :on-get-to-options="onGetToOptions"
+          ></select-dropdown>
+        </div>
+      </template>
+    </crud-table>
+  </div>
 </template>
 
 <script lang="ts">

@@ -19,67 +19,69 @@
     </div>
   </modal>
   <div class="views-setting-container">
-    <span class="views-setting-section-title">Account</span>
-    <div class="views-setting-sections">
-      <div class="views-setting-row">
-        <div class="views-setting-cell">Name:</div>
-        <input
-          class="w-72 border-2 border-gray-600 text-white placeholder-gray-400 ml-4 px-4 rounded-lg focus:outline-none hidden sm:inline-block"
-          :class="state.isNameEditable ? 'bg-gray-500' : 'bg-gray-600'"
-          type="text"
-          v-model="userState.newName"
-          :placeholder="userState.name"
-          :disabled="!state.isNameEditable"
-        />
-        <ripple-button
-          class="flex btn btn-primary h-full mx-2 rounded-lg bg-blue-500 hover:opacity-50 hover:bg-gray-500 items-center"
-          @click="makeNameEditable"
-        >
-          <icon-ic-outline-edit style="font-size: 1.2rem; color: white" />
-        </ripple-button>
+    <div class="views-setting-section">
+      <span class="views-setting-section-title">Profile</span>
+      <div class="views-setting-rows">
+        <div class="views-setting-row">
+          <div class="views-setting-cell">Name:</div>
+          <input
+            class="w-72 border-2 border-gray-600 text-white placeholder-gray-400 ml-4 px-4 rounded-lg focus:outline-none hidden sm:inline-block"
+            :class="state.isNameEditable ? 'bg-gray-500' : 'bg-gray-600'"
+            type="text"
+            v-model="userState.newName"
+            :placeholder="userState.name"
+            :disabled="!state.isNameEditable"
+          />
+          <ripple-button
+            class="flex btn btn-primary h-full mx-2 rounded-lg bg-blue-500 hover:opacity-50 hover:bg-gray-500 items-center"
+            @click="makeNameEditable"
+          >
+            <icon-ic-outline-edit style="font-size: 1.2rem; color: white" />
+          </ripple-button>
+        </div>
+        <div class="views-setting-row">
+          <div class="views-setting-cell">Email:</div>
+          <div class="views-setting-cell ml-4">{{ userState.email }}</div>
+        </div>
+        <div class="views-setting-row">
+          <ripple-button class="flex btn btn-primary ml-auto" @click="openChangeUser">Save</ripple-button>
+        </div>
       </div>
-      <div class="views-setting-row">
-        <div class="views-setting-cell">Email:</div>
-        <div class="views-setting-cell ml-4">{{ userState.email }}</div>
-      </div>
-      <div class="views-setting-row">
-        <ripple-button class="flex btn btn-primary ml-auto" @click="openChangeUser">Save</ripple-button>
-      </div>
-      <div class="views-setting-section">
-        <span class="views-setting-section-title">Change password</span>
-        <div class="views-setting-sections">
-          <div class="views-setting-row">
-            <div class="views-setting-cell w-48">Old password:</div>
-            <form>
-              <input
-                class="w-72 border-2 border-gray-600 bg-gray-500 text-white placeholder-gray-400 ml-4 px-4 rounded-lg focus:outline-none hidden sm:inline-block"
-                type="password"
-                autocomplete="new-password"
-                v-model="userState.oldPassword"
-              />
-            </form>
-          </div>
-          <div class="views-setting-row">
-            <div class="views-setting-cell w-48">New password:</div>
+    </div>
+    <div class="views-setting-section">
+      <span class="views-setting-section-title">Change password</span>
+      <div class="views-setting-rows">
+        <div class="views-setting-row">
+          <div class="views-setting-cell w-48">Old password:</div>
+          <form>
             <input
-              class="w-72 border-2 border-gray-600 bg-gray-500 text-white placeholder-gray-400 ml-4 px-4 rounded-lg focus:outline-none hidden sm:inline-block"
+              class="views-setting-cell w-72"
               type="password"
               autocomplete="new-password"
-              v-model="userState.newPassword"
+              v-model="userState.oldPassword"
             />
-          </div>
-          <div class="views-setting-row">
-            <div class="views-setting-cell w-48">Confirm new password:</div>
-            <input
-              class="w-72 border-2 border-gray-600 bg-gray-500 text-white placeholder-gray-400 ml-4 px-4 rounded-lg focus:outline-none hidden sm:inline-block"
-              type="password"
-              autocomplete="new-password"
-              v-model="userState.passwordConfirmation"
-            />
-          </div>
-          <div class="views-setting-row">
-            <ripple-button class="flex btn btn-primary ml-auto" @click="confirmChangeUser">Save</ripple-button>
-          </div>
+          </form>
+        </div>
+        <div class="views-setting-row">
+          <div class="views-setting-cell w-48">New password:</div>
+          <input
+            class="views-setting-cell w-72"
+            type="password"
+            autocomplete="new-password"
+            v-model="userState.newPassword"
+          />
+        </div>
+        <div class="views-setting-row">
+          <div class="views-setting-cell w-48">Confirm new password:</div>
+          <input
+            class="views-setting-cell w-72"
+            type="password"
+            autocomplete="new-password"
+            v-model="userState.passwordConfirmation"
+          />
+        </div>
+        <div class="views-setting-row">
+          <ripple-button class="flex btn btn-primary ml-auto" @click="confirmChangeUser">Save</ripple-button>
         </div>
       </div>
     </div>

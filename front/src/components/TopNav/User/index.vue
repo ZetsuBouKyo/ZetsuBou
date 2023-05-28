@@ -35,33 +35,9 @@
           </a>
         </ripple-button>
         <ripple-button class="flex w-full">
-          <a class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" href="/tag/tag">
-            <icon-ion-ios-pricetags class="self-center ml-2" style="font-size: 1.4rem" />
-            <span class="flex px-2 py-1 self-center">Tag</span>
-          </a>
-        </ripple-button>
-        <ripple-button class="flex w-full">
-          <a class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" href="/elastic-query/count">
-            <icon-ic-baseline-search class="self-center ml-2" style="font-size: 1.4rem" />
-            <span class="flex px-2 py-1 self-center">Elastic Query</span>
-          </a>
-        </ripple-button>
-        <ripple-button class="flex w-full">
-          <a class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" href="/quest/quest">
-            <icon-icons8-todo-list class="self-center ml-2" style="font-size: 1.4rem" />
-            <span class="flex px-2 py-1 self-center">Quest</span>
-          </a>
-        </ripple-button>
-        <ripple-button class="flex w-full">
           <a class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" href="">
             <icon-ic-outline-analytics class="self-center ml-2" style="font-size: 1.4rem" />
             <span class="flex px-2 py-1 self-center">Analytics</span>
-          </a>
-        </ripple-button>
-        <ripple-button class="flex w-full">
-          <a class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" href="/administration/user">
-            <icon-ic-outline-admin-panel-settings class="self-center ml-2" style="font-size: 1.4rem" />
-            <span class="flex px-2 py-1 self-center">Administration</span>
           </a>
         </ripple-button>
         <ripple-button class="flex w-full">

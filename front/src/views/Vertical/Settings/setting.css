@@ -1,9 +1,6 @@
 @layer utilities {
   .views-setting-container {
-    @apply flex flex-col w-full ml-4 px-4 divide-y divide-gray-300;
-  }
-  .views-setting-sections {
-    @apply flex flex-col py-4;
+    @apply flex flex-col w-full ml-8;
   }
   .views-setting-section {
     @apply flex flex-col w-full divide-y divide-gray-300;
@@ -11,14 +8,31 @@
   .views-setting-section-title {
     @apply w-full text-xl text-white font-medium py-3 rounded-t-lg;
   }
+  .views-setting-rows {
+    @apply flex flex-col py-4 w-full;
+  }
   .views-setting-row {
     @apply flex flex-row my-2 items-center;
   }
-  .views-setting-cell {
+  div.views-setting-cell {
     @apply flex h-11 items-center;
+  }
+  input.views-setting-cell {
+    @apply border-2 ml-4 px-4 rounded-lg;
+    @apply border-gray-600 bg-gray-500 text-white placeholder-gray-400;
+    @apply focus:outline-none hidden sm:inline-block;
   }
   .views-setting-action-ripple-button {
     @apply flex w-full;
+  }
+  .views-setting-action-ripple-button-inactive {
+    @apply border-l-4 border-gray-800;
+  }
+  .views-setting-action-ripple-button-active {
+    @apply border-l-4 border-blue-500 bg-gray-600 text-white;
+  }
+  div.views-setting-action {
+    @apply flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white;
   }
   a.views-setting-action {
     @apply flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white;
@@ -26,7 +40,10 @@
   span.views-setting-action {
     @apply flex px-2 py-1 text-sm self-center;
   }
+  span.views-setting-sub-action {
+    @apply flex px-2 py-1 text-xs self-center;
+  }
   .views-setting-action-icon {
-    @apply self-center ml-2;
+    @apply self-center;
   }
 }

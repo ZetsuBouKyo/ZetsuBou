@@ -1,26 +1,22 @@
-import Account from "./views/Vertical/Settings/Account/index.vue";
-import Administration from "./views/Vertical/Administration/index.vue";
-import AdministrationGroup from "./views/Vertical/Administration/Group/index.vue";
-import AdministrationStorage from "./views/Vertical/Administration/Storage/index.vue";
-import Appearance from "./views/Vertical/Settings/Appearance/index.vue";
-import Count from "./views/Vertical/ElasticQuery/Count.vue";
-import ElasticCountQuest from "./views/Vertical/Quest/ElasticCountQuest/index.vue";
-import ElasticQuery from "./views/Vertical/ElasticQuery/index.vue";
-import FrontUI from "./views/Vertical/Administration/FrontUI/index.vue";
 import Galleries from "./views/Vertical/Galleries.vue";
 import Gallery from "./views/Vertical/Gallery/index.vue";
 import ImgSvgPreview from "./views/Vertical/ImgSvgPreview/index.vue";
 import Login from "./views/Login.vue";
 import NotFound from "./views/Vertical/NotFound.vue";
-import Quest from "./views/Vertical/Quest/index.vue";
-import QuestQuest from "./views/Vertical/Quest/Quest/index.vue";
-import Search from "./views/Vertical/ElasticQuery/Search.vue";
-import Tag from "./views/Vertical/Tag/index.vue";
-import TagAttribute from "./views/Vertical/Tag/Attribute/index.vue";
-import TagTag from "./views/Vertical/Tag/Tag/index.vue";
-import TagToken from "./views/Vertical/Tag/Token/index.vue";
-import Task from "./views/Vertical/Administration/Task/index.vue";
+import SettingAccount from "./views/Vertical/Settings/Account/index.vue";
+import SettingAppearance from "./views/Vertical/Settings/Appearance/index.vue";
+import SettingAuthentication from "./views/Vertical/Settings/Authentication/index.vue";
+import SettingElasticsearchCount from "./views/Vertical/Settings/Elasticsearch/CountTable.vue";
+import SettingElasticsearchCountQuest from "./views/Vertical/Settings/Quest/ElasticsearchCountQuestTable.vue";
+import SettingElasticsearchSearch from "./views/Vertical/Settings/Elasticsearch/SearchTable.vue";
+import SettingGroup from "./views/Vertical/Settings/Group/GroupTable.vue";
+import SettingQuest from "./views/Vertical/Settings/Quest/QuestTable.vue";
 import Settings from "./views/Vertical/Settings/index.vue";
+import SettingStorageMinioTable from "./views/Vertical/Settings/Storage/StorageMinioTable.vue";
+import SettingTag from "./views/Vertical/Settings/Tag/TagTable.vue";
+import SettingTagAttribute from "./views/Vertical/Settings/Tag/TagAttributeTable.vue";
+import SettingTagFrontUI from "./views/Vertical/Settings/Tag/FrontUI/index.vue";
+import SettingTagToken from "./views/Vertical/Settings/Tag/TagTokenTable.vue";
 import Vertical from "./views/Vertical/index.vue";
 import Video from "./views/Vertical/Video/index.vue";
 import Videos from "./views/Vertical/Videos.vue";
@@ -42,52 +38,31 @@ export const routes = [
       { path: "/video/search", component: Videos, meta: { title: "Video Search" } },
       { path: "/video/advanced-search", component: Videos, meta: { title: "Video Advanced Search" } },
       {
-        path: "/administration",
-        component: Administration,
-        meta: { title: "Administration" },
-        children: [
-          { path: "user", component: NotFound, meta: { title: "User" } },
-          { path: "group", component: AdministrationGroup, meta: { title: "Group" } },
-          { path: "storage", component: AdministrationStorage, meta: { title: "Storage" } },
-          { path: "front-ui", component: FrontUI, meta: { title: "Front UI" } },
-          { path: "task", component: Task, meta: { title: "Task" } },
-        ],
-      },
-      {
-        path: "/elastic-query",
-        component: ElasticQuery,
-        meta: { title: "ElasticQuery" },
-        children: [
-          { path: "count", component: Count, meta: { title: "Elasticsearch Query Count" } },
-          { path: "search", component: Search, meta: { title: "Elasticsearch Query Search" } },
-        ],
-      },
-      {
-        path: "/quest",
-        component: Quest,
-        meta: { title: "Quest" },
-        children: [
-          { path: "quest", component: QuestQuest, meta: { title: "Quest" } },
-          { path: "elastic-count-quest", component: ElasticCountQuest, meta: { title: "Elasticsearch Count Quest" } },
-        ],
-      },
-      {
-        path: "/tag",
-        component: Tag,
-        meta: { title: "Tag" },
-        children: [
-          { path: "tag", component: TagTag, meta: { title: "Tag" } },
-          { path: "token", component: TagToken, meta: { title: "Token" } },
-          { path: "attribute", component: TagAttribute, meta: { title: "Attribute" } },
-        ],
-      },
-      {
         path: "/settings",
         component: Settings,
         meta: { title: "Settings" },
         children: [
-          { path: "account", component: Account, meta: { title: "Account" } },
-          { path: "appearance", component: Appearance, meta: { title: "Appearance" } },
+          { path: "account", component: SettingAccount, meta: { title: "Account" } },
+          { path: "appearance", component: SettingAppearance, meta: { title: "Appearance" } },
+          { path: "authentication", component: SettingAuthentication, meta: { title: "Authentication" } },
+          { path: "storage-minio", component: SettingStorageMinioTable, meta: { title: "Storage Minio" } },
+          { path: "elasticsearch-count", component: SettingElasticsearchCount, meta: { title: "Elasticsearch Count" } },
+          {
+            path: "elasticsearch-search",
+            component: SettingElasticsearchSearch,
+            meta: { title: "Elasticsearch Search" },
+          },
+          { path: "tag", component: SettingTag, meta: { title: "Tag" } },
+          { path: "tag-token", component: SettingTagToken, meta: { title: "Tag Token" } },
+          { path: "tag-attribute", component: SettingTagAttribute, meta: { title: "Tag Attribute" } },
+          { path: "tag-front-ui", component: SettingTagFrontUI, meta: { title: "Tag Front UI" } },
+          { path: "quest", component: SettingQuest, meta: { title: "Quest" } },
+          {
+            path: "elasticsearch-count-quest",
+            component: SettingElasticsearchCountQuest,
+            meta: { title: "Elasticsearch Count Quest" },
+          },
+          { path: "group", component: SettingGroup, meta: { title: "Group" } },
         ],
       },
       { path: "/NotFound", component: NotFound },

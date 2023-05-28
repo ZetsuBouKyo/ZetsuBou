@@ -1,5 +1,5 @@
 <template>
-  <div class="lg:w-2/3 mt-4 mx-auto flex flex-col">
+  <div class="views-setting-container">
     <gallery-setting />
     <video-setting class="my-4" />
   </div>

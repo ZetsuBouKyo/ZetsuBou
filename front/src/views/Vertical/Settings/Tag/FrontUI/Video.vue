@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-col bg-gray-900 rounded-lg">
-    <span class="text-xl text-white font-medium bg-black px-4 py-3 rounded-t-lg">Gallery</span>
-    <div class="flex flex-col my-1">
-      <div class="modal-row">
-        <span class="w-32 mr-4">Categories:</span>
+  <div class="views-setting-section">
+    <span class="views-setting-section-title">Video</span>
+    <div class="views-setting-rows">
+      <div class="views-setting-row">
+        <div class="views-setting-cell w-32">Categories:</div>
         <select-dropdown
           class="flex-1"
           :options-width-class="'w-96'"
@@ -17,8 +17,8 @@
           :mode="SelectDropdownMode.InputChips"
         />
       </div>
-      <div class="modal-row">
-        <span class="w-32 mr-4">Tag fields:</span>
+      <div class="views-setting-row">
+        <div class="views-setting-cell w-32">Tag fields:</div>
         <select-dropdown
           class="flex-1"
           :options-width-class="'w-96'"
@@ -32,8 +32,8 @@
           :mode="SelectDropdownMode.InputChips"
         />
       </div>
-      <div class="modal-row">
-        <button class="flex ml-auto btn btn-primary" @click="save">Save</button>
+      <div class="views-setting-row">
+        <ripple-button class="flex btn btn-primary ml-auto" @click="save">Save</ripple-button>
       </div>
     </div>
   </div>
@@ -42,17 +42,18 @@
 <script lang="ts">
 import { onGetTip, onMouseoverOption } from "@/utils/tag";
 
+import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown, {
   SelectDropdownState,
   SelectDropdownMode,
   Origin,
 } from "@/elements/Dropdown/SelectDropdown.vue";
 
-import { getSettingFrontGalleryInterpretation, putSettingFrontGallery } from "@/api/v1/setting/front/gallery";
+import { getSettingFrontVideoInterpretation, putSettingFrontVideo } from "@/api/v1/setting/front/video";
 import { getTagTokenStartWith } from "@/api/v1/tag/token";
 
 export default {
-  components: { SelectDropdown },
+  components: { RippleButton, SelectDropdown },
   setup() {
     function tokenToOption(token: { id: number; name: string }) {
       return { title: token.name, value: token.id };
@@ -67,7 +68,7 @@ export default {
     const onGetTagFieldsToOptions = tokenToOption;
 
     function load() {
-      getSettingFrontGalleryInterpretation().then((response) => {
+      getSettingFrontVideoInterpretation().then((response) => {
         const data = response.data as any;
         for (let i = 0; i < data.categories.length; i++) {
           const token = data.categories[i];
@@ -99,7 +100,7 @@ export default {
         query.tag_field_ids.push(chip.value);
       }
 
-      putSettingFrontGallery(query).then(() => {
+      putSettingFrontVideo(query).then(() => {
         window.location.reload();
       });
     }

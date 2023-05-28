@@ -158,24 +158,23 @@ async def video_advanced_search(
 private_router.add_api_route("/settings", index)
 private_router.add_api_route("/settings/account", index)
 private_router.add_api_route("/settings/appearance", index)
+private_router.add_api_route("/settings/authentication", index)
+private_router.add_api_route("/settings/storage-minio", table)
+
+private_router.add_api_route("/settings/elasticsearch-count", table)
+private_router.add_api_route("/settings/elasticsearch-search", table)
+
+private_router.add_api_route("/settings/tag", table)
+private_router.add_api_route("/settings/tag-token", table)
+private_router.add_api_route("/settings/tag-attribute", table)
+private_router.add_api_route("/settings/tag-front-ui", index)
+
+private_router.add_api_route("/settings/quest", table)
+private_router.add_api_route("/settings/elasticsearch-count-quest", table)
+
+private_router.add_api_route("/settings/group", table)
 
 private_router.add_api_route("/video", index)
-
-private_router.add_api_route("/administration/user", table)
-private_router.add_api_route("/administration/group", table)
-private_router.add_api_route("/administration/storage", table)
-private_router.add_api_route("/administration/front-ui", index)
-private_router.add_api_route("/administration/task", index)
-
-private_router.add_api_route("/tag/tag", table)
-private_router.add_api_route("/tag/token", table)
-private_router.add_api_route("/tag/attribute", table)
-
-private_router.add_api_route("/elastic-query/count", table)
-private_router.add_api_route("/elastic-query/search", table)
-
-private_router.add_api_route("/quest/quest", table)
-private_router.add_api_route("/quest/elastic-count-quest", table)
 
 private_router.add_api_route("/g/{gallery_id}", index)
 private_router.add_api_route("/g/{gallery_id}/i/{image}", index)

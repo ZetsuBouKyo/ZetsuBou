@@ -1,87 +1,89 @@
 <template>
-  <crud-table
-    class="lg:w-2/3 mt-4"
-    :state="table"
-    :editor-title="'Tag'"
-    :headers="headers"
-    :search="search"
-    :colspan="'3'"
-    :on-crud-create="onCrudCreate"
-    :on-crud-get="onCrudGet"
-    :on-crud-get-total="onCrudGetTotal"
-    :on-crud-update="onCrudUpdate"
-    :on-crud-delete="onCrudDelete"
-    :on-close-editor="onCloseEditor"
-    :delete-confirm-message="'Are you sure you want to permanently delete this row? This might destroy the database.'"
-  >
-    <template v-slot:editor>
-      <div class="modal-row">
-        <span class="w-32 mr-4">Name:</span>
-        <input class="w-1/2 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
-      </div>
-      <div class="modal-row">
-        <span class="w-32 mr-4">Representative:</span>
-        <select-dropdown
-          class="flex-1"
-          :options-width-class="'w-64'"
-          :origin="Origin.BottomLeft"
-          :state="representative"
-          :on-get="onGetTokens"
-          :on-get-to-options="onGetTokensToOptions"
-          :on-get-tip="onGetTip"
-          :on-mouseover-option="onMouseoverOption"
-          :mode="SelectDropdownMode.Input"
-        />
-      </div>
-      <div class="modal-row">
-        <span class="w-32 mr-4">Synonyms:</span>
-        <select-dropdown
-          class="flex-1"
-          :options-width-class="'w-64'"
-          :origin="Origin.BottomLeft"
-          :state="synonyms"
-          :enable-input-chips-enter-event="false"
-          :on-get="onGetTokens"
-          :on-get-to-options="onGetTokensToOptions"
-          :on-get-tip="onGetTip"
-          :on-mouseover-option="onMouseoverOption"
-          :mode="SelectDropdownMode.InputChips"
-        />
-      </div>
-      <div class="modal-row">
-        <span class="w-32 mr-4">Categories:</span>
-        <select-dropdown
-          class="flex-1"
-          :options-width-class="'w-96'"
-          :origin="Origin.BottomLeft"
-          :state="categories"
-          :enable-input-chips-enter-event="false"
-          :on-get="onGetTokens"
-          :on-get-to-options="onGetTokensToOptions"
-          :on-get-tip="onGetTip"
-          :on-mouseover-option="onMouseoverOption"
-          :mode="SelectDropdownMode.InputChips"
-        />
-      </div>
-      <div class="modal-row">
-        <span class="w-32 mr-4">Attributes:</span>
-        <select-dropdown
-          class="flex-1"
-          :options-width-class="'w-96'"
-          :origin="Origin.BottomLeft"
-          :state="attributes"
-          :enable-input-chips-enter-event="false"
-          :on-get="onGetAttributes"
-          :on-get-to-options="onGetAttributesToOptions"
-          :mode="SelectDropdownMode.InputChips"
-        />
-      </div>
-      <div class="modal-row" v-for="(_, chipID) in table.row.attributes" :key="chipID">
-        <span class="w-32 mr-4">{{ getAttributeTitleByID(chipID) }}:</span>
-        <textarea class="modal-textarea flex-1 h-40" v-model="table.row.attributes[chipID]" />
-      </div>
-    </template>
-  </crud-table>
+  <div class="views-setting-container">
+    <crud-table
+      class="w-full"
+      :state="table"
+      :editor-title="'Tag'"
+      :headers="headers"
+      :search="search"
+      :colspan="'3'"
+      :on-crud-create="onCrudCreate"
+      :on-crud-get="onCrudGet"
+      :on-crud-get-total="onCrudGetTotal"
+      :on-crud-update="onCrudUpdate"
+      :on-crud-delete="onCrudDelete"
+      :on-close-editor="onCloseEditor"
+      :delete-confirm-message="'Are you sure you want to permanently delete this row? This might destroy the database.'"
+    >
+      <template v-slot:editor>
+        <div class="modal-row">
+          <span class="w-32 mr-4">Name:</span>
+          <input class="w-1/2 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
+        </div>
+        <div class="modal-row">
+          <span class="w-32 mr-4">Representative:</span>
+          <select-dropdown
+            class="flex-1"
+            :options-width-class="'w-64'"
+            :origin="Origin.BottomLeft"
+            :state="representative"
+            :on-get="onGetTokens"
+            :on-get-to-options="onGetTokensToOptions"
+            :on-get-tip="onGetTip"
+            :on-mouseover-option="onMouseoverOption"
+            :mode="SelectDropdownMode.Input"
+          />
+        </div>
+        <div class="modal-row">
+          <span class="w-32 mr-4">Synonyms:</span>
+          <select-dropdown
+            class="flex-1"
+            :options-width-class="'w-64'"
+            :origin="Origin.BottomLeft"
+            :state="synonyms"
+            :enable-input-chips-enter-event="false"
+            :on-get="onGetTokens"
+            :on-get-to-options="onGetTokensToOptions"
+            :on-get-tip="onGetTip"
+            :on-mouseover-option="onMouseoverOption"
+            :mode="SelectDropdownMode.InputChips"
+          />
+        </div>
+        <div class="modal-row">
+          <span class="w-32 mr-4">Categories:</span>
+          <select-dropdown
+            class="flex-1"
+            :options-width-class="'w-96'"
+            :origin="Origin.BottomLeft"
+            :state="categories"
+            :enable-input-chips-enter-event="false"
+            :on-get="onGetTokens"
+            :on-get-to-options="onGetTokensToOptions"
+            :on-get-tip="onGetTip"
+            :on-mouseover-option="onMouseoverOption"
+            :mode="SelectDropdownMode.InputChips"
+          />
+        </div>
+        <div class="modal-row">
+          <span class="w-32 mr-4">Attributes:</span>
+          <select-dropdown
+            class="flex-1"
+            :options-width-class="'w-96'"
+            :origin="Origin.BottomLeft"
+            :state="attributes"
+            :enable-input-chips-enter-event="false"
+            :on-get="onGetAttributes"
+            :on-get-to-options="onGetAttributesToOptions"
+            :mode="SelectDropdownMode.InputChips"
+          />
+        </div>
+        <div class="modal-row" v-for="(_, chipID) in table.row.attributes" :key="chipID">
+          <span class="w-32 mr-4">{{ getAttributeTitleByID(chipID) }}:</span>
+          <textarea class="modal-textarea flex-1 h-40" v-model="table.row.attributes[chipID]" />
+        </div>
+      </template>
+    </crud-table>
+  </div>
 </template>
 
 <script lang="ts">

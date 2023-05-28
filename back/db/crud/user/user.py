@@ -3,11 +3,13 @@ from typing import List
 from back.security import get_hashed_password, verify_password
 from back.session.async_db import async_session
 from back.settings import setting
+from fastapi import HTTPException
 from pydantic import BaseModel, EmailStr
+from sqlalchemy import update
 from sqlalchemy.future import select
 from sqlalchemy.sql import functions as func
 
-from ...model import Group, User, UserCreate, UserCreated
+from ...model import Group, User, UserCreate, UserCreated, UserUpdate
 from ...table import GroupBase, UserBase, UserFrontSettingBase, UserGroupBase
 from ..base import (
     batch_create,
@@ -18,7 +20,6 @@ from ..base import (
     get_row_by,
     get_row_by_id,
     get_rows_order_by_id,
-    update_by_id,
 )
 
 
@@ -94,9 +95,34 @@ class CrudUser(UserBase):
         return out
 
     @classmethod
-    async def update_by_id(cls, user) -> bool:
-        user = get_user_hashed_password(user)
-        return await update_by_id(cls, user)
+    async def update_by_user(cls, user: UserUpdate) -> bool:
+        async with async_session() as session:
+            async with session.begin():
+                row = await session.execute(select(cls).where(cls.email == user.email))
+                first = row.scalars().first()
+                if first is None:
+                    raise HTTPException(status_code=401, detail="Not authenticated")
+            async with session.begin():
+                if not verify_password(user.password, first.hashed_password):
+                    raise HTTPException(status_code=401, detail="Not authenticated")
+
+                new_user = {}
+                if user.name is not None and user.name != first.name:
+                    new_user["name"] = user.name
+                if user.new_password is not None:
+                    new_user["hashed_password"] = get_hashed_password(user.new_password)
+
+                if new_user:
+                    rows = await session.execute(
+                        update(cls).where(cls.email == first.email).values(**new_user)
+                    )
+                    await session.commit()
+                    if rows.rowcount == 0:
+                        raise HTTPException(status_code=500, detail="Update failed")
+            async with session.begin():
+                row = await session.execute(select(cls).where(cls.email == user.email))
+                first = row.scalars().first()
+        return User(**first.__dict__)
 
     @classmethod
     async def delete_all(cls):

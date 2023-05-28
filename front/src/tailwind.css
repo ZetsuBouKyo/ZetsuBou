@@ -9,6 +9,8 @@
 @import "@/elements/Modal/modal.css";
 @import "@/elements/Table/table.css";
 
+@import "@/views/Vertical/Settings/setting.css";
+
 @layer utilities {
   .scrollbar-gray-900-2::-webkit-scrollbar {
     @apply w-2 h-full bg-gray-900 rounded-md;

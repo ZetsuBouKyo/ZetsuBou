@@ -155,6 +155,10 @@ async def video_advanced_search(
     return index(request)
 
 
+private_router.add_api_route("/settings", index)
+private_router.add_api_route("/settings/account", index)
+private_router.add_api_route("/settings/appearance", index)
+
 private_router.add_api_route("/video", index)
 
 private_router.add_api_route("/administration/user", table)

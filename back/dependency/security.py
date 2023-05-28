@@ -162,6 +162,10 @@ async def verify_view_with_scope(
         raise RequiresLoginException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 
+def api_user_security():
+    pass
+
+
 def api_security(scopes: List[str] = []) -> Security:
     return Security(verify_api_with_scopes, scopes=scopes)
 

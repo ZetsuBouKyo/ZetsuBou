@@ -15,10 +15,10 @@ class UserCreated(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    id: int
     email: EmailStr
-    name: str
+    name: str = None
     password: str
+    new_password: str = None
 
 
 class User(BaseModel):

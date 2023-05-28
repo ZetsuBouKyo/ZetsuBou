@@ -1,6 +1,8 @@
+import Account from "./views/Vertical/Settings/Account/index.vue";
 import Administration from "./views/Vertical/Administration/index.vue";
 import AdministrationGroup from "./views/Vertical/Administration/Group/index.vue";
 import AdministrationStorage from "./views/Vertical/Administration/Storage/index.vue";
+import Appearance from "./views/Vertical/Settings/Appearance/index.vue";
 import Count from "./views/Vertical/ElasticQuery/Count.vue";
 import ElasticCountQuest from "./views/Vertical/Quest/ElasticCountQuest/index.vue";
 import ElasticQuery from "./views/Vertical/ElasticQuery/index.vue";
@@ -18,6 +20,7 @@ import TagAttribute from "./views/Vertical/Tag/Attribute/index.vue";
 import TagTag from "./views/Vertical/Tag/Tag/index.vue";
 import TagToken from "./views/Vertical/Tag/Token/index.vue";
 import Task from "./views/Vertical/Administration/Task/index.vue";
+import Settings from "./views/Vertical/Settings/index.vue";
 import Vertical from "./views/Vertical/index.vue";
 import Video from "./views/Vertical/Video/index.vue";
 import Videos from "./views/Vertical/Videos.vue";
@@ -55,8 +58,17 @@ export const routes = [
         component: ElasticQuery,
         meta: { title: "ElasticQuery" },
         children: [
-          { path: "count", component: Count, meta: { title: "ElasticQueryCount" } },
-          { path: "search", component: Search, meta: { title: "ElasticQuerySearch" } },
+          { path: "count", component: Count, meta: { title: "Elasticsearch Query Count" } },
+          { path: "search", component: Search, meta: { title: "Elasticsearch Query Search" } },
+        ],
+      },
+      {
+        path: "/quest",
+        component: Quest,
+        meta: { title: "Quest" },
+        children: [
+          { path: "quest", component: QuestQuest, meta: { title: "Quest" } },
+          { path: "elastic-count-quest", component: ElasticCountQuest, meta: { title: "Elasticsearch Count Quest" } },
         ],
       },
       {
@@ -70,15 +82,14 @@ export const routes = [
         ],
       },
       {
-        path: "/quest",
-        component: Quest,
-        meta: { title: "Quest" },
+        path: "/settings",
+        component: Settings,
+        meta: { title: "Settings" },
         children: [
-          { path: "quest", component: QuestQuest, meta: { title: "Quest" } },
-          { path: "elastic-count-quest", component: ElasticCountQuest, meta: { title: "ElasticCountQuest" } },
+          { path: "account", component: Account, meta: { title: "Account" } },
+          { path: "appearance", component: Appearance, meta: { title: "Appearance" } },
         ],
       },
-      { path: "/elastic-count-quest", component: ElasticCountQuest, meta: { title: "ElasticCountQuest" } },
       { path: "/NotFound", component: NotFound },
       { path: "/g/:gallery", component: Gallery },
       { path: "/g/:gallery/i/:img", component: ImgSvgPreview },

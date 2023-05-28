@@ -36,12 +36,8 @@ async def get_user_by_id(user_id: int):
 
 
 @router.put("/{user_id}", dependencies=[api_security([ScopeEnum.user_put.name])])
-async def put_user_by_id(user_id: int, user: UserUpdate):
-    if user_id != user.id:
-        return JSONResponse(
-            status_code=409, content={"detail": "Conflict between user_id and user.id"}
-        )
-    return await CrudUser.update_by_id(user)
+async def put_user_by_id(user: UserUpdate):
+    return await CrudUser.update_by_user(user)
 
 
 @router.delete("/{user_id}", dependencies=[api_security([ScopeEnum.user_delete.name])])

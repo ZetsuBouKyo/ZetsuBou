@@ -10,6 +10,7 @@ from starlette.responses import JSONResponse
 
 from back.api import router as api
 from back.init.async_elasticsearch import init_indices
+from back.init.database import init_table
 from back.route import router as views
 from back.session.minio import init_minio
 from back.settings import setting

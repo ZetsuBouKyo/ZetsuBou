@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col w-full mx-auto my-4 bg-gray-900 rounded-lg shadow-black">
+  <div class="flex flex-col w-full mx-auto bg-gray-800 rounded-lg shadow-gray-900">
     <confirm-modal
       ref="confirm"
       :title="'Warning'"
@@ -83,7 +83,7 @@ import { useRoute } from "vue-router";
 
 import { isEmpty } from "@/utils/obj";
 
-import { ButtonColorEnum } from "@/elements/Button/button.ts";
+import { ButtonColorEnum } from "@/elements/Button/button";
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 import Modal from "@/elements/Modal/Modal.vue";

@@ -114,6 +114,7 @@ module.exports = {
       },
       boxShadow: {
         black: "0 4px 14px 0 rgba(0, 0, 0, 1)",
+        "gray-900": "0 4px 14px 0 rgba(17, 24, 39, 1)",
       },
       screens: {
         "3xl": "2690px",

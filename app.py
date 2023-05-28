@@ -11,17 +11,16 @@ from starlette.responses import JSONResponse
 from back.api import router as api
 from back.init.async_elasticsearch import init_indices
 from back.route import router as views
-from back.session.init_db import init_table
 from back.session.minio import init_minio
 from back.settings import setting
 from back.utils.exceptions import RequiresLoginException
 from cli import app as cli_app  # noqa
 
-title = setting.app_title
-host = setting.app_host
-port = setting.app_port
-front = setting.app_front
-statics = setting.app_statics
+TITLE = setting.app_title
+HOST = setting.app_host
+PORT = setting.app_port
+FRONT = setting.app_front
+STATICS = setting.app_statics
 
 description = """
 ZetsuBou is a web-based app to serve your own image galleries and make annotation
@@ -30,14 +29,14 @@ on your collections.
 This is written in Python 3 and Vue 3.
 """
 
-app = FastAPI(title=title, description=description, docs_url=None, redoc_url=None)
+app = FastAPI(title=TITLE, description=description, docs_url=None, redoc_url=None)
 
 app.add_event_handler("startup", init_table)
 app.add_event_handler("startup", init_indices)
 app.add_event_handler("startup", init_minio)
 
-app.mount("/statics", StaticFiles(directory=f"{statics}"), name="statics")
-app.mount("/assets", StaticFiles(directory=f"{front}/assets"), name="assets")
+app.mount("/statics", StaticFiles(directory=f"{STATICS}"), name="statics")
+app.mount("/assets", StaticFiles(directory=f"{FRONT}/assets"), name="assets")
 
 
 app.include_router(views)
@@ -85,4 +84,4 @@ async def requires_login_exception(request: Request, exc: Exception):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host=host, port=port)
+    uvicorn.run(app, host=HOST, port=PORT)

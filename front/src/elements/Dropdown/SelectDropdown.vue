@@ -248,6 +248,9 @@ export default defineComponent({
       }
       privateState.lock = true;
       props.onGet(params).then((response: any) => {
+        if (response.status !== 200) {
+          state.scroll.isEnd = false;
+        }
         const data = response.data;
         if (data) {
           if (data.length === 0) {

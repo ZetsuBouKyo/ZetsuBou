@@ -46,6 +46,8 @@ app.include_router(api, prefix="/api")
 
 @app.exception_handler(StarletteHTTPException)
 async def starlette_http_exception_handler(request: Request, exc: Exception):
+    if request.url.path.startswith("/api"):
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
     return RedirectResponse("/NotFound")
 
 

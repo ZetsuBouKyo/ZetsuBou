@@ -1,0 +1,26 @@
+{
+    "ZetsuBou template": {
+        "scope": "vue",
+        "prefix": "<te",
+        "body": ["<template>", "</template>", "", "<script lang=\"ts\">", "\texport default {", "\t}", "</script>", ""],
+        "description": "ZetsuBou"
+    },
+    "ZetsuBou props": {
+        "scope": "vue,javascript,typescript",
+        "prefix": "pr",
+        "body": ["props: {", "\t$2: {", "\t\ttype: Object as PropType<$1>,", "\t\tdefault: undefined,", "\t},", "},"],
+        "description": "ZetsuBou"
+    },
+    "ZetsuBou watch": {
+        "scope": "vue,javascript,typescript",
+        "prefix": "wa",
+        "body": ["watch(", "\t() => $1,", "\t() => {}", ")"],
+        "description": "ZetsuBou"
+    },
+    "ZetsuBou setup": {
+        "scope": "vue,javascript,typescript",
+        "prefix": "se",
+        "body": ["setup(props) {", "\treturn {...props}", "}"],
+        "description": "ZetsuBou"
+    }
+}

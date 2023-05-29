@@ -1,5 +1,5 @@
 from back.crud.video import get_crud_video
-from back.db.model import ScopeEnum
+from back.model.scope import ScopeEnum
 from back.dependency.security import view_security
 from fastapi import APIRouter
 from fastapi.responses import FileResponse, RedirectResponse

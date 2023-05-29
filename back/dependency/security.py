@@ -1,7 +1,7 @@
 from typing import List
 
 from back.db.crud import CrudGroup, CrudScope
-from back.db.model import ScopeEnum
+from back.model.scope import ScopeEnum
 from back.settings import setting
 from back.utils.exceptions import RequiresLoginException
 from fastapi import Cookie, Depends, HTTPException, Security, status

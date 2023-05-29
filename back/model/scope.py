@@ -1,7 +1,5 @@
 from enum import Enum, auto
 
-from pydantic import BaseModel
-
 
 class ScopeEnum(int, Enum):
     admin: int = auto()
@@ -158,11 +156,3 @@ class ScopeEnum(int, Enum):
     sys_basic_setting_get: int = auto()
 
     users_get: int = auto()
-
-
-class Scope(BaseModel):
-    id: ScopeEnum
-    group_id: int
-
-
-ScopeCreate = ScopeUpdate = Scope

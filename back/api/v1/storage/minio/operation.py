@@ -1,7 +1,7 @@
 from typing import List
 from urllib.parse import unquote
 
-from back.db.model import ScopeEnum
+from back.model.scope import ScopeEnum
 from back.dependency.security import api_security
 from back.model.s3 import S3Object
 from back.session.storage.async_s3 import AsyncS3Session, list_all

@@ -2,7 +2,7 @@ from typing import List
 
 from back.crud.tag import CrudElasticTag, CrudTag
 from back.db.crud import CrudTagToken
-from back.db.model import ScopeEnum
+from back.model.scope import ScopeEnum
 from back.dependency.base import get_pagination
 from back.dependency.security import api_security
 from back.model.base import Pagination

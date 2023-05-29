@@ -1,5 +1,5 @@
 import httpx
-from back.db.model import ScopeEnum
+from back.model.scope import ScopeEnum
 from back.dependency.security import api_security
 from back.settings import setting
 from fastapi import APIRouter

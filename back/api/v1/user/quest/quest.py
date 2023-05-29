@@ -4,7 +4,6 @@ from back.api.model.user.quest import CurrentQuestProgress
 from back.crud.user_quest import CrudElasticCount
 from back.db.crud import CrudUserElasticCountQuest, CrudUserQuest, CrudUserQuestCategory
 from back.db.model import (
-    ScopeEnum,
     UserQuest,
     UserQuestCategoryEnum,
     UserQuestCreate,
@@ -14,6 +13,7 @@ from back.db.model import (
 from back.dependency.base import get_pagination
 from back.dependency.security import api_security
 from back.model.base import Pagination
+from back.model.scope import ScopeEnum
 from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()

@@ -1,13 +1,13 @@
 from back.db.crud import CrudGroup, CrudUser, CrudUserGroup, CrudUserQuestCategory
 from back.db.model import (
     GroupCreate,
-    ScopeEnum,
     UserCreate,
     UserGroupCreate,
     UserQuestCategoryCreate,
     UserQuestCategoryEnum,
 )
 from back.db.table import Base
+from back.model.scope import ScopeEnum
 from back.session.async_db import async_engine
 from back.settings import setting
 

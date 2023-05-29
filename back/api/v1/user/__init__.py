@@ -3,7 +3,6 @@ from typing import List
 from back.db.crud import CrudUser, CrudUserFrontSetting, CrudUserGroup
 from back.db.model import (
     Group,
-    ScopeEnum,
     UserCreate,
     UserCreated,
     UserFrontSetting,
@@ -12,6 +11,7 @@ from back.db.model import (
     UserUpdate,
 )
 from back.dependency.security import api_security
+from back.model.scope import ScopeEnum
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 

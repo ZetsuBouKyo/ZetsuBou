@@ -1,5 +1,5 @@
 from .group.group import CrudGroup
-from .scope import CrudScope
+from .scope.scope import CrudScope
 from .setting.front.gallery import CrudSettingFrontGallery
 from .setting.front.video import CrudSettingFrontVideo
 from .storage.minio import CrudStorageMinio

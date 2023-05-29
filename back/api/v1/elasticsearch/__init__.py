@@ -1,6 +1,6 @@
 from typing import List
 
-from back.db.model import ScopeEnum
+from back.model.scope import ScopeEnum
 from back.dependency.security import api_security
 from back.model.elasticsearch import AnalyzerEnum
 from fastapi import APIRouter

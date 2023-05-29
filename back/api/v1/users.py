@@ -1,8 +1,9 @@
 from typing import List
 
 from back.db.crud import CrudUser
-from back.db.model import ScopeEnum, User
+from back.db.model import User
 from back.dependency.security import api_security
+from back.model.scope import ScopeEnum
 from fastapi import APIRouter
 
 router = APIRouter()

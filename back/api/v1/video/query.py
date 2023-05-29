@@ -3,7 +3,7 @@ from urllib.parse import unquote
 
 from back.crud.async_video import CrudAsyncElasticsearchVideo
 from back.db.crud import CrudUserElasticSearchQuery
-from back.db.model import ScopeEnum
+from back.model.scope import ScopeEnum
 from back.dependency.security import Token, api_security, extract_token
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.video import VideoOrderedFieldEnum, Videos

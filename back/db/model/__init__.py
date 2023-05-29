@@ -1,14 +1,5 @@
-from .group.group import (
-    Group,
-    GroupCreate,
-    GroupCreated,
-    GroupCreatedWithScopes,
-    GroupCreateWithScopes,
-    GroupUpdatedWithScopes,
-    GroupUpdateWithScopes,
-    GroupWithScopes,
-)
-from .scope import Scope, ScopeCreate, ScopeEnum, ScopeUpdate
+from .group.group import Group, GroupCreate, GroupCreated, GroupUpdate, GroupUpdated
+from .scope.scope import Scope, ScopeCreate, ScopeCreated, ScopeUpdate, ScopeUpdated
 from .setting.front.gallery import (
     SettingFrontGallery,
     SettingFrontGalleryCreate,
@@ -98,13 +89,16 @@ __all__ = [
     "GroupCreated",
     "GroupCreatedWithScopes",
     "GroupCreateWithScopes",
+    "GroupUpdate",
+    "GroupUpdated",
     "GroupUpdatedWithScopes",
     "GroupUpdateWithScopes",
     "GroupWithScopes",
     "Scope",
     "ScopeCreate",
-    "ScopeEnum",
+    "ScopeCreated",
     "ScopeUpdate",
+    "ScopeUpdated",
     "SettingFrontGallery",
     "SettingFrontGalleryCategory",
     "SettingFrontGalleryCreate",

@@ -1,5 +1,5 @@
 <template>
-  <modal ref="editor" :title="'Video Editor'" class="w-1/2 top-1/4 left-1/4 text-gray-300">
+  <modal ref="editor" :title="'Video Editor'" class="w-1/2 top-12 left-1/4 text-gray-300">
     <div class="modal-row">
       <span class="w-32 mr-4">Name:</span>
       <input

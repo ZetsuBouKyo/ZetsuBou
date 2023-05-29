@@ -1,5 +1,5 @@
 <template>
-  <modal ref="editor" :title="title" class="w-1/2 h-1/2 top-1/4 left-1/4">
+  <modal ref="editor" :title="title" class="w-1/2 h-3/4 top-12 left-1/4">
     <div class="modal-row-h-full">
       <textarea v-model="privateState.json" class="modal-textarea h-full" />
     </div>

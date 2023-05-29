@@ -2,7 +2,7 @@
   <modal
     ref="advancedSearch"
     :title="'Advanced Search'"
-    class="w-1/2 top-12 h-50v left-1/4"
+    class="w-1/2 top-12 left-1/4"
     :is-scrollable="true"
     @keyup.enter="search"
   >

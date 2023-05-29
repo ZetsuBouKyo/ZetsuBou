@@ -104,7 +104,7 @@ async def get_advanced_search(
     raw_name_fuzziness: int = 0,
     raw_name_bool: QueryBoolean = QueryBoolean.SHOULD,
     src: str = None,
-    src_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
     src_fuzziness: int = 0,
     src_bool: QueryBoolean = QueryBoolean.SHOULD,
     path: str = None,

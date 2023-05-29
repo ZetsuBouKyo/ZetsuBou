@@ -22,5 +22,11 @@
         "prefix": "se",
         "body": ["setup(props) {", "\treturn {...props}", "}"],
         "description": "ZetsuBou"
+    },
+    "ZetsuBou PropType": {
+        "scope": "vue,javascript,typescript",
+        "prefix": ["PropType", "PropType "],
+        "body": ["import { PropType } from \"vue\";"],
+        "description": "ZetsuBou"
     }
 }

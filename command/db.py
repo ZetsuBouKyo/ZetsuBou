@@ -25,6 +25,17 @@ app = typer.Typer(name="db", help=_help)
 
 @app.command()
 @sync
+async def execute(sql: str = typer.Argument(..., help="SQL.")):
+    async with async_engine.begin() as conn:
+        statement = text(sql)
+        rows = await conn.execute(statement)
+        await conn.commit()
+        for row in rows:
+            print(row)
+
+
+@app.command()
+@sync
 async def list_schemas():
     """
     List the schemas.

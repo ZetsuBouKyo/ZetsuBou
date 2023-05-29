@@ -56,12 +56,15 @@ async def list_schemas():
     console.print(table)
 
 
-# TODO: To make this general
 @app.command()
 @sync
-async def drop_permission_tables():
+async def drop_table(table_name: str = typer.Argument(..., help="Table name.")):
+    tables = list_tables()
+    if table_name not in tables:
+        return
+    sql = f"DROP TABLE IF EXISTS {table_name}, permission CASCADE;"
     async with async_engine.begin() as conn:
-        statement = text("DROP TABLE IF EXISTS group_permission, permission CASCADE;")
+        statement = text(sql)
         await conn.execute(statement)
         await conn.commit()
 
@@ -124,7 +127,7 @@ def tree():
 @app.command(name="reset-auto-increment")
 @sync
 async def _reset_auto_increment(
-    table_name: str = typer.Argument(..., help="The table name.")
+    table_name: str = typer.Argument(..., help="Table name.")
 ):
     """
     Reset the auto increment in PostgreSQL.

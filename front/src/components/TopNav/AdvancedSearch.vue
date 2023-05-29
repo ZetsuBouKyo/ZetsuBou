@@ -104,6 +104,7 @@
 
 <script lang="ts">
 import { PropType, reactive, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
 import { SearchCategory } from "@/interface/search";
 
@@ -159,6 +160,8 @@ export default {
     },
   },
   setup(props) {
+    const router = useRouter();
+
     watch(
       () => settingState.setting,
       () => {
@@ -320,7 +323,8 @@ export default {
       const queriesStr = queriesArray.join("&");
       const url = `/${props.state.category}/advanced-search?${queriesStr}`;
 
-      window.open(url, "_self");
+      router.push(url);
+      advancedSearch.value.close();
     }
 
     function reset() {}

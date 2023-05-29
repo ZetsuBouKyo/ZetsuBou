@@ -9,7 +9,7 @@
     @mouseup="stopMoving"
     @mousemove="move"
   >
-    <image ref="image" class="h-app w-screen" :href="getImgUrl()"></image>
+    <image ref="image" class="h-app w-screen" :href="state.imgUrl" :key="state.imgUrl"></image>
     <g v-if="svgState.xTopLeft !== undefined && svgState.yTopLeft !== undefined">
       <circle :cx="svgState.xTopLeft" :cy="svgState.yTopLeft" r="2" />
     </g>
@@ -41,8 +41,12 @@ export default {
     const layerState = props.layerState;
 
     const route = useRoute();
-    const gallery = route.params.gallery;
-    const imgName = route.params.img;
+
+    const state = reactive({
+      gallery: route.params.gallery,
+      imgName: route.params.img,
+      imgUrl: undefined,
+    });
 
     let svg = ref(null);
     let image = ref(null);
@@ -60,12 +64,41 @@ export default {
     });
 
     function getImgUrl() {
-      return `/api/v1/gallery/${gallery}/i/${imgName}`;
+      return `/api/v1/gallery/${state.gallery}/i/${state.imgName}`;
     }
+
+    function load() {
+      if (route.params.gallery === undefined || route.params.img === undefined) {
+        return;
+      }
+
+      state.gallery = route.params.gallery;
+      state.imgName = route.params.img;
+      state.imgUrl = getImgUrl();
+      setImageSlope();
+      document.addEventListener.call(window, "resize", () => {
+        setImageSlope();
+      });
+      document.addEventListener.call(window, "keyup", (event) => {
+        if (event.keyCode === 13) {
+          finishSelection();
+        }
+      });
+    }
+    load();
+
+    watch(
+      () => {
+        return [JSON.stringify(route.params.gallery), JSON.stringify(route.params.img)];
+      },
+      () => {
+        load();
+      },
+    );
 
     function setImageSlope() {
       let tmpImg = new Image();
-      tmpImg.src = getImgUrl();
+      tmpImg.src = state.imgUrl;
       tmpImg.onload = () => {
         svgState.imgWidth = tmpImg.width;
         svgState.imgHeight = tmpImg.height;
@@ -92,17 +125,7 @@ export default {
       }
     }
 
-    onBeforeMount(() => {
-      setImageSlope();
-      document.addEventListener.call(window, "resize", () => {
-        setImageSlope();
-      });
-      document.addEventListener.call(window, "keyup", (event) => {
-        if (event.keyCode === 13) {
-          finishSelection();
-        }
-      });
-    });
+    onBeforeMount(() => {});
 
     watch(
       () => [svgState.imgSlope, tagger.isTagger],
@@ -110,8 +133,6 @@ export default {
         setImageSlope();
       },
     );
-
-    onMounted(() => {});
 
     function startMoving() {
       if (layerState.isEdit) {
@@ -260,17 +281,18 @@ export default {
     }
 
     return {
-      tagger,
+      getImgUrl,
       image,
+      layerState,
+      move,
+      point,
+      startMoving,
+      state,
+      stopMoving,
       svg,
       svgState,
-      layerState,
-      getImgUrl,
-      move,
-      startMoving,
-      stopMoving,
+      tagger,
       zoom,
-      point,
     };
   },
 };

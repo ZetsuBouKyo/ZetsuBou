@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { reactive, watch } from "vue";
 
 import { getImages } from "@/api/v1/gallery/image";
@@ -21,7 +21,8 @@ import PreviewList from "@/components/PreviewList/index.vue";
 
 function getItems(id: string, data: any, query: Query) {
   const items: Items = [];
-  for (let i = (query.page - 1) * query.size; i < data.length && i < query.page * query.size; i++) {
+  const page = query.page as number;
+  for (let i = (page - 1) * query.size; i < data.length && i < page * query.size; i++) {
     let item: Item = {
       imgUrl: `/api/v1/gallery/${id}/i/${data[i]}`,
       linkUrl: `/g/${id}/i/${data[i]}`,
@@ -35,6 +36,7 @@ export default {
   components: { PreviewList, Info },
   setup() {
     const route = useRoute();
+    const router = useRouter();
     const id = route.params.gallery as string;
 
     const previews = reactive<Previews>({
@@ -42,25 +44,35 @@ export default {
       items: undefined,
     });
 
+    function load() {
+      if (userState.frontSetting.img_preview_size === undefined) {
+        return;
+      }
+      const query: Query = {
+        page: route.query.page ? parseInt(route.query.page as string) : 1,
+        size: userState.frontSetting.img_preview_size,
+      };
+
+      getImages(id)
+        .then((response) => {
+          const imgs = response.data;
+          const total = imgs.length;
+
+          previews.pagination = getPagination(route.path, total, query);
+          previews.items = getItems(id, imgs, query);
+        })
+        .catch(() => {
+          router.push("/NotFound");
+        });
+    }
+    load();
+
     watch(
-      () => userState.frontSetting.img_preview_size,
       () => {
-        const query: Query = {
-          page: route.query.page ? parseInt(route.query.page as string) : 1,
-          size: userState.frontSetting.img_preview_size,
-        };
-
-        getImages(id)
-          .then((response) => {
-            const imgs = response.data;
-            const total = imgs.length;
-
-            previews.pagination = getPagination(route.path, total, query);
-            previews.items = getItems(id, imgs, query);
-          })
-          .catch(() => {
-            window.open("/NotFound", "_self");
-          });
+        return [userState.frontSetting.img_preview_size, JSON.stringify(route.path), JSON.stringify(route.query.page)];
+      },
+      () => {
+        load();
       },
     );
     return { previews };

@@ -45,7 +45,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive, watch } from "vue";
+import { defineComponent, watch } from "vue";
+import { useRouter } from "vue-router";
 
 import { userState } from "@/state/user";
 
@@ -78,6 +79,8 @@ export interface Row {
 export default defineComponent({
   components: { CrudTable, RippleButton, SelectDropdown },
   setup() {
+    const router = useRouter();
+
     const userID = userState.id;
     const table = CrudTable.initState() as CrudTableState<Row>;
 
@@ -147,7 +150,7 @@ export default defineComponent({
     );
 
     function openQueryPage() {
-      window.open("/elastic-query/count", "_blank");
+      router.push("/settings/elasticsearch-count");
     }
 
     const headers: Array<Header> = [

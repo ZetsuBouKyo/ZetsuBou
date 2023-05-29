@@ -1,6 +1,7 @@
 <template>
   <div class="relative mx-1 h-full">
     <dropdown
+      ref="dropdown"
       class="text-white bg-gray-700 border-2 border-gray-600 hover:bg-gray-500 rounded-lg"
       :selectClass="'border-r-2 border-gray-600'"
     >
@@ -29,22 +30,26 @@
       </template>
       <template v-slot:options>
         <ripple-button class="flex w-full">
-          <a class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" href="">
+          <router-link class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" to="" @click="close">
             <icon-ic-baseline-person class="self-center ml-2" style="font-size: 1.4rem" />
             <span class="flex px-2 py-1 self-center">Profile</span>
-          </a>
+          </router-link>
         </ripple-button>
         <ripple-button class="flex w-full">
-          <a class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" href="">
+          <router-link class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" to="" @click="close">
             <icon-ic-outline-analytics class="self-center ml-2" style="font-size: 1.4rem" />
             <span class="flex px-2 py-1 self-center">Analytics</span>
-          </a>
+          </router-link>
         </ripple-button>
         <ripple-button class="flex w-full">
-          <a class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" href="/settings/account">
+          <router-link
+            class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white"
+            to="/settings/account"
+            @click="close"
+          >
             <icon-mdi-user-settings-variant class="self-center ml-2" style="font-size: 1.4rem" />
             <span class="flex px-2 py-1 self-center">Settings</span>
-          </a>
+          </router-link>
         </ripple-button>
         <ripple-button class="flex w-full focus:outline-none">
           <a class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" @click="signOut">
@@ -58,7 +63,7 @@
 </template>
 
 <script>
-import { reactive, onBeforeMount, computed, watch } from "vue";
+import { reactive, ref } from "vue";
 
 import { userState } from "@/state/user";
 import RippleButton from "@/elements/Button/RippleButton.vue";
@@ -70,6 +75,8 @@ import QuestProgress from "./QuestProgress.vue";
 export default {
   components: { RippleButton, Dropdown, QuestProgress },
   setup() {
+    const dropdown = ref();
+
     const dropdownState = reactive({
       popout: false,
       close: () => {
@@ -90,7 +97,11 @@ export default {
 
     progressState.init();
 
-    return { userState, dropdownState, progressState, signOut };
+    function close() {
+      dropdown.value.close();
+    }
+
+    return { userState, dropdown, dropdownState, progressState, signOut, close };
   },
 };
 </script>

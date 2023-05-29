@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import { useRoute } from "vue-router";
-import { ref, reactive, onMounted, onBeforeMount, nextTick, watch, PropType } from "vue";
+import { PropType } from "vue";
 
 import { LayerState } from "../interface";
 import SlidebarIcon from "./SlidebarIcon.vue";
@@ -46,16 +46,10 @@ export default {
       layerState.isEdit = true;
     }
 
-    function back() {
-      const url = "/g/" + gallery;
-      window.open(url, "_self");
-    }
-
     return {
+      edit,
       layerState,
       select,
-      edit,
-      back,
     };
   },
 };

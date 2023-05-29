@@ -1,5 +1,9 @@
 <template>
-  <div class="flex flex-col w-full mx-auto bg-gray-800 rounded-lg shadow-gray-900">
+  <div
+    class="flex flex-col w-full mx-auto bg-gray-800 rounded-lg shadow-gray-900"
+    v-if="state.pagination"
+    :key="state.pagination.current"
+  >
     <confirm-modal
       ref="confirm"
       :title="'Warning'"
@@ -72,7 +76,12 @@
         </tbody>
       </table>
     </div>
-    <pagination-base class="ml-auto mr-4" v-if="state.pagination" :pagination="state.pagination" />
+    <pagination-base
+      class="ml-auto mr-4"
+      v-if="state.pagination"
+      :pagination="state.pagination"
+      :key="state.pagination.current"
+    />
   </div>
 </template>
 
@@ -116,8 +125,8 @@ export interface Row {
 }
 
 export interface GetParam {
-  page: number;
-  size: number;
+  page: number | string;
+  size: number | string;
   [key: string]: any;
 }
 
@@ -332,6 +341,20 @@ export default defineComponent({
       }
     }
     load();
+
+    watch(
+      () => {
+        return [route.path, JSON.stringify(route.query)];
+      },
+      () => {
+        if (route.query.page === undefined || route.query.size === undefined) {
+          return;
+        }
+        params.page = route.query.page as string;
+        params.size = route.query.size as string;
+        load();
+      },
+    );
 
     function onOpenEditor() {
       if (state.row) {

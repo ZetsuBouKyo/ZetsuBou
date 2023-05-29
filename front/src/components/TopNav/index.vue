@@ -15,10 +15,12 @@ export default {
     <header class="text-gray-400 bg-gray-900 body-font xl:px-8 md:px-4 sm:px-2">
       <div class="flex flex-row mx-auto items-center">
         <icon />
-        <a class="lg:inline hidden ml-8 3xl:text-xl text-lg text-gray-300 hover:text-gray-500" href="/gallery"
-          >Gallery</a
-        >
-        <a class="lg:inline hidden ml-4 3xl:text-xl text-lg text-gray-300 hover:text-gray-500" href="/video">Video</a>
+        <router-link class="lg:inline hidden ml-8 3xl:text-xl text-lg text-gray-300 hover:text-gray-500" to="/gallery">
+          Gallery
+        </router-link>
+        <router-link class="lg:inline hidden ml-4 3xl:text-xl text-lg text-gray-300 hover:text-gray-500" to="/video">
+          Video
+        </router-link>
         <nav class="ml-4 flex flex-row items-center text-base justify-center w-full 3xl:text-lg">
           <search class="h-10" />
           <sync class="h-10 md:inline-flex hidden" />

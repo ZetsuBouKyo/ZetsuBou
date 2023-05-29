@@ -45,31 +45,43 @@ export default {
       pagination: undefined,
       items: undefined,
     });
+
+    function load() {
+      const searchQuery = JSON.parse(JSON.stringify(route.query)) as SearchQuery;
+      if (searchQuery.size === undefined) {
+        searchQuery.size = userState.frontSetting.gallery_preview_size;
+      }
+      if (searchQuery.page === undefined) {
+        searchQuery.page = 1;
+      }
+
+      if (searchQuery.size === undefined) {
+        return;
+      }
+
+      let getQuery = getSearch;
+      if (route.path === "/gallery/random") {
+        getQuery = getRandom;
+      } else if (route.path === "/gallery/advanced-search") {
+        getQuery = getAdvancedSearch;
+      }
+
+      getQuery(searchQuery).then((response) => {
+        const hits = response.data.hits.hits ? response.data.hits.hits : [];
+        const totalItems = response.data.hits.total.value as number;
+
+        previews.pagination = getPagination(route.path, totalItems, searchQuery);
+        previews.items = getItems(hits);
+      });
+    }
+    load();
+
     watch(
-      () => userState.frontSetting.gallery_preview_size,
       () => {
-        const searchQuery = JSON.parse(JSON.stringify(route.query)) as SearchQuery;
-        if (searchQuery.size === undefined) {
-          searchQuery.size = userState.frontSetting.gallery_preview_size;
-        }
-        if (searchQuery.page === undefined) {
-          searchQuery.page = 1;
-        }
-
-        let getQuery = getSearch;
-        if (route.path === "/gallery/random") {
-          getQuery = getRandom;
-        } else if (route.path === "/gallery/advanced-search") {
-          getQuery = getAdvancedSearch;
-        }
-
-        getQuery(searchQuery).then((response) => {
-          const hits = response.data.hits.hits ? response.data.hits.hits : [];
-          const totalItems = response.data.hits.total.value as number;
-
-          previews.pagination = getPagination(route.path, totalItems, searchQuery);
-          previews.items = getItems(hits);
-        });
+        return [userState.frontSetting.gallery_preview_size, route.path, JSON.stringify(route.query)];
+      },
+      () => {
+        load();
       },
     );
     return { previews };

@@ -1,5 +1,6 @@
 <script lang="ts">
 import { PropType, onBeforeMount } from "vue";
+import { useRouter } from "vue-router";
 
 import PaginationBase from "@/elements/Pagination/index.vue";
 import { Pagination } from "@/elements/Pagination/interface";
@@ -13,17 +14,19 @@ export default {
     },
   },
   setup(props) {
+    const router = useRouter();
+
     let pagination: Pagination = props.pagination;
 
-    onBeforeMount(() => {
-      document.addEventListener.call(window, "keyup", (event) => {
-        if (event.keyCode === 34 && pagination.current < pagination.totalPage) {
-          window.open(pagination.toNextPage, "_self");
-        } else if (event.keyCode === 33 && pagination.current > 1) {
-          window.open(pagination.toPreviousPage, "_self");
-        }
-      });
-    });
+    // onBeforeMount(() => {
+    //   document.addEventListener.call(window, "keyup", (event) => {
+    //     if (event.keyCode === 34 && pagination.current < pagination.totalPage) {
+    //       router.push(pagination.toNextPage);
+    //     } else if (event.keyCode === 33 && pagination.current > 1) {
+    //       router.push(pagination.toPreviousPage);
+    //     }
+    //   });
+    // });
 
     return { pagination };
   },

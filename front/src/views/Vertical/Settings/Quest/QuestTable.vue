@@ -52,6 +52,7 @@
 
 <script lang="ts">
 import { reactive, watch } from "vue";
+import { useRouter } from "vue-router";
 
 import { userState } from "@/state/user";
 
@@ -88,6 +89,8 @@ export default {
   components: { CrudTable, RippleButton, SelectDropdown },
 
   setup() {
+    const router = useRouter();
+
     const userID = userState.id;
     const table = CrudTable.initState() as CrudTableState<Row>;
 
@@ -125,7 +128,7 @@ export default {
               state.onGetQuest = (params: any) => {
                 return getUserElasticCountQuests(userID, params);
               };
-              state.questUrl = "/elastic-count-quest";
+              state.questUrl = "/settings/elasticsearch-count-quest";
               break;
           }
         }
@@ -175,7 +178,7 @@ export default {
     );
 
     function openQuestPage() {
-      window.open(state.questUrl, "_blank");
+      router.push(state.questUrl);
     }
 
     function onCloseEditor() {

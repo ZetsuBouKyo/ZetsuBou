@@ -30,7 +30,13 @@
       <button type="button" class="flex flex-row items-center w-full mr-1 font-medium text-gray-700 focus:outline-none">
         <icon-ic-baseline-search class="hover:opacity-50" style="font-size: 1.5rem; color: white" @click="search" />
       </button>
-      <dropdown class="mr-1" :options-width-class="'w-80'" :options-overflow-y-class="''" :on-click="onClick">
+      <dropdown
+        ref="dropdown"
+        class="mr-1"
+        :options-width-class="'w-80'"
+        :options-overflow-y-class="''"
+        :on-click="onClick"
+      >
         <template v-slot:options>
           <div class="flex flex-col py-1">
             <div class="modal-row h-10">
@@ -108,7 +114,7 @@
 </template>
 
 <script lang="ts">
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { reactive, ref, watch } from "vue";
 
 import { SearchAnalyzer, SearchBase, SearchBoolean, SearchCategory, SearchState } from "@/interface/search";
@@ -141,6 +147,7 @@ export default {
   components: { AdvancedSearch, Dropdown, RippleButton, SearchAutoComplete, SelectDropdown },
   setup() {
     const route = useRoute();
+    const router = useRouter();
 
     const advancedSearch = ref();
     function advanced() {
@@ -281,7 +288,8 @@ export default {
         url += "?";
         url += queries.join("&");
       }
-      window.open(url, "_self");
+      router.push(url);
+      dropdown.value.close();
     }
     const customSearchState = SelectDropdown.initState() as SelectDropdownState;
 
@@ -373,6 +381,8 @@ export default {
       },
     );
 
+    const dropdown = ref();
+
     const analyzer = ref();
     const fuzziness = ref();
     const query = ref();
@@ -396,27 +406,28 @@ export default {
     }
 
     return {
-      advancedSearch,
       advanced,
-      Origin,
-      SelectDropdownMode,
-      analyzerState,
-      fuzzinessState,
-      queryTypeState,
-      booleanTypeState,
-      state,
-      search,
-      customSearchState,
-      onGet,
-      onGetToOptions,
-      onGetTip,
+      advancedSearch,
       analyzer,
-      fuzziness,
-      query,
+      analyzerState,
       bool,
-      custom,
-      onClick,
+      booleanTypeState,
       clearAll,
+      custom,
+      customSearchState,
+      dropdown,
+      fuzziness,
+      fuzzinessState,
+      onClick,
+      onGet,
+      onGetTip,
+      onGetToOptions,
+      Origin,
+      query,
+      queryTypeState,
+      search,
+      SelectDropdownMode,
+      state,
     };
   },
 };

@@ -5,10 +5,10 @@
       route.path === path ? 'views-setting-action-ripple-button-active' : 'views-setting-action-ripple-button-inactive'
     "
   >
-    <a class="views-setting-action" :href="path">
+    <router-link class="views-setting-action" :to="path">
       <slot></slot>
-      <span class="views-setting-sub-action">&emsp;&emsp;&emsp;{{ title }}</span>
-    </a>
+      <span class="views-setting-sub-action-title">&emsp;&emsp;&emsp;{{ title }}</span>
+    </router-link>
   </ripple-button>
 </template>
 
@@ -16,7 +16,10 @@
 import { PropType } from "vue";
 import { useRoute } from "vue-router";
 
+import RippleButton from "@/elements/Button/RippleButton.vue";
+
 export default {
+  components: { RippleButton },
   props: {
     path: {
       type: Object as PropType<string>,

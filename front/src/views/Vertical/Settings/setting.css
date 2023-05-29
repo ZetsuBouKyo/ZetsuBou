@@ -23,7 +23,7 @@
     @apply focus:outline-none hidden sm:inline-block;
   }
   .views-setting-action-ripple-button {
-    @apply flex w-full;
+    @apply flex flex-row w-full hover:bg-gray-600 hover:text-white;
   }
   .views-setting-action-ripple-button-inactive {
     @apply border-l-4 border-gray-800;
@@ -31,16 +31,13 @@
   .views-setting-action-ripple-button-active {
     @apply border-l-4 border-blue-500 bg-gray-600 text-white;
   }
-  div.views-setting-action {
-    @apply flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white;
+  .views-setting-action {
+    @apply flex flex-row w-full p-2;
   }
-  a.views-setting-action {
-    @apply flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white;
-  }
-  span.views-setting-action {
+  span.views-setting-action-title {
     @apply flex px-2 py-1 text-sm self-center;
   }
-  span.views-setting-sub-action {
+  span.views-setting-sub-action-title {
     @apply flex px-2 py-1 text-xs self-center;
   }
   .views-setting-action-icon {

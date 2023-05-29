@@ -14,8 +14,11 @@
     />
   </div>
   <div class="flex flex-col fixed right-0 bottom-0 m-4 bg-gray-900 bg-opacity-50 rounded-lg p-2">
-    <div class="flex mx-auto text-white" v-if="state.current !== undefined">
-      <span>{{ state.current + 1 }} / {{ state.imgs.length }}</span>
+    <div class="flex mx-auto text-white">
+      <span :key="state.current" v-if="state.current !== undefined">
+        {{ state.current + 1 }} / {{ state.imgs.length }}
+      </span>
+      <span v-else>&emsp;</span>
     </div>
     <div class="flex">
       <icon-ic-round-keyboard-arrow-left
@@ -45,8 +48,8 @@
 </template>
 
 <script>
-import { useRoute } from "vue-router";
-import { reactive, onMounted, onBeforeMount } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { reactive, onMounted, onBeforeMount, watch } from "vue";
 
 import { getImages } from "@/api/v1/gallery/image";
 
@@ -58,29 +61,48 @@ export default {
     },
   },
   setup(props) {
-    const tagger = props.tagger;
     const route = useRoute();
-    const gallery = route.params.gallery;
-    const imgName = route.params.img;
-    const timeInterval = route.query.interval ? parseInt(route.query.interval) : 5;
+    const router = useRouter();
+
+    const tagger = props.tagger;
 
     const state = reactive({
       imgs: [],
+      gallery: route.params.gallery,
+      imgName: route.params.img,
+      timeInterval: route.query.interval ? parseInt(route.query.interval) : 5,
       current: undefined,
       isPlay: route.query.play,
       play: undefined,
     });
 
-    function back() {
-      const url = "/g/" + gallery;
-      window.open(url, "_self");
-    }
+    watch(
+      () => {
+        return [JSON.stringify(route.params), JSON.stringify(route.query)];
+      },
+      () => {
+        if (route.params.gallery !== undefined) {
+          state.gallery = route.params.gallery;
+        }
+        if (route.params.imgName !== undefined) {
+          state.imgName = route.params.imgName;
+        }
+        if (route.params.timeInterval !== undefined) {
+          state.timeInterval = route.params.timeInterval;
+        }
+      },
+    );
 
+    function back() {
+      const url = "/g/" + state.gallery;
+      router.push(url);
+    }
     function getNextPageUrl() {
       const nextP = state.current + 1;
       let url = undefined;
       if (nextP < state.imgs.length) {
-        url = `/g/${gallery}/i/${state.imgs[nextP]}`;
+        url = `/g/${state.gallery}/i/${state.imgs[nextP]}`;
+        state.current = nextP;
       }
       return url;
     }
@@ -88,29 +110,35 @@ export default {
     function previousPage() {
       const previousP = state.current - 1;
       if (previousP > -1) {
-        const url = `/g/${gallery}/i/${state.imgs[previousP]}`;
-        window.open(url, "_self");
+        const url = `/g/${state.gallery}/i/${state.imgs[previousP]}`;
+        state.current = previousP;
+        router.push(url);
       }
     }
 
     function nextPage() {
       const url = getNextPageUrl();
       if (url !== undefined) {
-        window.open(url, "_self");
+        router.push(url);
       }
     }
 
     function startPlay() {
       state.isPlay = true;
-      // console.log(state.current, state.imgs.length);
       if (state.current === state.imgs.length - 1) {
         state.isPlay = false;
         return;
       }
       state.play = setInterval(() => {
-        const url = `${getNextPageUrl()}?play=1&interval=${timeInterval.toString()}`;
-        window.open(url, "_self");
-      }, timeInterval * 1000);
+        const baseUrl = getNextPageUrl();
+        if (baseUrl === undefined) {
+          state.isPlay = false;
+          clearInterval(state.play);
+          return;
+        }
+        const url = `${baseUrl}?play=1&interval=${state.timeInterval.toString()}`;
+        router.push(url);
+      }, state.timeInterval * 1000);
     }
 
     function stopPlay() {
@@ -128,14 +156,18 @@ export default {
       });
     });
 
-    onMounted(() => {
-      getImages(gallery).then((response) => {
+    function load() {
+      getImages(state.gallery).then((response) => {
         state.imgs = response.data;
-        state.current = state.imgs.indexOf(imgName);
+        state.current = state.imgs.indexOf(state.imgName);
         if (state.isPlay) {
           startPlay();
         }
       });
+    }
+
+    onMounted(() => {
+      load();
     });
 
     return {

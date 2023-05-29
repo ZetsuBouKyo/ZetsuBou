@@ -607,7 +607,6 @@ class CrudAsyncVideoSync:
         app_storage_session: AsyncS3Session = None,
         is_from_setting_if_none: bool = False,
     ):
-
         self.storage_session = storage_session
 
         self.root_source = root_source

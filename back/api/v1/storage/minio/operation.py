@@ -1,9 +1,9 @@
 from typing import List
 from urllib.parse import unquote
 
-from back.model.scope import ScopeEnum
 from back.dependency.security import api_security
 from back.model.s3 import S3Object
+from back.model.scope import ScopeEnum
 from back.session.storage.async_s3 import AsyncS3Session, list_all
 from back.settings import setting
 from botocore.exceptions import (
@@ -29,7 +29,7 @@ def get_prefix(prefix: str = ""):
 @router.get(
     "/list",
     response_model=List[S3Object],
-    dependencies=[api_security([ScopeEnum.storage_minio_operation_list_get.name])],
+    dependencies=[api_security([ScopeEnum.storage_minio_list_get.name])],
 )
 async def get_minio_list(
     bucket_name: str = Depends(get_bucket_name),

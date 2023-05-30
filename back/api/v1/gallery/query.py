@@ -3,10 +3,10 @@ from urllib.parse import unquote
 
 from back.crud.async_gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserElasticSearchQuery
-from back.model.scope import ScopeEnum
 from back.dependency.security import Token, api_security, extract_token
 from back.model.elasticsearch import AnalyzerEnum, Count, QueryBoolean
 from back.model.gallery import Galleries, GalleryOrderedFieldEnum
+from back.model.scope import ScopeEnum
 from back.settings import setting
 from fastapi import APIRouter, Body, Depends, Request
 
@@ -29,7 +29,7 @@ def get_body(query: CustomQuery):
 @router.get(
     "/count/{field}/{value}",
     response_model=Count,
-    dependencies=[api_security([ScopeEnum.gallery_query_count_field_value_get.name])],
+    dependencies=[api_security([ScopeEnum.gallery_count_field_value_get.name])],
 )
 async def get_count_field(field: str, value: str):
     body = {"query": {"terms": {field: [value]}}}
@@ -40,7 +40,7 @@ async def get_count_field(field: str, value: str):
 @router.post(
     "/count",
     response_model=Count,
-    dependencies=[api_security([ScopeEnum.gallery_query_count_post.name])],
+    dependencies=[api_security([ScopeEnum.gallery_count_post.name])],
 )
 async def post_count(query: CustomQuery = Body(..., examples=query_examples)) -> Count:
     body = get_body(query)
@@ -51,7 +51,7 @@ async def post_count(query: CustomQuery = Body(..., examples=query_examples)) ->
 @router.get(
     "/random",
     response_model=Galleries,
-    dependencies=[api_security([ScopeEnum.gallery_query_random_get.name])],
+    dependencies=[api_security([ScopeEnum.gallery_random_get.name])],
 )
 async def get_random(
     analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
@@ -74,7 +74,7 @@ async def get_random(
 @router.post(
     "/custom-search",
     response_model=dict,
-    dependencies=[api_security([ScopeEnum.gallery_query_custom_search_post.name])],
+    dependencies=[api_security([ScopeEnum.gallery_custom_search_post.name])],
 )
 async def post_custom_search(query: CustomQuery = Body(..., examples=query_examples)):
     body = get_body(query)
@@ -85,7 +85,7 @@ async def post_custom_search(query: CustomQuery = Body(..., examples=query_examp
 @router.get(
     "/advanced-search",
     response_model=Galleries,
-    dependencies=[api_security([ScopeEnum.gallery_query_advanced_search_get.name])],
+    dependencies=[api_security([ScopeEnum.gallery_advanced_search_get.name])],
 )
 async def get_advanced_search(
     request: Request,
@@ -167,7 +167,7 @@ async def get_advanced_search(
 @router.get(
     "/search",
     response_model=Galleries,
-    dependencies=[api_security([ScopeEnum.gallery_query_search_get.name])],
+    dependencies=[api_security([ScopeEnum.gallery_search_get.name])],
 )
 async def get_search(
     analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,

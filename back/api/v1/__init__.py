@@ -5,7 +5,6 @@ from .gallery import router as gallery
 from .group import router as group
 from .setting import router as setting
 from .storage import router as storage
-from .sys import router as sys
 from .tag import router as tag
 from .task import router as task
 from .token import router as token
@@ -20,7 +19,6 @@ router.include_router(token, tags=["Token"], prefix="/token")
 router.include_router(user, tags=["User"], prefix="/user")
 router.include_router(users, tags=["Users"], prefix="/users")
 router.include_router(group, tags=["Group"])
-router.include_router(sys, tags=["System"], prefix="/sys")
 router.include_router(setting, tags=["Setting"], prefix="/setting")
 router.include_router(task, tags=["Task"], prefix="/task")
 router.include_router(tag, tags=["Tag"])

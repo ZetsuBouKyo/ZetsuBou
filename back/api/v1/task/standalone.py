@@ -1,6 +1,6 @@
 import httpx
-from back.model.scope import ScopeEnum
 from back.dependency.security import api_security
+from back.model.scope import ScopeEnum
 from back.settings import setting
 from fastapi import APIRouter
 from httpx import ConnectError
@@ -53,7 +53,7 @@ def sync_new_galleries():
 
 @router.get(
     "/ping",
-    dependencies=[api_security([ScopeEnum.task_standalone_gallery_ping_get.name])],
+    dependencies=[api_security([ScopeEnum.task_standalone_ping_get.name])],
 )
 def ping():
     return _ping()

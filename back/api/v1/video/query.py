@@ -3,9 +3,9 @@ from urllib.parse import unquote
 
 from back.crud.async_video import CrudAsyncElasticsearchVideo
 from back.db.crud import CrudUserElasticSearchQuery
-from back.model.scope import ScopeEnum
 from back.dependency.security import Token, api_security, extract_token
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
+from back.model.scope import ScopeEnum
 from back.model.video import VideoOrderedFieldEnum, Videos
 from back.settings import setting
 from fastapi import APIRouter, Depends, Request
@@ -20,7 +20,7 @@ elastic_size = setting.elastic_size
 @router.get(
     "/random",
     response_model=Videos,
-    dependencies=[api_security([ScopeEnum.video_query_random_get.name])],
+    dependencies=[api_security([ScopeEnum.video_random_get.name])],
 )
 async def get_random(
     analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
@@ -43,7 +43,7 @@ async def get_random(
 @router.get(
     "/advanced-search",
     response_model=Videos,
-    dependencies=[api_security([ScopeEnum.video_query_advanced_search_get.name])],
+    dependencies=[api_security([ScopeEnum.video_advanced_search_get.name])],
 )
 async def get_advanced_search(
     request: Request,
@@ -137,7 +137,7 @@ async def get_advanced_search(
 @router.get(
     "/search",
     response_model=Videos,
-    dependencies=[api_security([ScopeEnum.video_query_search_get.name])],
+    dependencies=[api_security([ScopeEnum.video_search_get.name])],
 )
 async def get_search(
     analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,

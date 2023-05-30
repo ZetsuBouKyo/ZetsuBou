@@ -98,7 +98,6 @@ async def list_objects_v2(
     Delimiter: str = "/",
     MaxKeys: int = 1000,
 ) -> S3GetPaginatorResponse:
-
     resp = await client.list_objects_v2(
         Bucket=bucket_name, Prefix=prefix, Delimiter=Delimiter, MaxKeys=MaxKeys
     )

@@ -54,7 +54,6 @@ async def _generate_presigned_url(
     ),
     expires_in: int = typer.Option(default=3600, help="Time in seconds."),
 ):
-
     async with AsyncS3Session(
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
@@ -62,7 +61,6 @@ async def _generate_presigned_url(
         region_name=region_name,
         is_from_setting_if_none=True,
     ) as session:
-
         print(
             await generate_presigned_url(
                 session.client, bucket_name, object_name, expires_in=expires_in

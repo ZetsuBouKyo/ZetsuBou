@@ -34,6 +34,12 @@
   .views-setting-action {
     @apply flex flex-row w-full p-2;
   }
+  div.views-setting-actions {
+    @apply flex flex-col w-full;
+  }
+  span.views-setting-action-category {
+    @apply flex flex-row w-full ml-2 p-2 text-xs cursor-default font-bold text-gray-400;
+  }
   span.views-setting-action-title {
     @apply flex px-2 py-1 text-sm self-center;
   }

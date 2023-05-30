@@ -20,6 +20,7 @@ import SettingTagToken from "./views/Vertical/Settings/Tag/TagTokenTable.vue";
 import Vertical from "./views/Vertical/index.vue";
 import Video from "./views/Vertical/Video/index.vue";
 import Videos from "./views/Vertical/Videos.vue";
+import Construction from "./views/Vertical/Construction.vue";
 
 /** @type {import('vue-router').RouterOptions['routes']} */
 
@@ -66,6 +67,7 @@ export const routes = [
         ],
       },
       { path: "/NotFound", component: NotFound },
+      { path: "/construction", component: Construction },
       { path: "/g/:gallery", component: Gallery },
       { path: "/g/:gallery/i/:img", component: ImgSvgPreview },
       { path: "/v/:video", component: Video },

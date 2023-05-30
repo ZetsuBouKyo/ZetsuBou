@@ -181,6 +181,7 @@ private_router.add_api_route("/g/{gallery_id}/i/{image}", index)
 
 private_router.add_api_route("/v/{video_id}", index)
 
+public_router.add_api_route("/construction", index)
 public_router.add_api_route("/NotFound", index, tags=["Exception"])
 
 

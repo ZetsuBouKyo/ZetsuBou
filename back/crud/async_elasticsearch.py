@@ -245,6 +245,9 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         fuzziness: int = 0,
         boolean: QueryBoolean = QueryBoolean.SHOULD,
     ) -> SearchResult[SourceT]:
+        if keywords is None or keywords == "":
+            return await self.match_all(page)
+
         dsl = self.get_basic_dsl()
 
         if boolean == QueryBoolean.SHOULD:

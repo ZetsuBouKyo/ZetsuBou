@@ -162,47 +162,58 @@ export default {
   setup(props) {
     const router = useRouter();
 
-    watch(
-      () => settingState.setting,
-      () => {
-        for (const field of props.state.fields) {
-          switch (field.type) {
-            case AdvancedSearchFieldType.String:
-              field.fuzziness = SelectDropdown.initState() as SelectDropdownState;
-              field.fuzziness.options = [
-                { title: 0, value: 0 },
-                { title: 1, value: 1 },
-                { title: 2, value: 2 },
-                { title: 3, value: 3 },
-              ];
+    const state = props.state;
 
-              field.analyzer = SelectDropdown.initState() as SelectDropdownState;
+    function load() {
+      if (settingState.setting === undefined) {
+        return;
+      }
 
-              let analyzers: any;
+      for (const field of props.state.fields) {
+        switch (field.type) {
+          case AdvancedSearchFieldType.String:
+            field.fuzziness = SelectDropdown.initState() as SelectDropdownState;
+            field.fuzziness.options = [
+              { title: 0, value: 0 },
+              { title: 1, value: 1 },
+              { title: 2, value: 2 },
+              { title: 3, value: 3 },
+            ];
 
-              switch (field.keyType) {
-                case AdvancedSearchFieldKeyEnum.BuiltIn:
-                  analyzers = settingState.setting[props.state.category].analyzer.keyword as object;
-                  for (let analyzer in analyzers) {
-                    field.analyzer.options.push({ title: toTitle(analyzer), value: analyzer });
-                  }
-                  break;
-                case AdvancedSearchFieldKeyEnum.ElasticsearchField:
-                  analyzers = settingState.setting[props.state.category].analyzer.field[field.key] as Array<string>;
-                  for (let analyzer of analyzers) {
-                    field.analyzer.options.push({ title: toTitle(analyzer), value: analyzer });
-                  }
-                  break;
-              }
+            field.analyzer = SelectDropdown.initState() as SelectDropdownState;
 
-              field.boolean = SelectDropdown.initState() as SelectDropdownState;
-              field.boolean.options = [
-                { title: "Should", value: "should" },
-                { title: "Must", value: "must" },
-              ];
-              break;
-          }
+            let analyzers: any;
+
+            switch (field.keyType) {
+              case AdvancedSearchFieldKeyEnum.BuiltIn:
+                analyzers = settingState.setting[props.state.category].analyzer.keyword as object;
+                for (let analyzer in analyzers) {
+                  field.analyzer.options.push({ title: toTitle(analyzer), value: analyzer });
+                }
+                break;
+              case AdvancedSearchFieldKeyEnum.ElasticsearchField:
+                analyzers = settingState.setting[props.state.category].analyzer.field[field.key] as Array<string>;
+                for (let analyzer of analyzers) {
+                  field.analyzer.options.push({ title: toTitle(analyzer), value: analyzer });
+                }
+                break;
+            }
+
+            field.boolean = SelectDropdown.initState() as SelectDropdownState;
+            field.boolean.options = [
+              { title: "Should", value: "should" },
+              { title: "Must", value: "must" },
+            ];
+            break;
         }
+      }
+    }
+    load();
+
+    watch(
+      () => JSON.stringify(settingState.setting) + JSON.stringify(state.category),
+      () => {
+        load();
       },
     );
 
@@ -334,7 +345,6 @@ export default {
     }
 
     return {
-      ...props,
       advancedSearch,
       AdvancedSearchFieldType,
       category,
@@ -344,6 +354,7 @@ export default {
       reset,
       search,
       SelectDropdownMode,
+      state,
       tagFields,
       tags,
       toTitle,

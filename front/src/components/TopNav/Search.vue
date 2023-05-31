@@ -1,5 +1,5 @@
 <template>
-  <advanced-search ref="advancedSearch" :state="state.advancedSearchState"></advanced-search>
+  <advanced-search ref="advancedSearch" :key="state.category" :state="state.advancedSearchState"></advanced-search>
   <div class="sm:mr-5 mr-2 relative ml-4 flex w-full 3xl:text-base text-sm">
     <input
       class="w-full border-2 border-gray-600 bg-gray-700 text-white placeholder-gray-400 h-10 pl-2 pr-16 rounded-lg focus:outline-none hidden sm:inline-block"

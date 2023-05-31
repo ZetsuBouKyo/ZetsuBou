@@ -197,6 +197,8 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             _resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
             sources = SearchResult[SourceT](**_resp)
 
+        await self.async_elasticsearch.close()
+
         return sources
 
     async def custom(self, body: dict) -> dict:

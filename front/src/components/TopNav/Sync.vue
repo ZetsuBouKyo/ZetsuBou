@@ -17,16 +17,16 @@
     <dropdown class="text-white border-2 border-gray-700 hover:bg-gray-600 rounded-lg">
       <template v-slot:select>
         <ripple-button
-          class="focus:outline-none"
-          :title="state.action === 'new' ? 'Synchronize new' : 'Synchronize all'"
+          class="focus:outline-none h-full"
+          :title="state.action === 'new' ? 'synchronize new' : 'synchronize all'"
         >
-          <div class="inline-flex items-center" @click="Synchronize">
-            <icon-ic-twotone-sync
+          <div class="inline-flex items-center" @click="synchronize">
+            <!-- <icon-ic-twotone-sync
               class="m-2"
               :class="state.isSync ? 'animate-spin' : ''"
               style="font-size: 1.2rem; color: white"
-            />
-            <span class="mr-4">Sync</span>
+            /> -->
+            <span class="mx-4 my-auto">Sync</span>
           </div>
         </ripple-button>
       </template>
@@ -47,9 +47,8 @@
 </template>
 
 <script>
-import { reactive, ref, onBeforeMount } from "vue";
+import { reactive, ref } from "vue";
 
-import { getTaskGallerySyncAll, getTaskGallerySyncStatus } from "@/api/v1/task/gallery";
 import { getTaskStandaloneSyncNewGalleries } from "@/api/v1/task/standalone";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
@@ -71,7 +70,7 @@ export default {
       state.isSync = false;
     }
 
-    function Synchronize() {
+    function synchronize() {
       if (state.isSync) {
         return;
       }
@@ -83,57 +82,14 @@ export default {
       }
     }
 
-    async function synchronizeHandler(handler) {
-      return getTaskGallerySyncStatus()
-        .then((response) => {
-          if (response.status === 200 && response.data.is_sync) {
-            checkSyncState();
-          } else if (!response.data.is_sync) {
-            handler()
-              .then((response) => {
-                if (response.status === 200) {
-                  checkSyncState();
-                }
-              })
-              .catch((error) => {
-                // console.log(error);
-                state.isSync = false;
-              });
-          }
-        })
-        .catch((error) => {
-          // console.log(error);
-          state.isSync = false;
-        });
-    }
-
     function onConfirmSynchronizeNew() {
-      synchronizeHandler(getTaskStandaloneSyncNewGalleries);
-    }
-
-    function onConfirmSynchronizeAll() {
-      synchronizeHandler(getTaskGallerySyncAll);
-    }
-
-    function checkSyncState() {
-      state.isSync = true;
-      state.sync = setInterval(() => {
-        getTaskGallerySyncStatus().then((response) => {
-          if (response.status === 200 && !response.data.is_sync) {
-            clearTimeout(state.sync);
-            state.isSync = false;
-          }
-        });
-      }, 1000);
-    }
-
-    onBeforeMount(() => {
-      getTaskGallerySyncStatus().then((response) => {
-        if (response.status === 200 && response.data.is_sync) {
-          checkSyncState();
+      getTaskStandaloneSyncNewGalleries().then((response) => {
+        if (response.status === 200) {
         }
       });
-    });
+    }
+
+    function onConfirmSynchronizeAll() {}
 
     return {
       state,
@@ -142,7 +98,7 @@ export default {
       confirmAll,
       onConfirmSynchronizeAll,
       onCloseConfirm,
-      Synchronize,
+      synchronize,
     };
   },
 };

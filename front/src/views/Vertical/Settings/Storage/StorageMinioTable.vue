@@ -31,7 +31,7 @@
             type="text"
             :placeholder="table.row.endpoint"
             v-model="table.row.endpoint"
-            autocomplete="off"
+            autocomplete="new-password"
           />
         </div>
         <div class="modal-row">
@@ -41,7 +41,7 @@
             type="password"
             :placeholder="table.row.access_key"
             v-model="table.row.access_key"
-            autocomplete="off"
+            autocomplete="new-password"
           />
         </div>
         <div class="modal-row">
@@ -51,7 +51,7 @@
             type="password"
             :placeholder="table.row.secret_key"
             v-model="table.row.secret_key"
-            autocomplete="off"
+            autocomplete="new-password"
           />
         </div>
         <div class="modal-row">

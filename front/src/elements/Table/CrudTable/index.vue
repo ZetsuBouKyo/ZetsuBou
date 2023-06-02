@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="flex flex-col w-full mx-auto bg-gray-800 rounded-lg shadow-gray-900"
-    v-if="state.pagination"
-    :key="state.pagination.current"
-  >
+  <div class="flex flex-col w-full mx-auto bg-gray-800 rounded-lg shadow-gray-900">
     <confirm-modal
       ref="confirm"
       :title="'Warning'"

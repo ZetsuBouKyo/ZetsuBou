@@ -11,6 +11,7 @@ from starlette.responses import JSONResponse
 from back.api import router as api
 from back.init.async_elasticsearch import init_indices
 from back.init.database import init_table
+from back.init.logger import init_loggers
 from back.route import router as views
 from back.session.minio import init_minio
 from back.settings import setting
@@ -29,6 +30,8 @@ on your collections.
 
 This is written in Python 3 and Vue 3.
 """
+
+init_loggers()
 
 app = FastAPI(title=TITLE, description=description, docs_url=None, redoc_url=None)
 

@@ -11,6 +11,7 @@ dags/plugins.py
 dev
 etc
 front/package-lock.json
+logs
 node_modules
 plugins
 poetry.lock*

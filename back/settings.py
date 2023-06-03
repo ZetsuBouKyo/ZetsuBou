@@ -132,6 +132,8 @@ class Setting(BaseSettings):
     airflow_username: str = "airflow"
     airflow_password: str = "airflow"
 
+    redis_url: str = "redis://localhost:6380/0"
+
     class Config:
         env_prefix = "zetsubou_"
 

@@ -58,3 +58,16 @@ services:
     volumes:
       # - postgres_data:/var/lib/postgresql/data
       - ${MINIO_VOLUME:-./dev/volumes/minio}:/data
+
+  zetsubou-redis:
+    image: redis:latest
+    network_mode: host
+    expose:
+      - 6380
+    command: redis-server --port 6380
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
+      retries: 50
+    restart: always

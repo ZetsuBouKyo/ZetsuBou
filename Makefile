@@ -22,7 +22,7 @@ AIRFLOW_LOGS_VOLUME ?= ./dev/volumes/airflow/logs
 AIRFLOW_PLUGINS_VOLUME ?= ./dev/volumes/airflow/plugins
 AIRFLOW_POSTGRES_DB_VOLUME ?= ./dev/volumes/airflow/postgres
 
-APP_DEV_SERVICES := zetsubou-postgres zetsubou-elastic zetsubou-minio
+APP_DEV_SERVICES := zetsubou-postgres zetsubou-elastic zetsubou-minio zetsubou-redis
 AIRFLOW_SERVICES := airflow-postgres airflow-redis airflow-webserver airflow-scheduler airflow-worker airflow-triggerer airflow-init airflow-cli flower
 
 .PHONY: test line check

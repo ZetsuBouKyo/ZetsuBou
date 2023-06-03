@@ -1,0 +1,8 @@
+{
+    "ZetsuBou __name__": {
+        "scope": "python",
+        "prefix": "if __",
+        "body": ["if __name__ == \"__main__\":"],
+        "description": "ZetsuBou __name__"
+    }
+}

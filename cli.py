@@ -18,6 +18,7 @@ from command.elasticsearch import app as elasticsearch
 from command.gallery import app as gallery
 from command.migrate import app as migrate
 from command.s3 import app as s3
+from command.standalone import app as standalone
 from command.sync import app as sync
 from command.tag import app as tag
 from command.test import app as test
@@ -44,6 +45,7 @@ app.add_typer(elasticsearch)
 app.add_typer(gallery)
 app.add_typer(migrate)
 app.add_typer(s3)
+app.add_typer(standalone)
 app.add_typer(sync)
 app.add_typer(tag)
 app.add_typer(test)

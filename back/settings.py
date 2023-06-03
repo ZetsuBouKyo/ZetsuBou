@@ -82,6 +82,12 @@ class Setting(BaseSettings):
             return f"https://{cls.standalone_host}:{cls.standalone_port}"
         return f"http://{cls.standalone_host}:{cls.standalone_port}"
 
+    standalone_storage_protocol: SourceProtocolEnum = None
+    standalone_storage_id: int = None
+    standalone_storage_minio_volume: str = None
+    standalone_sync_galleries_from_path: str = None
+    standalone_sync_galleries_to_path: str = None
+
     gallery_dir_fname: str = ".tag"
     gallery_backup_count: int = 3
     gallery_tag_fname: str = "gallery.json"

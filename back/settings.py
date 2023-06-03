@@ -19,8 +19,8 @@ class DatabaseType(str, Enum):
 
 
 class AppMode(str, Enum):
-    STANDALONE: str = "STANDALONE"
-    CLUSTER: str = "CLUSTER"
+    STANDALONE: str = "standalone"
+    CLUSTER: str = "cluster"
 
 
 class Setting(BaseSettings):

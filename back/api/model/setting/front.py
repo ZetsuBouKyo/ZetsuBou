@@ -1,6 +1,7 @@
 from typing import Dict, List
 
 from back.model.elasticsearch import AnalyzerEnum, ElasticsearchField
+from back.settings import AppMode
 from pydantic import BaseModel
 
 
@@ -22,6 +23,7 @@ class FrontGeneralSettingVideo(FrontGeneralSettingBase):
 
 
 class FrontGeneralSetting(BaseModel):
+    app_mode: AppMode = None
     gallery: FrontGeneralSettingGallery
     video: FrontGeneralSettingVideo
 

@@ -1,18 +1,20 @@
 from back.api.model.setting.front import FrontGeneralSetting
 from back.crud.async_gallery import elasticsearch_gallery_analyzer
 from back.crud.async_video import elasticsearch_video_analyzer
-from back.model.scope import ScopeEnum
 from back.dependency.security import api_security
 from back.init.async_elasticsearch import (
     gallery_mappings,
     get_field_analyzer_from_mapping,
     video_mappings,
 )
+from back.model.scope import ScopeEnum
+from back.settings import setting
 from fastapi import APIRouter
 
 from .gallery import router as gallery
 from .video import router as video
 
+APP_MODE = setting.app_mode
 router = APIRouter()
 
 router.include_router(gallery, prefix="/gallery")
@@ -26,6 +28,7 @@ router.include_router(video, prefix="/video")
 )
 async def get_general_setting() -> FrontGeneralSetting:
     _front_general_setting = {
+        "app_mode": APP_MODE,
         "gallery": {
             "analyzer": {
                 "field": get_field_analyzer_from_mapping(gallery_mappings),

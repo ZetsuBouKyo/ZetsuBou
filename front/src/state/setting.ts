@@ -4,6 +4,11 @@ import { getSettingFrontGeneral } from "@/api/v1/setting/front/front";
 
 import { SearchAnalyzer } from "@/interface/search";
 
+export enum SettingAppMode {
+  Standalone = "standalone",
+  Cluster = "cluster",
+}
+
 export interface GeneralAnalyzerFieldSetting {
   [key: string]: Array<string>;
 }
@@ -26,6 +31,7 @@ export interface GeneralVideoSetting {
 }
 
 export interface GeneralSetting {
+  app_mode: SettingAppMode;
   gallery: GeneralGallerySetting;
   video: GeneralVideoSetting;
 }

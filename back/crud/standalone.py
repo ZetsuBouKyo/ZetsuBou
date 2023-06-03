@@ -1,14 +1,19 @@
+import asyncio
 import json
 import os
 import re
 from pathlib import Path
+from shutil import which
 from typing import List
 from uuid import uuid4
 
+from back.crud.async_gallery import get_gallery_by_gallery_id
 from back.db.crud import CrudStorageMinio
 from back.db.model import StorageMinio
+from back.logging import logger_webapp
 from back.model.base import SourceProtocolEnum
 from back.model.gallery import Gallery
+from back.schema.basic import Message
 from back.session.async_elasticsearch import async_elasticsearch as _async_elasticsearch
 from back.settings import setting
 from back.utils.dt import get_now
@@ -223,3 +228,32 @@ class _SyncNewGalleries:
 async def sync_new_galleries():
     sync_new = _SyncNewGalleries(is_from_setting_if_none=True)
     await sync_new.sync()
+
+
+async def open_folder(gallery_id: str):
+    gallery = await get_gallery_by_gallery_id(gallery_id)
+    gallery_path = gallery.path
+
+    if STANDALONE_STORAGE_MINIO_VOLUME is None:
+        raise HTTPException(
+            status_code=404, detail="'STANDALONE_STORAGE_MINIO_VOLUME' not found"
+        )
+
+    relative_path = gallery_path.split("//")[-1]
+    if len(relative_path) > 0 and relative_path[0] == "/":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Path in Minio path after removing '{SourceProtocolEnum.MINIO.value}' should not start with '/'",  # noqa
+        )
+
+    path_at_host = Path(STANDALONE_STORAGE_MINIO_VOLUME, relative_path)
+    logger_webapp.info(path_at_host)
+
+    preferred_app = "nautilus"
+    if which(preferred_app) is not None:
+        cmd = f'{preferred_app} "{str(path_at_host)}"'
+        await asyncio.create_subprocess_shell(
+            cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
+        return Message(detail="ok")
+    return Message(detail=f"{preferred_app}: command not found")

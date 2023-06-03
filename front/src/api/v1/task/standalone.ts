@@ -2,7 +2,7 @@ import request from "@/utils/request";
 
 export function getTaskStandaloneSyncNewGalleries() {
   return request({
-    url: "/api/v1/task/standalone/gallery/sync-new-galleries",
+    url: "/api/v1/task/standalone/sync-new-galleries",
     method: "get",
   });
 }

@@ -1,6 +1,7 @@
 <template>
   <confirm-modal
     ref="confirmNew"
+    v-if="state.appMode !== undefined"
     :title="'Warning'"
     :message="'Do you really want to synchronize new galleries?'"
     :on-close="onCloseConfirm"
@@ -16,17 +17,14 @@
   <div class="relative mx-1 h-10">
     <dropdown class="text-white border-2 border-gray-700 hover:bg-gray-600 rounded-lg">
       <template v-slot:select>
-        <ripple-button
-          class="focus:outline-none h-full"
-          :title="state.action === 'new' ? 'synchronize new' : 'synchronize all'"
-        >
+        <ripple-button class="focus:outline-none h-full">
           <div class="inline-flex items-center" @click="synchronize">
-            <!-- <icon-ic-twotone-sync
+            <icon-ic-twotone-sync
               class="m-2"
               :class="state.isSync ? 'animate-spin' : ''"
               style="font-size: 1.2rem; color: white"
-            /> -->
-            <span class="mx-4 my-auto">Sync</span>
+            />
+            <span class="mr-4 my-auto">Sync</span>
           </div>
         </ripple-button>
       </template>
@@ -38,7 +36,7 @@
             v-model="state.action"
           >
             <option class="my-1 mx-2" value="all">All</option>
-            <option class="my-1 mx-2" value="new">New</option>
+            <option class="my-1 mx-2" value="new" v-if="state.appMode === SettingAppMode.Standalone">New</option>
           </select>
         </div>
       </template>
@@ -46,23 +44,62 @@
   </div>
 </template>
 
-<script>
-import { reactive, ref } from "vue";
+<script lang="ts">
+import { reactive, ref, watch, onBeforeMount } from "vue";
+import { AxiosResponse } from "axios";
 
-import { getTaskStandaloneSyncNewGalleries } from "@/api/v1/task/standalone";
+import {
+  getTaskStandaloneSyncNewGalleries,
+  getTaskStandaloneSyncNewProgress,
+  deleteTaskStandaloneSyncNewProgress,
+} from "@/api/v1/task/standalone";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import Dropdown from "@/elements/Dropdown/Dropdown.vue";
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 
+import { settingState, SettingAppMode } from "@/state/setting";
+
+enum SyncMode {
+  All = "all",
+  New = "new",
+}
+
 export default {
   components: { RippleButton, Dropdown, ConfirmModal },
   setup() {
     const state = reactive({
+      appMode: undefined,
       isSync: false,
-      action: "new",
+      action: undefined,
       sync: undefined,
     });
+
+    function load() {
+      if (settingState.setting === undefined) {
+        return;
+      }
+      state.appMode = settingState.setting.app_mode;
+      switch (settingState.setting.app_mode) {
+        case SettingAppMode.Standalone:
+          state.action = SyncMode.New;
+          break;
+        case SettingAppMode.Cluster:
+          state.action = SyncMode.All;
+      }
+    }
+    load();
+    watch(
+      () => {
+        if (settingState.setting !== undefined) {
+          return settingState.setting.app_mode;
+        }
+        return undefined;
+      },
+      () => {
+        load();
+      },
+    );
 
     const confirmNew = ref();
     const confirmAll = ref();
@@ -75,25 +112,65 @@ export default {
         return;
       }
       state.isSync = true;
-      if (state.action === "new") {
-        confirmNew.value.open();
-      } else if (state.action === "all") {
-        confirmAll.value.open();
+      switch (state.action) {
+        case SyncMode.New:
+          confirmNew.value.open();
+          break;
+        case SyncMode.All:
+          confirmAll.value.open();
+          break;
       }
     }
 
+    async function synchronizeHandler(handler: any) {
+      checkSyncState();
+      return handler()
+        .then((response: AxiosResponse) => {
+          if (response.status === 200) {
+            deleteTaskStandaloneSyncNewProgress().then((response: AxiosResponse) => {
+              if (response.status === 200) {
+                state.isSync = false;
+              }
+            });
+          }
+        })
+        .catch(() => {
+          // console.log(error);
+          state.isSync = false;
+        });
+    }
+
     function onConfirmSynchronizeNew() {
-      getTaskStandaloneSyncNewGalleries().then((response) => {
-        if (response.status === 200) {
+      synchronizeHandler(getTaskStandaloneSyncNewGalleries);
+    }
+
+    function onConfirmSynchronizeAll() {
+      // synchronizeHandler(getTaskGallerySyncAll);
+    }
+
+    function getProgress() {
+      getTaskStandaloneSyncNewProgress().then((response) => {
+        if (response.status === 200 && response.data.progress_id === null) {
+          clearTimeout(state.sync);
+          state.isSync = false;
         }
       });
     }
 
-    function onConfirmSynchronizeAll() {}
+    function checkSyncState() {
+      state.isSync = true;
+      state.sync = setInterval(() => {
+        getProgress();
+      }, 1000);
+    }
+
+    getProgress();
 
     return {
       state,
       confirmNew,
+      SyncMode,
+      SettingAppMode,
       onConfirmSynchronizeNew,
       confirmAll,
       onConfirmSynchronizeAll,

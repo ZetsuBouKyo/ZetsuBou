@@ -13,8 +13,10 @@ from back.db.model import StorageMinio
 from back.logging import logger_webapp
 from back.model.base import SourceProtocolEnum
 from back.model.gallery import Gallery
+from back.model.task import ZetsuBouTaskProgressEnum
 from back.schema.basic import Message
 from back.session.async_elasticsearch import async_elasticsearch as _async_elasticsearch
+from back.session.async_redis import Progress
 from back.settings import setting
 from back.utils.dt import get_now
 from fastapi import HTTPException
@@ -165,7 +167,13 @@ class _SyncNewGalleries:
                 detail=f"path: {self._sync_to_path} not in minio galleries",
             )
 
-        for gallery_path in self._sync_from_path.iterdir():
+        progress_id = ZetsuBouTaskProgressEnum.SYNC_NEW_GALLERIES.value
+        gallery_paths = [
+            gallery_path for gallery_path in self._sync_from_path.iterdir()
+        ]
+        async for gallery_path in Progress(
+            gallery_paths, id=progress_id, is_from_setting_if_none=True
+        ):
             if not gallery_path.is_dir():
                 continue
 

@@ -1,5 +1,5 @@
 import typer
-from back.session.async_redis import async_redis
+from back.session.async_redis import async_redis, list_pairs
 
 from command.utils import sync
 
@@ -14,9 +14,16 @@ async def ping():
 
 @app.command()
 @sync
-async def list():
-    async for key in async_redis.scan_iter("*"):
+async def list(key: str = typer.Option(default="*", help="Redis key.")):
+    async for key in async_redis.scan_iter(key):
         print(key)
+
+
+@app.command(name="list-pairs")
+@sync
+async def _list_pairs(key: str = typer.Option(default="*", help="Redis key.")):
+    async for key, value in list_pairs(key=key):
+        print(key, value)
 
 
 @app.command()

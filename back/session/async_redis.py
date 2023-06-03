@@ -9,10 +9,16 @@ REDIS_URL = setting.redis_url
 async_redis = _async_redis = _async_redis.from_url(REDIS_URL)
 
 
+async def list_pairs(key="*", async_redis: Redis = async_redis):
+    async for key in async_redis.scan_iter(key):
+        value = await async_redis.get(key)
+        yield key, value
+
+
 def get_progress_id(prefix: str = ""):
     id_body = str(uuid4())
     if prefix:
-        return f"{prefix}-{id_body}"
+        return f"{prefix}.{id_body}"
     return id_body
 
 

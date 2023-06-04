@@ -70,7 +70,7 @@ class Setting(BaseSettings):
     app_security_secret: str = "VadwSj8umrbeG8ro"
 
     app_logging_level: str = "WARNING"
-    app_logging_formatter_fmt: str = "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)-8s - %(message)s"  # noqa
+    app_logging_formatter_fmt: str = "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"  # noqa
 
     standalone_host: str = "0.0.0.0"
     standalone_port: int = 3001

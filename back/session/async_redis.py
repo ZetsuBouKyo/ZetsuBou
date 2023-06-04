@@ -1,6 +1,8 @@
+import logging
 from uuid import uuid4
 
 import redis.asyncio as _async_redis
+from back.logging import logger_webapp
 from back.settings import setting
 from redis.asyncio import Redis
 
@@ -46,6 +48,9 @@ class Progress:
         else:
             self.total = total
 
+        if logger_webapp.level == logging.DEBUG:
+            self.current = self.initial
+
         self.async_redis = async_redis
         self._iterable = iterable
 
@@ -59,6 +64,10 @@ class Progress:
 
     async def _update(self, i: int):
         self._initial += i / self.total
+        if logger_webapp.level == logging.DEBUG:
+            if self._initial % 10 == 0:
+                logger_webapp.debug(f"progress: {self._initial} %")
+
         await self._set(self._initial)
 
     async def __aiter__(self):

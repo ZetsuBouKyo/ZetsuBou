@@ -8,6 +8,7 @@ from uuid import uuid4
 import typer
 from pdf2image import convert_from_path
 
+from back.init.logger import init_zetsubou_logger
 from back.model.gallery import Gallery as GalleryModel
 from back.settings import setting
 from back.utils.dt import get_now
@@ -25,6 +26,8 @@ from command.tag import app as tag
 from command.test import app as test
 from command.utils import is_empty_dir
 from command.video import app as video
+
+init_zetsubou_logger()
 
 try:
     from plugins.cli import app as plugin  # type: ignore

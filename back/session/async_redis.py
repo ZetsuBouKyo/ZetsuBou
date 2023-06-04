@@ -42,6 +42,7 @@ class Progress:
 
         self.initial = self._initial = initial
         self.final = final
+        self._interval = self.final - self.initial
 
         if total is None:
             self.total = len(iterable)
@@ -49,7 +50,7 @@ class Progress:
             self.total = total
 
         if logger_webapp.level == logging.DEBUG:
-            self.current = self.initial
+            self._last_progress = int(self._initial)
 
         self.async_redis = async_redis
         self._iterable = iterable
@@ -62,22 +63,26 @@ class Progress:
         _progress = f"{progress:.2f}"
         await self.async_redis.set(self.id, _progress)
 
-    async def _update(self, i: int):
-        self._initial += i / self.total
+    async def _update(self):
+        self._initial += 1 / self.total * self._interval
+
         if logger_webapp.level == logging.DEBUG:
-            if self._initial % 10 == 0:
-                logger_webapp.debug(f"progress: {self._initial} %")
+            self._current_progress = int(self._initial)
+            if self._current_progress != self._last_progress:
+                self._last_progress = self._current_progress
+                if self._current_progress % 10 == 0:
+                    logger_webapp.debug(f"progress: {self._current_progress} %")
 
         await self._set(self._initial)
 
     async def __aiter__(self):
         if hasattr(self._iterable, "__aiter__"):
-            async for i, obj in enumerate(self._iterable):
-                await self._update(i)
+            async for obj in self._iterable:
+                await self._update()
                 yield obj
         else:
-            for i, obj in enumerate(self._iterable):
-                await self._update(i)
+            for obj in self._iterable:
+                await self._update()
                 yield obj
 
         await self._set(self.final)

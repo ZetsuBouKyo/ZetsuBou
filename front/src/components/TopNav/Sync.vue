@@ -127,11 +127,7 @@ export default {
       return handler()
         .then((response: AxiosResponse) => {
           if (response.status === 200) {
-            deleteTaskStandaloneSyncNewProgress().then((response: AxiosResponse) => {
-              if (response.status === 200) {
-                state.isSync = false;
-              }
-            });
+            deleteProgress();
           }
         })
         .catch(() => {
@@ -148,11 +144,24 @@ export default {
       // synchronizeHandler(getTaskGallerySyncAll);
     }
 
-    function getProgress() {
-      getTaskStandaloneSyncNewProgress().then((response) => {
-        if (response.status === 200 && response.data.progress_id === null) {
+    function deleteProgress() {
+      deleteTaskStandaloneSyncNewProgress().then((response: AxiosResponse) => {
+        if (response.status === 200) {
           clearTimeout(state.sync);
           state.isSync = false;
+        }
+      });
+    }
+
+    function getProgress() {
+      getTaskStandaloneSyncNewProgress().then((response) => {
+        if (response.status === 200) {
+          if (response.data.progress_id === null) {
+            clearTimeout(state.sync);
+            state.isSync = false;
+          } else if (response.data.progress === 100) {
+            deleteProgress();
+          }
         }
       });
     }

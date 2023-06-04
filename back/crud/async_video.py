@@ -5,10 +5,13 @@ from uuid import uuid4
 
 import cv2
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
+from back.logging import logger_webapp
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
+from back.model.task import ZetsuBouTaskProgressEnum
 from back.model.video import Video, VideoOrderedFieldEnum, Videos
 from back.session.async_elasticsearch import async_elasticsearch
+from back.session.async_redis import Progress
 from back.session.storage import get_app_storage_session, get_storage_session_by_source
 from back.session.storage.async_s3 import AsyncS3Session
 from back.settings import setting
@@ -74,6 +77,10 @@ elasticsearch_video_analyzer = {
     ],
     AnalyzerEnum.URL.value: ["path.url", "attributes.src.url"],
 }
+
+
+def get_sync_video_progress_id(protocol: SourceProtocolEnum, id: int):
+    return f"{ZetsuBouTaskProgressEnum.SYNC_STORAGE}.{protocol}.{id}"
 
 
 class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
@@ -594,6 +601,8 @@ class CrudAsyncVideoSync:
     def __init__(
         self,
         storage_session: AsyncS3Session,
+        storage_protocol: SourceProtocolEnum,
+        storage_id: int,
         root_source: SourceBaseModel,
         depth: int,
         hosts: List[str] = None,
@@ -605,9 +614,15 @@ class CrudAsyncVideoSync:
         cover_home: str = None,
         app_storage_protocol: SourceProtocolEnum = None,
         app_storage_session: AsyncS3Session = None,
+        progress_id: str = None,
+        progress_initial: float = 0,
+        progress_final: float = 100.0,
+        is_progress: bool = True,
         is_from_setting_if_none: bool = False,
     ):
         self.storage_session = storage_session
+        self.storage_protocol = storage_protocol
+        self.storage_id = storage_id
 
         self.root_source = root_source
         self.depth = depth
@@ -624,6 +639,16 @@ class CrudAsyncVideoSync:
         self.app_storage_session = app_storage_session
 
         self.async_elasticsearch = AsyncElasticsearch(self.hosts)
+
+        self.progress_initial = progress_initial
+        self.progress_final = progress_final
+        self.progress_interval = self.progress_final - self.progress_initial
+        self.progress_id = progress_id
+        if self.progress_id is None:
+            self.progress_id = get_sync_video_progress_id(
+                self.storage_protocol, self.storage_id
+            )
+        self.is_progress = is_progress
 
         if is_from_setting_if_none:
             if self.hosts is None:
@@ -658,92 +683,182 @@ class CrudAsyncVideoSync:
         self._elasticsearch_to_storage_batches = []
         self._storage_to_elasticsearch_batches = []
 
-    async def _sync_elasticsearch_to_storage(self):
-        query = {"query": {"match_all": {}}}
-        c = 0
+    @property
+    def dsl(self):
+        return {
+            "size": 0,
+            "query": {
+                "constant_score": {
+                    "filter": {
+                        "multi_match": {
+                            "query": f"{self.storage_protocol}-{self.storage_id}",
+                            "fields": [f"path.{AnalyzerEnum.URL}"],
+                        }
+                    }
+                }
+            },
+            "track_total_hits": True,
+        }
+
+    async def _sync_video_elasticsearch_to_storage(self, doc: dict):
+        source = doc.get("_source", None)
+        if source is None:
+            return
+
+        video = Video(**source)
+
+        if video._scheme != self.root_source._scheme:
+            return
+
+        exists = await self.storage_session.exists(video)
+        if not exists:
+            self._elasticsearch_to_storage_batches.append(
+                {
+                    "_index": self.index,
+                    "_id": video.id,
+                    "_op_type": "delete",
+                }
+            )
+        else:
+            self._video_paths_in_elasitcsearch[video.path] = video
+
+        if len(self._elasticsearch_to_storage_batches) > self.batch_size:
+            await self.send_bulk(self._elasticsearch_to_storage_batches)
+
+    async def _sync_video_storage_to_elasticsearch(self, source: SourceBaseModel):
+        if Path(source.path).suffix not in self.available_extensions:
+            return
+
+        video = self._video_paths_in_elasitcsearch.get(source.path, None)
+        if video is not None:
+            if not self.force:
+                return
+            else:
+                new_video = await _get_video_attrs(self.storage_session, video)
+                if new_video is None:
+                    return
+                video.attributes.height = new_video.attributes.height
+                video.attributes.width = new_video.attributes.width
+                video.attributes.fps = new_video.attributes.fps
+                video.attributes.duration = new_video.attributes.duration
+                video.attributes.frames = new_video.attributes.frames
+        else:
+            video = await _get_video_attrs(self.storage_session, source)
+            if video is None:
+                return
+
+        video.name = Path(source.path).name
+        video.path = source.path
+        if video.id is None:
+            video.id = str(uuid4())
+        if video.timestamp is None:
+            video.timestamp = get_now()
+        if not is_isoformat_with_timezone(video.timestamp):
+            video.timestamp = get_isoformat_with_timezone(video.timestamp)
+
+        await _generate_cover(
+            self.app_storage_protocol,
+            self.app_storage_session,
+            self.storage_session,
+            video,
+            self.cache_home,
+            self.cover_home,
+        )
+
+        action = {"_index": self.index, "_id": video.id, "_source": video.dict()}
+        self._storage_to_elasticsearch_batches.append(action)
+
+        if len(self._storage_to_elasticsearch_batches) > self.batch_size:
+            await self.send_bulk(self._storage_to_elasticsearch_batches)
+
+    async def _sync_elasticsearch_to_storage_without_progress(self):
+        query = self.dsl
 
         async for doc in async_scan(
             client=self.async_elasticsearch, query=query, index=self.index
         ):
-            source = doc.get("_source", None)
-            if source is None:
-                continue
-            c += 1
-            video = Video(**source)
+            await self._sync_video_elasticsearch_to_storage(doc)
 
-            if video._scheme != self.root_source._scheme:
-                continue
+        if len(self._elasticsearch_to_storage_batches) > 0:
+            await self.send_bulk(self._elasticsearch_to_storage_batches)
 
-            exists = await self.storage_session.exists(video)
-            if not exists:
-                self._elasticsearch_to_storage_batches.append(
-                    {
-                        "_index": self.index,
-                        "_id": video.id,
-                        "_op_type": "delete",
-                    }
-                )
-            else:
-                self._video_paths_in_elasitcsearch[video.path] = video
+    async def _sync_storage_to_elasticsearch_without_progress(self):
+        sources = await self.storage_session.list_nested_sources(self.root_source)
+        for source in sources:
+            await self._sync_video_storage_to_elasticsearch(source)
 
-            if len(self._elasticsearch_to_storage_batches) > self.batch_size:
-                await self.send_bulk(self._elasticsearch_to_storage_batches)
+        if len(self._storage_to_elasticsearch_batches) > 0:
+            await self.send_bulk(self._storage_to_elasticsearch_batches)
+
+    async def _count_storage(self):
+        self._sources = await self.storage_session.list_nested_sources(self.root_source)
+
+        self._storage_to_elasticsearch_num = len(self._sources)
+
+        logger_webapp.debug(
+            f"storage to elasticsearch (number): {self._storage_to_elasticsearch_num}"
+        )
+
+    async def _count_elasticsearch(self):
+        dsl = self.dsl
+
+        resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
+        self._elasticsearch_to_storage_num = resp["hits"]["total"]["value"]
+
+        logger_webapp.debug(
+            f"elasticsearch to storage (number): {self._elasticsearch_to_storage_num}"
+        )
+
+    async def _sync_elasticsearch_to_storage(self):
+        query = self.dsl
+
+        self._elasticsearch_to_storage_final = (
+            self._elasticsearch_to_storage_num
+            / (self._storage_to_elasticsearch_num + self._elasticsearch_to_storage_num)
+            * self.progress_interval
+        )
+
+        async for doc in Progress(
+            async_scan(client=self.async_elasticsearch, query=query, index=self.index),
+            id=self.progress_id,
+            initial=self.progress_initial,
+            final=self._elasticsearch_to_storage_final,
+            total=self._elasticsearch_to_storage_num,
+            is_from_setting_if_none=True,
+        ):
+            await self._sync_video_elasticsearch_to_storage(doc)
 
         if len(self._elasticsearch_to_storage_batches) > 0:
             await self.send_bulk(self._elasticsearch_to_storage_batches)
 
     async def _sync_storage_to_elasticsearch(self):
-        sources = await self.storage_session.list_nested_sources(self.root_source)
-        for source in sources:
-            if Path(source.path).suffix not in self.available_extensions:
-                continue
-
-            video = self._video_paths_in_elasitcsearch.get(source.path, None)
-            if video is not None:
-                if not self.force:
-                    continue
-                else:
-                    new_video = await _get_video_attrs(self.storage_session, video)
-                    if new_video is None:
-                        continue
-                    video.attributes.height = new_video.attributes.height
-                    video.attributes.width = new_video.attributes.width
-                    video.attributes.fps = new_video.attributes.fps
-                    video.attributes.duration = new_video.attributes.duration
-                    video.attributes.frames = new_video.attributes.frames
-            else:
-                video = await _get_video_attrs(self.storage_session, source)
-                if video is None:
-                    continue
-
-            video.name = Path(source.path).name
-            video.path = source.path
-            if video.id is None:
-                video.id = str(uuid4())
-            if video.timestamp is None:
-                video.timestamp = get_now()
-            if not is_isoformat_with_timezone(video.timestamp):
-                video.timestamp = get_isoformat_with_timezone(video.timestamp)
-
-            await _generate_cover(
-                self.app_storage_protocol,
-                self.app_storage_session,
-                self.storage_session,
-                video,
-                self.cache_home,
-                self.cover_home,
-            )
-
-            action = {"_index": self.index, "_id": video.id, "_source": video.dict()}
-            self._storage_to_elasticsearch_batches.append(action)
-
-            if len(self._storage_to_elasticsearch_batches) > self.batch_size:
-                await self.send_bulk(self._storage_to_elasticsearch_batches)
+        async for source in Progress(
+            self._sources,
+            id=self.progress_id,
+            initial=self._elasticsearch_to_storage_final,
+            final=self.progress_final,
+            total=self._elasticsearch_to_storage_num,
+            is_from_setting_if_none=True,
+        ):
+            await self._sync_video_storage_to_elasticsearch(source)
 
         if len(self._storage_to_elasticsearch_batches) > 0:
             await self.send_bulk(self._storage_to_elasticsearch_batches)
 
     async def sync(self):
+        logger_webapp.debug(f"storage protocol: {self.storage_protocol}")
+        logger_webapp.debug(f"storage id: {self.storage_id}")
+        logger_webapp.debug(f"elasticsearch index: {self.index}")
+        logger_webapp.debug(f"is progress: {self.is_progress}")
+        logger_webapp.debug(f"progress id: {self.progress_id}")
+
         async with self.app_storage_session, self.storage_session:
-            await self._sync_elasticsearch_to_storage()
-            await self._sync_storage_to_elasticsearch()
+            if self.is_progress:
+                await self._count_storage()
+                await self._count_elasticsearch()
+                await self._sync_elasticsearch_to_storage()
+                await self._sync_storage_to_elasticsearch()
+
+            else:
+                await self._sync_elasticsearch_to_storage_without_progress()
+                await self._sync_storage_to_elasticsearch_without_progress()

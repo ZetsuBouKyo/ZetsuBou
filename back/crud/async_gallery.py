@@ -4,10 +4,13 @@ from typing import Any, Dict, List
 from uuid import uuid4
 
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
-from back.model.base import SourceBaseModel
+from back.logging import logger_webapp
+from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
+from back.model.task import ZetsuBouTaskProgressEnum
 from back.session.async_elasticsearch import async_elasticsearch
+from back.session.async_redis import Progress
 from back.session.storage import get_storage_session_by_source
 from back.session.storage.async_s3 import AsyncS3Session
 from back.settings import setting
@@ -82,6 +85,10 @@ def convert(text) -> int:
 
 def alphanum_sorting(text) -> List[int]:
     return [convert(c) for c in re.split("([0-9]+)", text)]
+
+
+def get_sync_gallery_progress_id(protocol: SourceProtocolEnum, id: int):
+    return f"{ZetsuBouTaskProgressEnum.SYNC_STORAGE}.{protocol}.{id}"
 
 
 class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
@@ -545,6 +552,8 @@ class CrudAsyncGallerySync:
     def __init__(
         self,
         storage_session: AsyncS3Session,
+        storage_protocol: SourceProtocolEnum,
+        storage_id: int,
         root_source: SourceBaseModel,
         depth: int,
         hosts: List[str] = None,
@@ -553,9 +562,15 @@ class CrudAsyncGallerySync:
         batch_size: int = None,
         dir_fname: str = None,
         tag_fname: str = None,
+        progress_id: str = None,
+        progress_initial: float = 0,
+        progress_final: float = 100.0,
+        is_progress: bool = True,
         is_from_setting_if_none: bool = False,
     ):
         self.storage_session = storage_session
+        self.storage_protocol = storage_protocol
+        self.storage_id = storage_id
 
         self.root_source = root_source
         self.depth = depth
@@ -568,6 +583,16 @@ class CrudAsyncGallerySync:
         self.tag_fname = tag_fname
 
         self.async_elasticsearch = AsyncElasticsearch(self.hosts)
+
+        self.progress_initial = progress_initial
+        self.progress_final = progress_final
+        self.progress_interval = self.progress_final - self.progress_initial
+        self.progress_id = progress_id
+        if self.progress_id is None:
+            self.progress_id = get_sync_gallery_progress_id(
+                self.storage_protocol, self.storage_id
+            )
+        self.is_progress = is_progress
 
         if is_from_setting_if_none:
             if self.hosts is None:
@@ -587,6 +612,23 @@ class CrudAsyncGallerySync:
         self._elasticsearch_to_storage_batches = []
         self._storage_to_elasticsearch_batches = []
 
+    @property
+    def dsl(self):
+        return {
+            "size": 0,
+            "query": {
+                "constant_score": {
+                    "filter": {
+                        "multi_match": {
+                            "query": f"{self.storage_protocol}-{self.storage_id}",
+                            "fields": [f"path.{AnalyzerEnum.URL}"],
+                        }
+                    }
+                }
+            },
+            "track_total_hits": True,
+        }
+
     async def iter_elasticsearch_batches(self, batches: List[dict]):
         for batch in batches:
             yield batch
@@ -596,7 +638,9 @@ class CrudAsyncGallerySync:
         self._elasticsearch_to_storage_batches = []
         self._storage_to_elasticsearch_batches = []
 
-    async def _sync_gallery(self, source: SourceBaseModel) -> Gallery:
+    async def _sync_gallery_storage_to_elasticsearch(
+        self, source: SourceBaseModel
+    ) -> Gallery:
         tag_source = _get_tag_source(
             self.storage_session, source, self.dir_fname, self.tag_fname
         )
@@ -646,50 +690,123 @@ class CrudAsyncGallerySync:
 
         return tag
 
-    async def _sync_storage_to_elasticsearch(self):
-        self._storage_to_elasticsearch_batches = []
+    async def _sync_gallery_elasticsearch_to_storage(self, doc: dict):
+        source = doc.get("_source", None)
+        if source is None:
+            return
+
+        gallery = Gallery(**source)
+
+        if gallery._scheme != self.root_source._scheme:
+            return
+
+        exists = await self.storage_session.exists(gallery)
+        if not exists or gallery.id not in self.cache:
+            self._elasticsearch_to_storage_batches.append(
+                {
+                    "_index": self.index,
+                    "_id": gallery.id,
+                    "_op_type": "delete",
+                }
+            )
+
+        if len(self._elasticsearch_to_storage_batches) > self.batch_size:
+            await self.send_bulk(self._elasticsearch_to_storage_batches)
+
+    async def _sync_storage_to_elasticsearch_without_progress(self):
         async for source in self.storage_session.iter(self.root_source, self.depth):
             if source is None:
                 continue
 
-            await self._sync_gallery(source)
+            await self._sync_gallery_storage_to_elasticsearch(source)
+
+        if len(self._storage_to_elasticsearch_batches) > 0:
+            await self.send_bulk(self._storage_to_elasticsearch_batches)
+
+    async def _sync_elasticsearch_to_storage_without_progress(self):
+        query = self.dsl
+
+        async for doc in async_scan(
+            client=self.async_elasticsearch, query=query, index=self.index
+        ):
+            await self._sync_gallery_elasticsearch_to_storage(doc)
+
+        if len(self._elasticsearch_to_storage_batches) > 0:
+            await self.send_bulk(self._elasticsearch_to_storage_batches)
+
+    async def _count_storage(self):
+        self._sources = []
+        async for source in self.storage_session.iter(self.root_source, self.depth):
+            if source is None:
+                continue
+            self._sources.append(source)
+
+        self._storage_to_elasticsearch_num = len(self._sources)
+
+        logger_webapp.debug(
+            f"storage to elasticsearch (number): {self._storage_to_elasticsearch_num}"
+        )
+
+    async def _count_elasticsearch(self):
+        dsl = self.dsl
+
+        resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
+        self._elasticsearch_to_storage_num = resp["hits"]["total"]["value"]
+
+        logger_webapp.debug(
+            f"elasticsearch to storage (number): {self._elasticsearch_to_storage_num}"
+        )
+
+    async def _sync_storage_to_elasticsearch(self):
+        self._storage_to_elasticsearch_final = (
+            self._storage_to_elasticsearch_num
+            / (self._storage_to_elasticsearch_num + self._elasticsearch_to_storage_num)
+            * self.progress_interval
+        )
+
+        async for source in Progress(
+            self._sources,
+            id=self.progress_id,
+            initial=self.progress_initial,
+            final=self._storage_to_elasticsearch_final,
+            total=self._storage_to_elasticsearch_num,
+            is_from_setting_if_none=True,
+        ):
+            await self._sync_gallery_storage_to_elasticsearch(source)
 
         if len(self._storage_to_elasticsearch_batches) > 0:
             await self.send_bulk(self._storage_to_elasticsearch_batches)
 
     async def _sync_elasticsearch_to_storage(self):
-        query = {"query": {"match_all": {}}}
-        c = 0
+        query = self.dsl
 
-        async for doc in async_scan(
-            client=self.async_elasticsearch, query=query, index=self.index
+        async for doc in Progress(
+            async_scan(client=self.async_elasticsearch, query=query, index=self.index),
+            id=self.progress_id,
+            initial=self._storage_to_elasticsearch_final,
+            final=self.progress_final,
+            total=self._elasticsearch_to_storage_num,
+            is_from_setting_if_none=True,
         ):
-            source = doc.get("_source", None)
-            if source is None:
-                continue
-            c += 1
-            gallery = Gallery(**source)
-
-            if gallery._scheme != self.root_source._scheme:
-                continue
-
-            exists = await self.storage_session.exists(gallery)
-            if not exists or gallery.id not in self.cache:
-                self._elasticsearch_to_storage_batches.append(
-                    {
-                        "_index": self.index,
-                        "_id": gallery.id,
-                        "_op_type": "delete",
-                    }
-                )
-
-            if len(self._elasticsearch_to_storage_batches) > self.batch_size:
-                await self.send_bulk(self._elasticsearch_to_storage_batches)
+            await self._sync_gallery_elasticsearch_to_storage(doc)
 
         if len(self._elasticsearch_to_storage_batches) > 0:
             await self.send_bulk(self._elasticsearch_to_storage_batches)
 
     async def sync(self):
+        logger_webapp.debug(f"storage protocol: {self.storage_protocol}")
+        logger_webapp.debug(f"storage id: {self.storage_id}")
+        logger_webapp.debug(f"elasticsearch index: {self.index}")
+        logger_webapp.debug(f"is progress: {self.is_progress}")
+        logger_webapp.debug(f"progress id: {self.progress_id}")
+
         async with self.storage_session:
-            await self._sync_storage_to_elasticsearch()
-            await self._sync_elasticsearch_to_storage()
+            if self.is_progress:
+                await self._count_elasticsearch()
+                await self._count_storage()
+
+                await self._sync_storage_to_elasticsearch()
+                await self._sync_elasticsearch_to_storage()
+            else:
+                await self._sync_storage_to_elasticsearch_without_progress()
+                await self._sync_elasticsearch_to_storage_without_progress()

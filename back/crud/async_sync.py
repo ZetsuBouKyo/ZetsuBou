@@ -24,7 +24,12 @@ def get_root_source_by_storage_minio(storage_minio: StorageMinio) -> SourceBaseM
 
 
 async def get_crud_sync(
-    protocol: SourceProtocolEnum, storage_id: int
+    protocol: SourceProtocolEnum,
+    storage_id: int,
+    progress_id: str = None,
+    progress_initial: float = 0.0,
+    progress_final: float = 100.0,
+    is_progress: bool = False,
 ) -> CrudAsyncGallerySync:
     if protocol == SourceProtocolEnum.MINIO.value:
         storage_minio = await CrudStorageMinio.get_row_by_id(storage_id)
@@ -45,8 +50,14 @@ async def get_crud_sync(
 
             return CrudAsyncGallerySync(
                 storage_session,
+                protocol,
+                storage_id,
                 root_source,
                 storage_minio.depth,
+                progress_id=progress_id,
+                progress_initial=progress_initial,
+                progress_final=progress_final,
+                is_progress=is_progress,
                 is_from_setting_if_none=True,
             )
 
@@ -64,8 +75,14 @@ async def get_crud_sync(
 
             return CrudAsyncVideoSync(
                 storage_session,
+                protocol,
+                storage_id,
                 root_source,
                 storage_minio.depth,
                 app_storage_session=app_storage_session,
+                progress_id=progress_id,
+                progress_initial=progress_initial,
+                progress_final=progress_final,
+                is_progress=is_progress,
                 is_from_setting_if_none=True,
             )

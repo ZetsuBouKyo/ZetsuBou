@@ -81,7 +81,3 @@ make lint
 ## Contact
 
 [My twitch channel](https://www.twitch.tv/demonic22)
-
-## Reference
-
-- [vite-vue3-tailwind-starter](https://github.com/web2033/vite-vue3-tailwind-starter)

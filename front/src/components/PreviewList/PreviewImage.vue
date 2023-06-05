@@ -14,7 +14,7 @@
             @load="getIntrinsicSize"
           />
           <icon-eos-icons-loading
-            class="absolute m-auto top-0 bottom-0 left-0 right-0 animate-spin"
+            class="absolute m-auto top-0 bottom-0 left-0 right-0"
             style="font-size: 2rem; color: white"
             v-if="state.loading"
           />

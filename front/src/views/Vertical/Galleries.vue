@@ -9,6 +9,7 @@ import { reactive, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { getDatetime } from "@/utils/datetime";
+import { detectRouteChange } from "@/utils/route";
 
 import { getRandom, getAdvancedSearch, getSearch, SearchQuery } from "@/api/v1/gallery/query";
 
@@ -78,7 +79,7 @@ export default {
 
     watch(
       () => {
-        return [userState.frontSetting.gallery_preview_size, route.path, JSON.stringify(route.query)];
+        return [userState.frontSetting.gallery_preview_size, detectRouteChange(route)];
       },
       () => {
         load();

@@ -19,7 +19,9 @@
 
 <script lang="ts">
 import { useRoute } from "vue-router";
-import { ref, reactive, onMounted, onBeforeMount, nextTick, watch, PropType } from "vue";
+import { ref, reactive, onBeforeMount, nextTick, watch, PropType } from "vue";
+
+import { detectRouteChange } from "@/utils/route";
 
 import SvgLayers from "./SvgLayers.vue";
 import { LayerState } from "./interface";
@@ -89,7 +91,7 @@ export default {
 
     watch(
       () => {
-        return [JSON.stringify(route.params.gallery), JSON.stringify(route.params.img)];
+        return [detectRouteChange(route)];
       },
       () => {
         load();

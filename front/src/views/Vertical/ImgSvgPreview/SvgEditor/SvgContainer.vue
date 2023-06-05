@@ -265,8 +265,8 @@ export default {
         newY = newPts.y;
       }
 
-      const layerIndex = layerState.current.layer;
-      const selectionIndex = layerState.current.selection;
+      const layerIndex = layerState.current.layer as number;
+      const selectionIndex = layerState.current.selection as number;
 
       layerState.layers[layerIndex].selections[selectionIndex].points.push({
         x: newX,
@@ -275,8 +275,8 @@ export default {
     }
 
     function finishSelection() {
-      const layerIndex = layerState.current.layer;
-      const selectionIndex = layerState.current.selection;
+      const layerIndex = layerState.current.layer as number;
+      const selectionIndex = layerState.current.selection as number;
 
       layerState.layers[layerIndex].selections[selectionIndex].isCompleted = true;
       layerState.current.layer = undefined;

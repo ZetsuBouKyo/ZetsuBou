@@ -24,7 +24,7 @@ export default {
     <pagination
       class="sticky top-20 z-40 bg-gray-800"
       :pagination="previews.pagination"
-      :key="previews.pagination.current"
+      :key="JSON.stringify(previews.pagination)"
     />
     <div class="px-5 py-5 mx-auto">
       <div class="flex flex-wrap -m-4">

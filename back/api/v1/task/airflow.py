@@ -1,13 +1,21 @@
 from typing import List
 
 from back.api.model.task.airflow import CommandRequest, CommandSchema
+from back.crud.async_progress import check_airflow_progress
 from back.model.airflow import AirflowDagRunResponse, AirflowDagRunsResponse
+from back.model.task import ZetsuBouTask
 from back.session.airflow import dags
 from back.session.airflow import get_dag_run as _get_dag_run
 from back.session.airflow import get_dag_runs, trigger_new_dag_run
+from back.session.async_redis import async_redis
 from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
+
+
+def is_progress_id(progress_id: str):
+    if not check_airflow_progress(progress_id):
+        raise HTTPException(status_code=401, detail="Not authenticated")
 
 
 def is_dag_id(dag_id: str):
@@ -18,6 +26,26 @@ def is_dag_id(dag_id: str):
 @router.get("", response_model=List[CommandSchema])
 def get_dags() -> List[CommandSchema]:
     return list(dags.values())
+
+
+@router.get(
+    "/progress/{progress_id}",
+    response_model=ZetsuBouTask,
+    dependencies=[Depends(is_progress_id)],
+)
+async def get_progress(progress_id: str) -> ZetsuBouTask:
+    progress = await async_redis.get(progress_id)
+    if progress is None:
+        return ZetsuBouTask()
+    return ZetsuBouTask(progress_id=progress_id, progress=float(progress))
+
+
+@router.delete(
+    "/progress/{progress_id}",
+    dependencies=[Depends(is_progress_id)],
+)
+async def delete_progress(progress_id: str):
+    await async_redis.delete(progress_id)
 
 
 @router.post(

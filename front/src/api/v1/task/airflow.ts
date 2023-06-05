@@ -38,3 +38,30 @@ export function postSyncStorageMinio(id: number) {
   };
   return runAirflowDag("sync-storage", data);
 }
+
+export function postSyncStoragesMinio() {
+  const data = {};
+  return runAirflowDag("sync-storages", data);
+}
+
+export function getTaskAirflowProgress(id: string) {
+  return request({
+    url: `/api/v1/task/cmd/progress/${id}`,
+    method: "get",
+  });
+}
+
+export function deleteTaskAirflowProgress(progressID: string) {
+  return request({
+    url: `/api/v1/task/cmd/progress/${progressID}`,
+    method: "delete",
+  });
+}
+
+export function getTaskAirflowSyncStoragesProgress() {
+  return getTaskAirflowProgress("zetsubou.task.progress.sync-storages");
+}
+
+export function deleteTaskAirflowSyncStoragesProgress() {
+  return deleteTaskAirflowProgress("zetsubou.task.progress.sync-storages");
+}

@@ -73,6 +73,7 @@ export default {
       if (route.params.gallery === undefined || route.params.img === undefined) {
         return;
       }
+      svgState.viewBox = undefined;
 
       state.gallery = route.params.gallery;
       state.imgName = route.params.img;

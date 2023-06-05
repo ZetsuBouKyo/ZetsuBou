@@ -17,6 +17,9 @@ export default {
     function rippleEffect(event) {
       state.isRipple = true;
       const btn = bt.value;
+      if (btn === undefined || btn === null) {
+        return;
+      }
       const circle = ripple.value;
       const diameter = Math.max(btn.clientWidth, btn.clientHeight);
       const radius = diameter / 2;

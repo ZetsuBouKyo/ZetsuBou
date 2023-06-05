@@ -8,7 +8,7 @@ from back.settings import setting
 APP_LOGGING_LEVEL = setting.app_logging_level
 APP_LOGGING_Path = "./logs/app.log"
 APP_LOGGING_FORMATTER_FMT = setting.app_logging_formatter_fmt
-IGNORE_LOGGERS = ["sqlalchemy"]
+IGNORE_LOGGERS = ["sqlalchemy", "botocore", "httpcore"]
 
 handler = RotatingFileHandler(APP_LOGGING_Path, maxBytes=2 * 1024 * 1024, backupCount=3)
 formatter = Formatter(fmt=APP_LOGGING_FORMATTER_FMT)

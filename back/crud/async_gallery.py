@@ -758,7 +758,7 @@ class CrudAsyncGallerySync:
         )
 
     async def _sync_storage_to_elasticsearch(self):
-        self._storage_to_elasticsearch_final = (
+        self._storage_to_elasticsearch_final = self.progress_initial + (
             self._storage_to_elasticsearch_num
             / (self._storage_to_elasticsearch_num + self._elasticsearch_to_storage_num)
             * self.progress_interval

@@ -812,7 +812,7 @@ class CrudAsyncVideoSync:
     async def _sync_elasticsearch_to_storage(self):
         query = self.dsl
 
-        self._elasticsearch_to_storage_final = (
+        self._elasticsearch_to_storage_final = self.progress_initial + (
             self._elasticsearch_to_storage_num
             / (self._storage_to_elasticsearch_num + self._elasticsearch_to_storage_num)
             * self.progress_interval

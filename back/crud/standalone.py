@@ -8,6 +8,7 @@ from typing import List
 from uuid import uuid4
 
 from back.crud.async_gallery import get_gallery_by_gallery_id
+from back.crud.async_progress import Progress
 from back.db.crud import CrudStorageMinio
 from back.db.model import StorageMinio
 from back.logging import logger_webapp
@@ -16,7 +17,6 @@ from back.model.gallery import Gallery
 from back.model.task import ZetsuBouTaskProgressEnum
 from back.schema.basic import Message
 from back.session.async_elasticsearch import async_elasticsearch as _async_elasticsearch
-from back.session.async_redis import Progress
 from back.settings import setting
 from back.utils.dt import get_now
 from fastapi import HTTPException

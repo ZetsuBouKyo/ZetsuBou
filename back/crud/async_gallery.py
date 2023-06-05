@@ -4,13 +4,13 @@ from typing import Any, Dict, List
 from uuid import uuid4
 
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
+from back.crud.async_progress import Progress
 from back.logging import logger_webapp
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
 from back.model.task import ZetsuBouTaskProgressEnum
 from back.session.async_elasticsearch import async_elasticsearch
-from back.session.async_redis import Progress
 from back.session.storage import get_storage_session_by_source
 from back.session.storage.async_s3 import AsyncS3Session
 from back.settings import setting

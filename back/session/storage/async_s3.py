@@ -16,6 +16,8 @@ from back.model.s3 import (
 )
 from back.settings import setting
 
+BUCKET_NAMES = [setting.storage_cache, setting.storage_backup]
+
 STORAGE_S3_AWS_ACCESS_KEY_ID = setting.storage_s3_aws_access_key_id
 STORAGE_S3_AWS_SECRET_ACCESS_KEY = setting.storage_s3_aws_secret_access_key
 STORAGE_S3_ENDPOINT_URL = setting.storage_s3_endpoint_url
@@ -308,6 +310,13 @@ class AsyncS3Session(AioSession):
         if _relative_path.startswith("/"):
             _relative_path = _relative_path[1:]
         return SourceBaseModel(path=_base_path + "/" + _relative_path)
+
+    async def init(self):
+        for bucket_name in BUCKET_NAMES:
+            try:
+                await self.client.head_bucket(Bucket=bucket_name)
+            except self.client.exceptions.ClientError:
+                await self.client.create_bucket(Bucket=bucket_name)
 
     async def get_url(self, source: SourceBaseModel) -> str:
         return await generate_presigned_url(

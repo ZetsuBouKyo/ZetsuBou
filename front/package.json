@@ -8,27 +8,26 @@
         "serve": "vite preview"
     },
     "dependencies": {
-        "axios": "^0.21.1",
-        "js-cookie": "^3.0.0",
-        "jshint": "^2.13.1",
+        "axios": "^1.4.0",
+        "js-cookie": "^3.0.5",
+        "jshint": "^2.13.6",
         "jwt-decode": "^3.1.2",
-        "vue": "^3.2.20",
-        "vue-router": "^4.0.6"
+        "vue": "^3.3.4",
+        "vue-router": "^4.2.2"
     },
     "devDependencies": {
-        "@iconify/json": "^1.1.461",
-        "@tailwindcss/aspect-ratio": "^0.4.0",
-        "@tailwindcss/forms": "^0.4.0",
-        "@tailwindcss/line-clamp": "^0.3.1",
-        "@tailwindcss/typography": "^0.5.0",
-        "@types/tailwindcss": "^2.0.2",
-        "@vitejs/plugin-vue": "^1.9.4",
-        "@vue/compiler-sfc": "^3.2.20",
-        "autoprefixer": "^10.4.2",
-        "postcss": "^8.4.5",
-        "tailwindcss": "^3.0.15",
-        "unplugin-icons": "^0.7.6",
-        "unplugin-vue-components": "^0.14.13",
-        "vite": "^2.6.12"
+        "@iconify/json": "^2.2.74",
+        "@tailwindcss/aspect-ratio": "^0.4.2",
+        "@tailwindcss/forms": "^0.5.3",
+        "@tailwindcss/typography": "^0.5.9",
+        "@types/tailwindcss": "^3.1.0",
+        "@vitejs/plugin-vue": "^4.2.3",
+        "@vue/compiler-sfc": "^3.3.4",
+        "autoprefixer": "^10.4.14",
+        "postcss": "^8.4.24",
+        "tailwindcss": "^3.3.2",
+        "unplugin-icons": "^0.16.2",
+        "unplugin-vue-components": "^0.25.1",
+        "vite": "^4.3.9"
     }
 }

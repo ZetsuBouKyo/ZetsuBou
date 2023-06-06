@@ -4,10 +4,7 @@ from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
 from back.model.task import ZetsuBouTask, ZetsuBouTaskProgressEnum
 from back.session.async_redis import async_redis
-from back.settings import setting
 from fastapi import APIRouter, Response, status
-
-standalone_url = setting.standalone_url
 
 router = APIRouter()
 

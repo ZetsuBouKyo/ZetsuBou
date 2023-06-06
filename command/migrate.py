@@ -3,10 +3,10 @@ from urllib.parse import urlparse
 import typer
 from back.crud.async_video import CrudAsyncElasticsearchVideo
 from back.model.video import Video
-from back.session.elasticsearch import elastic_client
+from back.session.async_elasticsearch import async_elasticsearch
 
 from command.utils import sync
-from elasticsearch import helpers
+from elasticsearch.helpers import async_bulk
 
 app = typer.Typer(name="migrate")
 
@@ -18,6 +18,7 @@ async def video(index: str = typer.Argument(..., help="Video index name.")):
     crud = CrudAsyncElasticsearchVideo(
         size=300, index=index, is_from_setting_if_none=True
     )
+
     async for resp in crud.iter():
         batches = []
         for hit in resp.hits.hits:
@@ -37,7 +38,7 @@ async def video(index: str = typer.Argument(..., help="Video index name.")):
             action = {"_index": index, "_id": video.id, "_source": video.dict()}
             batches.append(action)
             if len(batches) == batch_size:
-                helpers.bulk(elastic_client, batches)
+                await async_bulk(async_elasticsearch, batches)
                 batches = []
         if len(batches) > 0:
-            helpers.bulk(elastic_client, batches)
+            await async_bulk(async_elasticsearch, batches)

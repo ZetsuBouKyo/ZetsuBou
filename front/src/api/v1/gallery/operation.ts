@@ -6,11 +6,3 @@ export function deleteGalleryByID(id: String) {
     method: "delete",
   });
 }
-
-// deprecated
-export function getOpenGallery(id: String) {
-  return request({
-    url: `/api/v1/gallery/${id}/open`,
-    method: "get",
-  });
-}

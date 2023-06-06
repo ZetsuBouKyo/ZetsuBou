@@ -1,9 +1,8 @@
 from back.crud.async_gallery import get_crud_async_gallery
-from back.model.scope import ScopeEnum
 from back.dependency.security import api_security
+from back.model.scope import ScopeEnum
 from back.schema.basic import Message
-from back.session.standalone import standalone_client
-from back.settings import AppMode, setting
+from back.settings import setting
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -19,12 +18,3 @@ async def delete(gallery_id: str) -> Message:
     crud = await get_crud_async_gallery(gallery_id)
     detail = await crud.delete()
     return Message(detail=detail)
-
-
-@router.get(
-    "/{gallery_id}/open", dependencies=[api_security([ScopeEnum.gallery_open_get.name])]
-)
-def open_folder(gallery_id: str):
-    if app_mode != AppMode.STANDALONE:
-        return False
-    return standalone_client.open_folder(gallery_id)

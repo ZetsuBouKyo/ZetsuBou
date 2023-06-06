@@ -72,16 +72,6 @@ class Setting(BaseSettings):
     app_logging_level: str = "WARNING"
     app_logging_formatter_fmt: str = "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"  # noqa
 
-    standalone_host: str = "0.0.0.0"
-    standalone_port: int = 3001
-    standalone_secure: bool = False
-
-    @property
-    def standalone_url(cls):
-        if cls.standalone_secure:
-            return f"https://{cls.standalone_host}:{cls.standalone_port}"
-        return f"http://{cls.standalone_host}:{cls.standalone_port}"
-
     standalone_storage_protocol: SourceProtocolEnum = None
     standalone_storage_id: int = None
     standalone_storage_minio_volume: str = None
@@ -117,22 +107,6 @@ class Setting(BaseSettings):
     storage_s3_aws_access_key_id: str = "admin"
     storage_s3_aws_secret_access_key: str = "wJalrXUtnFEMI"
     storage_s3_endpoint_url: str = "http://localhost:9000"
-
-    minio_user: str = "admin"
-    minio_password: str = "wJalrXUtnFEMI"
-    minio_endpoint: str = "localhost:9000"
-    minio_is_secure: str = "false"
-    minio_expires_in_minutes: int = 7 * 24 * 60
-    minio_cache_bucket_name: str = "zetsubou"
-    minio_backup_bucket_name: str = "backup"
-
-    @property
-    def minio_secure(cls):
-        if cls.minio_is_secure.lower() == "false":
-            return False
-        elif cls.minio_is_secure.lower() == "true":
-            return True
-        return False
 
     airflow_host: str = "http://localhost:8080"
     airflow_username: str = "airflow"

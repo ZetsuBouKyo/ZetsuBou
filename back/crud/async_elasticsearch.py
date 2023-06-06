@@ -9,10 +9,10 @@ from back.model.elasticsearch import (
 )
 from back.session.async_elasticsearch import async_elasticsearch
 from back.settings import setting
-from fastapi import HTTPException
-
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import NotFoundError
+from elasticsearch.helpers import async_scan
+from fastapi import HTTPException
 
 ELASTICSEARCH_SIZE = setting.elastic_size
 ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000
@@ -74,19 +74,11 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
                 "_doc",
             ],
         }
-        _resp = await self.async_elasticsearch.search(
-            index=self.index, body=dsl, scroll="1m"
-        )
-        resp = SearchResult[SourceT](**_resp)
-        yield resp
-
-        while resp.hits.hits:
-            _resp = await self.async_elasticsearch.scroll(
-                scroll_id=resp.scroll_id, scroll="1m"
-            )
-            resp = SearchResult[SourceT](**_resp)
-            if resp.hits.hits:
-                yield resp
+        async for doc in async_scan(
+            client=self.async_elasticsearch, query=dsl, index=self.index
+        ):
+            resp = SearchResult[SourceT](**doc)
+            yield resp
 
     def get_basic_dsl(self, dsl: dict = None) -> dict:
         if dsl is None:

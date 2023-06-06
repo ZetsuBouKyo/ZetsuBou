@@ -5,7 +5,6 @@ from back.dependency.security import api_security
 from back.model.s3 import S3Object
 from back.model.scope import ScopeEnum
 from back.session.storage.async_s3 import AsyncS3Session, list_all
-from back.settings import setting
 from botocore.exceptions import (
     ClientError,
     EndpointConnectionError,
@@ -15,7 +14,6 @@ from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 
 router = APIRouter()
-default_minio_secure = setting.minio_secure
 
 
 def get_bucket_name(bucket_name: str = ""):

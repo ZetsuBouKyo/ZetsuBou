@@ -3,7 +3,7 @@ import time
 from pathlib import Path
 
 import typer
-from back.crud.tag import CrudTag
+from back.crud.async_tag import CrudTag
 from back.db.crud import CrudTagAttribute, CrudTagToken
 from back.db.model import TagAttributeCreate, TagTokenCreate
 from back.model.tag import TagInsert

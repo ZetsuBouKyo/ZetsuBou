@@ -1,11 +1,11 @@
 from typing import List
 
-from back.crud.tag import CrudElasticTag, CrudTag
+from back.crud.async_tag import CrudAsyncElasticsearchTag, CrudTag
 from back.db.crud import CrudTagToken
-from back.model.scope import ScopeEnum
 from back.dependency.base import get_pagination
 from back.dependency.security import api_security
 from back.model.base import Pagination
+from back.model.scope import ScopeEnum
 from back.model.tag import Tag, TagCreate, TagToken, TagUpdate
 from fastapi import APIRouter, Depends
 
@@ -31,8 +31,8 @@ async def search(
 ) -> List[TagToken]:
     if not s:
         return []
-    elastic_crud = CrudElasticTag(size=pagination.size)
-    results = elastic_crud.match(pagination.page, s)
+    elastic_crud = CrudAsyncElasticsearchTag(size=pagination.size)
+    results = await elastic_crud.match(pagination.page, s)
     ids = [int(r.id) for r in results.hits.hits]
     if len(ids) > 0:
         return await CrudTagToken.get_rows_by_ids_order_by_id(ids)

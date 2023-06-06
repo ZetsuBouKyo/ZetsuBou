@@ -32,12 +32,16 @@ test:
 
 
 line:
-	git ls-files | xargs wc -l
+	git ls-files | xargs wc -l || true
 
-EXECUTABLES = poetry docker docker-compose ffmpeg
 check:
-	ok := $(foreach exec,$(EXECUTABLES),\
-		$(if $(shell which $(exec)), $(error "Command $(exec) not found")))
+	@docker > /dev/null 2>&1
+	@docker-compose > /dev/null 2>&1
+check-dev:
+	@poetry > /dev/null 2>&1
+	@docker > /dev/null 2>&1
+	@docker-compose > /dev/null 2>&1
+	@npm --version > /dev/null 2>&1
 
 .PHONY: build build-docker-app build-docker-airflow-dev build-docker-minio-dev build-dev
 build-docker-app:

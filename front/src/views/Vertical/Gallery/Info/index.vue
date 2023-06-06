@@ -72,7 +72,8 @@
 import { useRoute } from "vue-router";
 import { reactive, ref, onBeforeMount } from "vue";
 
-import { getOpenGallery, deleteGalleryByID } from "@/api/v1/gallery/operation";
+import { deleteGalleryByID } from "@/api/v1/gallery/operation";
+import { getTaskStandaloneGalleryOpen } from "@/api/v1/task/standalone";
 
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 import StarRating from "@/elements/Rating/StarRating.vue";
@@ -126,7 +127,7 @@ export default {
 
     const controlPanelState = reactive<ControlPanelState>({
       openGallery: () => {
-        getOpenGallery(id).then(() => {});
+        getTaskStandaloneGalleryOpen(id).then(() => {});
       },
       openEditor: openEditor,
       openTextEditor: openTextEditor,

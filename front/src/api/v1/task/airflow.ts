@@ -26,7 +26,7 @@ export function postVideoCreateCover(id: string, frame: number) {
       },
     ],
   };
-  return runAirflowDag("video-create-cover", data);
+  return runAirflowDag("video-generate-cover", data);
 }
 
 export function postSyncStorageMinio(id: number) {

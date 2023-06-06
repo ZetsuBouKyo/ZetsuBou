@@ -7,6 +7,6 @@ export function getToken(data: FormData) {
     headers: {
       "Content-Type": "multipart/form-data",
     },
-    data,
+    data: data,
   });
 }

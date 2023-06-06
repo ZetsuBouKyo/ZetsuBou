@@ -78,8 +78,8 @@ tasks = [
         },
     ),
     Task(
-        dag_id="video-create-cover",
-        sub_command="video create-cover",
+        dag_id="video-generate-cover",
+        sub_command="video generate-cover",
         dag_kwargs={
             "start_date": datetime(2021, 1, 1),
             "schedule_interval": None,

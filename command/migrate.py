@@ -1,7 +1,7 @@
 from urllib.parse import urlparse
 
 import typer
-from back.crud.video import CrudAsyncElasticsearchVideo
+from back.crud.async_video import CrudAsyncElasticsearchVideo
 from back.model.video import Video
 from back.session.elasticsearch import elastic_client
 

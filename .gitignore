@@ -13,6 +13,7 @@ etc
 front/package-lock.json
 logs
 node_modules
+package-lock.json
 plugins
 poetry.lock*
 statics

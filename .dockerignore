@@ -18,4 +18,5 @@ front/public
 front/src
 logs
 node_modules
+package-lock.json
 poetry.lock

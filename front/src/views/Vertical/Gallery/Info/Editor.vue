@@ -93,6 +93,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 
 import { getTagTokenStartWith } from "@/api/v1/tag/token";
 import {
@@ -131,6 +132,8 @@ export interface PrivateState {
 export default defineComponent({
   components: { Modal, RippleButton, SelectDropdown },
   setup() {
+    const route = useRoute();
+
     function tokenToOption(token: { id: number; name: string }) {
       return { title: token.name, value: token.id };
     }
@@ -274,7 +277,7 @@ export default defineComponent({
       }
       galleryState.save().then(() => {
         editor.value.close();
-        messageState.push("Saved");
+        messageState.pushWithLink("Gallery tag saved", route.path);
       });
     }
 

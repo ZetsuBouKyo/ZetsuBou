@@ -21,7 +21,10 @@ export interface Message {
 export interface MessageState {
   queue: Array<Message>;
   history: Array<Message>;
+  getHistory: () => Array<Message>;
+  clearHistory: () => void;
   push: (detail: string) => void;
+  pushWithLink: (detail: string, link: string) => void;
   pushHistory: (message: Message) => void;
   shiftQueue: (id: string) => void;
   getAirflowTasks: () => Array<AirflowTask>;
@@ -35,25 +38,49 @@ export interface MessageState {
   ) => void;
 }
 
+function _push(message: Message) {
+  messageState.queue.push(message);
+  messageState.pushHistory(message);
+  message.timeout = setTimeout(() => {
+    if (!message.lock) {
+      messageState.queue = messageState.queue.filter(function (_message: Message) {
+        return _message.id !== message.id;
+      });
+    }
+    clearTimeout(message.timeout);
+    message.timeout = undefined;
+  }, 3000);
+  messageState.getHistory();
+}
+
 export const messageState = reactive<MessageState>({
   queue: [],
   history: [],
+  getHistory: () => {
+    const historyString = localStorage.getItem(localStorageKey.Message);
+    const history = JSON.parse(historyString) as Array<Message>;
+    if (history === null) {
+      return [];
+    }
+    messageState.history = history;
+    return history;
+  },
+  clearHistory: () => {
+    localStorage.removeItem(localStorageKey.Message);
+    messageState.getHistory();
+  },
   push: (detail: string) => {
     const message: Message = { id: getUUID(), detail: detail, lastUpdated: new Date().toLocaleString() };
-    messageState.queue.push(message);
-    messageState.pushHistory(message);
-    message.timeout = setTimeout(() => {
-      if (!message.lock) {
-        messageState.queue = messageState.queue.filter(function (_message: Message) {
-          return _message.id !== message.id;
-        });
-      }
-      clearTimeout(message.timeout);
-      message.timeout = undefined;
-    }, 3000);
+    _push(message);
+  },
+  pushWithLink: (detail: string, link: string) => {
+    const message: Message = { id: getUUID(), detail: detail, lastUpdated: new Date().toLocaleString(), link: link };
+    _push(message);
   },
   pushHistory: (message: Message) => {
-    messageState.history.push(message);
+    const history = messageState.getHistory();
+    history.unshift(message);
+    localStorage.setItem(localStorageKey.Message, JSON.stringify(history));
   },
   shiftQueue: (id: string) => {
     messageState.queue = messageState.queue.filter(function (_message: Message) {

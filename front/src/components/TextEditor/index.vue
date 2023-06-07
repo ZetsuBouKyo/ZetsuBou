@@ -15,6 +15,7 @@
 
 <script lang="ts">
 import { PropType, reactive, ref } from "vue";
+import { useRoute } from "vue-router";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import Modal from "@/elements/Modal/Modal.vue";
@@ -42,8 +43,18 @@ export default {
       type: Object as PropType<OnOverwrite>,
       default: undefined,
     },
+    saveMessage: {
+      type: Object as PropType<string>,
+      default: "Saved",
+    },
+    resetMessage: {
+      type: Object as PropType<string>,
+      default: "Reset",
+    },
   },
   setup(props) {
+    const route = useRoute();
+
     const editor = ref();
     const state = props.state;
     const onOverwrite = props.onOverwrite;
@@ -59,7 +70,7 @@ export default {
         }
         state.save().then(() => {
           editor.value.close();
-          messageState.push("Saved");
+          messageState.pushWithLink(props.saveMessage, route.path);
         });
       });
     }
@@ -76,7 +87,7 @@ export default {
           privateState.json = JSON.stringify(state.data, null, 4);
           return true;
         } catch (error) {
-          messageState.push(error.message);
+          messageState.pushWithLink(error.message, route.path);
           return false;
         }
       });
@@ -85,7 +96,7 @@ export default {
     function reset() {
       state.reset().then(() => {
         privateState.json = JSON.stringify(state.data, null, 4);
-        messageState.push("Reset");
+        messageState.pushWithLink(props.resetMessage, route.path);
       });
     }
 

@@ -1,5 +1,12 @@
 <template>
-  <text-editor ref="textEditor" :title="'Video JSON Editor'" :state="videoState" :on-overwrite="onOverwrite" />
+  <text-editor
+    ref="textEditor"
+    :title="'Video JSON Editor'"
+    :state="videoState"
+    :on-overwrite="onOverwrite"
+    :save-message="'Video tag saved'"
+    :reset-message="'Video tag is reset'"
+  />
   <editor ref="editor" />
   <section class="body-font overflow-hidden lg:mx-8 mx-2">
     <div class="px-2 py-6 mx-auto" v-if="videoState.data">

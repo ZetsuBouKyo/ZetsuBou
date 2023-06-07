@@ -1,5 +1,12 @@
 <template>
-  <text-editor ref="textEditor" :title="'Gallery JSON Editor'" :state="galleryState" :on-overwrite="onOverwrite" />
+  <text-editor
+    ref="textEditor"
+    :title="'Gallery JSON Editor'"
+    :state="galleryState"
+    :on-overwrite="onOverwrite"
+    :save-message="'Gallery tag saved'"
+    :reset-message="'Gallery tag is reset'"
+  />
   <editor ref="editor" />
   <section class="body-font overflow-hidden lg:mx-8 mx-2">
     <div class="px-2 py-6 mx-auto">

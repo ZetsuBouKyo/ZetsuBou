@@ -15,7 +15,7 @@
     <div class="absolute bottom-0" :class="origin === Origin.BottomLeft ? 'left-0' : 'right-0'">
       <div
         class="scrollbar-gray-900-2 absolute ring-1 ring-black ring-opacity-5 focus:outline-none text-base text-white 3xl:text-lg shadow-black rounded z-40"
-        :class="optionsClass"
+        :class="_optionsClass"
         @click.stop="onClick"
         v-if="state.popout"
       >
@@ -85,6 +85,10 @@ export default defineComponent({
     selectClass: {
       type: Object as PropType<string>,
       default: "border-r-2 border-gray-700",
+    },
+    optionsClass: {
+      type: Object as PropType<string>,
+      default: "",
     },
     optionsWidthClass: {
       type: Object as PropType<string>,
@@ -179,7 +183,7 @@ export default defineComponent({
     });
 
     function getOptionsClass() {
-      const optionsClasses = [];
+      const optionsClasses: Array<string> = [];
       const optionsClassKeys = Object.keys(props);
       for (const key of optionsClassKeys) {
         if (key.startsWith("options") && key.endsWith("Class") && typeof props[key] === "string") {
@@ -193,12 +197,19 @@ export default defineComponent({
         optionsClasses.push("right-0");
       }
 
+      const tempOptionsClass = props.optionsClass.split(" ");
+      for (const key of tempOptionsClass) {
+        if (!optionsClasses.includes(key)) {
+          optionsClasses.push(key);
+        }
+      }
+
       return optionsClasses.join(" ");
     }
 
-    const optionsClass = getOptionsClass();
+    const _optionsClass = getOptionsClass();
 
-    return { ...props, Origin, optionsClass, isSelect, selectToggle, expandToggle, open, close, toggle };
+    return { ...props, Origin, _optionsClass, isSelect, selectToggle, expandToggle, open, close, toggle };
   },
 });
 </script>

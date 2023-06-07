@@ -12,7 +12,7 @@
         <nav class="ml-4 flex flex-row items-center text-base justify-center w-full 3xl:text-lg">
           <search class="h-10" />
           <sync class="h-10 md:inline-flex hidden" />
-
+          <notification class="h-10 mx-2" />
           <user class="h-10" />
         </nav>
       </div>
@@ -21,13 +21,14 @@
 </template>
 
 <script lang="ts">
-import Sync from "./Sync.vue";
-import Search from "./Search.vue";
 import Icon from "./Icon.vue";
+import Notification from "./Notification.vue";
+import Search from "./Search.vue";
+import Sync from "./Sync.vue";
 import User from "./User/index.vue";
 
 export default {
-  components: { Sync, Search, Icon, User },
+  components: { Icon, Notification, Search, Sync, User },
   setup() {},
 };
 </script>

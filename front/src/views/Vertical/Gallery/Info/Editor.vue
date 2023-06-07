@@ -27,7 +27,7 @@
         v-model="galleryState.data.attributes.src"
       />
     </div>
-    <div class="modal-row">
+    <div class="modal-row h-10">
       <span class="w-32 mr-4">Category:</span>
       <select-dropdown
         class="w-64"
@@ -38,7 +38,7 @@
         :mode="SelectDropdownMode.Input"
       />
       <span class="w-16 mx-4">Rating:</span>
-      <select-dropdown class="h-10 w-24 ml-2 3xl:w-48" :options-width-class="'w-24'" :state="rating"></select-dropdown>
+      <select-dropdown class="w-24 ml-2 3xl:w-48" :options-width-class="'w-24'" :state="rating"></select-dropdown>
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Labels:</span>

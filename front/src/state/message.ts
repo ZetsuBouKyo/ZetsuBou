@@ -5,16 +5,25 @@ import { AxiosResponse } from "axios";
 import { AirflowDagRunResponse, AirflowDagRunStateEnum, AirflowTask } from "@/interface/airflow";
 import { localStorageKey } from "@/interface/localStorage";
 
+import { getUUID } from "@/utils/str";
+
 import { getAirflowDagRun } from "@/api/v1/task/airflow";
 
 export interface Message {
+  id: string;
   detail: string;
+  link?: string;
+  lock?: boolean;
+  timeout?: ReturnType<typeof setTimeout>;
+  lastUpdated?: string;
 }
 
 export interface MessageState {
   queue: Array<Message>;
-  messages: Array<Message>;
+  history: Array<Message>;
   push: (detail: string) => void;
+  pushHistory: (message: Message) => void;
+  shiftQueue: (id: string) => void;
   getAirflowTasks: () => Array<AirflowTask>;
   pushAirflowTask: (task: AirflowTask) => void;
   pushAirflowTasks: (tasks: Array<AirflowTask>) => void;
@@ -28,13 +37,28 @@ export interface MessageState {
 
 export const messageState = reactive<MessageState>({
   queue: [],
-  messages: [],
+  history: [],
   push: (detail: string) => {
-    const message: Message = { detail: detail };
+    const message: Message = { id: getUUID(), detail: detail, lastUpdated: new Date().toLocaleString() };
     messageState.queue.push(message);
-    setTimeout(() => {
-      messageState.queue.shift();
+    messageState.pushHistory(message);
+    message.timeout = setTimeout(() => {
+      if (!message.lock) {
+        messageState.queue = messageState.queue.filter(function (_message: Message) {
+          return _message.id !== message.id;
+        });
+      }
+      clearTimeout(message.timeout);
+      message.timeout = undefined;
     }, 3000);
+  },
+  pushHistory: (message: Message) => {
+    messageState.history.push(message);
+  },
+  shiftQueue: (id: string) => {
+    messageState.queue = messageState.queue.filter(function (_message: Message) {
+      return _message.id !== id;
+    });
   },
   getAirflowTasks: () => {
     const tasks = localStorage.getItem(localStorageKey.AirflowTasks);

@@ -81,6 +81,8 @@
         :options-width-class="'w-64'"
         :origin="Origin.BottomLeft"
         :state="tagFields"
+        :on-get="getSettingFrontGalleryStartWithTagFields"
+        :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips"
       />
     </div>
@@ -105,6 +107,11 @@
 <script lang="ts">
 import { PropType, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+
+import {
+  getSettingFrontGalleryStartWithCategories,
+  getSettingFrontGalleryStartWithTagFields,
+} from "@/api/v1/setting/front/gallery";
 
 import { SearchCategory } from "@/interface/search";
 
@@ -344,10 +351,16 @@ export default {
       advancedSearch.value.open();
     }
 
+    function tokenToOption(token: { id: number; name: string }) {
+      return { title: token.name, value: token.id };
+    }
+
     return {
       advancedSearch,
       AdvancedSearchFieldType,
       category,
+      getSettingFrontGalleryStartWithCategories,
+      getSettingFrontGalleryStartWithTagFields,
       labels,
       open,
       Origin,
@@ -357,6 +370,7 @@ export default {
       state,
       tagFields,
       tags,
+      tokenToOption,
       toTitle,
       uploader,
     };

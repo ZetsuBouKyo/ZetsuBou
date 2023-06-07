@@ -12,8 +12,6 @@
 </template>
 
 <script lang="ts">
-import { watch } from "vue";
-
 import { messageState, Message } from "@/state/message";
 
 export default {

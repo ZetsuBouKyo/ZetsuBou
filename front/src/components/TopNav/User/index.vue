@@ -1,5 +1,5 @@
 <template>
-  <div class="relative mx-1 h-full">
+  <div class="relative mx-1">
     <dropdown
       ref="dropdown"
       class="text-white bg-gray-700 border-2 border-gray-600 hover:bg-gray-500 rounded-lg"

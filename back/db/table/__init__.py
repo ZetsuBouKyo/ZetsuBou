@@ -12,6 +12,8 @@ from .tag.category import TagCategoryBase
 from .tag.representative import TagRepresentativeBase
 from .tag.synonym import TagSynonymBase
 from .tag.token import TagTokenBase
+from .user.bookmark.gallery import UserBookmarkGalleryBase
+from .user.bookmark.video import UserBookmarkVideoBase
 from .user.elastic.count_query import UserElasticCountQueryBase
 from .user.elastic.search_query import UserElasticSearchQueryBase
 from .user.front_setting import UserFrontSettingBase
@@ -37,6 +39,8 @@ __all__ = [
     "TagSynonymBase",
     "TagTokenBase",
     "UserBase",
+    "UserBookmarkGalleryBase",
+    "UserBookmarkVideoBase",
     "UserElasticCountQueryBase",
     "UserElasticCountQuestBase",
     "UserElasticSearchQueryBase",

@@ -1,3 +1,5 @@
+import Bookmark from "./views/Vertical/Bookmark/index.vue";
+import Construction from "./views/Vertical/Construction.vue";
 import Galleries from "./views/Vertical/Galleries.vue";
 import Gallery from "./views/Vertical/Gallery/index.vue";
 import ImgSvgPreview from "./views/Vertical/ImgSvgPreview/index.vue";
@@ -20,7 +22,6 @@ import SettingTagToken from "./views/Vertical/Settings/Tag/TagTokenTable.vue";
 import Vertical from "./views/Vertical/index.vue";
 import Video from "./views/Vertical/Video/index.vue";
 import Videos from "./views/Vertical/Videos.vue";
-import Construction from "./views/Vertical/Construction.vue";
 
 /** @type {import('vue-router').RouterOptions['routes']} */
 
@@ -30,6 +31,7 @@ export const routes = [
     component: Vertical,
     children: [
       { path: "/", component: Galleries, meta: { title: "Home" } },
+      { path: "/bookmark", component: Bookmark, meta: { title: "Bookmark" } },
       { path: "/gallery", component: Galleries, meta: { title: "Gallery" } },
       { path: "/gallery/random", component: Galleries, meta: { title: "Gallery Random" } },
       { path: "/gallery/search", component: Galleries, meta: { title: "Gallery Search" } },

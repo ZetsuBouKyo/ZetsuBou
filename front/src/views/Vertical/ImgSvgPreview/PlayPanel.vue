@@ -1,10 +1,26 @@
 <template>
   <div class="hidden sm:block fixed right-0 top-20 m-4 bg-opacity-50 rounded-lg p-2">
-    <icon-mdi-file-edit-outline
-      class="cursor-pointer hover:opacity-50 opacity-100"
-      style="font-size: 1.5rem; color: white"
-      @click="tagger.toggleTagger"
-    />
+    <div class="flex flex-col">
+      <div class="flex flex-col" v-if="state.bookmark !== undefined && state.current !== undefined">
+        <icon-mdi-bookmark-outline
+          class="cursor-pointer hover:opacity-50 opacity-100 my-2"
+          style="font-size: 1.5rem; color: white"
+          v-if="!state.isBookmark"
+          @click="addBookmark"
+        />
+        <icon-mdi-bookmark
+          class="cursor-pointer hover:opacity-50 opacity-100 my-2"
+          style="font-size: 1.5rem; color: white"
+          v-else
+          @click="deleteBookmark"
+        />
+      </div>
+      <icon-mdi-file-edit-outline
+        class="cursor-pointer hover:opacity-50 opacity-100 my-2"
+        style="font-size: 1.5rem; color: white"
+        @click="tagger.toggleTagger"
+      />
+    </div>
   </div>
   <div class="fixed left-0 bottom-3 bg-gray-900 bg-opacity-50 rounded-lg m-1 p-1 flex">
     <icon-ri-arrow-go-back-fill
@@ -47,11 +63,33 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { useRoute, useRouter } from "vue-router";
 import { reactive, onMounted, onBeforeMount, watch } from "vue";
 
 import { getImages } from "@/api/v1/gallery/image";
+import {
+  getUserBookmarkGallery,
+  postUserBookmarkGallery,
+  putUserBookmarkGallery,
+  deleteUserBookmarkGallery,
+} from "@/api/v1/user/bookmark/gallery";
+
+import { userState } from "@/state/user";
+
+interface Bookmark {
+  user_id: number;
+  gallery_id: string;
+  page: number;
+  [key: string]: any;
+}
+
+interface State {
+  bookmark: undefined | null | Bookmark;
+  current: number;
+  isBookmark: boolean;
+  [key: string]: any;
+}
 
 export default {
   props: {
@@ -66,15 +104,28 @@ export default {
 
     const tagger = props.tagger;
 
-    const state = reactive({
+    const state = reactive<State>({
       imgs: [],
-      gallery: route.params.gallery,
+      gallery: route.params.gallery as any,
       imgName: route.params.img,
-      timeInterval: route.query.interval ? parseInt(route.query.interval) : 5,
+      timeInterval: route.query.interval ? parseInt(route.query.interval as string) : 5,
       current: undefined,
-      isPlay: route.query.play,
+      isPlay: route.query.play as any,
       play: undefined,
+      bookmark: undefined,
+      isBookmark: false,
     });
+
+    function updateBookmarkStatus() {
+      if (state.current === undefined || state.bookmark === undefined) {
+        return;
+      }
+      if (state.bookmark && state.bookmark.page === state.current) {
+        state.isBookmark = true;
+      } else {
+        state.isBookmark = false;
+      }
+    }
 
     watch(
       () => {
@@ -88,8 +139,16 @@ export default {
           state.imgName = route.params.imgName;
         }
         if (route.params.timeInterval !== undefined) {
-          state.timeInterval = route.params.timeInterval;
+          state.timeInterval = route.params.timeInterval as any;
         }
+      },
+    );
+    watch(
+      () => {
+        return [JSON.stringify(state.bookmark), state.current];
+      },
+      () => {
+        updateBookmarkStatus();
       },
     );
 
@@ -147,7 +206,7 @@ export default {
     }
 
     onBeforeMount(() => {
-      document.addEventListener.call(window, "keyup", (event) => {
+      document.addEventListener.call(window, "keyup", (event: any) => {
         if (event.keyCode === 39) {
           nextPage();
         } else if (event.keyCode === 37) {
@@ -168,16 +227,83 @@ export default {
 
     onMounted(() => {
       load();
+      loadBookmark();
     });
 
+    function loadBookmark() {
+      const userID = userState.id;
+      const galleryID = route.params.gallery as string;
+      getUserBookmarkGallery(userID, galleryID).then((response: any) => {
+        state.bookmark = null;
+        if (response.data) {
+          state.bookmark = response.data;
+        }
+      });
+    }
+
+    function getNewBookmark() {
+      const userID = userState.id;
+      const galleryID = route.params.gallery as string;
+      const page = state.current;
+      if (userID === undefined || galleryID === undefined || page === undefined) {
+        return undefined;
+      }
+      return {
+        user_id: userID,
+        gallery_id: galleryID,
+        page: page,
+      };
+    }
+
+    function addBookmark() {
+      const newBookmark = getNewBookmark() as any;
+      if (newBookmark === undefined) {
+        return;
+      }
+
+      const bookmark = state.bookmark;
+      switch (bookmark) {
+        case null:
+          postUserBookmarkGallery(newBookmark.user_id, newBookmark).then((response: any) => {
+            if (response.status === 200) {
+              state.bookmark = response.data;
+            }
+          });
+          break;
+        case undefined:
+          break;
+        default:
+          newBookmark.id = bookmark.id;
+          putUserBookmarkGallery(newBookmark.user_id, newBookmark).then((response: any) => {
+            if (response.status === 200) {
+              state.bookmark = newBookmark;
+            }
+          });
+      }
+    }
+
+    function deleteBookmark() {
+      const userID = userState.id;
+      const bookmark = state.bookmark;
+      if (bookmark.id) {
+        deleteUserBookmarkGallery(userID, bookmark.id).then((response: any) => {
+          if (response.status === 200) {
+            state.bookmark = null;
+          }
+        });
+      }
+    }
+
     return {
-      tagger,
-      state,
-      startPlay,
-      stopPlay,
+      addBookmark,
       back,
-      previousPage,
+      deleteBookmark,
       nextPage,
+      previousPage,
+      startPlay,
+      state,
+      stopPlay,
+      tagger,
     };
   },
 };

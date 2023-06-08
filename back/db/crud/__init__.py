@@ -7,6 +7,7 @@ from .tag.attribute import CrudTagAttribute
 from .tag.category import CrudTagCategory
 from .tag.synonym import CrudTagSynonym
 from .tag.token import CrudTagToken
+from .user.bookmark.gallery import CrudUserBookmarkGallery
 from .user.elastic.count_query import CrudUserElasticCountQuery
 from .user.elastic.search_query import CrudUserElasticSearchQuery
 from .user.front_setting import CrudUserFrontSetting
@@ -28,6 +29,7 @@ __all__ = [
     "CrudTagSynonym",
     "CrudTagToken",
     "CrudUser",
+    "CrudUserBookmarkGallery",
     "CrudUserElasticCountQuery",
     "CrudUserElasticCountQuest",
     "CrudUserElasticSearchQuery",

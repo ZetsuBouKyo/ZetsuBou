@@ -15,6 +15,7 @@ from back.model.scope import ScopeEnum
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
+from .bookmark import router as bookmark
 from .elastic_query import router as elastic_query
 from .quest import router as quest
 
@@ -89,4 +90,5 @@ async def put_user_front_setting(
 
 
 router.include_router(elastic_query, tags=["User Elastic Query"])
+router.include_router(bookmark)
 router.include_router(quest)

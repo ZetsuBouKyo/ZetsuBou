@@ -44,6 +44,13 @@ from .tag.synonym import (
     TagSynonymUpdate,
 )
 from .tag.token import TagToken, TagTokenCreate, TagTokenCreated, TagTokenUpdate
+from .user.bookmark.gallery import (
+    UserBookmarkGallery,
+    UserBookmarkGalleryCreate,
+    UserBookmarkGalleryCreated,
+    UserBookmarkGalleryUpdate,
+    UserBookmarkGalleryUpdated,
+)
 from .user.elastic.count_query import (
     UserElasticCountQuery,
     UserElasticCountQueryCreate,
@@ -135,6 +142,11 @@ __all__ = [
     "TagTokenCreated",
     "TagTokenUpdate",
     "User",
+    "UserBookmarkGallery",
+    "UserBookmarkGalleryCreate",
+    "UserBookmarkGalleryCreated",
+    "UserBookmarkGalleryUpdate",
+    "UserBookmarkGalleryUpdated",
     "UserCreate",
     "UserCreated",
     "UserElasticCountQuery",

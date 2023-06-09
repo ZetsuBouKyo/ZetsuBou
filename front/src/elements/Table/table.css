@@ -1,11 +1,22 @@
 @layer utilities {
+  div.table-container {
+    @apply flex flex-col;
+    @apply w-full mx-auto rounded-lg overflow-x-auto;
+    @apply bg-gray-800  shadow-gray-900  scrollbar-gray-900-2;
+  }
+  table.table-container {
+    @apply table-auto w-full text-left;
+  }
   .table-head {
     @apply rounded-t-lg tracking-wider font-medium text-white text-sm bg-gray-900;
   }
   .table-row {
     @apply border-b-2 border-gray-700 hover:bg-gray-600 hover:text-white;
   }
-  .table-data {
+  .table-row-data {
     @apply px-4 py-3 truncate;
+  }
+  .table-row-buttons {
+    @apply px-4 py-3 truncate flex flex-row items-center;
   }
 }

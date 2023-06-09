@@ -1,84 +1,82 @@
 <template>
-  <div class="flex flex-col w-full mx-auto bg-gray-800 rounded-lg shadow-gray-900">
-    <confirm-modal
-      ref="confirm"
-      :title="'Warning'"
-      :message="
-        deleteConfirmMessage === undefined
-          ? 'Are you sure you want to permanently delete this row?'
-          : deleteConfirmMessage
-      "
-      :on-confirm="onConfirm"
-    />
-    <div class="flex flex-row mx-4 my-2 items-center" v-if="!isEmpty(search)">
-      <select-dropdown class="w-64 h-10 mr-4" :options-width-class="'w-64'" :state="searchFieldState" />
-      <select-dropdown
-        class="flex-1"
-        :options-width-class="'w-64'"
-        :origin="Origin.BottomLeft"
-        :state="searchValueState"
-        :on-get="onSearch"
-        :on-get-to-options="onSearchToOptions"
-        :on-get-tip="onSearchGetTip"
-        :on-mouseover-option="onSearchMouseoverOption"
-        :mode="SelectDropdownMode.Input"
-      />
-    </div>
-    <modal
-      ref="editor"
-      :title="editorTitle"
-      :is-scrollable="isEditorScrollable"
-      :on-open="onOpenEditor"
-      :on-close="onCloseEditor"
-      :class="editorClass"
-    >
-      <slot name="editor"></slot>
-      <div class="modal-row-reverse">
-        <button class="flex ml-2 btn btn-primary" @click="state.editor.handler">Save</button>
-        <button class="flex ml-2 btn btn-primary" @click="editor.close">Cancel</button>
-        <slot name="editor-buttons"></slot>
-      </div>
-    </modal>
-    <div class="overflow-x-auto scrollbar-gray-900-2 w-full" :class="isEmpty(search) ? 'rounded-lg' : ''">
-      <table class="table-auto w-full text-left whitespace-no-wrap" v-if="state.sheet">
-        <thead>
-          <tr class="table-head">
-            <th class="table-data" v-for="(h, i) in state.sheet.headers" :key="i" :class="i === 0 ? 'w-20' : ''">
-              {{ h.title }}
-            </th>
-            <th class="table-data">Operation</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="table-row" v-for="(row, i) in state.sheet.rows" :key="i">
-            <td class="table-data" v-for="(header, j) in state.sheet.headers" :key="j">
-              {{ header.handler ? header.handler(row[header.key]) : row[header.key] }}
-            </td>
-            <td class="table-data flex flex-row items-center">
-              <slot name="buttons" :row="row"></slot>
-              <crud-table-button :text="'Edit'" :color="ButtonColorEnum.Primary" :row="row" :onClick="update">
-                <template v-slot:icon><icon-mdi-file-edit-outline /></template>
-              </crud-table-button>
-              <crud-table-button :text="'Delete'" :color="ButtonColorEnum.Danger" :row="row" :onClick="confirmRemove">
-                <template v-slot:icon><icon-mdi-trash-can-outline /></template>
-              </crud-table-button>
-            </td>
-          </tr>
-          <tr :class="state.pagination ? 'table-row' : ''">
-            <td class="table-data" :colspan="colspan">
-              <ripple-button class="btn w-full btn-primary" @click="create">+</ripple-button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <pagination-base
-      class="ml-auto mr-4"
-      v-if="state.pagination"
-      :pagination="state.pagination"
-      :key="state.pagination.current"
+  <confirm-modal
+    ref="confirm"
+    :title="'Warning'"
+    :message="
+      deleteConfirmMessage === undefined
+        ? 'Are you sure you want to permanently delete this row?'
+        : deleteConfirmMessage
+    "
+    :on-confirm="onConfirm"
+  />
+  <div class="flex flex-row mx-4 my-2 items-center" v-if="!isEmpty(search)">
+    <select-dropdown class="w-64 h-10 mr-4" :options-width-class="'w-64'" :state="searchFieldState" />
+    <select-dropdown
+      class="flex-1"
+      :options-width-class="'w-64'"
+      :origin="Origin.BottomLeft"
+      :state="searchValueState"
+      :on-get="onSearch"
+      :on-get-to-options="onSearchToOptions"
+      :on-get-tip="onSearchGetTip"
+      :on-mouseover-option="onSearchMouseoverOption"
+      :mode="SelectDropdownMode.Input"
     />
   </div>
+  <modal
+    ref="editor"
+    :title="editorTitle"
+    :is-scrollable="isEditorScrollable"
+    :on-open="onOpenEditor"
+    :on-close="onCloseEditor"
+    :class="editorClass"
+  >
+    <slot name="editor"></slot>
+    <div class="modal-row-reverse">
+      <button class="flex ml-2 btn btn-primary" @click="state.editor.handler">Save</button>
+      <button class="flex ml-2 btn btn-primary" @click="editor.close">Cancel</button>
+      <slot name="editor-buttons"></slot>
+    </div>
+  </modal>
+  <div class="table-container" :class="isEmpty(search) ? 'rounded-lg' : ''">
+    <table class="table-container" v-if="state.sheet">
+      <thead>
+        <tr class="table-head">
+          <th class="table-row-data" v-for="(h, i) in state.sheet.headers" :key="i" :class="i === 0 ? 'w-20' : ''">
+            {{ h.title }}
+          </th>
+          <th class="table-row-data">Operation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="table-row" v-for="(row, i) in state.sheet.rows" :key="i">
+          <td class="table-row-data" v-for="(header, j) in state.sheet.headers" :key="j">
+            {{ header.handler ? header.handler(row[header.key]) : row[header.key] }}
+          </td>
+          <td class="table-row-buttons">
+            <slot name="buttons" :row="row"></slot>
+            <crud-table-button :text="'Edit'" :color="ButtonColorEnum.Primary" :row="row" :onClick="update">
+              <template v-slot:icon><icon-mdi-file-edit-outline /></template>
+            </crud-table-button>
+            <crud-table-button :text="'Delete'" :color="ButtonColorEnum.Danger" :row="row" :onClick="confirmRemove">
+              <template v-slot:icon><icon-mdi-trash-can-outline /></template>
+            </crud-table-button>
+          </td>
+        </tr>
+        <tr :class="state.pagination ? 'table-row' : ''">
+          <td class="table-row-data" :colspan="colspan">
+            <ripple-button class="btn w-full btn-primary" @click="create">+</ripple-button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <pagination-base
+    class="ml-auto mr-4"
+    v-if="state.pagination"
+    :pagination="state.pagination"
+    :key="state.pagination.current"
+  />
 </template>
 
 <script lang="ts">

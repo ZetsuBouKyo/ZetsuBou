@@ -14,7 +14,7 @@ from .video import router as video
 
 router = APIRouter()
 
-router.include_router(token, tags=["Token"], prefix="/token")
+router.include_router(token, tags=["Token"])
 
 router.include_router(user, tags=["User"], prefix="/user")
 router.include_router(users, tags=["Users"], prefix="/users")

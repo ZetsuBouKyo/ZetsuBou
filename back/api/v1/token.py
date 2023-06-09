@@ -4,21 +4,31 @@ from back.db.crud import CrudUser
 from back.security import create_access_token
 from back.settings import setting
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.param_functions import Form
 from fastapi.security import OAuth2PasswordRequestForm
 
-expired_in_minutes = setting.app_security_expired
+EXPIRED_IN_MINUTES = setting.app_security_expired
 
 router = APIRouter()
 
 
-@router.post("")
+class ZetsuBouOAuth2PasswordRequestForm(OAuth2PasswordRequestForm):
+    def __init__(self, expires: int = Form(default=None), **kwargs):
+        super().__init__(**kwargs)
+        self.expires = expires
+
+
+@router.post("/token")
 async def get_token(form: OAuth2PasswordRequestForm = Depends()):
     user = await CrudUser.verify(form.username, form.password)
 
     if user is None:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
 
-    expires_delta = timedelta(minutes=expired_in_minutes)
+    if form.expires is None:
+        expires_delta = timedelta(minutes=EXPIRED_IN_MINUTES)
+    else:
+        expires_delta = timedelta(minutes=form.expires)
 
     if not form.scopes:
         groups = await CrudUser.get_groups_by_id(user.id)

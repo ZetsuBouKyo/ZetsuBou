@@ -1,5 +1,11 @@
 export function getDatetime(date: string): string {
-  return date.slice(0, 10) + " " + date.slice(11, 19);
+  const d = new Date(date);
+  const offset = d.getTimezoneOffset();
+  if (date.match(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/) === null) {
+    d.setMinutes(d.getMinutes() - offset);
+  }
+
+  return d.toLocaleString(navigator.language, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
 }
 
 export function toIsoStringWithTimeZone(date: Date): string {

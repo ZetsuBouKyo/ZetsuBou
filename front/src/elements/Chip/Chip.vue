@@ -1,6 +1,6 @@
 <template>
   <span class="chip chip-dark">
-    <button v-if="onDelete" class="mr-4 rounded-full" @click="remove">✕</button>
+    <button v-if="onDelete" class="mr-4 rounded-full focus:outline-none" @click="remove">✕</button>
     <span>{{ title }}</span>
   </span>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <button ref="bt" class="relative overflow-hidden" type="button" @click="rippleEffect">
+  <button ref="bt" class="relative overflow-hidden focus:outline-none" type="button" @click="rippleEffect">
     <slot></slot>
     <span ref="ripple" :class="state.isRipple ? 'zetsubou-ripple' : 'hidden'"></span>
   </button>

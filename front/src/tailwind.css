@@ -11,6 +11,12 @@
 
 @import "@/layouts/Setting/setting.css";
 
+@layer base {
+  a {
+    @apply focus:outline-none;
+  }
+}
+
 @layer utilities {
   .scrollbar-gray-900-2::-webkit-scrollbar {
     @apply w-2 h-full bg-gray-900 rounded-md;

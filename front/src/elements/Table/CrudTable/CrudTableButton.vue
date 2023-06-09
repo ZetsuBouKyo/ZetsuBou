@@ -8,7 +8,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 
-import { ButtonColorEnum } from "@/elements/Button/button.ts";
+import { ButtonColorEnum } from "@/elements/Button/button";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 
@@ -42,8 +42,10 @@ export default defineComponent({
     const onClick = props.onClick;
 
     function click(row: CrudTableButtonRow) {
-      const data = JSON.parse(JSON.stringify(row));
-      onClick(data);
+      if (row !== undefined) {
+        const data = JSON.parse(JSON.stringify(row));
+        onClick(data);
+      }
     }
     return { ...props, click };
   },

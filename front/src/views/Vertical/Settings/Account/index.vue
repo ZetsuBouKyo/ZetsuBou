@@ -41,7 +41,7 @@
         </div>
         <div class="views-setting-row">
           <div class="views-setting-cell">Email:</div>
-          <div class="views-setting-cell ml-4">{{ userState.email }}</div>
+          <div class="views-setting-cell">{{ userState.email }}</div>
         </div>
         <div class="views-setting-row">
           <ripple-button class="flex btn btn-primary ml-auto" @click="openChangeUser">Save</ripple-button>
@@ -52,7 +52,7 @@
       <span class="views-setting-section-title">Change password</span>
       <div class="views-setting-rows">
         <div class="views-setting-row">
-          <div class="views-setting-cell w-48">Old password:</div>
+          <div class="views-setting-cell w-56">Old password:</div>
           <form>
             <input
               class="views-setting-cell w-72"
@@ -63,7 +63,7 @@
           </form>
         </div>
         <div class="views-setting-row">
-          <div class="views-setting-cell w-48">New password:</div>
+          <div class="views-setting-cell w-56">New password:</div>
           <input
             class="views-setting-cell w-72"
             type="password"
@@ -72,7 +72,7 @@
           />
         </div>
         <div class="views-setting-row">
-          <div class="views-setting-cell w-48">Confirm new password:</div>
+          <div class="views-setting-cell w-56">Confirm new password:</div>
           <input
             class="views-setting-cell w-72"
             type="password"

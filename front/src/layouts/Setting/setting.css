@@ -15,7 +15,10 @@
     @apply flex flex-row my-2 items-center;
   }
   div.views-setting-cell {
-    @apply flex h-11 items-center;
+    @apply flex h-11 items-center ml-4 px-4;
+  }
+  span.views-setting-cell {
+    @apply ml-4 px-4;
   }
   input.views-setting-cell {
     @apply border-2 ml-4 px-4 rounded-lg;

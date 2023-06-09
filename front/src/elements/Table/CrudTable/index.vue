@@ -49,34 +49,47 @@
         </tr>
       </thead>
       <tbody>
+        <slot name="rows"></slot>
         <tr class="table-row" v-for="(row, i) in state.sheet.rows" :key="i">
           <td class="table-row-data" v-for="(header, j) in state.sheet.headers" :key="j">
             {{ header.handler ? header.handler(row[header.key]) : row[header.key] }}
           </td>
           <td class="table-row-buttons">
             <slot name="buttons" :row="row"></slot>
-            <crud-table-button :text="'Edit'" :color="ButtonColorEnum.Primary" :row="row" :onClick="update">
+            <crud-table-button
+              :text="'Edit'"
+              :color="ButtonColorEnum.Primary"
+              :row="row"
+              :onClick="update"
+              v-if="isRowEditable"
+            >
               <template v-slot:icon><icon-mdi-file-edit-outline /></template>
             </crud-table-button>
-            <crud-table-button :text="'Delete'" :color="ButtonColorEnum.Danger" :row="row" :onClick="confirmRemove">
+            <crud-table-button
+              :text="'Delete'"
+              :color="ButtonColorEnum.Danger"
+              :row="row"
+              :onClick="confirmRemove"
+              v-if="isRowDeletable"
+            >
               <template v-slot:icon><icon-mdi-trash-can-outline /></template>
             </crud-table-button>
           </td>
         </tr>
-        <tr :class="state.pagination ? 'table-row' : ''">
+        <tr :class="state.pagination ? 'table-row' : ''" v-if="isAddible">
           <td class="table-row-data" :colspan="colspan">
             <ripple-button class="btn w-full btn-primary" @click="create">+</ripple-button>
           </td>
         </tr>
       </tbody>
     </table>
+    <pagination-base
+      class="ml-auto mr-4"
+      v-if="state.pagination"
+      :pagination="state.pagination"
+      :key="state.pagination.current"
+    />
   </div>
-  <pagination-base
-    class="ml-auto mr-4"
-    v-if="state.pagination"
-    :pagination="state.pagination"
-    :key="state.pagination.current"
-  />
 </template>
 
 <script lang="ts">
@@ -121,6 +134,7 @@ export interface Row {
 export interface GetParam {
   page: number | string;
   size: number | string;
+  is_desc?: boolean;
   [key: string]: any;
 }
 
@@ -234,6 +248,10 @@ export default defineComponent({
       type: Object as PropType<boolean>,
       default: false,
     },
+    isAddible: { type: Object as PropType<boolean>, default: true },
+    isRowEditable: { type: Object as PropType<boolean>, default: true },
+    isRowDeletable: { type: Object as PropType<boolean>, default: true },
+    areRowsCustom: { type: Object as PropType<boolean>, default: false },
     deleteConfirmMessage: {
       type: Object as PropType<string>,
       default: undefined,
@@ -332,6 +350,8 @@ export default defineComponent({
             state.sheet = { headers: headers, rows: rows };
           }),
         );
+      } else {
+        state.sheet = { headers: headers, rows: [] };
       }
     }
     load();
@@ -384,6 +404,9 @@ export default defineComponent({
     }
 
     function update(row: Row) {
+      if (!props.isRowEditable) {
+        return;
+      }
       state.row = row;
       state.editor.handler = () => {
         props.onCrudUpdate(state.row).then((response: any) => {
@@ -413,6 +436,9 @@ export default defineComponent({
     }
 
     function confirmRemove(row: any) {
+      if (!props.isRowDeletable) {
+        return;
+      }
       state.row = row;
       confirm.value.open();
     }

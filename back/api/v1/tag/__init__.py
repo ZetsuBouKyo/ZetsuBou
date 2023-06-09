@@ -35,7 +35,9 @@ async def search(
     results = await elastic_crud.match(pagination.page, s)
     ids = [int(r.id) for r in results.hits.hits]
     if len(ids) > 0:
-        return await CrudTagToken.get_rows_by_ids_order_by_id(ids)
+        return await CrudTagToken.get_rows_by_ids_order_by_id(
+            ids, skip=pagination.skip, limit=pagination.size, is_desc=pagination.is_desc
+        )
     return []
 
 

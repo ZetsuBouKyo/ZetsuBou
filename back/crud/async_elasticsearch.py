@@ -269,3 +269,12 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         if source is None:
             raise HTTPException(status_code=404, detail=f"{id} not found")
         return source
+
+    async def get_sources_by_ids(self, ids: List[str]) -> SearchResult[SourceT]:
+        dsl = {"size": self.size, "query": {"ids": {"values": ids}}}
+        try:
+            _resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
+        except NotFoundError:
+            raise HTTPException(status_code=404, detail=f"{id} not found")
+        sources = SearchResult[SourceT](**_resp)
+        return sources

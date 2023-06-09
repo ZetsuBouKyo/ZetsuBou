@@ -17,4 +17,12 @@ class UserBookmarkGalleryCreated(UserBookmarkGalleryUpdate):
     modified: DatetimeStr
 
 
-UserBookmarkGallery = UserBookmarkGalleryUpdated = UserBookmarkGalleryCreated
+UserBookmarkGalleryUpdated = UserBookmarkGalleryCreated
+
+
+class UserBookmarkGallery(BaseModel):
+    id: int = None
+    user_id: int = None
+    gallery_id: str = None
+    page: int = Field(default=None, description="0-based image index.")
+    modified: DatetimeStr = None

@@ -1,5 +1,6 @@
 from typing import List, Union
 
+from back.crud.async_gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserBookmarkGallery
 from back.db.model import (
     UserBookmarkGallery,
@@ -7,20 +8,67 @@ from back.db.model import (
     UserBookmarkGalleryCreated,
     UserBookmarkGalleryUpdate,
 )
+from back.dependency.base import get_pagination
 from back.dependency.security import api_security
+from back.model.base import Pagination
+from back.model.bookmark import GalleryBookmark
+from back.model.gallery import Gallery
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 router = APIRouter()
 
 
 @router.get(
-    "/{user_id}/bookmark/galleries",
-    response_model=List[UserBookmarkGallery],
-    dependencies=[api_security([ScopeEnum.user_bookmark_galleries_get.name])],
+    "/{user_id}/total-bookmarks",
+    response_model=int,
+    dependencies=[api_security([ScopeEnum.user_total_bookmarks_get.name])],
 )
-async def get_gallery_bookmarks(user_id: int) -> List[UserBookmarkGallery]:
-    return await CrudUserBookmarkGallery.get_rows_by_user_id(user_id)
+async def count_total_bookmarks(user_id: int) -> int:
+    return await CrudUserBookmarkGallery.count_total_by_user_id(user_id)
+
+
+@router.get(
+    "/{user_id}/bookmarks/gallery/detail",
+    response_model=List[GalleryBookmark],
+    dependencies=[api_security([ScopeEnum.user_bookmarks_gallery_detail_get.name])],
+)
+async def get_detailed_gallery_bookmarks(
+    user_id: int, pagination: Pagination = Depends(get_pagination)
+) -> List[GalleryBookmark]:
+    bookmarks = await CrudUserBookmarkGallery.get_rows_by_user_id_order_by_modified(
+        user_id, skip=pagination.skip, limit=pagination.size, is_desc=pagination.is_desc
+    )
+    if len(bookmarks) == 0:
+        return []
+
+    gallery_ids = [bookmark.gallery_id for bookmark in bookmarks]
+
+    elasticsearch_crud = CrudAsyncElasticsearchGallery(
+        size=pagination.size, is_from_setting_if_none=True
+    )
+    galleries = await elasticsearch_crud.get_sources_by_ids(gallery_ids)
+    galleries_table = {
+        hit.source["id"]: Gallery(**hit.source) for hit in galleries.hits.hits
+    }
+    detailed_bookmarks = [
+        GalleryBookmark(bookmark=bookmark, gallery=galleries_table[bookmark.gallery_id])
+        for bookmark in bookmarks
+    ]
+    return detailed_bookmarks
+
+
+@router.get(
+    "/{user_id}/bookmarks/gallery",
+    response_model=List[UserBookmarkGallery],
+    dependencies=[api_security([ScopeEnum.user_bookmarks_gallery_get.name])],
+)
+async def get_gallery_bookmarks(
+    user_id: int, pagination: Pagination = Depends(get_pagination)
+) -> List[UserBookmarkGallery]:
+    return await CrudUserBookmarkGallery.get_rows_by_user_id(
+        user_id, skip=pagination.skip, limit=pagination.size, is_desc=pagination.is_desc
+    )
 
 
 @router.get(

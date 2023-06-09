@@ -44,7 +44,7 @@
         <ripple-button class="flex w-full">
           <router-link
             class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white"
-            to="/bookmark"
+            to="/bookmark/gallery"
             @click="close"
           >
             <icon-mdi-bookmark-outline class="self-center ml-2" style="font-size: 1.4rem" />

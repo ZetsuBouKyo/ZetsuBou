@@ -8,9 +8,11 @@ from ....model import (
 )
 from ....table import UserBookmarkGalleryBase
 from ...base import (
+    count,
     create,
     delete_by_id,
     get_row_by,
+    get_rows_by_condition_order_by,
     get_rows_by_condition_order_by_id,
     update_by_id,
 )
@@ -22,6 +24,24 @@ class CrudUserBookmarkGallery(UserBookmarkGalleryBase):
         cls, bookmark: UserBookmarkGalleryCreate
     ) -> UserBookmarkGalleryCreated:
         return UserBookmarkGalleryCreated(**await create(cls, bookmark))
+
+    @classmethod
+    async def count_total_by_user_id(cls, user_id: int) -> int:
+        return await count(cls, cls.user_id == user_id)
+
+    @classmethod
+    async def get_rows_by_user_id_order_by_modified(
+        cls, user_id: int, skip: int = 0, limit: int = 100, is_desc: bool = False
+    ) -> List[UserBookmarkGallery]:
+        return await get_rows_by_condition_order_by(
+            cls,
+            cls.user_id == user_id,
+            cls.modified,
+            UserBookmarkGallery,
+            skip=skip,
+            limit=limit,
+            is_desc=is_desc,
+        )
 
     @classmethod
     async def get_rows_by_user_id(

@@ -18,7 +18,7 @@ function getPageUrl(page: number, path: string, query: Query) {
 }
 
 export function getPagination(path: string, totalItems: number, query: Query) {
-  const totalPage = Math.ceil(totalItems / query.size);
+  const totalPage = Math.ceil(totalItems / (query.size as number));
   if (totalPage === 0) {
     return undefined;
   }

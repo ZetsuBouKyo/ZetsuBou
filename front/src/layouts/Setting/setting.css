@@ -1,6 +1,6 @@
 @layer utilities {
   .views-setting-container {
-    @apply flex flex-col w-full ml-8;
+    @apply flex flex-col w-full ml-8 mb-8;
   }
   .views-setting-section {
     @apply flex flex-col w-full divide-y divide-gray-300;

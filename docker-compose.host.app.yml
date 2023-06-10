@@ -23,6 +23,8 @@ services:
       POSTGRES_USER: zetsubou
       POSTGRES_PASSWORD: zetsubou
       POSTGRES_DB: zetsubou
+      TZ: Asia/Taipei
+      PGTZ: Asia/Taipei
     ports:
       - 5430:5432
     volumes:

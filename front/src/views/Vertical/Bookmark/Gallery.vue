@@ -1,8 +1,14 @@
 <template>
   <div class="views-setting-container">
     <div
-      class="flex flex-col w-full mx-auto rounded-lg overflow-x-auto bg-gray-800 shadow-gray-900 scrollbar-gray-900-2 divide-y divide-gray-500"
+      class="flex flex-col w-full mx-auto rounded-lg overflow-x-auto bg-gray-800 shadow-gray-900 scrollbar-gray-900-2"
+      :class="state.rows.length ? 'divide-y divide-gray-500' : ''"
     >
+      <div class="flex flex-row w-full p-4 cursor-default" v-if="state.rows.length === 0">
+        <div class="flex flex-row w-full">
+          <span class="w-24 self-center mr-2">No results</span>
+        </div>
+      </div>
       <div
         class="flex flex-row w-full p-4"
         v-for="(row, i) in state.rows"

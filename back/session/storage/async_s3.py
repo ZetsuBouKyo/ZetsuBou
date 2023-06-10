@@ -328,6 +328,8 @@ class AsyncS3Session(AioSession):
 
     async def get_json(self, source: SourceBaseModel) -> dict:
         obj = await self.get_object(source)
+        if obj is None:
+            return None
         return json.loads(obj)
 
     async def list_nested_sources(

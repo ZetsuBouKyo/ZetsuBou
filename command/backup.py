@@ -14,10 +14,10 @@ from back.db.crud.base import (
     reset_auto_increment,
 )
 from back.init.async_elasticsearch import indices, init_indices
+from back.init.database import create_tables
 from back.model.base import SourceBaseModel
 from back.session.async_db import async_session
 from back.session.async_elasticsearch import async_elasticsearch
-from back.init.database import create_tables
 from back.session.storage import get_app_storage_session
 from back.settings import setting
 from back.utils.dt import get_now
@@ -180,6 +180,8 @@ async def load(
         for table_name in tqdm(table_names):
             table_source = get_database_table_source(date, table_name)
             rows = await storage_session.get_json(table_source)
+            if rows is None:
+                continue
             table_instance = table_instances.get(table_name, None)
 
             await _load_table(table_name, table_instance, rows)

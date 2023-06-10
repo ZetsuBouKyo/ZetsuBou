@@ -1,5 +1,5 @@
 <template>
-  <div class="views-setting-container" :key="detectRouteChange(route)">
+  <div class="views-setting-container">
     <div
       class="flex flex-col w-full mx-auto rounded-lg overflow-x-auto bg-gray-800 shadow-gray-900 scrollbar-gray-900-2 divide-y divide-gray-500"
     >

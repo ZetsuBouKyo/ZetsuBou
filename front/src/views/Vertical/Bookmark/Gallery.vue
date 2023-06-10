@@ -124,17 +124,21 @@ export default {
     const router = useRouter();
     const route = useRoute();
     const params: GetParam = {
-      page: route.query.page ? parseInt(route.query.page as string) : 1,
-      size: route.query.size ? parseInt(route.query.size as string) : 20,
-      is_desc: route.query.is_desc ? Boolean(route.query.is_desc) : true,
+      page: undefined,
+      size: undefined,
+      is_desc: undefined,
     };
+
+    function updateParams() {
+      params.page = route.query.page ? parseInt(route.query.page as string) : 1;
+      params.size = route.query.size ? parseInt(route.query.size as string) : 20;
+      params.is_desc = route.query.is_desc ? Boolean(route.query.is_desc) : true;
+    }
 
     state.userID = userState.id;
 
     function load() {
-      params.page = route.query.page as any;
-      params.size = route.query.size as any;
-      params.is_desc = route.query.is_desc as any;
+      updateParams();
       axios.all<any>([getUserTotalBookmarks(state.userID), getUserDetailedGalleryBookmarks(state.userID, params)]).then(
         axios.spread((response1, response2) => {
           const totalItems = response1.data;
@@ -145,10 +149,9 @@ export default {
       );
     }
     load();
+
     watch(
-      () => {
-        return [detectRouteChange(route), state.rows.length];
-      },
+      () => detectRouteChange(route),
       () => {
         load();
       },

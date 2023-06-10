@@ -23,6 +23,9 @@ export function getPagination(path: string, totalItems: number, query: Query) {
     return undefined;
   }
   const current = parseInt(query.page as string) as number;
+  if (isNaN(current)) {
+    return undefined;
+  }
 
   const pagination: Pagination = {
     totalPage: totalPage,

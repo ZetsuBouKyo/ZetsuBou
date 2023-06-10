@@ -2,11 +2,19 @@
   <section class="sticky top-0 shadow-black">
     <header class="text-gray-400 bg-gray-900 body-font xl:px-8 md:px-4 sm:px-2">
       <div class="flex flex-row mx-auto items-center">
-        <icon />
-        <router-link class="lg:inline hidden ml-8 3xl:text-xl text-lg text-gray-300 hover:text-gray-500" to="/gallery">
+        <icon @click="toTop" />
+        <router-link
+          class="lg:inline hidden ml-8 3xl:text-xl text-lg text-gray-300 hover:text-gray-500"
+          to="/gallery"
+          @click="toTop"
+        >
           Gallery
         </router-link>
-        <router-link class="lg:inline hidden ml-4 3xl:text-xl text-lg text-gray-300 hover:text-gray-500" to="/video">
+        <router-link
+          class="lg:inline hidden ml-4 3xl:text-xl text-lg text-gray-300 hover:text-gray-500"
+          to="/video"
+          @click="toTop"
+        >
           Video
         </router-link>
         <nav class="ml-4 flex flex-row items-center text-base justify-center w-full 3xl:text-lg">
@@ -29,6 +37,11 @@ import User from "./User/index.vue";
 
 export default {
   components: { Icon, Notification, Search, Sync, User },
-  setup() {},
+  setup() {
+    function toTop() {
+      window.scrollTo(0, 0);
+    }
+    return { toTop };
+  },
 };
 </script>

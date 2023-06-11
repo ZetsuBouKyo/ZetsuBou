@@ -9,9 +9,6 @@ ZETSUBOU_APP_MINIO ?= ./dev/minio
 ZETSUBOU_APP_MINIO_GALLERIES ?= ./dev/minio/galleries
 ZETSUBOU_APP_MINIO_GALLERIES_SIMPLE ?= ./dev/minio/galleries/simple
 ZETSUBOU_ELASTICSEARCH_VOLUME ?= ./dev/volumes/elasticsearch
-ZETSUBOU_LABEL_STUDIO_DATA_VOLUME ?= ./dev/volumes/label-studio/data
-ZETSUBOU_LABEL_STUDIO_DEPLOY_VOLUME ?= ./dev/volumes/label-studio/deploy
-ZETSUBOU_LABEL_STUDIO_DATA_POSTGRES_DB_VOLUME ?= ./dev/volumes/label-studio/postgres
 ZETSUBOU_REDIS_VOLUME ?= ./dev/volumes/redis
 ZETSUBOU_POSTGRES_DB_VOLUME ?= ./dev/volumes/postgres
 
@@ -23,7 +20,6 @@ AIRFLOW_PLUGINS_VOLUME ?= ./dev/volumes/airflow/plugins
 AIRFLOW_POSTGRES_DB_VOLUME ?= ./dev/volumes/airflow/postgres
 
 APP_DEV_SERVICES := zetsubou-postgres zetsubou-elastic zetsubou-minio zetsubou-redis
-AIRFLOW_SERVICES := airflow-postgres airflow-redis airflow-webserver airflow-scheduler airflow-worker airflow-triggerer airflow-init airflow-cli flower
 
 .PHONY: test line check
 
@@ -43,15 +39,15 @@ check-dev:
 	@docker-compose > /dev/null 2>&1
 	@npm --version > /dev/null 2>&1
 
-.PHONY: build build-docker-app build-docker-airflow-dev build-docker-minio-dev build-dev
+.PHONY: build build-docker-app build-docker-airflow build-docker-minio-dev build-dev
 build-docker-app:
 	docker build --force-rm -f Dockerfile.app -t zetsubou-dev/app:0.0.1-python-3.8.16-slim-buster .
-build-docker-airflow-dev:
-	docker build --force-rm -f Dockerfile.airflow -t zetsubou-dev/airflow:2.6.0-python3.8 .
-build-dev: build-docker-airflow-dev
+build-docker-airflow:
+	docker build --force-rm -f Dockerfile.airflow -t zetsubou/airflow:2.6.1-python3.8 .
+build-dev: build-docker-airflow
 	poetry install
 	source ./.venv/bin/activate; pre-commit install
-build: build-docker-airflow-dev
+build: build-docker-airflow
 
 lint:
 	pre-commit run --all-files
@@ -81,14 +77,10 @@ init-airflow:
 	chown -R $(AIRFLOW_UID):$(AIRFLOW_UID) $(AIRFLOW_PLUGINS_VOLUME)
 
 	docker-compose -f docker-compose.host.airflow.yml up airflow-init
-init-label-studio:
-	mkdir -p $(ZETSUBOU_LABEL_STUDIO_DATA_VOLUME)
-	mkdir -p $(ZETSUBOU_LABEL_STUDIO_DEPLOY_VOLUME)
-	mkdir -p $(ZETSUBOU_LABEL_STUDIO_DATA_POSTGRES_DB_VOLUME)
 init-redis:
 	mkdir -p $(ZETSUBOU_REDIS_VOLUME)
 	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
-init: init-env init-app-postgres init-airflow init-app-elastic init-label-studio init-redis
+init: init-env init-app-postgres init-airflow init-app-elastic init-redis
 
 .PHONY: clean clean-all clean-airflow clean-app-elastic clean-app-postgres clean-docker
 clean-airflow:
@@ -119,11 +111,9 @@ up-app:
 up-app-dev:
 	docker-compose -f docker-compose.host.app.yml up -d $(APP_DEV_SERVICES)
 up-airflow:
-	docker-compose -f docker-compose.host.airflow.yml up -d $(AIRFLOW_SERVICES)
-up-label-studio:
-	docker-compose -f docker-compose.host.label-studio.yml up -d
-up-dev: up-app-dev up-airflow up-label-studio
-up: up-app up-airflow up-label-studio
+	docker-compose -f docker-compose.host.airflow.yml up -d
+up-dev: up-app-dev up-airflow
+up: up-app up-airflow
 
 log-app:
 	docker-compose -f docker-compose.host.app.yml logs
@@ -132,23 +122,21 @@ log-app:
 start-app-dev:
 	docker-compose -f docker-compose.host.app.yml start $(APP_DEV_SERVICES)
 start-airflow:
-	docker-compose -f docker-compose.host.airflow.yml start $(AIRFLOW_SERVICES)
+	docker-compose -f docker-compose.host.airflow.yml start
 
 
 .PHONY: stop-app-dev stop-airflow
 stop-app-dev:
 	docker-compose -f docker-compose.host.app.yml stop $(APP_DEV_SERVICES)
 stop-airflow:
-	docker-compose -f docker-compose.host.airflow.yml stop $(AIRFLOW_SERVICES)
+	docker-compose -f docker-compose.host.airflow.yml stop
 
 .PHONY: down
 down-app:
 	docker-compose -f docker-compose.host.app.yml down --remove-orphans
 down-airflow:
 	docker-compose -f docker-compose.host.airflow.yml down --remove-orphans
-down-label-studio:
-	docker-compose -f docker-compose.host.label-studio.yml down --remove-orphans
-down: down-app down-airflow down-label-studio
+down: down-app down-airflow
 
 .PHONY: logs
 logs:

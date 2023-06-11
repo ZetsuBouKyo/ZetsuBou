@@ -11,6 +11,7 @@ services:
     expose:
       - 3000
     volumes:
+      - ./logs:/workspace/logs
       - ./etc:/workspace/etc
       - ./.env:/workspace/.env
     depends_on:
@@ -36,9 +37,8 @@ services:
     restart: always
   zetsubou-elastic:
     image: elasticsearch:7.10.1
-    network_mode: host
-    expose:
-      - 9200
+    ports:
+      - 9200:9200
     environment:
       - USER_UID=1000
       - USER_GID=1000
@@ -49,11 +49,10 @@ services:
       - ${ZETSUBOU_ELASTICSEARCH_VOLUME:-./dev/volumes/elasticsearch}:/usr/share/elasticsearch/data
   zetsubou-minio:
     image: minio/minio:RELEASE.2022-02-26T02-54-46Z.fips
-    command: server /data --console-address ":9001"
-    network_mode: host
-    expose:
-      - 9000
-      - 9001
+    command: server /data --address zetsubou-minio:9000 --console-address "zetsubou-minio:9001"
+    ports:
+      - 9000:9000
+      - 9001:9001
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER:-admin}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-wJalrXUtnFEMI}
@@ -63,9 +62,8 @@ services:
 
   zetsubou-redis:
     image: redis:latest
-    network_mode: host
-    expose:
-      - 6380
+    ports:
+      - 6380:6380
     command: redis-server --port 6380
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -73,3 +71,7 @@ services:
       timeout: 30s
       retries: 50
     restart: always
+
+networks:
+  zetsubou:
+    external: true

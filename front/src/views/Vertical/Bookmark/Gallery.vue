@@ -2,8 +2,7 @@
   <div class="views-setting-container">
     <div
       class="flex flex-col w-full mx-auto rounded-lg overflow-x-auto bg-gray-800 shadow-gray-900 scrollbar-gray-900-2"
-      :class="state.rows.length ? 'divide-y divide-gray-500' : ''"
-    >
+      :class="state.rows.length ? 'divide-y divide-gray-500' : ''">
       <div class="flex flex-row w-full p-4 cursor-default" v-if="state.rows.length === 0">
         <div class="flex flex-row w-full">
           <span class="w-24 self-center mr-2">No results</span>
@@ -12,8 +11,7 @@
       <div
         class="flex flex-row w-full p-4"
         v-for="(row, i) in state.rows"
-        :key="i + state.rows.length + JSON.stringify(row)"
-      >
+        :key="i + state.rows.length + JSON.stringify(row)">
         <div class="flex flex-row w-full hover:opacity-50">
           <span class="w-12 self-center mr-2">{{ i + 1 }}</span>
           <div class="flex h-36 w-24">
@@ -21,8 +19,7 @@
               alt="Not found!"
               loading="lazy"
               class="object-contain object-center h-full w-full animate-fade-in"
-              :src="getCover(row)"
-            />
+              :src="getCover(row)" />
           </div>
           <div class="flex flex-col w-full mx-4">
             <span class="text-gray-400 text-xs" v-if="row.gallery.attributes.category">{{
@@ -45,16 +42,14 @@
           <ripple-button
             class="h-10 mr-2 btn-icon cursor-pointer"
             :class="ButtonColorEnum.Primary"
-            @click="toBookmark(row)"
-          >
+            @click="toBookmark(row)">
             <div class="ml-2"><icon-mdi-arrow /></div>
             <span class="ml-2 mr-4">Go</span>
           </ripple-button>
           <ripple-button
             class="h-10 mt-2 mr-2 btn-icon cursor-pointer"
             :class="ButtonColorEnum.Danger"
-            @click="deleteBookmark(row)"
-          >
+            @click="deleteBookmark(row)">
             <div class="ml-2"><icon-mdi-trash-can-outline /></div>
             <span class="ml-2 mr-4">Delete</span>
           </ripple-button>
@@ -65,8 +60,7 @@
           class="ml-auto mr-4"
           v-if="state.pagination"
           :pagination="state.pagination"
-          :key="state.pagination.current"
-        />
+          :key="state.pagination.current" />
       </div>
     </div>
   </div>

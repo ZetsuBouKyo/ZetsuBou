@@ -10,8 +10,7 @@
             :cx="point.x"
             :cy="point.y"
             stroke="rgb(255,255,255)"
-            r="4"
-          />
+            r="4" />
         </g>
         <g>
           <g v-for="(point, i) in selection.points" :key="i">
@@ -21,8 +20,7 @@
               :y1="selection.points[i - 1].y"
               :x2="selection.points[i].x"
               :y2="selection.points[i].y"
-              :stroke="selection.color"
-            />
+              :stroke="selection.color" />
           </g>
           <g v-if="selection.isCompleted">
             <line
@@ -30,8 +28,7 @@
               :y1="selection.points[selection.points.length - 1].y"
               :x2="selection.points[0].x"
               :y2="selection.points[0].y"
-              :stroke="selection.color"
-            />
+              :stroke="selection.color" />
           </g>
         </g>
       </g>

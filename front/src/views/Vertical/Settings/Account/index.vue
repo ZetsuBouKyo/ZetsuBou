@@ -7,8 +7,7 @@
           class="flex-1 modal-input w-full"
           type="password"
           autocomplete="new-password"
-          v-model="userState.password"
-        />
+          v-model="userState.password" />
       </form>
     </div>
     <div class="modal-row">
@@ -30,12 +29,10 @@
             type="text"
             v-model="userState.newName"
             :placeholder="userState.name"
-            :disabled="!state.isNameEditable"
-          />
+            :disabled="!state.isNameEditable" />
           <ripple-button
             class="flex btn btn-primary h-full mx-2 rounded-lg bg-blue-500 hover:opacity-50 hover:bg-gray-500 items-center"
-            @click="makeNameEditable"
-          >
+            @click="makeNameEditable">
             <icon-ic-outline-edit style="font-size: 1.2rem; color: white" />
           </ripple-button>
         </div>
@@ -58,8 +55,7 @@
               class="views-setting-cell w-72"
               type="password"
               autocomplete="new-password"
-              v-model="userState.oldPassword"
-            />
+              v-model="userState.oldPassword" />
           </form>
         </div>
         <div class="views-setting-row">
@@ -68,8 +64,7 @@
             class="views-setting-cell w-72"
             type="password"
             autocomplete="new-password"
-            v-model="userState.newPassword"
-          />
+            v-model="userState.newPassword" />
         </div>
         <div class="views-setting-row">
           <div class="views-setting-cell w-56">Confirm new password:</div>
@@ -77,8 +72,7 @@
             class="views-setting-cell w-72"
             type="password"
             autocomplete="new-password"
-            v-model="userState.passwordConfirmation"
-          />
+            v-model="userState.passwordConfirmation" />
         </div>
         <div class="views-setting-row">
           <ripple-button class="flex btn btn-primary ml-auto" @click="confirmChangeUser">Save</ripple-button>

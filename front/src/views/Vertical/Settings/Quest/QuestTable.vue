@@ -11,8 +11,7 @@
       :on-crud-get-total="onCrudGetTotal"
       :on-crud-update="onCrudUpdate"
       :on-crud-delete="onCrudDelete"
-      :on-close-editor="onCloseEditor"
-    >
+      :on-close-editor="onCloseEditor">
       <template v-slot:editor>
         <div class="modal-row">
           <span class="w-20 mr-4">Name:</span>
@@ -25,8 +24,7 @@
             :options-width-class="'w-64'"
             :state="category"
             :on-get="onGetCategory"
-            :on-get-to-options="onGetCategoryToOptions"
-          ></select-dropdown>
+            :on-get-to-options="onGetCategoryToOptions"></select-dropdown>
         </div>
         <div class="modal-row" v-if="category.title">
           <span class="w-20 mr-4">Quest Id:</span>
@@ -35,8 +33,7 @@
             :options-width-class="'w-64'"
             :state="quest"
             :on-get="onGetQuest"
-            :on-get-to-options="onGetQuestToOptions"
-          ></select-dropdown>
+            :on-get-to-options="onGetQuestToOptions"></select-dropdown>
           <ripple-button class="ml-2 btn btn-primary" @click="openQuestPage"> Add </ripple-button>
         </div>
         <div class="modal-row h-10" v-else></div>

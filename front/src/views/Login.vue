@@ -18,8 +18,7 @@
               autocomplete="email"
               required=""
               placeholder="Email address"
-              v-model="state.email"
-            />
+              v-model="state.email" />
           </div>
           <div class="py-1">
             <label class="my-1 inline-block" for="password">Password</label>
@@ -32,8 +31,7 @@
               autocomplete="current-password"
               required=""
               placeholder="Password"
-              v-model="state.password"
-            />
+              v-model="state.password" />
           </div>
         </div>
         <div class="flex items-center justify-between my-4">
@@ -55,8 +53,7 @@
           <ripple-button
             type="submit"
             class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none"
-            @click="submit"
-          >
+            @click="submit">
             <span class="absolute left-0 inset-y-0 flex items-center pl-3">
               <LockClosedIcon class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
             </span>

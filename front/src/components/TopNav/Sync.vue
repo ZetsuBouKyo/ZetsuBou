@@ -5,15 +5,13 @@
     :title="'Warning'"
     :message="'Do you really want to synchronize new galleries?'"
     :on-close="onCloseConfirm"
-    :on-confirm="onConfirmSynchronizeNew"
-  />
+    :on-confirm="onConfirmSynchronizeNew" />
   <confirm-modal
     ref="confirmAll"
     :title="'Warning'"
     :message="'Do you really want to synchronize all galleries?'"
     :on-close="onCloseConfirm"
-    :on-confirm="onConfirmSynchronizeAll"
-  />
+    :on-confirm="onConfirmSynchronizeAll" />
   <div class="relative mx-1 h-10">
     <dropdown class="text-white border-2 border-gray-700 hover:bg-gray-600 rounded-lg">
       <template v-slot:select>
@@ -30,8 +28,7 @@
                 stroke-width="2.4"
                 pathLength="100"
                 style="stroke-dasharray: 100; stroke-dashoffset: 100; stroke-linecap: round"
-                :style="'stroke-dashoffset:' + state.progress + ';'"
-              />
+                :style="'stroke-dashoffset:' + state.progress + ';'" />
             </svg>
             <span class="mr-4 my-auto">Sync</span>
           </div>
@@ -43,8 +40,7 @@
           <select
             class="flex py-1 px-2 ml-auto mr-1 bg-gray-800 border-gray-700 w-36 self-center"
             v-model="state.action"
-            :disabled="state.isSync"
-          >
+            :disabled="state.isSync">
             <option class="my-1 mx-2" value="all">All</option>
             <option class="my-1 mx-2" value="new" v-if="state.appMode === SettingAppMode.Standalone">New</option>
           </select>

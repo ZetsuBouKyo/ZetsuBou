@@ -8,8 +8,7 @@
       :options-width-class="optionsWidthClass"
       :on-open="onOpen"
       :is-expand="false"
-      :is-toggle="false"
-    >
+      :is-toggle="false">
       <template v-slot:select>
         <div v-if="mode === SelectDropdownMode.Input" class="relative h-full w-full inline-flex items-center">
           <input
@@ -17,14 +16,12 @@
             type="search"
             v-model="state.title"
             @click.stop="toggleDropdown"
-            @focus="focusOpenDropdown"
-          />
+            @focus="focusOpenDropdown" />
           <icon-ic-round-expand-more class="absolute right-0 mx-2" style="font-size: 1rem" />
         </div>
         <div
           v-if="mode === SelectDropdownMode.InputChips"
-          class="flex flex-wrap min-h-14 items-center bg-gray-600 rounded px-2 py-2"
-        >
+          class="flex flex-wrap min-h-14 items-center bg-gray-600 rounded px-2 py-2">
           <chip
             class="flex-initial m-1"
             v-for="(chip, i) in state.chips"
@@ -32,8 +29,7 @@
             :index="i"
             :title="chip.title"
             :value="chip.value"
-            :on-delete="onDeleteChip"
-          />
+            :on-delete="onDeleteChip" />
           <input
             class="w-2 h-10 p-0 bg-gray-600 text-base 3xl:text-xl border-0 focus:outline-none focus:ring-0 flex-1"
             type="text"
@@ -42,15 +38,13 @@
             @focus="focusOpenDropdown"
             @keyup.delete="deleteLastChip"
             @keyup.enter="createChip"
-            @keyup="openDropdown"
-          />
+            @keyup="openDropdown" />
         </div>
         <ripple-button
           v-else-if="mode === SelectDropdownMode.Button"
           class="h-full w-full btn-dark inline-flex items-center text-base 3xl:text-xl border-0 py-1 pl-4 pr-3 focus:outline-none rounded"
           @click.stop="toggleDropdown"
-          @focus="focusOpenDropdown"
-        >
+          @focus="focusOpenDropdown">
           <span class="truncate">{{ state.title }}</span>
           <icon-ic-round-expand-more class="ml-auto" style="font-size: 1rem" />
         </ripple-button>
@@ -64,8 +58,7 @@
             :key="opt.value"
             :title="onGetTip ? onGetTip(opt) : undefined"
             @click="select(opt)"
-            @mouseover="(event) => mouseoverOption(event, opt)"
-          >
+            @mouseover="(event) => mouseoverOption(event, opt)">
             {{ opt.title }}
           </button>
         </div>

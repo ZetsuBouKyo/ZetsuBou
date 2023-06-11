@@ -6,8 +6,7 @@
         class="flex-1 modal-input"
         type="text"
         :placeholder="videoState.data.name"
-        v-model="videoState.data.name"
-      />
+        v-model="videoState.data.name" />
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Source:</span>
@@ -15,8 +14,7 @@
         class="flex-1 modal-input"
         type="text"
         :placeholder="videoState.data.attributes.src"
-        v-model="videoState.data.attributes.src"
-      />
+        v-model="videoState.data.attributes.src" />
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Category:</span>
@@ -26,8 +24,7 @@
         :state="category"
         :on-get="getSettingFrontVideoStartWithCategories"
         :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.Input"
-      />
+        :mode="SelectDropdownMode.Input" />
       <span class="w-16 mx-4">Rating:</span>
       <select-dropdown class="h-10 w-24 ml-2 3xl:w-48" :options-width-class="'w-24'" :state="rating"></select-dropdown>
     </div>
@@ -42,8 +39,7 @@
         :enable-input-chips-enter-event="false"
         :on-get="getTagTokenStartWith"
         :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.InputChips"
-      />
+        :mode="SelectDropdownMode.InputChips" />
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Tag field:</span>
@@ -56,8 +52,7 @@
         :enable-input-chips-enter-event="false"
         :on-get="getSettingFrontVideoStartWithTagFields"
         :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.InputChips"
-      />
+        :mode="SelectDropdownMode.InputChips" />
     </div>
     <div class="modal-row" v-for="(_, field) in privateState.tagFields" :key="privateState.tagFields[field]">
       <span class="w-24 ml-8 mr-4">{{ field }}:</span>
@@ -70,8 +65,7 @@
         :enable-input-chips-enter-event="false"
         :on-get="privateState.onGets[field]"
         :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.InputChips"
-      />
+        :mode="SelectDropdownMode.InputChips" />
     </div>
     <div class="modal-row">
       <div class="flex ml-auto">

@@ -10,8 +10,7 @@
       </div>
       <div
         class="flex flex-col w-full py-1"
-        :class="isScrollable ? 'overflow-y-scroll scrollbar-gray-100-2 max-h-80v' : 'h-full'"
-      >
+        :class="isScrollable ? 'overflow-y-scroll scrollbar-gray-100-2 max-h-80v' : 'h-full'">
         <slot></slot>
       </div>
     </div>

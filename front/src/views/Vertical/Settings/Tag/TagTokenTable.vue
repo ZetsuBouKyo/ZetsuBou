@@ -11,8 +11,7 @@
       :on-crud-get-total="onCrudGetTotal"
       :on-crud-update="onCrudUpdate"
       :on-crud-delete="onCrudDelete"
-      :delete-confirm-message="'Are you sure you want to permanently delete this row? This might destroy the database.'"
-    >
+      :delete-confirm-message="'Are you sure you want to permanently delete this row? This might destroy the database.'">
       <template v-slot:editor>
         <div class="modal-row">
           <span class="w-32 mr-4">Name:</span>

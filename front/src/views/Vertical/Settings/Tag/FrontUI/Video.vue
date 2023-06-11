@@ -14,8 +14,7 @@
           :on-get-to-options="onGetCategoriesToOptions"
           :on-get-tip="onGetTip"
           :on-mouseover-option="onMouseoverOption"
-          :mode="SelectDropdownMode.InputChips"
-        />
+          :mode="SelectDropdownMode.InputChips" />
       </div>
       <div class="views-setting-row">
         <div class="views-setting-cell w-32">Tag fields:</div>
@@ -29,8 +28,7 @@
           :on-get-to-options="onGetTagFieldsToOptions"
           :on-get-tip="onGetTip"
           :on-mouseover-option="onMouseoverOption"
-          :mode="SelectDropdownMode.InputChips"
-        />
+          :mode="SelectDropdownMode.InputChips" />
       </div>
       <div class="views-setting-row">
         <ripple-button class="flex btn btn-primary ml-auto" @click="save">Save</ripple-button>

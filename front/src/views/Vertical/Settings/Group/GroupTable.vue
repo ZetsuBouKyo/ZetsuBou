@@ -12,8 +12,7 @@
       :on-crud-update="onCrudUpdate"
       :on-crud-delete="onCrudDelete"
       :on-open-editor="onOpenEditor"
-      :on-close-editor="onCloseEditor"
-    >
+      :on-close-editor="onCloseEditor">
       <template v-slot:editor>
         <div class="modal-row">
           <span class="w-32 mr-4">Name:</span>

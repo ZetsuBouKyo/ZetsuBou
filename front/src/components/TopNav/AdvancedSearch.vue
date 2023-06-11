@@ -4,8 +4,7 @@
     :title="'Advanced Search'"
     class="w-1/2 top-12 left-1/4"
     :is-scrollable="true"
-    @keyup.enter="search"
-  >
+    @keyup.enter="search">
     <div class="flex flex-col" v-for="(field, i) in state.fields" :key="i">
       <div class="flex flex-col" v-if="field.type === AdvancedSearchFieldType.String">
         <div class="modal-row h-10">
@@ -19,24 +18,21 @@
             :group="'search'"
             :options-width-class="'w-20'"
             :origin="Origin.BottomLeft"
-            :state="field.fuzziness"
-          />
+            :state="field.fuzziness" />
           <span class="w-16 mr-4">Analyzer:</span>
           <select-dropdown
             class="w-32 mr-4"
             :group="'search'"
             :options-width-class="'w-32'"
             :origin="Origin.BottomLeft"
-            :state="field.analyzer"
-          />
+            :state="field.analyzer" />
           <span class="w-16 mr-4">Boolean:</span>
           <select-dropdown
             class="w-28"
             :group="'search'"
             :options-width-class="'w-28'"
             :origin="Origin.BottomLeft"
-            :state="field.boolean"
-          />
+            :state="field.boolean" />
         </div>
       </div>
       <div class="flex flex-col" v-else-if="field.type === AdvancedSearchFieldType.Range">
@@ -71,8 +67,7 @@
         :options-width-class="'w-64'"
         :origin="Origin.BottomLeft"
         :state="labels"
-        :mode="SelectDropdownMode.InputChips"
-      />
+        :mode="SelectDropdownMode.InputChips" />
     </div>
     <div class="modal-row" @keyup.enter.stop="">
       <span class="w-28 mr-4 text-white">Tag Fields:</span>
@@ -83,8 +78,7 @@
         :state="tagFields"
         :on-get="getSettingFrontGalleryStartWithTagFields"
         :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.InputChips"
-      />
+        :mode="SelectDropdownMode.InputChips" />
     </div>
     <div class="modal-row" v-for="(fieldState, field, index) in tags" :key="index" @keyup.enter.stop="">
       <span class="w-28 mx-4">{{ field }}:</span>
@@ -93,8 +87,7 @@
         :options-width-class="'w-64'"
         :origin="Origin.BottomLeft"
         :state="fieldState"
-        :mode="SelectDropdownMode.InputChips"
-      />
+        :mode="SelectDropdownMode.InputChips" />
     </div>
     <div class="modal-row">
       <div class="flex ml-auto">

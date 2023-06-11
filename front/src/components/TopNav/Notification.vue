@@ -5,8 +5,7 @@
         <ripple-button class="focus:outline-none h-full rounded">
           <icon-mdi-bell-outline
             class="text-white mx-2 my-auto cursor-pointer hover:opacity-50"
-            style="font-size: 1.4rem"
-          />
+            style="font-size: 1.4rem" />
         </ripple-button>
       </template>
       <template v-slot:options>
@@ -23,8 +22,7 @@
               :class="!msg.link ? 'cursor-default' : 'cursor-pointer'"
               v-for="(msg, i) in messageState.getHistory()"
               :to="msg.link !== undefined ? msg.link : ''"
-              :key="msg.id + i"
-            >
+              :key="msg.id + i">
               <span class="text-sm px-4 py-2">{{ msg.detail }}</span>
               <div class="flex ml-auto text-gray-300 text-xs px-4 py-2">Last updated: {{ msg.lastUpdated }}</div>
             </router-link>

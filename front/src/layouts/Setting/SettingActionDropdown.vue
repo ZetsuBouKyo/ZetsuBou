@@ -2,8 +2,7 @@
   <div class="flex flex-col">
     <ripple-button
       class="views-setting-action-ripple-button views-setting-action-ripple-button-inactive"
-      @click="toggle"
-    >
+      @click="toggle">
       <div class="views-setting-action">
         <slot name="icon"></slot>
         <span class="views-setting-action-title">{{ title }}</span>

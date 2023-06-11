@@ -6,8 +6,7 @@
       :on-crud-get="onCrudGet"
       :on-crud-get-total="onCrudGetTotal"
       :on-crud-update="onCrudUpdate"
-      :on-crud-delete="onCrudDelete"
-    />
+      :on-crud-delete="onCrudDelete" />
   </div>
 </template>
 

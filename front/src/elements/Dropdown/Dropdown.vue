@@ -7,8 +7,7 @@
       <div
         class="h-full flex flex-col justify-center hover:opacity-50 cursor-pointer"
         v-if="isExpand"
-        @click.stop="expandToggle"
-      >
+        @click.stop="expandToggle">
         <icon-ic-round-expand-more class="mx-1" />
       </div>
     </div>
@@ -17,8 +16,7 @@
         class="scrollbar-gray-900-2 absolute ring-1 ring-black ring-opacity-5 focus:outline-none text-base text-white 3xl:text-lg shadow-black rounded z-40"
         :class="_optionsClass"
         @click.stop="onClick"
-        v-if="state.popout"
-      >
+        v-if="state.popout">
         <slot name="options"></slot>
       </div>
     </div>

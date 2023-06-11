@@ -11,13 +11,11 @@
             :class="state.loading ? 'invisible' : ''"
             :title="state.width ? state.width.toString() + ' x ' + state.height.toString() : ''"
             :src="item.imgUrl"
-            @load="getIntrinsicSize"
-          />
+            @load="getIntrinsicSize" />
           <icon-eos-icons-loading
             class="absolute m-auto top-0 bottom-0 left-0 right-0"
             style="font-size: 2rem; color: white"
-            v-if="state.loading"
-          />
+            v-if="state.loading" />
         </a>
       </div>
       <div class="m-4 3xl:text-base text-xs" v-if="item.category || item.title">

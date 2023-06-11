@@ -13,8 +13,7 @@
       :on-crud-update="onCrudUpdate"
       :on-crud-delete="onCrudDelete"
       :on-close-editor="onCloseEditor"
-      :delete-confirm-message="'Are you sure you want to permanently delete this row? This might destroy the database.'"
-    >
+      :delete-confirm-message="'Are you sure you want to permanently delete this row? This might destroy the database.'">
       <template v-slot:editor>
         <div class="modal-row">
           <span class="w-32 mr-4">Name:</span>
@@ -31,8 +30,7 @@
             :on-get-to-options="onGetTokensToOptions"
             :on-get-tip="onGetTip"
             :on-mouseover-option="onMouseoverOption"
-            :mode="SelectDropdownMode.Input"
-          />
+            :mode="SelectDropdownMode.Input" />
         </div>
         <div class="modal-row">
           <span class="w-32 mr-4">Synonyms:</span>
@@ -46,8 +44,7 @@
             :on-get-to-options="onGetTokensToOptions"
             :on-get-tip="onGetTip"
             :on-mouseover-option="onMouseoverOption"
-            :mode="SelectDropdownMode.InputChips"
-          />
+            :mode="SelectDropdownMode.InputChips" />
         </div>
         <div class="modal-row">
           <span class="w-32 mr-4">Categories:</span>
@@ -61,8 +58,7 @@
             :on-get-to-options="onGetTokensToOptions"
             :on-get-tip="onGetTip"
             :on-mouseover-option="onMouseoverOption"
-            :mode="SelectDropdownMode.InputChips"
-          />
+            :mode="SelectDropdownMode.InputChips" />
         </div>
         <div class="modal-row">
           <span class="w-32 mr-4">Attributes:</span>
@@ -74,8 +70,7 @@
             :enable-input-chips-enter-event="false"
             :on-get="onGetAttributes"
             :on-get-to-options="onGetAttributesToOptions"
-            :mode="SelectDropdownMode.InputChips"
-          />
+            :mode="SelectDropdownMode.InputChips" />
         </div>
         <div class="modal-row" v-for="(_, chipID) in table.row.attributes" :key="chipID">
           <span class="w-32 mr-4">{{ getAttributeTitleByID(chipID) }}:</span>

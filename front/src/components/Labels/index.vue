@@ -9,8 +9,7 @@
       "
       v-for="(val, key) in labels"
       :key="key"
-      :href="searchable ? search(val) : undefined"
-    >
+      :href="searchable ? search(val) : undefined">
       {{ val }}
     </ripple-anchor>
   </div>

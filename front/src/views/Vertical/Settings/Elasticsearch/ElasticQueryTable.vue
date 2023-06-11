@@ -9,8 +9,7 @@
     :on-crud-get="onCrudGet"
     :on-crud-get-total="onCrudGetTotal"
     :on-crud-update="onCrudUpdate"
-    :on-crud-delete="onCrudDelete"
-  >
+    :on-crud-delete="onCrudDelete">
     <template v-slot:editor>
       <div class="modal-row">
         <span class="w-24 mr-4">Name:</span>
@@ -24,8 +23,7 @@
           :origin="Origin.BottomLeft"
           :state="examples"
           :on-select="onSelect"
-          :enable-input-chips-enter-event="false"
-        />
+          :enable-input-chips-enter-event="false" />
       </div>
       <div class="modal-row h-56">
         <textarea v-model="table.row.query" class="modal-textarea h-full" />

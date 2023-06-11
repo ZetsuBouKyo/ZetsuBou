@@ -8,8 +8,7 @@
           <input
             class="views-setting-cell w-72"
             type="text"
-            :placeholder="userState.frontSetting.gallery_preview_size"
-          />
+            :placeholder="userState.frontSetting.gallery_preview_size" />
         </div>
         <div class="views-setting-row">
           <div class="views-setting-cell w-64">Image preview size:</div>
@@ -20,8 +19,7 @@
           <input
             class="views-setting-cell w-72"
             type="text"
-            :placeholder="userState.frontSetting.auto_play_time_interval"
-          />
+            :placeholder="userState.frontSetting.auto_play_time_interval" />
         </div>
       </div>
     </div>

@@ -6,15 +6,13 @@
         <router-link
           class="lg:inline hidden ml-8 3xl:text-xl text-lg text-gray-300 hover:text-gray-500"
           to="/gallery"
-          @click="toTop"
-        >
+          @click="toTop">
           Gallery
         </router-link>
         <router-link
           class="lg:inline hidden ml-4 3xl:text-xl text-lg text-gray-300 hover:text-gray-500"
           to="/video"
-          @click="toTop"
-        >
+          @click="toTop">
           Video
         </router-link>
         <nav class="ml-4 flex flex-row items-center text-base justify-center w-full 3xl:text-lg">

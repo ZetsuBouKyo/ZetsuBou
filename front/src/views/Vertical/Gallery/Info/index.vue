@@ -5,8 +5,7 @@
     :state="galleryState"
     :on-overwrite="onOverwrite"
     :save-message="'Gallery tag saved'"
-    :reset-message="'Gallery tag is reset'"
-  />
+    :reset-message="'Gallery tag is reset'" />
   <editor ref="editor" />
   <section class="body-font overflow-hidden lg:mx-8 mx-2">
     <div class="px-2 py-6 mx-auto">
@@ -14,8 +13,7 @@
         <img
           alt="ecommerce"
           class="lg:w-1/2 lg:h-70v w-full object-contain object-center rounded-lg border-2 border-gray-600 px-6 py-6 animate-fade-in"
-          :src="cover"
-        />
+          :src="cover" />
         <div class="lg:w-1/2 lg:pl-10 lg:mt-0 lg:h-70v w-full mt-6 flex flex-col">
           <h3 class="text-gray-500 3xl:text-xl text-xs tracking-widest" v-if="galleryState.data.attributes.category">
             {{ galleryState.data.attributes.category }}
@@ -23,15 +21,13 @@
           <h1
             class="hover:opacity-50 text-white 3xl:text-2xl text-xl font-medium mb-1 cursor-pointer"
             v-if="galleryState.data.attributes.name"
-            @click="copy"
-          >
+            @click="copy">
             {{ galleryState.data.attributes.name }}
           </h1>
           <h2
             class="hover:opacity-50 3xl:text-xl text-sm text-gray-500 tracking-widest cursor-pointer"
             v-if="galleryState.data.attributes.raw_name"
-            @click="copy"
-          >
+            @click="copy">
             {{ galleryState.data.attributes.raw_name }}
           </h2>
           <div class="flex flex-row mt-4 mb-2 justify-center items-center">
@@ -49,20 +45,17 @@
             v-if="galleryState.data.labels && galleryState.data.labels.length > 0"
             class="mb-2 lg:h-1/4 rounded-lg border-2 border-gray-600 lg:overflow-y-scroll lg:scrollbar-gray-100-2"
             :labels="galleryState.data.labels"
-            :searchBaseUrl="'/gallery/advanced-search'"
-          />
+            :searchBaseUrl="'/gallery/advanced-search'" />
           <tags
             class="px-2 lg:overflow-y-scroll lg:scrollbar-gray-100-2 lg:h-full rounded-lg border-2 border-gray-600"
             :tags="galleryState.data.tags"
-            :searchBaseUrl="'/gallery/advanced-search'"
-          />
+            :searchBaseUrl="'/gallery/advanced-search'" />
           <control-panel :state="controlPanelState" />
         </div>
       </div>
       <div class="md:w-full mx-auto flex flex-wrap w-full animate-pulse" v-else>
         <div
-          class="lg:w-1/2 lg:h-70v w-full object-contain object-center rounded-lg border-2 border-gray-600 px-6 py-6 animate-fade-in"
-        ></div>
+          class="lg:w-1/2 lg:h-70v w-full object-contain object-center rounded-lg border-2 border-gray-600 px-6 py-6 animate-fade-in"></div>
         <div class="lg:w-1/2 lg:pl-10 lg:mt-0 lg:h-70v w-full mt-6 flex flex-col"></div>
       </div>
     </div>
@@ -70,8 +63,7 @@
       ref="confirmDelete"
       :title="'Warning'"
       :message="'Do you really want to delete this gallery?'"
-      :on-confirm="onConfirmDelete"
-    />
+      :on-confirm="onConfirmDelete" />
   </section>
 </template>
 

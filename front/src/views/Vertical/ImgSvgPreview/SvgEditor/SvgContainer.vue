@@ -7,8 +7,7 @@
     @wheel="zoom"
     @mousedown="startMoving"
     @mouseup="stopMoving"
-    @mousemove="move"
-  >
+    @mousemove="move">
     <image ref="image" class="h-app w-screen" :href="state.imgUrl" :key="state.imgUrl"></image>
     <g v-if="svgState.xTopLeft !== undefined && svgState.yTopLeft !== undefined">
       <circle :cx="svgState.xTopLeft" :cy="svgState.yTopLeft" r="2" />

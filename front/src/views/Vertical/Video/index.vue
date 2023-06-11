@@ -5,8 +5,7 @@
     :state="videoState"
     :on-overwrite="onOverwrite"
     :save-message="'Video tag saved'"
-    :reset-message="'Video tag is reset'"
-  />
+    :reset-message="'Video tag is reset'" />
   <editor ref="editor" />
   <section class="body-font overflow-hidden lg:mx-8 mx-2">
     <div class="px-2 py-6 mx-auto" v-if="videoState.data">
@@ -25,8 +24,7 @@
             </h1>
             <h1
               class="ml-auto w-32 text-center text-base text-gray-400 items-center"
-              v-if="videoState.data.attributes.width && videoState.data.attributes.height"
-            >
+              v-if="videoState.data.attributes.width && videoState.data.attributes.height">
               {{ videoState.data.attributes.width }} x {{ videoState.data.attributes.height }}
             </h1>
           </div>
@@ -64,8 +62,7 @@
                 v-if="videoState.data.labels && videoState.data.labels.length > 0"
                 class="mb-2"
                 :labels="videoState.data.labels"
-                :searchBaseUrl="'/video/advanced-search'"
-              />
+                :searchBaseUrl="'/video/advanced-search'" />
               <tags class="ml-2" :tags="videoState.data.tags" :searchBaseUrl="'/video/advanced-search'" />
             </div>
           </div>
@@ -83,8 +80,7 @@
                   alt="Not found!"
                   loading="lazy"
                   class="object-contain object-center w-full h-full block animate-fade-in"
-                  :src="item.imgUrl"
-                />
+                  :src="item.imgUrl" />
               </a>
             </div>
             <div class="flex flex-col w-40 ml-2 self-center">

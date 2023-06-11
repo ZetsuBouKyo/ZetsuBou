@@ -7,8 +7,7 @@
       v-model="state.query.keywords"
       @keypress.enter="search"
       v-if="state.defaultKeywords"
-      :list="state.autocomplete"
-    />
+      :list="state.autocomplete" />
     <input
       class="w-full border-2 border-gray-600 bg-gray-700 text-white placeholder-gray-400 h-10 pl-2 pr-16 rounded-lg focus:outline-none hidden sm:inline-block"
       type="text"
@@ -16,15 +15,13 @@
       v-model="state.query.keywords"
       @keypress.enter="search"
       v-else
-      :list="state.autocomplete"
-    />
+      :list="state.autocomplete" />
     <input
       class="w-full border-2 border-gray-300 bg-white h-10 pl-2 pr-16 rounded-lg focus:outline-none inline-block sm:hidden"
       type="search"
       v-model="state.query.keywords"
       @keypress.enter="search"
-      :list="state.autocomplete"
-    />
+      :list="state.autocomplete" />
     <search-auto-complete :id="state.autocomplete" :search-state="state" />
     <div class="absolute right-0 h-full inline-flex text-left">
       <button type="button" class="flex flex-row items-center w-full mr-1 font-medium text-gray-700 focus:outline-none">
@@ -35,8 +32,7 @@
         class="mr-1"
         :options-width-class="'w-80'"
         :options-overflow-y-class="''"
-        :on-click="onClick"
-      >
+        :on-click="onClick">
         <template v-slot:options>
           <div class="flex flex-col py-1">
             <div class="modal-row h-10">
@@ -47,8 +43,7 @@
                 :group="'search'"
                 :options-width-class="'w-44'"
                 :origin="Origin.BottomLeft"
-                :state="queryTypeState"
-              />
+                :state="queryTypeState" />
             </div>
             <div class="modal-row h-10">
               <span class="w-24 mr-4">Analyzer:</span>
@@ -58,8 +53,7 @@
                 :group="'search'"
                 :options-width-class="'w-44'"
                 :origin="Origin.BottomLeft"
-                :state="analyzerState"
-              />
+                :state="analyzerState" />
             </div>
             <div class="modal-row h-10">
               <span class="w-24 mr-4">Fuzziness:</span>
@@ -69,8 +63,7 @@
                 :group="'search'"
                 :options-width-class="'w-44'"
                 :origin="Origin.BottomLeft"
-                :state="fuzzinessState"
-              />
+                :state="fuzzinessState" />
             </div>
             <div class="modal-row h-10">
               <span class="w-24 mr-4">Boolean:</span>
@@ -80,8 +73,7 @@
                 :group="'search'"
                 :options-width-class="'w-44'"
                 :origin="Origin.BottomLeft"
-                :state="booleanTypeState"
-              />
+                :state="booleanTypeState" />
             </div>
             <div class="modal-row h-10">
               <span class="w-24 mr-4">Custom:</span>
@@ -94,8 +86,7 @@
                 :state="customSearchState"
                 :on-get="onGet"
                 :on-get-to-options="onGetToOptions"
-                :on-get-tip="onGetTip"
-              />
+                :on-get-tip="onGetTip" />
             </div>
             <div class="modal-row">
               <ripple-button class="btn-dark w-full h-10" @click="clearAll">Clear</ripple-button>

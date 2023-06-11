@@ -6,8 +6,7 @@
         class="flex-1 modal-input"
         type="text"
         :placeholder="galleryState.data.attributes.name"
-        v-model="galleryState.data.attributes.name"
-      />
+        v-model="galleryState.data.attributes.name" />
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Raw Name:</span>
@@ -15,8 +14,7 @@
         class="flex-1 modal-input"
         type="text"
         :placeholder="galleryState.data.attributes.raw_name"
-        v-model="galleryState.data.attributes.raw_name"
-      />
+        v-model="galleryState.data.attributes.raw_name" />
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Source:</span>
@@ -24,8 +22,7 @@
         class="flex-1 modal-input"
         type="text"
         :placeholder="galleryState.data.attributes.src"
-        v-model="galleryState.data.attributes.src"
-      />
+        v-model="galleryState.data.attributes.src" />
     </div>
     <div class="modal-row h-10">
       <span class="w-32 mr-4">Category:</span>
@@ -35,8 +32,7 @@
         :state="category"
         :on-get="getSettingFrontGalleryStartWithCategories"
         :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.Input"
-      />
+        :mode="SelectDropdownMode.Input" />
       <span class="w-16 mx-4">Rating:</span>
       <select-dropdown class="w-24 ml-2 3xl:w-48" :options-width-class="'w-24'" :state="rating"></select-dropdown>
     </div>
@@ -51,8 +47,7 @@
         :enable-input-chips-enter-event="false"
         :on-get="getTagTokenStartWith"
         :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.InputChips"
-      />
+        :mode="SelectDropdownMode.InputChips" />
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Tag field:</span>
@@ -65,8 +60,7 @@
         :enable-input-chips-enter-event="false"
         :on-get="getSettingFrontGalleryStartWithTagFields"
         :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.InputChips"
-      />
+        :mode="SelectDropdownMode.InputChips" />
     </div>
     <div class="modal-row" v-for="(_, field) in privateState.tagFields" :key="privateState.tagFields[field]">
       <span class="w-24 ml-8 mr-4">{{ field }}:</span>
@@ -79,8 +73,7 @@
         :enable-input-chips-enter-event="false"
         :on-get="privateState.onGets[field]"
         :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.InputChips"
-      />
+        :mode="SelectDropdownMode.InputChips" />
     </div>
     <div class="modal-row">
       <div class="flex ml-auto">

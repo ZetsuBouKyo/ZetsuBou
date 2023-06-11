@@ -7,8 +7,7 @@
       @mousemove="move"
       @mouseup="endMove"
       @mousedown="startMove"
-      @wheel="zoom"
-    />
+      @wheel="zoom" />
   </div>
   <div class="fixed left-0 bottom-0 m-4">
     <svg
@@ -18,12 +17,10 @@
       height="48px"
       viewBox="0 0 24 24"
       width="48px"
-      fill="#ffffff"
-    >
+      fill="#ffffff">
       <path d="M0 0h24v24H0V0z" fill="none" />
       <path
-        d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"
-      />
+        d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" />
     </svg>
   </div>
   <div class="flex flex-col fixed right-0 bottom-0 m-4">
@@ -38,8 +35,7 @@
         height="48px"
         viewBox="0 0 24 24"
         width="48px"
-        fill="#ffffff"
-      >
+        fill="#ffffff">
         <path d="M0 0h24v24H0V0z" fill="none" />
         <path d="M15.61 7.41L14.2 6l-6 6 6 6 1.41-1.41L11.03 12l4.58-4.59z" />
       </svg>
@@ -51,8 +47,7 @@
         height="48px"
         viewBox="0 0 24 24"
         width="48px"
-        fill="#FFFFFF"
-      >
+        fill="#FFFFFF">
         <path d="M0 0h24v24H0V0z" fill="none" />
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
       </svg>
@@ -64,11 +59,9 @@
         height="48px"
         viewBox="0 0 24 24"
         width="48px"
-        fill="#FFFFFF"
-      >
+        fill="#FFFFFF">
         <path
-          d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M11,16H9V8h2V16z M15,16h-2V8h2V16z"
-        />
+          d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M11,16H9V8h2V16z M15,16h-2V8h2V16z" />
       </svg>
       <svg
         class="cursor-pointer hover:opacity-50"
@@ -77,8 +70,7 @@
         height="48px"
         viewBox="0 0 24 24"
         width="48px"
-        fill="#ffffff"
-      >
+        fill="#ffffff">
         <path d="M0 0h24v24H0V0z" fill="none" />
         <path d="M10.02 6L8.61 7.41 13.19 12l-4.58 4.59L10.02 18l6-6-6-6z" />
       </svg>

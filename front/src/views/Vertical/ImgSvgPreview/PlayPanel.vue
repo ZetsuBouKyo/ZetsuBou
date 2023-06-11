@@ -6,28 +6,24 @@
           class="cursor-pointer hover:opacity-50 opacity-100 my-2"
           style="font-size: 1.5rem; color: white"
           v-if="!state.isBookmark"
-          @click="addBookmark"
-        />
+          @click="addBookmark" />
         <icon-mdi-bookmark
           class="cursor-pointer hover:opacity-50 opacity-100 my-2"
           style="font-size: 1.5rem; color: white"
           v-else
-          @click="deleteBookmark"
-        />
+          @click="deleteBookmark" />
       </div>
       <icon-mdi-file-edit-outline
         class="cursor-pointer hover:opacity-50 opacity-100 my-2"
         style="font-size: 1.5rem; color: white"
-        @click="tagger.toggleTagger"
-      />
+        @click="tagger.toggleTagger" />
     </div>
   </div>
   <div class="fixed left-0 bottom-3 bg-gray-900 bg-opacity-50 rounded-lg m-1 p-1 flex">
     <icon-ri-arrow-go-back-fill
       class="cursor-pointer hover:opacity-50 opacity-100"
       style="font-size: 1.5rem; color: white"
-      @click="back"
-    />
+      @click="back" />
   </div>
   <div class="flex flex-col fixed right-0 bottom-0 m-4 bg-gray-900 bg-opacity-50 rounded-lg p-2">
     <div class="flex mx-auto text-white">
@@ -40,25 +36,21 @@
       <icon-ic-round-keyboard-arrow-left
         class="cursor-pointer hover:opacity-50"
         style="font-size: 2rem; color: white"
-        @click="previousPage"
-      />
+        @click="previousPage" />
       <icon-ic-sharp-play-circle-filled
         class="cursor-pointer hover:opacity-50"
         style="font-size: 2rem; color: white"
         @click="startPlay"
-        v-if="!state.isPlay"
-      />
+        v-if="!state.isPlay" />
       <icon-ic-round-stop-circle
         class="cursor-pointer hover:opacity-50"
         style="font-size: 2rem; color: white"
         @click="stopPlay"
-        v-else
-      />
+        v-else />
       <icon-ic-round-keyboard-arrow-right
         class="cursor-pointer hover:opacity-50"
         style="font-size: 2rem; color: white"
-        @click="nextPage"
-      />
+        @click="nextPage" />
     </div>
   </div>
 </template>

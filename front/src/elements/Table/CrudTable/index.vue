@@ -7,8 +7,7 @@
         ? 'Are you sure you want to permanently delete this row?'
         : deleteConfirmMessage
     "
-    :on-confirm="onConfirm"
-  />
+    :on-confirm="onConfirm" />
   <div class="flex flex-row mx-4 my-2 items-center" v-if="!isEmpty(search)">
     <select-dropdown class="w-64 h-10 mr-4" :options-width-class="'w-64'" :state="searchFieldState" />
     <select-dropdown
@@ -20,8 +19,7 @@
       :on-get-to-options="onSearchToOptions"
       :on-get-tip="onSearchGetTip"
       :on-mouseover-option="onSearchMouseoverOption"
-      :mode="SelectDropdownMode.Input"
-    />
+      :mode="SelectDropdownMode.Input" />
   </div>
   <modal
     ref="editor"
@@ -29,8 +27,7 @@
     :is-scrollable="isEditorScrollable"
     :on-open="onOpenEditor"
     :on-close="onCloseEditor"
-    :class="editorClass"
-  >
+    :class="editorClass">
     <slot name="editor"></slot>
     <div class="modal-row-reverse">
       <button class="flex ml-2 btn btn-primary" @click="state.editor.handler">Save</button>
@@ -61,8 +58,7 @@
               :color="ButtonColorEnum.Primary"
               :row="row"
               :onClick="update"
-              v-if="isRowEditable"
-            >
+              v-if="isRowEditable">
               <template v-slot:icon><icon-mdi-file-edit-outline /></template>
             </crud-table-button>
             <crud-table-button
@@ -70,8 +66,7 @@
               :color="ButtonColorEnum.Danger"
               :row="row"
               :onClick="confirmRemove"
-              v-if="isRowDeletable"
-            >
+              v-if="isRowDeletable">
               <template v-slot:icon><icon-mdi-trash-can-outline /></template>
             </crud-table-button>
           </td>
@@ -87,8 +82,7 @@
       class="ml-auto mr-4"
       v-if="state.pagination"
       :pagination="state.pagination"
-      :key="state.pagination.current"
-    />
+      :key="state.pagination.current" />
   </div>
 </template>
 

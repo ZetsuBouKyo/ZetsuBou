@@ -1,3 +1,12 @@
+<template>
+  <div
+    v-if="pagination && pagination.pages.length > 0"
+    class="flex flex-col items-center bg-opacity-75 z-40 3xl:text-xl">
+    <span class="mt-5 text-gray-200" v-if="pagination.totalItems">Total: {{ pagination.totalItems }}</span>
+    <pagination-base :pagination="pagination" />
+  </div>
+</template>
+
 <script lang="ts">
 import { PropType, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
@@ -32,13 +41,3 @@ export default {
   },
 };
 </script>
-
-<template>
-  <div
-    v-if="pagination && pagination.pages.length > 0"
-    class="flex flex-col items-center bg-opacity-75 z-40 3xl:text-xl"
-  >
-    <span class="mt-5 text-gray-200" v-if="pagination.totalItems">Total: {{ pagination.totalItems }}</span>
-    <pagination-base :pagination="pagination" />
-  </div>
-</template>

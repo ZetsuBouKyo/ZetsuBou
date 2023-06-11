@@ -11,8 +11,7 @@
       :on-crud-get-total="onCrudGetTotal"
       :on-crud-update="onCrudUpdate"
       :on-crud-delete="onCrudDelete"
-      :on-close-editor="onCloseEditor"
-    >
+      :on-close-editor="onCloseEditor">
       <template v-slot:editor>
         <div class="modal-row">
           <span class="w-32 mr-4">Name:</span>
@@ -25,8 +24,7 @@
             :options-width-class="'w-64'"
             :state="numerator"
             :on-get="onGet"
-            :on-get-to-options="onGetToOptions"
-          ></select-dropdown>
+            :on-get-to-options="onGetToOptions"></select-dropdown>
           <ripple-button class="ml-2 btn btn-primary" @click="openQueryPage"> Add </ripple-button>
         </div>
         <div class="modal-row">
@@ -36,8 +34,7 @@
             :options-width-class="'w-64'"
             :state="denominator"
             :on-get="onGet"
-            :on-get-to-options="onGetToOptions"
-          ></select-dropdown>
+            :on-get-to-options="onGetToOptions"></select-dropdown>
         </div>
       </template>
     </crud-table>

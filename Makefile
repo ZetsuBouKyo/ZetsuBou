@@ -1,4 +1,3 @@
--include .env
 -include ./etc/settings.env
 export
 

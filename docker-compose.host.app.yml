@@ -54,8 +54,8 @@ services:
       - 9000:9000
       - 9001:9001
     environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-admin}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-wJalrXUtnFEMI}
+      - MINIO_ROOT_USER=${ZETSUBOU_STORAGE_S3_AWS_ACCESS_KEY_ID:-admin}
+      - MINIO_ROOT_PASSWORD=${ZETSUBOU_STORAGE_S3_AWS_SECRET_ACCESS_KEY:-wJalrXUtnFEMI}
     volumes:
       # - postgres_data:/var/lib/postgresql/data
       - ${MINIO_VOLUME:-./dev/volumes/minio}:/data

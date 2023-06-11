@@ -2,7 +2,7 @@ import os
 from enum import Enum
 from pathlib import Path
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, Field
 from pydantic.networks import EmailStr
 
 from back.model.base import SourceProtocolEnum
@@ -15,6 +15,7 @@ else:
     DEFAULT_SETTING_PATH = Path(_DEFAULT_SETTING_PATH)
 
 ELASTIC_INDEX_PREFIX = "zetsubou"
+TITLE_PREFIX = "ZetsuBou"
 
 if not DEFAULT_SETTING_PATH.exists():
     DEFAULT_SETTING_PATH = None
@@ -31,24 +32,29 @@ class AppMode(str, Enum):
 
 
 class Setting(BaseSettings):
-    app_host: str = "0.0.0.0"
-    app_port: int = 3000
+    app_host: str = Field(
+        default="0.0.0.0", title=f"{TITLE_PREFIX} Host", exmaple="0.0.0.0"
+    )
+    app_port: int = Field(default=3000, title=f"{TITLE_PREFIX} Port", example="3000")
     app_mode: AppMode = AppMode.STANDALONE
-    app_timezone: str = "UTC"
+    app_timezone: str = Field(default="UTC", title="Timezone", example="Asia/Taipei")
 
-    app_title: str = "ZetsuBou"
+    app_title: str = Field(default="ZetsuBou")
     app_front: str = "./front/dist"
     app_favicon: str = "/favicon.ico"
     app_statics: str = "./statics"
 
-    app_docs_swagger_js_url: str = (
-        "https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js"
+    app_docs_swagger_js_url: str = Field(
+        default="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js",
+        example="/statics/swagger-ui-bundle.js",
     )
-    app_docs_swagger_css_url: str = (
-        "https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css"
+    app_docs_swagger_css_url: str = Field(
+        default="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css",
+        example="/statics/swagger-ui.css",
     )
-    app_docs_redoc_js_url: str = (
-        "https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"
+    app_docs_redoc_js_url: str = Field(
+        default="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js",
+        example="/statics/redoc.standalone.js",
     )
 
     app_user_gallery_preview_size: int = 40
@@ -74,7 +80,10 @@ class Setting(BaseSettings):
 
     app_security_algorithm: str = "HS256"
     app_security_expired: int = 200  # minutes
-    app_security_secret: str = "VadwSj8umrbeG8ro"
+    app_security_secret: str = Field(
+        default="VadwSj8umrbeG8ro",
+        description="Used to encrypt token. Must be changed.",
+    )
 
     app_logging_level: str = "WARNING"
     app_logging_formatter_fmt: str = "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"  # noqa
@@ -91,10 +100,13 @@ class Setting(BaseSettings):
     gallery_imgs_fname: str = "imgs.json"
 
     database_type: DatabaseType = DatabaseType.POSTGRESQL
-    database_url: str = "postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou"
+    database_url: str = Field(
+        default=None,
+        example="postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou",
+    )
     database_echo: bool = False
 
-    elastic_urls: str = "http://localhost:9200"
+    elastic_urls: str = Field(default=None, example="http://localhost:9200")
     elastic_size: int = 40
     elastic_index_gallery: str = f"{ELASTIC_INDEX_PREFIX}-gallery"
     elastic_index_video: str = f"{ELASTIC_INDEX_PREFIX}-video"
@@ -111,15 +123,15 @@ class Setting(BaseSettings):
     storage_cache: str = "zetsubou"
     storage_backup: str = "backup"
 
-    storage_s3_aws_access_key_id: str = "admin"
-    storage_s3_aws_secret_access_key: str = "wJalrXUtnFEMI"
-    storage_s3_endpoint_url: str = "http://localhost:9000"
+    storage_s3_aws_access_key_id: str = Field(default=None, example="admin")
+    storage_s3_aws_secret_access_key: str = Field(default=None, example="wJalrXUtnFEMI")
+    storage_s3_endpoint_url: str = Field(default=None, example="http://localhost:9000")
 
-    airflow_host: str = "http://localhost:8080"
-    airflow_username: str = "airflow"
-    airflow_password: str = "airflow"
+    airflow_host: str = Field(default=None, example="http://localhost:8080")
+    airflow_username: str = Field(default=None, example="airflow")
+    airflow_password: str = Field(default=None, example="airflow")
 
-    redis_url: str = "redis://localhost:6380/0"
+    redis_url: str = Field(default=None, example="redis://localhost:6380/0")
 
     class Config:
         env_prefix = "zetsubou_"

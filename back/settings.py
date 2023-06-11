@@ -36,7 +36,7 @@ class Setting(BaseSettings):
         default="0.0.0.0", title=f"{TITLE_PREFIX} Host", exmaple="0.0.0.0"
     )
     app_port: int = Field(default=3000, title=f"{TITLE_PREFIX} Port", example="3000")
-    app_mode: AppMode = AppMode.STANDALONE
+    app_mode: AppMode = AppMode.CLUSTER
     app_timezone: str = Field(default="UTC", title="Timezone", example="Asia/Taipei")
 
     app_title: str = Field(default="ZetsuBou")

@@ -5,11 +5,11 @@ from airflow.operators.bash import BashOperator
 
 from model import Task
 
-python_path = "/opt/airflow/zetsubou-venv/.venv/bin/python3"
-cli_fname = "cli.py"
-base_command = f"{python_path} {cli_fname}"
-
-cwd = "/opt/airflow/zetsubou"
+PYTHON_PATH = "/opt/airflow/zetsubou-venv/.venv/bin/python3"
+CLI_FNAME = "cli.py"
+BASE_COMMAND = f"{PYTHON_PATH} {CLI_FNAME}"
+ZETSUBOU_SETTING_PATH = "/opt/airflow/zetsubou/etc/settings.airflow.env"
+CWD = "/opt/airflow/zetsubou"
 
 
 tasks = [
@@ -104,10 +104,13 @@ for task in tasks:
     with DAG(dag_id=task.dag_id, **task.dag_kwargs) as dag:
         command = BashOperator(
             task_id=task.dag_id,
-            cwd=cwd,
-            bash_command=f"{base_command} {task.sub_command} "
+            cwd=CWD,
+            bash_command=f"{BASE_COMMAND} {task.sub_command} "
             + '{{ dag_run.conf.get("args", "") }}',
-            env={"PYTHONPATH": python_path},
+            env={
+                "PYTHONPATH": PYTHON_PATH,
+                "ZETSUBOU_SETTING_PATH": ZETSUBOU_SETTING_PATH,
+            },
         )
 
     globals()[task.dag_id] = dag

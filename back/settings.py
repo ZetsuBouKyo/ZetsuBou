@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 from pathlib import Path
 
@@ -6,11 +7,17 @@ from pydantic.networks import EmailStr
 
 from back.model.base import SourceProtocolEnum
 
-default_setting_path = Path("etc", "settings.env")
-elastic_index_prefix = "zetsubou"
+_DEFAULT_SETTING_PATH = os.getenv("ZETSUBOU_SETTING_PATH", default=None)
 
-if not default_setting_path.exists():
-    default_setting_path = None
+if _DEFAULT_SETTING_PATH is None:
+    DEFAULT_SETTING_PATH = Path("etc", "settings.env")
+else:
+    DEFAULT_SETTING_PATH = Path(_DEFAULT_SETTING_PATH)
+
+ELASTIC_INDEX_PREFIX = "zetsubou"
+
+if not DEFAULT_SETTING_PATH.exists():
+    DEFAULT_SETTING_PATH = None
 
 
 class DatabaseType(str, Enum):
@@ -89,9 +96,9 @@ class Setting(BaseSettings):
 
     elastic_urls: str = "http://localhost:9200"
     elastic_size: int = 40
-    elastic_index_gallery: str = f"{elastic_index_prefix}-gallery"
-    elastic_index_video: str = f"{elastic_index_prefix}-video"
-    elastic_index_tag: str = f"{elastic_index_prefix}-tag"
+    elastic_index_gallery: str = f"{ELASTIC_INDEX_PREFIX}-gallery"
+    elastic_index_video: str = f"{ELASTIC_INDEX_PREFIX}-video"
+    elastic_index_tag: str = f"{ELASTIC_INDEX_PREFIX}-tag"
 
     @property
     def elastic_hosts(cls):
@@ -118,4 +125,4 @@ class Setting(BaseSettings):
         env_prefix = "zetsubou_"
 
 
-setting = Setting(_env_file=str(default_setting_path))
+setting = Setting(_env_file=str(DEFAULT_SETTING_PATH))

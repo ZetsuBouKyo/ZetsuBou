@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col w-2/3 mx-auto mt-4">
+  <div class="layout-container">
     <div class="flex"></div>
     <div class="flex flex-row">
       <div class="flex flex-col w-1/6 divide-y divide-gray-500">

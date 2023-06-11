@@ -9,6 +9,7 @@
 @import "@/elements/Modal/modal.css";
 @import "@/elements/Table/table.css";
 
+@import "@/layouts/layout.css";
 @import "@/layouts/Setting/setting.css";
 
 @layer base {

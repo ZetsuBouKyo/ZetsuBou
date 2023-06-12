@@ -2,11 +2,9 @@ from back.crud.async_gallery import get_crud_async_gallery
 from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
 from back.schema.basic import Message
-from back.settings import setting
 from fastapi import APIRouter
 
 router = APIRouter()
-app_mode = setting.app_mode
 
 
 @router.delete(

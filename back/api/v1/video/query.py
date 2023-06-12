@@ -14,7 +14,7 @@ from ..utils import get_tags_and_labels_by_query_params
 
 router = APIRouter()
 
-elastic_size = setting.elastic_size
+ELASTIC_SIZE = setting.elastic_size
 
 
 @router.get(
@@ -28,7 +28,7 @@ async def get_random(
     keywords: str = "",
     page: int = 1,
     fuzziness: int = 0,
-    size: int = elastic_size,
+    size: int = ELASTIC_SIZE,
     boolean: QueryBoolean = QueryBoolean.SHOULD,
 ) -> Videos:
     keywords = unquote(keywords)
@@ -48,7 +48,7 @@ async def get_random(
 async def get_advanced_search(
     request: Request,
     page: int = 1,
-    size: int = elastic_size,
+    size: int = ELASTIC_SIZE,
     keywords: str = None,
     keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     keywords_fuzziness: int = 0,
@@ -146,7 +146,7 @@ async def get_search(
     keywords: str = "",
     page: int = 1,
     fuzziness: int = 0,
-    size: int = elastic_size,
+    size: int = ELASTIC_SIZE,
     boolean: QueryBoolean = QueryBoolean.SHOULD,
 ) -> Videos:
     user_id = token.sub

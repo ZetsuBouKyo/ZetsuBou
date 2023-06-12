@@ -22,6 +22,8 @@ from ..base import (
     get_rows_order_by_id,
 )
 
+TEMPLATE_FRONT_SETTING = setting.app_user_front_setting
+
 
 def get_user_hashed_password(user: BaseModel) -> dict:
     user = user.dict()
@@ -42,7 +44,7 @@ class CrudUser(UserBase):
                 await session.flush()
                 created_user = UserCreated(**instance.__dict__)
 
-                template_front_setting = setting.app_user_front_setting
+                template_front_setting = TEMPLATE_FRONT_SETTING
                 template_front_setting["user_id"] = created_user.id
                 session.add(UserFrontSettingBase(**template_front_setting))
         return created_user

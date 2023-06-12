@@ -3,7 +3,6 @@ from back.model.scope import ScopeEnum
 from back.settings import Setting, setting
 from fastapi import APIRouter
 
-app_mode = setting.app_mode
 router = APIRouter()
 
 

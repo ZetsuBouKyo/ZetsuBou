@@ -7,9 +7,9 @@ from pydantic import BaseModel
 
 from back.settings import setting
 
-expired = setting.app_security_expired
-secret = setting.app_security_secret
-algorithm = setting.app_security_algorithm
+EXPIRED = setting.app_security_expired
+SECRET = setting.app_security_secret
+ALGORITHM = setting.app_security_algorithm
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -25,12 +25,12 @@ def create_access_token(
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=expired)
+        expire = datetime.utcnow() + timedelta(minutes=EXPIRED)
     to_encode = {"exp": expire, "sub": str(subject), "scopes": scopes}
     encoded_jwt = jwt.encode(
         to_encode,
-        secret,
-        algorithm=algorithm,
+        SECRET,
+        algorithm=ALGORITHM,
     )
     return encoded_jwt
 

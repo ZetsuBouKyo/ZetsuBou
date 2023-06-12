@@ -6,14 +6,14 @@ from back.model.elasticsearch import ElasticsearchHealthResponse
 from back.settings import setting
 from back.utils.url import get_host
 
-airflow_host = setting.airflow_host
-elasticsearch_hosts = setting.elastic_hosts
+AIRFLOW_HOST = setting.airflow_host
+ELASTICSEARCH_HOSTS = setting.elastic_hosts
 
 
 async def is_airflow_healthy() -> bool:
     healthy = "healthy"
 
-    host = get_host(airflow_host, endswith_slash=True)
+    host = get_host(AIRFLOW_HOST, endswith_slash=True)
     url = urljoin(host, "health")
 
     print(f"airflow url: {url}")
@@ -33,7 +33,7 @@ async def is_airflow_healthy() -> bool:
 
 
 async def is_elasticsearch_healthy() -> bool:
-    for host in elasticsearch_hosts:
+    for host in ELASTICSEARCH_HOSTS:
         host = get_host(host, endswith_slash=True)
         url = urljoin(host, "_cluster/health?pretty")
         print(f"elasticsearch url: {url}")

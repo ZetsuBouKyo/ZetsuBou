@@ -17,6 +17,9 @@ from command.utils import sync
 ELASTICSEARCH_SIZE = setting.elastic_size
 ELASTICSEARCH_INDEX_GALLERY = setting.elastic_index_gallery
 
+GALLERY_DIR_FNAME = setting.gallery_dir_fname
+GALLERY_TAG_FNAME = setting.gallery_tag_fname
+
 _help = """
 Manipulate the Galleries.
 """
@@ -44,8 +47,8 @@ def clone_tags(
         return
 
     for gallery_path in home.iterdir():
-        gallery_tag_home_path = gallery_path / setting.gallery_dir_fname
-        gallery_tag_path = gallery_tag_home_path / setting.gallery_tag_fname
+        gallery_tag_home_path = gallery_path / GALLERY_DIR_FNAME
+        gallery_tag_path = gallery_tag_home_path / GALLERY_TAG_FNAME
         gallery_tag_path = str(gallery_tag_path)
         new_gallery_tag_path = gallery_tag_home_path / fname
         new_gallery_tag_path = str(new_gallery_tag_path)

@@ -23,19 +23,18 @@ from back.model.tag import (
 from back.session.async_db import async_session
 from back.session.async_elasticsearch import async_elasticsearch
 from back.settings import setting
+from elasticsearch import AsyncElasticsearch
+from elasticsearch.exceptions import NotFoundError
+from elasticsearch.helpers import async_bulk, async_scan
 from fastapi import HTTPException
 from sqlalchemy import and_, delete, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from elasticsearch import AsyncElasticsearch
-from elasticsearch.exceptions import NotFoundError
-from elasticsearch.helpers import async_bulk, async_scan
-
-index = setting.elastic_index_tag
-batch_size = 300
-size = 100
-es_size = setting.elastic_size
+INDEX = setting.elastic_index_tag
+BATCH_SIZE = 300
+SIZE = 100
+ES_SIZE = setting.elastic_size
 ELASTICSEARCH_INDEX_TAG = setting.elastic_index_tag
 
 
@@ -67,9 +66,9 @@ class CrudTag:
     def __init__(
         self,
         async_elasticsearch: AsyncElasticsearch = async_elasticsearch,
-        index: str = index,
-        size: int = size,
-        batch_size: int = batch_size,
+        index: str = INDEX,
+        size: int = SIZE,
+        batch_size: int = BATCH_SIZE,
     ):
         self.async_elasticsearch = async_elasticsearch
         self.index = index

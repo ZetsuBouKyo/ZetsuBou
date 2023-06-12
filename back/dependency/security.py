@@ -11,8 +11,8 @@ from jose.exceptions import ExpiredSignatureError
 from jose.jwt import JWTError
 from pydantic import BaseModel, ValidationError
 
-secret = setting.app_security_secret
-algorithm = setting.app_security_algorithm
+SECRET = setting.app_security_secret
+ALGORITHM = setting.app_security_algorithm
 
 _scopes = {
     "admin": "admin",
@@ -66,8 +66,8 @@ def get_not_authenticated_exception(scopes: str, detail: str = None):
 def decode_token(token: str) -> Token:
     payload = jwt.decode(
         token,
-        secret,
-        algorithms=[algorithm],
+        SECRET,
+        algorithms=[ALGORITHM],
     )
     return Token(**payload)
 

@@ -15,8 +15,7 @@ from ..utils import get_tags_and_labels_by_query_params
 
 router = APIRouter()
 
-host = setting.app_host
-elastic_size = setting.elastic_size
+ELASTIC_SIZE = setting.elastic_size
 
 
 def get_body(query: CustomQuery):
@@ -59,7 +58,7 @@ async def get_random(
     keywords: str = "",
     page: int = 1,
     fuzziness: int = 0,
-    size: int = elastic_size,
+    size: int = ELASTIC_SIZE,
     boolean: QueryBoolean = QueryBoolean.SHOULD,
 ) -> Galleries:
     keywords = unquote(keywords)
@@ -90,7 +89,7 @@ async def post_custom_search(query: CustomQuery = Body(..., examples=query_examp
 async def get_advanced_search(
     request: Request,
     page: int = 1,
-    size: int = elastic_size,
+    size: int = ELASTIC_SIZE,
     keywords: str = None,
     keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     keywords_fuzziness: int = 0,
@@ -176,7 +175,7 @@ async def get_search(
     keywords: str = "",
     page: int = 1,
     fuzziness: int = 0,
-    size: int = elastic_size,
+    size: int = ELASTIC_SIZE,
     boolean: QueryBoolean = QueryBoolean.SHOULD,
 ) -> Galleries:
     user_id = token.sub

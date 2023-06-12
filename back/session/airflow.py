@@ -8,11 +8,11 @@ import httpx
 from back.model.airflow import AirflowDagRunResponse, AirflowDagRunsResponse
 from back.settings import setting
 
-app_title = setting.app_title.lower()
-airflow_host = setting.airflow_host
-airflow_username = setting.airflow_username
-airflow_password = setting.airflow_password
-auth = (airflow_username, airflow_password)
+APP_TITLE = setting.app_title.lower()
+AIRFLOW_HOST = setting.airflow_host
+AIRFLOW_USERNAME = setting.airflow_username
+AIRFLOW_PASSWORD = setting.airflow_password
+AUTH = (AIRFLOW_USERNAME, AIRFLOW_PASSWORD)
 
 headers = {
     "accept": "application/json",
@@ -25,32 +25,32 @@ dags = defaultdict(lambda: None)
 async def trigger_new_dag_run(
     dag_id: str, logical_date: str = None, conf: dict = {}
 ) -> AirflowDagRunResponse:
-    url = urljoin(airflow_host, f"/api/v1/dags/{dag_id}")
+    url = urljoin(AIRFLOW_HOST, f"/api/v1/dags/{dag_id}")
     data = {"is_paused": False}
     data = json.dumps(data)
     async with httpx.AsyncClient() as client:
-        resp = await client.patch(url, headers=headers, auth=auth, data=data)
+        resp = await client.patch(url, headers=headers, auth=AUTH, data=data)
 
     now = datetime.now(timezone.utc).isoformat()
     if logical_date is None:
         logical_date = now
     data = {
         "conf": conf,
-        "dag_run_id": f"{app_title}__{now}",
+        "dag_run_id": f"{APP_TITLE}__{now}",
         "logical_date": logical_date,
     }
     data = json.dumps(data)
-    url = urljoin(airflow_host, f"/api/v1/dags/{dag_id}/dagRuns")
+    url = urljoin(AIRFLOW_HOST, f"/api/v1/dags/{dag_id}/dagRuns")
     async with httpx.AsyncClient() as client:
-        resp = await client.post(url, headers=headers, auth=auth, data=data)
+        resp = await client.post(url, headers=headers, auth=AUTH, data=data)
 
     return AirflowDagRunResponse(**resp.json())
 
 
 async def get_dag_run(dag_id: str, dag_run_id: str) -> AirflowDagRunResponse:
-    url = urljoin(airflow_host, f"/api/v1/dags/{dag_id}/dagRuns/{dag_run_id}")
+    url = urljoin(AIRFLOW_HOST, f"/api/v1/dags/{dag_id}/dagRuns/{dag_run_id}")
     async with httpx.AsyncClient() as client:
-        resp = await client.get(url, headers=headers, auth=auth)
+        resp = await client.get(url, headers=headers, auth=AUTH)
     return AirflowDagRunResponse(**resp.json())
 
 
@@ -64,7 +64,7 @@ async def get_dag_runs(
     if order_by is not None:
         data["order_by"] = order_by
     data = json.dumps(data)
-    url = urljoin(airflow_host, "/api/v1/dags/~/dagRuns/list")
+    url = urljoin(AIRFLOW_HOST, "/api/v1/dags/~/dagRuns/list")
     async with httpx.AsyncClient() as client:
-        resp = await client.post(url, headers=headers, auth=auth, data=data)
+        resp = await client.post(url, headers=headers, auth=AUTH, data=data)
     return AirflowDagRunsResponse(**resp.json())

@@ -4,7 +4,8 @@ from typing import List
 import pytz
 from back.settings import setting
 
-timezone = setting.app_timezone
+TIMEZONE = setting.app_timezone
+
 datetime_format_db = r"%Y-%m-%dT%H:%M:%S.%f"
 datetime_format = r"%Y-%m-%dT%H:%M:%S.%f%z"
 datetime_format_no_f = r"%Y-%m-%dT%H:%M:%S%z"
@@ -32,10 +33,10 @@ def is_isoformat_with_timezone(date: str) -> str:
 
 
 def get_isoformat_with_timezone(date: str) -> str:
-    z = pytz.timezone(timezone)
+    z = pytz.timezone(TIMEZONE)
     date = iso2datetime(date)
     return z.localize(date).isoformat()
 
 
-def get_now(tz: str = timezone) -> str:
+def get_now(tz: str = TIMEZONE) -> str:
     return datetime.now(pytz.timezone(tz)).isoformat()

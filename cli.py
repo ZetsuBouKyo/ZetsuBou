@@ -34,8 +34,8 @@ try:
 except ModuleNotFoundError:
     plugin = None
 
-dir_fname = setting.gallery_dir_fname
-tag_fname = setting.gallery_tag_fname
+DIR_FNAME = setting.gallery_dir_fname
+TAG_FNAME = setting.gallery_tag_fname
 
 _help = """
 The CLI for ZetsuBou
@@ -81,7 +81,7 @@ def batch_pdf2img(
         print(f"pdf: {fpath}")
         new_fname = str(uuid4())
         new_fpath = dest / new_fname / fpath.name
-        tag_path = dest / new_fname / dir_fname / tag_fname
+        tag_path = dest / new_fname / DIR_FNAME / TAG_FNAME
         os.makedirs(tag_path.parent, exist_ok=True)
         gallery = GalleryModel(
             **{

@@ -1,12 +1,12 @@
-from back.model.scope import ScopeEnum
 from back.dependency.security import api_security
+from back.model.scope import ScopeEnum
 from back.settings import AppMode, setting
 from fastapi import APIRouter
 
 from .airflow import router as airflow
 from .standalone import router as standalone
 
-app_mode = setting.app_mode
+APP_MODE = setting.app_mode
 
 router = APIRouter()
 
@@ -17,5 +17,5 @@ router.include_router(
     dependencies=[api_security(ScopeEnum.task_cmd.name)],
 )
 
-if app_mode == AppMode.STANDALONE:
+if APP_MODE == AppMode.STANDALONE:
     router.include_router(standalone, prefix="/standalone")

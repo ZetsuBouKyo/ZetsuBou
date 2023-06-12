@@ -6,12 +6,13 @@ from back.settings import setting
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 
+FRONT = setting.app_front
+
 router = APIRouter()
 public_router = APIRouter()
 private_router = APIRouter(dependencies=[view_security()])
 
-front = setting.app_front
-templates = Jinja2Templates(directory=front)
+templates = Jinja2Templates(directory=FRONT)
 
 
 def index(request: Request):
@@ -154,6 +155,8 @@ async def video_advanced_search(
 ):
     return index(request)
 
+
+private_router.add_api_route("/initialization", index)
 
 private_router.add_api_route("/bookmark", index)
 private_router.add_api_route("/bookmark/gallery", table)

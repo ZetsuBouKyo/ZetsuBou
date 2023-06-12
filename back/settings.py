@@ -9,12 +9,17 @@ from back.model.base import SourceProtocolEnum
 
 _DEFAULT_SETTING_PATH = os.getenv("ZETSUBOU_SETTING_PATH", default=None)
 
+DEFAULT_SETTING_HOME = "./etc"
+DEFAULT_SETTING_NAME = "settings.env"
+DEFAULT_AIRFLOW_SETTING_NAME = "settings.airflow.env"
+
 if _DEFAULT_SETTING_PATH is None:
-    DEFAULT_SETTING_PATH = Path("etc", "settings.env")
+    DEFAULT_SETTING_PATH = Path(DEFAULT_SETTING_HOME) / DEFAULT_SETTING_NAME
 else:
     DEFAULT_SETTING_PATH = Path(_DEFAULT_SETTING_PATH)
 
 ELASTIC_INDEX_PREFIX = "zetsubou"
+ENV_PREFIX = "zetsubou_"
 TITLE_PREFIX = "ZetsuBou"
 
 if not DEFAULT_SETTING_PATH.exists():
@@ -38,6 +43,9 @@ class Setting(BaseSettings):
     app_port: int = Field(default=3000, title=f"{TITLE_PREFIX} Port", example="3000")
     app_mode: AppMode = AppMode.CLUSTER
     app_timezone: str = Field(default="UTC", title="Timezone", example="Asia/Taipei")
+
+    app_docs: bool = True
+    app_redoc: bool = True
 
     app_title: str = Field(default="ZetsuBou")
     app_front: str = "./front/dist"
@@ -134,7 +142,7 @@ class Setting(BaseSettings):
     redis_url: str = Field(default=None, example="redis://localhost:6380/0")
 
     class Config:
-        env_prefix = "zetsubou_"
+        env_prefix = ENV_PREFIX
 
 
 setting = Setting(_env_file=str(DEFAULT_SETTING_PATH))

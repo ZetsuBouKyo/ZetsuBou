@@ -1,3 +1,4 @@
+import httpx
 from back.db.crud import CrudStorageMinio
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.session.storage.async_s3 import AsyncS3Session
@@ -5,6 +6,18 @@ from back.settings import setting
 from fastapi import HTTPException
 
 STORAGE_PROTOCOL = setting.storage_protocol
+STORAGE_S3_ENDPOINT_URL = setting.storage_s3_endpoint_url
+
+
+async def ping_storage() -> bool:
+    if STORAGE_PROTOCOL == SourceProtocolEnum.MINIO.value:
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.get(STORAGE_S3_ENDPOINT_URL)
+        except httpx.ConnectError:
+            return False
+        return True
+    return False
 
 
 async def get_storage_session_by_source(

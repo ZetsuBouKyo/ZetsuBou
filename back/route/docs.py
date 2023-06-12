@@ -2,13 +2,13 @@ from back.settings import setting
 from fastapi import APIRouter
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 
-title = setting.app_title
+TITLE = setting.app_title
 
-favicon_url = setting.app_favicon
+FAVICON_URL = setting.app_favicon
 
-swagger_js_url = setting.app_docs_swagger_js_url
-swagger_css_url = setting.app_docs_swagger_css_url
-redoc_js_url = setting.app_docs_redoc_js_url
+SWAGGER_JS_URL = setting.app_docs_swagger_js_url
+SWAGGER_CSS_URL = setting.app_docs_swagger_css_url
+REDOC_JS_URL = setting.app_docs_redoc_js_url
 
 
 router = APIRouter()
@@ -18,10 +18,10 @@ router = APIRouter()
 def overridden_swagger():
     return get_swagger_ui_html(
         openapi_url="/openapi.json",
-        swagger_js_url=swagger_js_url,
-        swagger_css_url=swagger_css_url,
-        title=title,
-        swagger_favicon_url=favicon_url,
+        swagger_js_url=SWAGGER_JS_URL,
+        swagger_css_url=SWAGGER_CSS_URL,
+        title=TITLE,
+        swagger_favicon_url=FAVICON_URL,
     )
 
 
@@ -29,7 +29,7 @@ def overridden_swagger():
 def overridden_redoc():
     return get_redoc_html(
         openapi_url="/openapi.json",
-        title=title,
-        redoc_js_url=redoc_js_url,
-        redoc_favicon_url=favicon_url,
+        title=TITLE,
+        redoc_js_url=REDOC_JS_URL,
+        redoc_favicon_url=FAVICON_URL,
     )

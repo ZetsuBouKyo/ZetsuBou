@@ -5,6 +5,7 @@ import Construction from "./views/Vertical/Construction.vue";
 import Galleries from "./views/Vertical/Galleries.vue";
 import Gallery from "./views/Vertical/Gallery/index.vue";
 import ImgSvgPreview from "./views/Vertical/ImgSvgPreview/index.vue";
+import Initialization from "./views/Vertical/Initialization/index.vue";
 import Login from "./views/Login.vue";
 import NotFound from "./views/Vertical/NotFound.vue";
 import SettingAccount from "./views/Vertical/Settings/Account/index.vue";
@@ -24,6 +25,7 @@ import SettingTagToken from "./views/Vertical/Settings/Tag/TagTokenTable.vue";
 import Vertical from "./views/Vertical/index.vue";
 import Video from "./views/Vertical/Video/index.vue";
 import Videos from "./views/Vertical/Videos.vue";
+
 /** @type {import('vue-router').RouterOptions['routes']} */
 
 export const routes = [
@@ -84,5 +86,6 @@ export const routes = [
       { path: "/v/:video", component: Video },
     ],
   },
+  { path: "/initialization", component: Initialization, meta: { title: "Initialization" } },
   { path: "/login", component: Login, meta: { title: "Login" } },
 ];

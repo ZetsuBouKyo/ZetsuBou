@@ -1,3 +1,5 @@
+import asyncio
+
 import uvicorn
 from elasticsearch.exceptions import NotFoundError, RequestError
 from fastapi import FastAPI, HTTPException, Request
@@ -11,8 +13,10 @@ from starlette.responses import JSONResponse
 from back.api import router as api
 from back.init.async_elasticsearch import init_indices
 from back.init.async_storage import init_storage
+from back.init.check import ping
 from back.init.database import init_table
 from back.init.logger import init_loggers
+from back.init.route import router as init
 from back.route import router as views
 from back.settings import setting
 from back.utils.exceptions import RequiresLoginException
@@ -35,16 +39,19 @@ init_loggers()
 
 app = FastAPI(title=TITLE, description=description, docs_url=None, redoc_url=None)
 
-app.add_event_handler("startup", init_table)
-app.add_event_handler("startup", init_indices)
-app.add_event_handler("startup", init_storage)
-
 app.mount("/statics", StaticFiles(directory=f"{STATICS}"), name="statics")
 app.mount("/assets", StaticFiles(directory=f"{FRONT}/assets"), name="assets")
 
+are_services = asyncio.run(ping())
+if not are_services:
+    app.include_router(init)
+else:
+    app.add_event_handler("startup", init_table)
+    app.add_event_handler("startup", init_indices)
+    app.add_event_handler("startup", init_storage)
 
-app.include_router(views)
-app.include_router(api, prefix="/api")
+    app.include_router(views)
+    app.include_router(api, prefix="/api")
 
 
 @app.exception_handler(StarletteHTTPException)

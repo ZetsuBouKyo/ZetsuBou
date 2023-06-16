@@ -1,5 +1,3 @@
-import asyncio
-
 import uvicorn
 from elasticsearch.exceptions import NotFoundError, RequestError
 from fastapi import FastAPI, HTTPException, Request
@@ -42,16 +40,21 @@ app = FastAPI(title=TITLE, description=description, docs_url=None, redoc_url=Non
 app.mount("/statics", StaticFiles(directory=f"{STATICS}"), name="statics")
 app.mount("/assets", StaticFiles(directory=f"{FRONT}/assets"), name="assets")
 
-are_services = asyncio.run(ping())
-if not are_services:
-    app.include_router(init)
-else:
-    app.add_event_handler("startup", init_table)
-    app.add_event_handler("startup", init_indices)
-    app.add_event_handler("startup", init_storage)
 
-    app.include_router(views)
-    app.include_router(api, prefix="/api")
+async def startup():
+    are_services = await ping()
+    if not are_services:
+        app.include_router(init)
+    else:
+        app.add_event_handler("startup", init_table)
+        app.add_event_handler("startup", init_indices)
+        app.add_event_handler("startup", init_storage)
+
+        app.include_router(views)
+        app.include_router(api, prefix="/api")
+
+
+app.add_event_handler("startup", startup)
 
 
 @app.exception_handler(StarletteHTTPException)

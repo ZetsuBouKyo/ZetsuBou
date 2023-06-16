@@ -20,10 +20,9 @@ from back.utils.dt import (
     is_isoformat_with_timezone,
 )
 from back.utils.fs import is_image
-from fastapi import HTTPException
-
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk, async_scan
+from fastapi import HTTPException
 
 ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000
 ELASTICSEARCH_INDEX_GALLERY = setting.elastic_index_gallery

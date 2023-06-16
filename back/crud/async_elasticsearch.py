@@ -100,47 +100,120 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             return (page - 1) * self.size
         return 0
 
-    def get_must_match_query(self, keywords: str, fuzziness: int = 0) -> dict:
-        keywords = keywords.split()
-        return {
-            "bool": {
-                "must": [
-                    {
-                        "constant_score": {
-                            "filter": {
-                                "multi_match": {
-                                    "query": keyword,
-                                    "fuzziness": fuzziness,
-                                    "fields": self.fields,
-                                }
-                            }
-                        }
-                    }
-                    for keyword in keywords
-                ]
-            }
-        }
+    def get_match_query(
+        self,
+        keywords: str,
+        fuzziness: int = 0,
+        boolean: QueryBoolean = QueryBoolean.SHOULD,
+    ) -> dict:
+        _keywords = keywords.split()
 
-    def get_should_match_query(self, keywords: str, fuzziness: int = 0) -> dict:
-        keywords = keywords.split()
-        return {
-            "bool": {
-                "should": [
-                    {
-                        "constant_score": {
-                            "filter": {
-                                "multi_match": {
-                                    "query": keyword,
-                                    "fuzziness": fuzziness,
-                                    "fields": self.fields,
-                                }
+        if self.analyzer == AnalyzerEnum.NGRAM.value:
+            _keywords_ngram = keywords.replace(" ", "")
+            ngram_fields = []
+            non_ngram_fields = []
+            for field in self.fields:
+                if field.endswith(AnalyzerEnum.NGRAM.value):
+                    ngram_fields.append(field)
+                else:
+                    non_ngram_fields.append(field)
+
+            ngram_constant_score_query = [
+                {
+                    "constant_score": {
+                        "filter": {
+                            "multi_match": {
+                                "query": keyword,
+                                "fuzziness": fuzziness,
+                                "fields": ngram_fields,
                             }
                         }
                     }
-                    for keyword in keywords
-                ]
-            }
-        }
+                }
+                for keyword in _keywords_ngram
+            ]
+
+            non_ngram_constant_score_query = [
+                {
+                    "constant_score": {
+                        "filter": {
+                            "multi_match": {
+                                "query": keyword,
+                                "fuzziness": fuzziness,
+                                "fields": non_ngram_fields,
+                            }
+                        }
+                    }
+                }
+                for keyword in _keywords
+            ]
+
+            constant_score_query = (
+                ngram_constant_score_query + non_ngram_constant_score_query
+            )
+        else:
+            constant_score_query = [
+                {
+                    "constant_score": {
+                        "filter": {
+                            "multi_match": {
+                                "query": keyword,
+                                "fuzziness": fuzziness,
+                                "fields": self.fields,
+                            }
+                        }
+                    }
+                }
+                for keyword in _keywords
+            ]
+
+        if type(boolean) is not str:
+            _boolean = boolean.value
+        else:
+            _boolean = boolean
+
+        return {"bool": {_boolean: constant_score_query}}
+
+    def add_advanced_query(
+        self,
+        dsl: dict,
+        keywords: str,
+        field_name: str,
+        analyzer: AnalyzerEnum,
+        fuzziness: int,
+        boolean: QueryBoolean,
+    ):
+        if type(analyzer) is not str:
+            _analyzer = analyzer.value
+        else:
+            _analyzer = analyzer
+
+        if type(boolean) is not str:
+            _boolean = boolean.value
+        else:
+            _boolean = boolean
+
+        _field_name = f"{field_name}.{_analyzer}"
+
+        if analyzer == AnalyzerEnum.NGRAM:
+            _keywords = keywords.replace(" ", "")
+        else:
+            _keywords = keywords.split()
+
+        for k in _keywords:
+            dsl["query"]["bool"][_boolean].append(
+                {
+                    "constant_score": {
+                        "filter": {
+                            "multi_match": {
+                                "query": k,
+                                "fuzziness": fuzziness,
+                                "fields": [_field_name],
+                            }
+                        }
+                    }
+                }
+            )
 
     async def query(self, page: int, dsl: dict) -> SearchResult[SourceT]:
         target_idx = page * self.size
@@ -217,14 +290,9 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         }
 
         if keywords:
-            if boolean == QueryBoolean.SHOULD:
-                dsl["query"]["function_score"]["query"] = self.get_should_match_query(
-                    keywords, fuzziness=fuzziness
-                )
-            elif boolean == QueryBoolean.MUST:
-                dsl["query"]["function_score"]["query"] = self.get_must_match_query(
-                    keywords, fuzziness=fuzziness
-                )
+            dsl["query"]["function_score"]["query"] = dsl[
+                "query"
+            ] = self.get_match_query(keywords, fuzziness=fuzziness, boolean=boolean)
 
         return await self.query(page, dsl)
 
@@ -244,10 +312,9 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
         dsl = self.get_basic_dsl()
 
-        if boolean == QueryBoolean.SHOULD:
-            dsl["query"] = self.get_should_match_query(keywords, fuzziness=fuzziness)
-        elif boolean == QueryBoolean.MUST:
-            dsl["query"] = self.get_must_match_query(keywords, fuzziness=fuzziness)
+        dsl["query"] = self.get_match_query(
+            keywords, fuzziness=fuzziness, boolean=boolean
+        )
 
         return await self.query(page, dsl)
 

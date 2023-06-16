@@ -188,76 +188,39 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                     }
                 )
         if name is not None:
-            name_field = f"attributes.name.{name_analyzer}"
-            name = name.split()
-            for n in name:
-                dsl["query"]["bool"][name_bool].append(
-                    {
-                        "constant_score": {
-                            "filter": {
-                                "multi_match": {
-                                    "query": n,
-                                    "fuzziness": name_fuzziness,
-                                    "fields": [name_field],
-                                }
-                            }
-                        }
-                    }
-                )
+            self.add_advanced_query(
+                dsl, name, "attributes.name", name_analyzer, name_fuzziness, name_bool
+            )
 
         if raw_name is not None:
-            raw_name_field = f"attributes.raw_name.{raw_name_analyzer}"
-            raw_name = raw_name.split()
-            for n in raw_name:
-                dsl["query"]["bool"][raw_name_bool].append(
-                    {
-                        "constant_score": {
-                            "filter": {
-                                "multi_match": {
-                                    "query": n,
-                                    "fuzziness": raw_name_fuzziness,
-                                    "fields": [raw_name_field],
-                                }
-                            }
-                        }
-                    }
-                )
+            self.add_advanced_query(
+                dsl,
+                raw_name,
+                "attributes.raw_name",
+                raw_name_analyzer,
+                raw_name_fuzziness,
+                raw_name_bool,
+            )
 
         if src is not None:
-            src_field = f"attributes.src.{src_analyzer}"
-            src = src.split()
-            for n in src:
-                dsl["query"]["bool"][src_bool].append(
-                    {
-                        "constant_score": {
-                            "filter": {
-                                "multi_match": {
-                                    "query": n,
-                                    "fuzziness": src_fuzziness,
-                                    "fields": [src_field],
-                                }
-                            }
-                        }
-                    }
-                )
+            self.add_advanced_query(
+                dsl,
+                src,
+                "attributes.src",
+                src_analyzer,
+                src_fuzziness,
+                src_bool,
+            )
 
         if path is not None:
-            path_field = f"path.{path_analyzer}"
-            path = path.split()
-            for n in path:
-                dsl["query"]["bool"][path_bool].append(
-                    {
-                        "constant_score": {
-                            "filter": {
-                                "multi_match": {
-                                    "query": n,
-                                    "fuzziness": path_fuzziness,
-                                    "fields": [path_field],
-                                }
-                            }
-                        }
-                    }
-                )
+            self.add_advanced_query(
+                dsl,
+                path,
+                "path",
+                path_analyzer,
+                path_fuzziness,
+                path_bool,
+            )
 
         if category is not None:
             dsl["query"]["bool"]["must"].append(

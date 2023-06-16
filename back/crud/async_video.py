@@ -20,10 +20,9 @@ from back.utils.dt import (
     get_now,
     is_isoformat_with_timezone,
 )
-from fastapi import HTTPException
-
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk, async_scan
+from fastapi import HTTPException
 
 ELASTICSEARCH_INDEX_VIDEO = setting.elastic_index_video
 ELASTICSEARCH_SIZE = setting.elastic_size
@@ -187,76 +186,39 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
                     }
                 )
         if name is not None:
-            name_field = f"name.{name_analyzer}"
-            name = name.split()
-            for n in name:
-                dsl["query"]["bool"][name_bool].append(
-                    {
-                        "constant_score": {
-                            "filter": {
-                                "multi_match": {
-                                    "query": n,
-                                    "fuzziness": name_fuzziness,
-                                    "fields": [name_field],
-                                }
-                            }
-                        }
-                    }
-                )
+            self.add_advanced_query(
+                dsl, name, "name", name_analyzer, name_fuzziness, name_bool
+            )
 
         if other_names is not None:
-            other_names_field = f"other_names.{other_names_analyzer}"
-            other_names = other_names.split()
-            for n in other_names:
-                dsl["query"]["bool"][other_names_bool].append(
-                    {
-                        "constant_score": {
-                            "filter": {
-                                "multi_match": {
-                                    "query": n,
-                                    "fuzziness": other_names_fuzziness,
-                                    "fields": [other_names_field],
-                                }
-                            }
-                        }
-                    }
-                )
+            self.add_advanced_query(
+                dsl,
+                other_names,
+                "other_names",
+                other_names_analyzer,
+                other_names_fuzziness,
+                other_names_bool,
+            )
 
         if src is not None:
-            src_field = f"attributes.src.{src_analyzer}"
-            src = src.split()
-            for n in src:
-                dsl["query"]["bool"][src_bool].append(
-                    {
-                        "constant_score": {
-                            "filter": {
-                                "multi_match": {
-                                    "query": n,
-                                    "fuzziness": src_fuzziness,
-                                    "fields": [src_field],
-                                }
-                            }
-                        }
-                    }
-                )
+            self.add_advanced_query(
+                dsl,
+                src,
+                "attributes.src",
+                src_analyzer,
+                src_fuzziness,
+                src_bool,
+            )
 
         if path is not None:
-            path_field = f"path.{path_analyzer}"
-            path = path.split()
-            for n in path:
-                dsl["query"]["bool"][path_bool].append(
-                    {
-                        "constant_score": {
-                            "filter": {
-                                "multi_match": {
-                                    "query": n,
-                                    "fuzziness": path_fuzziness,
-                                    "fields": [path_field],
-                                }
-                            }
-                        }
-                    }
-                )
+            self.add_advanced_query(
+                dsl,
+                path,
+                "path",
+                path_analyzer,
+                path_fuzziness,
+                path_bool,
+            )
 
         if category is not None:
             dsl["query"]["bool"]["must"].append(

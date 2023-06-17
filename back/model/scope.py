@@ -61,6 +61,10 @@ class ScopeEnum(str, Enum):
     setting_front_video_put: str = "setting.front.video:put"
     setting_user_quest_categories_get: str = "setting:user-quest-categories:get"
     setting_user_quest_category_get: str = "setting:user-quest-category:get"
+    setting_system_get: str = "setting.system:get"
+    setting_system_put: str = "setting.system:put"
+    setting_system_airflow_get: str = "setting.system.airflow:get"
+    setting_system_airflow_put: str = "setting.system.airflow:put"
 
     tag: str = "tag"
     tag_search_for_tag_attributes_get: str = "tag.search-for-tag-attributes:get"
@@ -159,5 +163,4 @@ class ScopeEnum(str, Enum):
     group_get: str = "group:get"
     group_delete: str = "group:delete"
 
-    sys_setting_get: str = ""
     sys_basic_setting_get: str = ""

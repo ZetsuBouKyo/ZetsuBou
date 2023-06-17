@@ -7,6 +7,9 @@ router = APIRouter()
 router.add_api_route("/initialization", index)
 
 
-@router.get("/")
-async def redirect_to_initialization():
+def redirect():
     return RedirectResponse("/initialization")
+
+
+router.add_api_route("/", redirect)
+router.add_api_route("/NotFound", redirect)

@@ -1,7 +1,5 @@
-from enum import Enum
 from pathlib import Path
 
-import typer
 from back.settings import (
     DEFAULT_AIRFLOW_SETTING_NAME,
     DEFAULT_SETTING_HOME,
@@ -10,17 +8,10 @@ from back.settings import (
     Setting,
 )
 
-_help = """
-Initialize the ZetsuBou webapp.
-"""
-app = typer.Typer(name="init", help=_help)
-
-
 DEFAULT_SETTING = Setting()
-
-
-class ModeEnum(str, Enum):
-    HOST: str = "host"
+SETTING_HOME = Path(DEFAULT_SETTING_HOME)
+SETTING_PATH = SETTING_HOME / DEFAULT_SETTING_NAME
+AIRFLOW_SETTING_PATH = SETTING_HOME / DEFAULT_AIRFLOW_SETTING_NAME
 
 
 def get_envs(setting: Setting) -> str:
@@ -36,16 +27,18 @@ def get_envs(setting: Setting) -> str:
     return "\n".join(envs)
 
 
-def write(file_path: Path, data: str):
+def write_settings(file_path: Path, data: str):
     with file_path.open(mode="w") as fp:
         fp.write(data)
 
 
-def init_settings(setting: Setting):
-    setting_home = Path(DEFAULT_SETTING_HOME)
-    setting_path = setting_home / DEFAULT_SETTING_NAME
-    airflow_setting_path = setting_home / DEFAULT_AIRFLOW_SETTING_NAME
-
+def update_settings(setting: Setting, setting_path: Path = SETTING_PATH):
     envs = get_envs(setting)
-    write(setting_path, envs)
-    write(airflow_setting_path, envs)
+    write_settings(setting_path, envs)
+
+
+def update_airflow_settings(
+    setting: Setting, setting_path: Path = AIRFLOW_SETTING_PATH
+):
+    envs = get_envs(setting)
+    write_settings(setting_path, envs)

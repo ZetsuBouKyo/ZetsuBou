@@ -4,7 +4,7 @@ from back.model.scope import ScopeEnum
 from back.schema.basic import Message
 from fastapi import APIRouter
 
-router = APIRouter()
+router = APIRouter(tags=["Gallery Operation"])
 
 
 @router.delete(

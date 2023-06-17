@@ -7,8 +7,7 @@ from fastapi.responses import FileResponse, RedirectResponse
 from .query import router as query
 from .tag import router as tag
 
-router = APIRouter()
-
+router = APIRouter(prefix="/video", tags=["Video"])
 router.include_router(query)
 router.include_router(tag)
 

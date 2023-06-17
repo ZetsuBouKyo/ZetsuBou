@@ -13,7 +13,7 @@ from fastapi import APIRouter, Body, Depends, Request
 from ...model.gallery import CustomQuery, query_examples
 from ..utils import get_tags_and_labels_by_query_params
 
-router = APIRouter()
+router = APIRouter(tags=["Gallery Query"])
 
 ELASTIC_SIZE = setting.elastic_size
 

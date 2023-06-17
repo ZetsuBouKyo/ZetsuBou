@@ -14,7 +14,7 @@ from back.model.scope import ScopeEnum
 from back.model.storage import StorageCategoryEnum
 from fastapi import APIRouter, Depends
 
-router = APIRouter()
+router = APIRouter(tags=["Minio Storage"])
 
 
 @router.get(

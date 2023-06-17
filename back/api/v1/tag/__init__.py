@@ -14,11 +14,11 @@ from .category import router as category
 from .synonym import router as synonym
 from .token import router as token
 
-router = APIRouter()
-router.include_router(attribute, tags=["Tag Attribute"], prefix="/tag")
-router.include_router(category, tags=["Tag Category"], prefix="/tag")
-router.include_router(synonym, tags=["Tag Synonym"], prefix="/tag")
-router.include_router(token, tags=["Tag Token"], prefix="/tag")
+router = APIRouter(tags=["Tag"])
+router.include_router(attribute)
+router.include_router(category)
+router.include_router(synonym)
+router.include_router(token)
 
 
 @router.get(

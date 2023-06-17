@@ -6,7 +6,7 @@ from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
 from fastapi import APIRouter
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.get(

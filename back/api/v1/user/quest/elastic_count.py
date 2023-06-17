@@ -13,7 +13,7 @@ from back.model.base import Pagination
 from back.model.scope import ScopeEnum
 from fastapi import APIRouter, Depends, HTTPException
 
-router = APIRouter()
+router = APIRouter(tags=["User Elastic Count Quest"])
 
 
 def verify_user_id(

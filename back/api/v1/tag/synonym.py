@@ -13,7 +13,7 @@ from back.model.base import Pagination
 from back.model.scope import ScopeEnum
 from fastapi import APIRouter, Depends, HTTPException
 
-router = APIRouter()
+router = APIRouter(prefix="/tag", tags=["Tag Synonym"])
 
 
 async def verify_token_id(synonym):

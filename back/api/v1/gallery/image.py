@@ -1,12 +1,12 @@
 from typing import List
 
 from back.crud.async_gallery import get_crud_async_gallery
-from back.model.scope import ScopeEnum
 from back.dependency.security import api_security, view_security
+from back.model.scope import ScopeEnum
 from fastapi import APIRouter
 from fastapi.responses import FileResponse, RedirectResponse
 
-router = APIRouter()
+router = APIRouter(tags=["Gallery Image"])
 
 
 @router.get(

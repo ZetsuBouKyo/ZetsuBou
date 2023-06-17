@@ -13,7 +13,7 @@ from botocore.exceptions import (
 from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
 
-router = APIRouter()
+router = APIRouter(tags=["Minio Operation"])
 
 
 def get_bucket_name(bucket_name: str = ""):

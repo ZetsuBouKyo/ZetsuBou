@@ -6,7 +6,7 @@ from back.model.task import ZetsuBouTask, ZetsuBouTaskProgressEnum
 from back.session.async_redis import async_redis
 from fastapi import APIRouter, Response, status
 
-router = APIRouter()
+router = APIRouter(prefix="/standalone")
 
 
 @router.get(

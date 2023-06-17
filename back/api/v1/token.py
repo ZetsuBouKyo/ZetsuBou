@@ -10,7 +10,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 EXPIRED_IN_MINUTES = setting.app_security_expired
 
-router = APIRouter()
+router = APIRouter(tags=["Token"])
 
 
 class ZetsuBouOAuth2PasswordRequestForm(OAuth2PasswordRequestForm):

@@ -14,17 +14,17 @@ from .video import router as video
 
 router = APIRouter()
 
-router.include_router(token, tags=["Token"])
+router.include_router(token)
 
-router.include_router(user, tags=["User"], prefix="/user")
-router.include_router(users, tags=["Users"], prefix="/users")
-router.include_router(group, tags=["Group"])
-router.include_router(setting, tags=["Setting"], prefix="/setting")
-router.include_router(task, tags=["Task"], prefix="/task")
-router.include_router(tag, tags=["Tag"])
+router.include_router(user)
+router.include_router(users)
+router.include_router(group)
+router.include_router(setting)
+router.include_router(task)
+router.include_router(tag)
 
-router.include_router(gallery, tags=["Gallery"], prefix="/gallery")
-router.include_router(video, tags=["Video"], prefix="/video")
+router.include_router(gallery)
+router.include_router(video)
 
-router.include_router(elasticsearch, tags=["Elasticsearch"], prefix="/elasticsearch")
-router.include_router(storage, tags=["Storage"], prefix="/storage")
+router.include_router(elasticsearch)
+router.include_router(storage)

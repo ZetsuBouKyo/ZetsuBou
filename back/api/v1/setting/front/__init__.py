@@ -15,10 +15,10 @@ from .gallery import router as gallery
 from .video import router as video
 
 APP_MODE = setting.app_mode
-router = APIRouter()
 
-router.include_router(gallery, prefix="/gallery")
-router.include_router(video, prefix="/video")
+router = APIRouter(prefix="/front")
+router.include_router(gallery)
+router.include_router(video)
 
 
 @router.get(

@@ -2,7 +2,9 @@ from typing import List
 
 from back.api.model.task.airflow import CommandRequest, CommandSchema
 from back.crud.async_progress import check_airflow_progress
+from back.dependency.security import api_security
 from back.model.airflow import AirflowDagRunResponse, AirflowDagRunsResponse
+from back.model.scope import ScopeEnum
 from back.model.task import ZetsuBouTask
 from back.session.async_airflow import dags
 from back.session.async_airflow import get_dag_run as _get_dag_run
@@ -10,7 +12,9 @@ from back.session.async_airflow import get_dag_runs, trigger_new_dag_run
 from back.session.async_redis import async_redis
 from fastapi import APIRouter, Depends, HTTPException
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/cmd", tags=["Task"], dependencies=[api_security(ScopeEnum.task_cmd.name)]
+)
 
 
 def is_progress_id(progress_id: str):

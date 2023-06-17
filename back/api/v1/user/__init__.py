@@ -19,7 +19,7 @@ from .bookmark import router as bookmark
 from .elastic_query import router as elastic_query
 from .quest import router as quest
 
-router = APIRouter()
+router = APIRouter(prefix="/user", tags=["User"])
 
 
 @router.post(

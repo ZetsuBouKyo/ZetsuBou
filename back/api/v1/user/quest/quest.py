@@ -16,7 +16,7 @@ from back.model.base import Pagination
 from back.model.scope import ScopeEnum
 from fastapi import APIRouter, Depends, HTTPException
 
-router = APIRouter()
+router = APIRouter(tags=["User Quest"])
 
 
 def verify_user_id(user_id: int, quest: Union[UserQuestCreated, UserQuestUpdate]):

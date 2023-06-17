@@ -5,8 +5,8 @@ from .operation import router as operation
 from .query import router as query
 from .tag import router as tag
 
-router = APIRouter()
-router.include_router(query, tags=["Gallery Query"])
-router.include_router(operation, tags=["Gallery Operation"])
-router.include_router(tag, tags=["Gallery Tag"])
-router.include_router(image, tags=["Gallery Image"])
+router = APIRouter(prefix="/gallery", tags=["Gallery"])
+router.include_router(query)
+router.include_router(operation)
+router.include_router(tag)
+router.include_router(image)

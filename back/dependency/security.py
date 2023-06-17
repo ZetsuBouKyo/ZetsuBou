@@ -11,6 +11,7 @@ from jose.exceptions import ExpiredSignatureError
 from jose.jwt import JWTError
 from pydantic import BaseModel, ValidationError
 
+APP_SECURITY = setting.app_security
 SECRET = setting.app_security_secret
 ALGORITHM = setting.app_security_algorithm
 
@@ -162,13 +163,21 @@ async def verify_view_with_scope(
         raise RequiresLoginException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 
+async def do_nothing():
+    pass
+
+
 def api_user_security():
     pass
 
 
 def api_security(scopes: List[str] = []) -> Security:
-    return Security(verify_api_with_scopes, scopes=scopes)
+    if APP_SECURITY:
+        return Security(verify_api_with_scopes, scopes=scopes)
+    return Security(do_nothing, scopes=scopes)
 
 
 def view_security(scopes: List[str] = []) -> Security:
-    return Security(verify_view_with_scope, scopes=scopes)
+    if APP_SECURITY:
+        return Security(verify_view_with_scope, scopes=scopes)
+    return Security(do_nothing, scopes=scopes)

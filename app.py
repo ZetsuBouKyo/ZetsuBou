@@ -20,6 +20,7 @@ from back.settings import setting
 from back.utils.exceptions import RequiresLoginException
 from cli import app as cli_app  # noqa
 
+APP_SECURITY = setting.app_security
 TITLE = setting.app_title
 HOST = setting.app_host
 PORT = setting.app_port
@@ -43,15 +44,16 @@ app.mount("/assets", StaticFiles(directory=f"{FRONT}/assets"), name="assets")
 
 async def startup():
     are_services = await ping()
-    if not are_services:
+    if not are_services and not APP_SECURITY:
         app.include_router(init)
-    else:
-        app.add_event_handler("startup", init_table)
-        app.add_event_handler("startup", init_indices)
-        app.add_event_handler("startup", init_storage)
+        return
 
-        app.include_router(views)
-        app.include_router(api, prefix="/api")
+    app.add_event_handler("startup", init_table)
+    app.add_event_handler("startup", init_indices)
+    app.add_event_handler("startup", init_storage)
+
+    app.include_router(views)
+    app.include_router(api, prefix="/api")
 
 
 app.add_event_handler("startup", startup)

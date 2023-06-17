@@ -6,7 +6,7 @@ from back.init.statics import get_static_file
 from back.model.service import ServiceEnum
 from fastapi import APIRouter
 
-PORTS = [3000, 5430, 5431, 5555, 6379, 6380, 8080, 9000, 9001, 9200]
+PORTS = [5430, 5431, 5555, 6379, 6380, 8080, 9000, 9001, 9200]
 
 
 router = APIRouter(prefix="/init")
@@ -27,7 +27,7 @@ async def ping(service: ServiceEnum = None) -> bool:
 def check_host_ports() -> Dict[int, bool]:
     host_ports = {}
     for port in PORTS:
-        is_port = check_host_port(port)
+        is_port = not check_host_port(port)
         host_ports[port] = is_port
 
     return host_ports

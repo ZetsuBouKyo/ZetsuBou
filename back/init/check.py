@@ -3,6 +3,7 @@ import socket
 import httpx
 from back.init.database import init_table
 from back.model.service import ServiceEnum
+from back.service import services
 from back.session.async_elasticsearch import async_elasticsearch
 from back.session.async_redis import async_redis
 from back.session.storage import ping_storage as _ping_storage
@@ -21,33 +22,38 @@ async def ping_airflow() -> bool:
     try:
         async with httpx.AsyncClient() as client:
             await client.get(AIRFLOW_HOST)
+        services[ServiceEnum.AIRFLOW.value] = True
     except httpx.ConnectError:
-        return False
-    return True
+        services[ServiceEnum.AIRFLOW.value] = False
+    return services[ServiceEnum.AIRFLOW.value]
 
 
 async def ping_elasticsearch() -> bool:
-    return await async_elasticsearch.ping()
+    services[ServiceEnum.ELASTICSEARCH.value] = await async_elasticsearch.ping()
+    return services[ServiceEnum.ELASTICSEARCH.value]
 
 
 async def ping_postgres() -> bool:
     try:
         await init_table()
+        services[ServiceEnum.POSTGRES.value] = True
     except ConnectionRefusedError:
-        return False
-    return True
+        services[ServiceEnum.POSTGRES.value] = False
+    return services[ServiceEnum.POSTGRES.value]
 
 
 async def ping_redis() -> bool:
     try:
         await async_redis.ping()
+        services[ServiceEnum.REDIS.value] = True
     except ConnectionError:
-        return False
-    return True
+        services[ServiceEnum.REDIS.value] = False
+    return services[ServiceEnum.REDIS.value]
 
 
 async def ping_storage() -> bool:
-    return await _ping_storage()
+    services[ServiceEnum.STORAGE.value] = await _ping_storage()
+    return services[ServiceEnum.STORAGE.value]
 
 
 async def ping_all() -> bool:

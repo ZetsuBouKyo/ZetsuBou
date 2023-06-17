@@ -6,8 +6,11 @@ from pydantic import BaseSettings, Field
 from pydantic.networks import EmailStr
 
 from back.model.base import SourceProtocolEnum
+from back.model.envs import ZetsuBouEnvEnum
 
-_DEFAULT_SETTING_PATH = os.getenv("ZETSUBOU_SETTING_PATH", default=None)
+_DEFAULT_SETTING_PATH = os.getenv(
+    ZetsuBouEnvEnum.ZETSUBOU_SETTING_PATH.value, default=None
+)
 
 DEFAULT_SETTING_HOME = "./etc"
 DEFAULT_SETTING_NAME = "settings.env"
@@ -40,6 +43,7 @@ class Setting(BaseSettings):
     app_host: str = Field(
         default="0.0.0.0", title=f"{TITLE_PREFIX} Host", exmaple="0.0.0.0"
     )
+    app_security: bool = True
     app_port: int = Field(default=3000, title=f"{TITLE_PREFIX} Port", example="3000")
     app_mode: AppMode = AppMode.CLUSTER
     app_timezone: str = Field(default="UTC", title="Timezone", example="Asia/Taipei")

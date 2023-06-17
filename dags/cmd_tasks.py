@@ -109,6 +109,7 @@ for task in tasks:
             + '{{ dag_run.conf.get("args", "") }}',
             env={
                 "PYTHONPATH": PYTHON_PATH,
+                # See `/mnt/hdd1/project/ZetsuBou/back/model/envs.py`
                 "ZETSUBOU_SETTING_PATH": ZETSUBOU_SETTING_PATH,
             },
         )

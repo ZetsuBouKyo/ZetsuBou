@@ -1,14 +1,26 @@
 <template>
-  <button ref="bt" class="relative overflow-hidden focus:outline-none" type="button" @click="rippleEffect">
+  <button
+    ref="bt"
+    class="relative overflow-hidden focus:outline-none"
+    type="button"
+    @click="rippleEffect"
+    :disabled="disabled">
     <slot></slot>
     <span ref="ripple" :class="state.isRipple ? 'zetsubou-ripple' : 'hidden'"></span>
   </button>
 </template>
 
-<script>
-import { ref, reactive } from "vue";
+<script lang="ts">
+import { PropType, ref, reactive } from "vue";
+
 export default {
-  setup() {
+  props: {
+    disabled: {
+      type: Object as PropType<boolean>,
+      default: false,
+    },
+  },
+  setup(props) {
     const bt = ref(null);
     const ripple = ref(null);
     const state = reactive({
@@ -36,7 +48,7 @@ export default {
         state.isRipple = false;
       }, 600);
     }
-    return { state, bt, ripple, rippleEffect };
+    return { ...props, state, bt, ripple, rippleEffect };
   },
 };
 </script>

@@ -24,6 +24,9 @@ class AirflowDagRunResponse(BaseModel):
 
 
 class AirflowDagRunsResponse(BaseModel):
+    status: int = None
+    title: str = None
+    type: str = None
     dag_runs: List[AirflowDagRunResponse] = []
     total_entries: int = None
 

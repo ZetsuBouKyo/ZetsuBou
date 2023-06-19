@@ -30,17 +30,19 @@ class S3ResponseMetadata(BaseModel):
     HTTPStatusCode: int
 
 
+class S3Response(BaseModel):
+    ResponseMetadata: S3ResponseMetadata
+
+
 class S3ResponseBucket(BaseModel):
     Name: str
 
 
-class S3ListBucketsResponse(BaseModel):
-    ResponseMetadata: S3ResponseMetadata
+class S3ListBucketsResponse(S3Response):
     Buckets: List[S3ResponseBucket] = []
 
 
-class S3GetObjectResponse(BaseModel):
-    ResponseMetadata: S3ResponseMetadata
+class S3GetObjectResponse(S3Response):
     ContentLength: int
     ETag: str
     ContentType: str
@@ -48,13 +50,11 @@ class S3GetObjectResponse(BaseModel):
     Body: Any
 
 
-class S3PutObjectResponse(BaseModel):
-    ResponseMetadata: S3ResponseMetadata
+class S3PutObjectResponse(S3Response):
     ETag: str
 
 
-class S3DeleteObjectResponse(BaseModel):
-    ResponseMetadata: S3ResponseMetadata
+S3DeleteObjectResponse = S3Response
 
 
 class S3DeleteObjectsResponseDeleted(BaseModel):

@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from typing import List
 
+from aiobotocore.httpsession import EndpointConnectionError
 from aiobotocore.session import AioSession, ClientCreatorContext
 from back.model.base import SourceBaseModel
 from back.model.s3 import (
@@ -13,6 +14,7 @@ from back.model.s3 import (
     S3ListBucketsResponse,
     S3Object,
     S3PutObjectResponse,
+    S3Response,
 )
 from back.settings import setting
 
@@ -317,6 +319,16 @@ class AsyncS3Session(AioSession):
                 await self.client.head_bucket(Bucket=bucket_name)
             except self.client.exceptions.ClientError:
                 await self.client.create_bucket(Bucket=bucket_name)
+
+    async def ping(self) -> bool:
+        try:
+            _resp = await self.client.list_buckets()
+        except (self.client.exceptions.ClientError, EndpointConnectionError):
+            return False
+        resp = S3Response(**_resp)
+        if resp.ResponseMetadata.HTTPStatusCode == 200:
+            return True
+        return False
 
     async def get_url(self, source: SourceBaseModel) -> str:
         return await generate_presigned_url(

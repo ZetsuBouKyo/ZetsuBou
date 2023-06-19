@@ -6,9 +6,7 @@ from back.dependency.security import api_security
 from back.model.airflow import AirflowDagRunResponse, AirflowDagRunsResponse
 from back.model.scope import ScopeEnum
 from back.model.task import ZetsuBouTask
-from back.session.async_airflow import dags
-from back.session.async_airflow import get_dag_run as _get_dag_run
-from back.session.async_airflow import get_dag_runs, trigger_new_dag_run
+from back.session.async_airflow import AsyncAirflowSession, dags
 from back.session.async_redis import async_redis
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -81,7 +79,9 @@ async def trigger_dag_run(
 
     conf["args"] = args
 
-    return await trigger_new_dag_run(
+    session = AsyncAirflowSession(is_from_setting_if_none=True)
+
+    return await session.trigger_new_dag_run(
         dag_id, logical_date=command_request.logical_date, conf=conf
     )
 
@@ -95,14 +95,16 @@ def get_schema(dag_id: str) -> CommandSchema:
 
 @router.get("/dag-run/{dag_id}/{dag_run_id}", response_model=AirflowDagRunResponse)
 async def get_dag_run(dag_id: str, dag_run_id: str) -> AirflowDagRunResponse:
-    return await _get_dag_run(dag_id, dag_run_id)
+    session = AsyncAirflowSession(is_from_setting_if_none=True)
+    return await session.get_dag_run(dag_id, dag_run_id)
 
 
 @router.get("/dag-runs", response_model=AirflowDagRunsResponse)
 async def list_dag_runs(
     page_offset: int = 0, page_limit: int = 100, order_by: str = None
 ) -> AirflowDagRunsResponse:
-    return await get_dag_runs(
+    session = AsyncAirflowSession(is_from_setting_if_none=True)
+    return await session.get_dag_runs(
         list(dags.keys()),
         page_offset=page_offset,
         page_limit=page_limit,

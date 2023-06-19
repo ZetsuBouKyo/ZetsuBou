@@ -1,16 +1,32 @@
 import socket
+from typing import List
 
 import httpx
-from back.init.database import init_table
+import redis.asyncio as _async_redis
 from back.model.service import ServiceEnum
 from back.service import services
-from back.session.async_elasticsearch import async_elasticsearch
-from back.session.async_redis import async_redis
+from back.session.async_airflow import AsyncAirflowSession, dags
 from back.session.storage import ping_storage as _ping_storage
 from back.settings import setting
+from elasticsearch import AsyncElasticsearch
 from redis import ConnectionError
+from sqlalchemy.ext.asyncio import create_async_engine
 
 AIRFLOW_HOST = setting.airflow_host
+AIRFLOW_USERNAME = setting.airflow_username
+AIRFLOW_PASSWORD = setting.airflow_password
+
+ELASTICSEARCH_HOSTS = setting.elastic_hosts
+
+DATABASE_URL = setting.database_url
+ECHO = setting.database_echo
+
+REDIS_URL = setting.redis_url
+
+STORAGE_PROTOCOL = setting.storage_protocol
+STORAGE_S3_AWS_ACCESS_KEY_ID = setting.storage_s3_aws_access_key_id
+STORAGE_S3_AWS_SECRET_ACCESS_KEY = setting.storage_s3_aws_secret_access_key
+STORAGE_S3_ENDPOINT_URL = setting.storage_s3_endpoint_url
 
 
 def check_host_port(port: int) -> bool:
@@ -18,41 +34,73 @@ def check_host_port(port: int) -> bool:
         return s.connect_ex(("localhost", port)) == 0
 
 
-async def ping_airflow() -> bool:
+async def ping_airflow(
+    airflow_host: str = AIRFLOW_HOST,
+    airflow_username: str = AIRFLOW_USERNAME,
+    airflow_password: str = AIRFLOW_PASSWORD,
+) -> bool:
     try:
-        async with httpx.AsyncClient() as client:
-            await client.get(AIRFLOW_HOST)
-        services[ServiceEnum.AIRFLOW.value] = True
+        session = AsyncAirflowSession(
+            host=airflow_host,
+            username=airflow_username,
+            password=airflow_password,
+            is_from_setting_if_none=True,
+        )
+        dag_ids = list(dags.keys())
+        resp = await session.get_dag_runs(dag_ids)
+
+        if resp.status == 401:
+            services[ServiceEnum.AIRFLOW.value] = False
+        else:
+            services[ServiceEnum.AIRFLOW.value] = True
     except httpx.ConnectError:
         services[ServiceEnum.AIRFLOW.value] = False
     return services[ServiceEnum.AIRFLOW.value]
 
 
-async def ping_elasticsearch() -> bool:
+async def ping_elasticsearch(hosts: List[str] = ELASTICSEARCH_HOSTS) -> bool:
+    async_elasticsearch = AsyncElasticsearch(hosts=hosts)
     services[ServiceEnum.ELASTICSEARCH.value] = await async_elasticsearch.ping()
+    await async_elasticsearch.close()
     return services[ServiceEnum.ELASTICSEARCH.value]
 
 
-async def ping_postgres() -> bool:
+async def ping_postgres(database_url: str = DATABASE_URL, echo: bool = ECHO) -> bool:
+    async_engine = create_async_engine(database_url, echo=echo)
     try:
-        await init_table()
+        async with async_engine.begin():
+            pass
         services[ServiceEnum.POSTGRES.value] = True
     except ConnectionRefusedError:
         services[ServiceEnum.POSTGRES.value] = False
     return services[ServiceEnum.POSTGRES.value]
 
 
-async def ping_redis() -> bool:
+async def ping_redis(redis_url: str = REDIS_URL) -> bool:
+    async_redis = _async_redis.from_url(redis_url)
     try:
-        await async_redis.ping()
-        services[ServiceEnum.REDIS.value] = True
+        pong = await async_redis.ping()
+        if pong:
+            services[ServiceEnum.REDIS.value] = True
+        else:
+            services[ServiceEnum.REDIS.value] = False
     except ConnectionError:
         services[ServiceEnum.REDIS.value] = False
     return services[ServiceEnum.REDIS.value]
 
 
-async def ping_storage() -> bool:
-    services[ServiceEnum.STORAGE.value] = await _ping_storage()
+async def ping_storage(
+    storage_protocol: str = STORAGE_PROTOCOL,
+    storage_s3_aws_access_key_id: str = STORAGE_S3_AWS_ACCESS_KEY_ID,
+    storage_s3_aws_secret_access_key: str = STORAGE_S3_AWS_SECRET_ACCESS_KEY,
+    storage_s3_endpoint_url: str = STORAGE_S3_ENDPOINT_URL,
+) -> bool:
+    services[ServiceEnum.STORAGE.value] = await _ping_storage(
+        storage_protocol=storage_protocol,
+        storage_s3_aws_access_key_id=storage_s3_aws_access_key_id,
+        storage_s3_aws_secret_access_key=storage_s3_aws_secret_access_key,
+        storage_s3_endpoint_url=storage_s3_endpoint_url,
+    )
     return services[ServiceEnum.STORAGE.value]
 
 

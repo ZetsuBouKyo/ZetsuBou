@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from .elasticsearch import router as elasticsearch
 from .gallery import router as gallery
 from .group import router as group
+from .init import router as init
 from .setting import router as setting
 from .storage import router as storage
 from .tag import router as tag
@@ -14,6 +15,7 @@ from .video import router as video
 
 router = APIRouter()
 
+router.include_router(init)
 router.include_router(token)
 
 router.include_router(user)

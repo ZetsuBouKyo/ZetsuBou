@@ -24,6 +24,17 @@ class ScopeEnum(str, Enum):
     gallery_tag_get: str = "gallery.tag:get"
     gallery_tag_post: str = "gallery.tag:post"
 
+    init_check_host_ports_get: str = "init.check-host-ports:get"
+    init_download_redoc_get: str = "init.download-redoc:get"
+    init_download_swagger_get: str = "init.download-swagger:get"
+
+    init_ping_services_get: str = "init.ping.services:get"
+    init_ping_airflow_post: str = "init.ping.airflow:post"
+    init_ping_elasticsearch_post: str = "init.ping.elasticsearch:post"
+    init_ping_postgres_post: str = "init.ping.postgres:post"
+    init_ping_redis_post: str = "init.ping.redis:post"
+    init_ping_storage_post: str = "init.ping.storage:post"
+
     storage_minio: str = "storage.minio"
     storage_minio_list_get: str = "storage.minio.list:get"
     storage_minio_storages_get: str = "storage.minio.storages:get"

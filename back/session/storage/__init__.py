@@ -1,4 +1,3 @@
-import httpx
 from back.db.crud import CrudStorageMinio
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.session.storage.async_s3 import AsyncS3Session
@@ -6,17 +5,25 @@ from back.settings import setting
 from fastapi import HTTPException
 
 STORAGE_PROTOCOL = setting.storage_protocol
+STORAGE_S3_AWS_ACCESS_KEY_ID = setting.storage_s3_aws_access_key_id
+STORAGE_S3_AWS_SECRET_ACCESS_KEY = setting.storage_s3_aws_secret_access_key
 STORAGE_S3_ENDPOINT_URL = setting.storage_s3_endpoint_url
 
 
-async def ping_storage() -> bool:
-    if STORAGE_PROTOCOL == SourceProtocolEnum.MINIO.value:
-        try:
-            async with httpx.AsyncClient() as client:
-                await client.get(STORAGE_S3_ENDPOINT_URL)
-        except httpx.ConnectError:
-            return False
-        return True
+async def ping_storage(
+    storage_protocol: str = STORAGE_PROTOCOL,
+    storage_s3_aws_access_key_id: str = STORAGE_S3_AWS_ACCESS_KEY_ID,
+    storage_s3_aws_secret_access_key: str = STORAGE_S3_AWS_SECRET_ACCESS_KEY,
+    storage_s3_endpoint_url: str = STORAGE_S3_ENDPOINT_URL,
+) -> bool:
+    if storage_protocol == SourceProtocolEnum.MINIO.value:
+        session = AsyncS3Session(
+            aws_access_key_id=storage_s3_aws_access_key_id,
+            aws_secret_access_key=storage_s3_aws_secret_access_key,
+            endpoint_url=storage_s3_endpoint_url,
+        )
+        async with session:
+            return await session.ping()
     return False
 
 

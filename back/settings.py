@@ -29,12 +29,12 @@ if not DEFAULT_SETTING_PATH.exists():
     DEFAULT_SETTING_PATH = None
 
 
-class DatabaseType(str, Enum):
+class DatabaseTypeEnum(str, Enum):
     SQLITE: str = "sqlite"
     POSTGRESQL: str = "postgresql"
 
 
-class AppMode(str, Enum):
+class AppModeEnum(str, Enum):
     STANDALONE: str = "standalone"
     CLUSTER: str = "cluster"
 
@@ -45,7 +45,7 @@ class Setting(BaseSettings):
     )
     app_security: bool = True
     app_port: int = Field(default=3000, title=f"{TITLE_PREFIX} Port", example="3000")
-    app_mode: AppMode = AppMode.CLUSTER
+    app_mode: AppModeEnum = AppModeEnum.CLUSTER
     app_timezone: str = Field(default="UTC", title="Timezone", example="Asia/Taipei")
 
     app_docs: bool = True
@@ -111,7 +111,7 @@ class Setting(BaseSettings):
     gallery_tag_fname: str = "gallery.json"
     gallery_imgs_fname: str = "imgs.json"
 
-    database_type: DatabaseType = DatabaseType.POSTGRESQL
+    database_type: DatabaseTypeEnum = DatabaseTypeEnum.POSTGRESQL
     database_url: str = Field(
         default=None,
         example="postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou",

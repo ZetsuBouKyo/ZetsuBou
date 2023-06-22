@@ -1,4 +1,4 @@
-from back.settings import DatabaseType, setting  # noqa: F401
+from back.settings import DatabaseTypeEnum, setting  # noqa: F401
 from sqlalchemy import event  # noqa: F401
 from sqlalchemy.engine import Engine  # noqa: F401
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -13,7 +13,7 @@ async_engine = create_async_engine(DATABASE_URL, echo=ECHO)
 
 async_session = sessionmaker(async_engine, expire_on_commit=False, class_=AsyncSession)
 
-# if DATABASE_TYPE == DatabaseType.SQLITE:
+# if DATABASE_TYPE == DatabaseTypeEnum.SQLITE:
 
 #     @event.listens_for(Engine, "connect")
 #     def set_sqlite_pragma(dbapi_connection, _):

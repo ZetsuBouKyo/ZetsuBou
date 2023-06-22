@@ -87,7 +87,7 @@ def generate_interface(out: str = typer.Argument(..., help="Output path.")):
         if property_type == "integer":
             property_type = "number"
 
-        lines.append(f"  {property_name}: {property_type};")
+        lines.append(f"  {property_name}?: {property_type};")
 
     lines.append("}")
     lines.append("")

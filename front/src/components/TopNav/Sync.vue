@@ -42,7 +42,7 @@
             v-model="state.action"
             :disabled="state.isSync">
             <option class="my-1 mx-2" value="all">All</option>
-            <option class="my-1 mx-2" value="new" v-if="state.appMode === SettingAppMode.Standalone">New</option>
+            <option class="my-1 mx-2" value="new" v-if="state.appMode === AppModeEnum.Standalone">New</option>
           </select>
         </div>
       </template>
@@ -70,7 +70,9 @@ import Dropdown from "@/elements/Dropdown/Dropdown.vue";
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 
 import { messageState } from "@/state/message";
-import { settingState, SettingAppMode } from "@/state/setting";
+import { settingState } from "@/state/setting";
+
+import { AppModeEnum } from "@/interface/setting";
 
 enum SyncMode {
   All = "all",
@@ -95,10 +97,10 @@ export default {
       }
       state.appMode = settingState.setting.app_mode;
       switch (settingState.setting.app_mode) {
-        case SettingAppMode.Standalone:
+        case AppModeEnum.Standalone:
           state.action = SyncMode.New;
           break;
-        case SettingAppMode.Cluster:
+        case AppModeEnum.Cluster:
           state.action = SyncMode.All;
       }
     }
@@ -260,7 +262,7 @@ export default {
       state,
       confirmNew,
       SyncMode,
-      SettingAppMode,
+      AppModeEnum,
       onConfirmSynchronizeNew,
       confirmAll,
       onConfirmSynchronizeAll,

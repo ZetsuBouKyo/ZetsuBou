@@ -3,11 +3,7 @@ import { reactive } from "vue";
 import { getSettingFrontGeneral } from "@/api/v1/setting/front/front";
 
 import { SearchAnalyzer } from "@/interface/search";
-
-export enum SettingAppMode {
-  Standalone = "standalone",
-  Cluster = "cluster",
-}
+import { AppModeEnum } from "@/interface/setting";
 
 export interface GeneralAnalyzerFieldSetting {
   [key: string]: Array<string>;
@@ -31,7 +27,7 @@ export interface GeneralVideoSetting {
 }
 
 export interface GeneralSetting {
-  app_mode: SettingAppMode;
+  app_mode: AppModeEnum;
   gallery: GeneralGallerySetting;
   video: GeneralVideoSetting;
 }

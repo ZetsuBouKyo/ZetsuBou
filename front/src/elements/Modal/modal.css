@@ -10,12 +10,12 @@
     @apply flex flex-row items-center mx-4 my-1 h-full;
   }
   .modal-input {
+    @apply h-full px-3;
     @apply bg-gray-600  placeholder-gray-400;
     @apply text-white text-base 3xl:text-xl;
     @apply rounded;
     @apply border-0;
     @apply focus:outline-none;
-    @apply px-3 h-10;
   }
   .modal-textarea {
     @apply bg-black text-white;

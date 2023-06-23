@@ -12,18 +12,18 @@
     @apply flex flex-col py-4 w-full;
   }
   .views-setting-row {
-    @apply flex flex-row my-2 items-center;
+    @apply h-12 flex flex-row my-2 items-center;
   }
   div.views-setting-cell {
-    @apply flex h-11 items-center ml-4 px-4;
+    @apply flex items-center ml-4 px-3;
   }
   span.views-setting-cell {
-    @apply ml-4 px-4;
+    @apply ml-4 my-auto px-3;
   }
   input.views-setting-cell {
-    @apply border-2 ml-4 px-4 rounded-lg;
+    @apply h-full ml-4 px-3 rounded;
     @apply border-gray-600 bg-gray-500 text-white placeholder-gray-400;
-    @apply focus:outline-none hidden sm:inline-block;
+    @apply focus:outline-none sm:inline-block;
   }
   .views-setting-action-ripple-button {
     @apply flex flex-row w-full hover:bg-gray-600 hover:text-white;

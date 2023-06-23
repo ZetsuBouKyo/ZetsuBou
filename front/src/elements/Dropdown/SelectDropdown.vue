@@ -170,9 +170,21 @@ export default defineComponent({
       type: Object as PropType<SelectDropdownMode>,
       default: SelectDropdownMode.Button,
     },
+    options: {
+      type: Object as PropType<Array<SelectDropdownOption>>,
+      default: [],
+    },
     origin: {
       type: Object as PropType<Origin>,
       default: Origin.BottomRight,
+    },
+    isAutoCompleteOptionCaseSensitive: {
+      type: Object as PropType<boolean>,
+      default: false,
+    },
+    isAutoComplete: {
+      type: Object as PropType<boolean>,
+      default: false,
     },
     isInputChipsTitleUnique: {
       type: Object as PropType<boolean>,
@@ -213,7 +225,12 @@ export default defineComponent({
     const privateState = reactive({
       lastChipInputTitle: undefined,
       lock: false,
+      options: props.options,
     });
+
+    if (privateState.options && privateState.options.length > 0) {
+      state.options = JSON.parse(JSON.stringify(privateState.options));
+    }
 
     const params: GetParam = {
       page: 1,
@@ -383,18 +400,40 @@ export default defineComponent({
     watch(
       () => state.title,
       (title, prevTitle) => {
-        if (props.mode === SelectDropdownMode.Button || !isCrud) {
-          return;
-        }
-        if (title !== undefined) {
-          privateState.lastChipInputTitle = prevTitle;
-        } else {
-          privateState.lastChipInputTitle = undefined;
-        }
+        switch (props.mode) {
+          case SelectDropdownMode.Button:
+            return;
+          case SelectDropdownMode.Input:
+            if (!props.isAutoComplete || !privateState.options || privateState.options.length === 0) {
+              return;
+            }
+            const tmpOptions = JSON.parse(JSON.stringify(privateState.options));
+            state.options = [];
+            for (const option of tmpOptions) {
+              let optionTitle = option.title;
+              let stateTitle = state.title;
+              if (!props.isAutoCompleteOptionCaseSensitive) {
+                optionTitle = option.title.toLowerCase();
+                stateTitle = state.title.toString().toLowerCase();
+              }
+              if (optionTitle.startsWith(stateTitle)) {
+                state.options.push(option);
+              }
+            }
+          default:
+            if (!isCrud) {
+              return;
+            }
+            if (title !== undefined) {
+              privateState.lastChipInputTitle = prevTitle;
+            } else {
+              privateState.lastChipInputTitle = undefined;
+            }
 
-        params.s = state.title as string;
-        if (params.s !== undefined) {
-          getData(state, params, true);
+            params.s = state.title as string;
+            if (params.s !== undefined) {
+              getData(state, params, true);
+            }
         }
       },
     );

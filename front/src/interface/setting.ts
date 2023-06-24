@@ -63,6 +63,7 @@ export interface Setting {
   storage_s3_aws_access_key_id?: string;
   storage_s3_aws_secret_access_key?: string;
   storage_s3_endpoint_url?: string;
+  storage_s3_volume?: string;
   airflow_host?: string;
   airflow_username?: string;
   airflow_password?: string;

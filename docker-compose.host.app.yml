@@ -58,7 +58,7 @@ services:
       - MINIO_ROOT_PASSWORD=${ZETSUBOU_STORAGE_S3_AWS_SECRET_ACCESS_KEY:-wJalrXUtnFEMI}
     volumes:
       # - postgres_data:/var/lib/postgresql/data
-      - ${MINIO_VOLUME:-./dev/volumes/minio}:/data
+      - ${ZETSUBOU_STORAGE_S3_VOLUME:-./dev/volumes/minio}:/data
 
   zetsubou-redis:
     image: redis:latest

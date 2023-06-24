@@ -8,7 +8,10 @@ DATABASE_TYPE = setting.database_type
 DATABASE_URL = setting.database_url
 ECHO = setting.database_echo
 
-async_engine = create_async_engine(DATABASE_URL, echo=ECHO)
+if DATABASE_URL is not None:
+    async_engine = create_async_engine(DATABASE_URL, echo=ECHO)
+else:
+    async_engine = None
 
 
 async_session = sessionmaker(async_engine, expire_on_commit=False, class_=AsyncSession)

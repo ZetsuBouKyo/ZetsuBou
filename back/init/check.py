@@ -39,53 +39,65 @@ async def ping_airflow(
     airflow_username: str = AIRFLOW_USERNAME,
     airflow_password: str = AIRFLOW_PASSWORD,
 ) -> bool:
-    try:
-        session = AsyncAirflowSession(
-            host=airflow_host,
-            username=airflow_username,
-            password=airflow_password,
-            is_from_setting_if_none=True,
-        )
-        dag_ids = list(dags.keys())
-        resp = await session.get_dag_runs(dag_ids)
-
-        if resp.status == 401:
-            services[ServiceEnum.AIRFLOW.value] = False
-        else:
-            services[ServiceEnum.AIRFLOW.value] = True
-    except httpx.ConnectError:
+    if airflow_host is None or airflow_username is None or airflow_password is None:
         services[ServiceEnum.AIRFLOW.value] = False
+    else:
+        try:
+            session = AsyncAirflowSession(
+                host=airflow_host,
+                username=airflow_username,
+                password=airflow_password,
+                is_from_setting_if_none=True,
+            )
+            dag_ids = list(dags.keys())
+            resp = await session.get_dag_runs(dag_ids)
+
+            if resp.status == 401:
+                services[ServiceEnum.AIRFLOW.value] = False
+            else:
+                services[ServiceEnum.AIRFLOW.value] = True
+        except httpx.ConnectError:
+            services[ServiceEnum.AIRFLOW.value] = False
     return services[ServiceEnum.AIRFLOW.value]
 
 
 async def ping_elasticsearch(hosts: List[str] = ELASTICSEARCH_HOSTS) -> bool:
-    async_elasticsearch = AsyncElasticsearch(hosts=hosts)
-    services[ServiceEnum.ELASTICSEARCH.value] = await async_elasticsearch.ping()
-    await async_elasticsearch.close()
+    if not hosts:
+        services[ServiceEnum.ELASTICSEARCH.value] = False
+    else:
+        async_elasticsearch = AsyncElasticsearch(hosts=hosts)
+        services[ServiceEnum.ELASTICSEARCH.value] = await async_elasticsearch.ping()
+        await async_elasticsearch.close()
     return services[ServiceEnum.ELASTICSEARCH.value]
 
 
 async def ping_postgres(database_url: str = DATABASE_URL, echo: bool = ECHO) -> bool:
-    async_engine = create_async_engine(database_url, echo=echo)
-    try:
-        async with async_engine.begin():
-            pass
-        services[ServiceEnum.POSTGRES.value] = True
-    except ConnectionRefusedError:
+    if database_url is None:
         services[ServiceEnum.POSTGRES.value] = False
+    else:
+        async_engine = create_async_engine(database_url, echo=echo)
+        try:
+            async with async_engine.begin():
+                pass
+            services[ServiceEnum.POSTGRES.value] = True
+        except ConnectionRefusedError:
+            services[ServiceEnum.POSTGRES.value] = False
     return services[ServiceEnum.POSTGRES.value]
 
 
 async def ping_redis(redis_url: str = REDIS_URL) -> bool:
-    async_redis = _async_redis.from_url(redis_url)
-    try:
-        pong = await async_redis.ping()
-        if pong:
-            services[ServiceEnum.REDIS.value] = True
-        else:
-            services[ServiceEnum.REDIS.value] = False
-    except ConnectionError:
+    if redis_url is None:
         services[ServiceEnum.REDIS.value] = False
+    else:
+        async_redis = _async_redis.from_url(redis_url)
+        try:
+            pong = await async_redis.ping()
+            if pong:
+                services[ServiceEnum.REDIS.value] = True
+            else:
+                services[ServiceEnum.REDIS.value] = False
+        except ConnectionError:
+            services[ServiceEnum.REDIS.value] = False
     return services[ServiceEnum.REDIS.value]
 
 
@@ -95,12 +107,20 @@ async def ping_storage(
     storage_s3_aws_secret_access_key: str = STORAGE_S3_AWS_SECRET_ACCESS_KEY,
     storage_s3_endpoint_url: str = STORAGE_S3_ENDPOINT_URL,
 ) -> bool:
-    services[ServiceEnum.STORAGE.value] = await _ping_storage(
-        storage_protocol=storage_protocol,
-        storage_s3_aws_access_key_id=storage_s3_aws_access_key_id,
-        storage_s3_aws_secret_access_key=storage_s3_aws_secret_access_key,
-        storage_s3_endpoint_url=storage_s3_endpoint_url,
-    )
+    if (
+        storage_protocol is None
+        or storage_s3_aws_access_key_id is None
+        or storage_s3_aws_secret_access_key is None
+        or storage_s3_endpoint_url is None
+    ):
+        services[ServiceEnum.STORAGE.value] = False
+    else:
+        services[ServiceEnum.STORAGE.value] = await _ping_storage(
+            storage_protocol=storage_protocol,
+            storage_s3_aws_access_key_id=storage_s3_aws_access_key_id,
+            storage_s3_aws_secret_access_key=storage_s3_aws_secret_access_key,
+            storage_s3_endpoint_url=storage_s3_endpoint_url,
+        )
     return services[ServiceEnum.STORAGE.value]
 
 

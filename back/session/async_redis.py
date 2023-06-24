@@ -4,7 +4,10 @@ from redis.asyncio import Redis
 
 REDIS_URL = setting.redis_url
 
-async_redis = _async_redis.from_url(REDIS_URL)
+if REDIS_URL is not None:
+    async_redis = _async_redis.from_url(REDIS_URL)
+else:
+    async_redis = None
 
 
 async def list_pairs(key="*", async_redis: Redis = async_redis):

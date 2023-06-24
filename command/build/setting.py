@@ -1,5 +1,7 @@
+import json
 from pathlib import Path
 
+import pytz
 import typer
 from back.settings import Setting, setting
 
@@ -35,6 +37,13 @@ def print_setting():
     Print setting in the form of JSON.
     """
     print(setting.json(indent=4))
+
+
+@app.command()
+def generate_timezone_options(out: str = typer.Argument(..., help="Output path.")):
+    out_path = Path(out)
+    with out_path.open(mode="w") as fp:
+        json.dump(pytz.all_timezones, fp)
 
 
 @app.command()

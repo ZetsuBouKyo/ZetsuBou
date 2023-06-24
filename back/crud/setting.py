@@ -21,7 +21,9 @@ def get_envs(setting: Setting) -> str:
     for key, value in _setting.items():
         if value is None:
             continue
-        envs.append(f"{ENV_PREFIX}{key}={value}")
+        _key = ENV_PREFIX + key
+        _key = _key.upper()
+        envs.append(f"{_key}={value}")
 
     envs.sort()
     return "\n".join(envs)

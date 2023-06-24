@@ -27,9 +27,34 @@ def get_envs(setting: Setting) -> str:
     return "\n".join(envs)
 
 
+def init_settings(setting: Setting) -> Setting:
+    new_setting = {}
+    schema = Setting.schema()
+    properties = schema.get("properties", None)
+
+    for field_name, field_value in setting.dict().items():
+        if field_value is None:
+            example = properties.get(field_name, {}).get("example", None)
+            if example is None:
+                continue
+            new_setting[field_name] = example
+        else:
+            new_setting[field_name] = field_value
+
+    return Setting(**new_setting)
+
+
 def write_settings(file_path: Path, data: str):
     with file_path.open(mode="w") as fp:
         fp.write(data)
+
+
+def is_setting(setting_path: Path = SETTING_PATH) -> bool:
+    return setting_path.exists()
+
+
+def is_airflow_setting(setting_path: Path = AIRFLOW_SETTING_PATH) -> bool:
+    return setting_path.exists()
 
 
 def update_settings(setting: Setting, setting_path: Path = SETTING_PATH):

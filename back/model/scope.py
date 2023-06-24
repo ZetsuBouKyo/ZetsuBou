@@ -73,8 +73,10 @@ class ScopeEnum(str, Enum):
     setting_user_quest_categories_get: str = "setting:user-quest-categories:get"
     setting_user_quest_category_get: str = "setting:user-quest-category:get"
     setting_system_get: str = "setting.system:get"
+    setting_system_post: str = "setting.system:post"
     setting_system_put: str = "setting.system:put"
     setting_system_airflow_get: str = "setting.system.airflow:get"
+    setting_system_airflow_post: str = "setting.system.airflow:post"
     setting_system_airflow_put: str = "setting.system.airflow:put"
 
     tag: str = "tag"

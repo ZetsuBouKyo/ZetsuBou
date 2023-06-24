@@ -138,6 +138,11 @@ class Setting(BaseSettings):
     storage_s3_aws_access_key_id: str = Field(default=None, example="admin")
     storage_s3_aws_secret_access_key: str = Field(default=None, example="wJalrXUtnFEMI")
     storage_s3_endpoint_url: str = Field(default=None, example="http://localhost:9000")
+    storage_s3_volume: str = Field(
+        default=None,
+        description="Environment variable for docker-compose.",
+        example="./dev/volumes/minio",
+    )
 
     airflow_host: str = Field(default=None, example="http://localhost:8080")
     airflow_username: str = Field(default=None, example="airflow")

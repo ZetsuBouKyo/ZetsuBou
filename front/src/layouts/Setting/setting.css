@@ -12,16 +12,16 @@
     @apply flex flex-col py-4 w-full;
   }
   .views-setting-row {
-    @apply h-12 flex flex-row my-2 items-center;
+    @apply h-12 flex flex-row my-2 items-center pl-4;
   }
   div.views-setting-cell {
-    @apply flex items-center ml-4 px-3;
+    @apply flex items-center mx-1 px-3;
   }
   span.views-setting-cell {
-    @apply ml-4 my-auto px-3;
+    @apply mx-1 my-auto px-3;
   }
   input.views-setting-cell {
-    @apply h-full ml-4 px-3 rounded;
+    @apply h-full mx-1 px-3 rounded;
     @apply border-gray-600 bg-gray-500 text-white placeholder-gray-400;
     @apply focus:outline-none sm:inline-block;
   }

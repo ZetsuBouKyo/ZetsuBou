@@ -110,6 +110,9 @@ export default {
     }
 
     function setOrigin() {
+      if (svg.value === null) {
+        return;
+      }
       const svgWidth = svg.value.getBoundingClientRect().width;
       const svgHeight = svg.value.getBoundingClientRect().height;
       const svgSlope = svgHeight / svgWidth;

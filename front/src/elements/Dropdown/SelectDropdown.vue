@@ -397,6 +397,19 @@ export default defineComponent({
       state.chips.splice(index, 1);
     }
 
+    function updateOptions(title: string, prevTitle: string) {
+      if (title !== undefined) {
+        privateState.lastChipInputTitle = prevTitle;
+      } else {
+        privateState.lastChipInputTitle = undefined;
+      }
+
+      params.s = state.title as string;
+      if (params.s !== undefined) {
+        getData(state, params, true);
+      }
+    }
+
     watch(
       () => state.title,
       (title, prevTitle) => {
@@ -404,6 +417,11 @@ export default defineComponent({
           case SelectDropdownMode.Button:
             return;
           case SelectDropdownMode.Input:
+            if (isCrud) {
+              updateOptions(title as string, prevTitle as string);
+              return;
+            }
+
             if (!props.isAutoComplete || !privateState.options || privateState.options.length === 0) {
               return;
             }
@@ -420,20 +438,11 @@ export default defineComponent({
                 state.options.push(option);
               }
             }
-          default:
+          case SelectDropdownMode.InputChips:
             if (!isCrud) {
               return;
             }
-            if (title !== undefined) {
-              privateState.lastChipInputTitle = prevTitle;
-            } else {
-              privateState.lastChipInputTitle = undefined;
-            }
-
-            params.s = state.title as string;
-            if (params.s !== undefined) {
-              getData(state, params, true);
-            }
+            updateOptions(title as string, prevTitle as string);
         }
       },
     );

@@ -2,7 +2,8 @@
   <div class="views-setting-container">
     <div
       class="flex flex-col w-full mx-auto rounded-lg overflow-x-auto bg-gray-800 shadow-gray-900 scrollbar-gray-900-2"
-      :class="state.rows.length ? 'divide-y divide-gray-500' : ''">
+      :class="state.rows.length ? 'divide-y divide-gray-500' : ''"
+      :key="state.uuid">
       <div class="flex flex-row w-full p-4 cursor-default" v-if="state.rows.length === 0">
         <div class="flex flex-row w-full">
           <span class="w-24 self-center mr-2">No results</span>
@@ -68,7 +69,7 @@
 
 <script lang="ts">
 import axios from "axios";
-import { reactive, ref, watch } from "vue";
+import { reactive, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { ButtonColorEnum } from "@/elements/Button/button";
@@ -91,8 +92,9 @@ import { messageState } from "@/state/message";
 import { Gallery } from "@/interface/gallery";
 import { Pagination } from "@/elements/Pagination/interface";
 
-import { detectRouteChange } from "@/utils/route";
 import { getDatetime } from "@/utils/datetime";
+import { getUUID } from "@/utils/str";
+import { detectRouteChange } from "@/utils/route";
 
 interface Bookmark {
   id: number;
@@ -108,6 +110,7 @@ export interface Row {
 }
 
 interface State {
+  uuid: string;
   userID: number;
   pagination: Pagination;
   rows: Array<Row>;
@@ -117,6 +120,7 @@ export default {
   components: { PaginationBase, RippleButton, StarRating },
   setup() {
     const state = reactive<State>({
+      uuid: getUUID(),
       userID: undefined,
       pagination: undefined,
       rows: [],
@@ -145,6 +149,7 @@ export default {
           const rows = response2.data;
           state.pagination = getPagination(route.path, totalItems, params);
           state.rows = rows;
+          state.uuid = getUUID();
         }),
       );
     }
@@ -173,7 +178,7 @@ export default {
         return;
       }
       deleteUserBookmarkGallery(state.userID, bookmarkID).then((response) => {
-        if (response.status !== 200) {
+        if (response.status === 200) {
           messageState.push("Deleted bookmark");
           load();
         }

@@ -119,6 +119,14 @@ export default {
       }
     }
 
+    function checkCurrentPath() {
+      const currentPath = route.path;
+      const baseUrl = `/g/${state.gallery}/i/`;
+      if (!currentPath.startsWith(baseUrl)) {
+        clearInterval(state.play);
+      }
+    }
+
     watch(
       () => {
         return [JSON.stringify(route.params), JSON.stringify(route.query)];
@@ -133,6 +141,7 @@ export default {
         if (route.params.timeInterval !== undefined) {
           state.timeInterval = route.params.timeInterval as any;
         }
+        checkCurrentPath();
       },
     );
     watch(

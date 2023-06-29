@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from back.crud.async_tag import CrudAsyncElasticsearchTag, CrudTag
 from back.db.crud import CrudTagToken
@@ -43,7 +43,7 @@ async def search(
 
 @router.get(
     "/tag/{tag_id}/interpretation",
-    response_model=Tag,
+    response_model=Union[Tag, None],
     dependencies=[api_security([ScopeEnum.tag_interpretation_get.name])],
 )
 async def get_interpretation_of_tag(tag_id: int) -> Tag:

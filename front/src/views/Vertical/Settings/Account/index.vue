@@ -50,7 +50,7 @@
       <div class="views-setting-rows">
         <div class="views-setting-row">
           <div class="views-setting-cell w-56">Old password:</div>
-          <form>
+          <form class="h-full">
             <input
               class="views-setting-cell w-72"
               type="password"

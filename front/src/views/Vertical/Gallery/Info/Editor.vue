@@ -1,6 +1,6 @@
 <template>
   <modal ref="editor" :title="'Gallery Editor'" class="w-1/2 top-12 left-1/4">
-    <div class="modal-row">
+    <div class="modal-row-10">
       <span class="w-32 mr-4">Name:</span>
       <input
         class="flex-1 modal-input"
@@ -8,7 +8,7 @@
         :placeholder="galleryState.data.attributes.name"
         v-model="galleryState.data.attributes.name" />
     </div>
-    <div class="modal-row">
+    <div class="modal-row-10">
       <span class="w-32 mr-4">Raw Name:</span>
       <input
         class="flex-1 modal-input"
@@ -16,7 +16,7 @@
         :placeholder="galleryState.data.attributes.raw_name"
         v-model="galleryState.data.attributes.raw_name" />
     </div>
-    <div class="modal-row">
+    <div class="modal-row-10">
       <span class="w-32 mr-4">Source:</span>
       <input
         class="flex-1 modal-input"
@@ -24,7 +24,7 @@
         :placeholder="galleryState.data.attributes.src"
         v-model="galleryState.data.attributes.src" />
     </div>
-    <div class="modal-row h-10">
+    <div class="modal-row-10">
       <span class="w-32 mr-4">Category:</span>
       <select-dropdown
         class="w-64"
@@ -75,7 +75,7 @@
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>
-    <div class="modal-row">
+    <div class="modal-row-10">
       <div class="flex ml-auto">
         <ripple-button class="flex mr-2 btn btn-primary" @click="reset"> Reset </ripple-button>
         <ripple-button class="flex btn btn-primary" @click="save"> Save </ripple-button>

@@ -1,6 +1,6 @@
 <template>
   <modal ref="editor" :title="'Video Editor'" class="w-1/2 top-12 left-1/4 text-gray-300">
-    <div class="modal-row">
+    <div class="modal-row-10">
       <span class="w-32 mr-4">Name:</span>
       <input
         class="flex-1 modal-input"
@@ -8,7 +8,7 @@
         :placeholder="videoState.data.name"
         v-model="videoState.data.name" />
     </div>
-    <div class="modal-row">
+    <div class="modal-row-10">
       <span class="w-32 mr-4">Source:</span>
       <input
         class="flex-1 modal-input"
@@ -16,7 +16,7 @@
         :placeholder="videoState.data.attributes.src"
         v-model="videoState.data.attributes.src" />
     </div>
-    <div class="modal-row">
+    <div class="modal-row-10">
       <span class="w-32 mr-4">Category:</span>
       <select-dropdown
         class="w-64"
@@ -26,7 +26,7 @@
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.Input" />
       <span class="w-16 mx-4">Rating:</span>
-      <select-dropdown class="h-10 w-24 ml-2 3xl:w-48" :options-width-class="'w-24'" :state="rating"></select-dropdown>
+      <select-dropdown class="w-24 ml-2 3xl:w-48" :options-width-class="'w-24'" :state="rating"></select-dropdown>
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Labels:</span>
@@ -67,7 +67,7 @@
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>
-    <div class="modal-row">
+    <div class="modal-row-10">
       <div class="flex ml-auto">
         <ripple-button class="flex mr-2 btn btn-primary" @click="reset"> Reset </ripple-button>
         <ripple-button class="flex btn btn-primary" @click="save"> Save </ripple-button>

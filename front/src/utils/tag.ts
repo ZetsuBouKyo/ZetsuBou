@@ -5,7 +5,7 @@ import SelectDropdown, { SelectDropdownOption, SelectDropdownState } from "@/ele
 import { Gallery } from "@/interface/gallery";
 import { Video } from "@/interface/video";
 import { TagFieldsPrivateState, Tags } from "@/interface/tag";
-import { SourceState } from "@/interface/source";
+import { SourceDataState } from "@/interface/source";
 
 import { getTagInterpretation, TagInterpretation } from "@/api/v1/tag/tag";
 import { getTagTokenStartWith } from "@/api/v1/tag/token";
@@ -66,7 +66,7 @@ export function onMouseoverOption(_: any, opt: SelectDropdownOption) {
 export function watchTagsLength(
   privateState?: TagFieldsPrivateState,
   tagFieldsState?: SelectDropdownState,
-  sourceState?: SourceState<Gallery> | SourceState<Video>,
+  sourceState?: SourceDataState<Gallery | Video>,
 ): [any, any] {
   return [
     () => Object.keys(sourceState.data.tags).length,
@@ -94,7 +94,7 @@ export function watchTagsLength(
 export function watchTagFieldsChipsLength(
   privateState?: TagFieldsPrivateState,
   tagFieldsState?: SelectDropdownState,
-  sourceState?: SourceState<Gallery | Video>,
+  sourceState?: SourceDataState<Gallery | Video>,
 ): [any, any] {
   return [
     () => tagFieldsState.chips.length,

@@ -261,19 +261,18 @@ export default defineComponent({
         if (response.status !== 200) {
           state.scroll.isEnd = false;
         }
-        const data = response.data;
-        if (data) {
-          if (data.length === 0) {
+        const options = response.data;
+        if (options) {
+          if (options.length === 0) {
             state.scroll.isEnd = true;
           }
-          for (let i = 0; i < data.length; i++) {
-            const opt = props.onGetToOptions(data[i]);
-            opt.raw = data[i];
-            switch (+props.mode) {
+          for (let option of options) {
+            const opt = props.onGetToOptions(option);
+            opt.raw = option;
+            switch (props.mode) {
               case SelectDropdownMode.InputChips:
                 let skip = false;
-                for (let j = 0; j < state.chips.length; j++) {
-                  const chip = state.chips[j];
+                for (let chip of state.chips) {
                   if (chip.title === opt.title && chip.value === opt.value) {
                     skip = true;
                     break;
@@ -304,10 +303,9 @@ export default defineComponent({
     }
 
     function select(opt: SelectDropdownOption) {
-      switch (+props.mode) {
+      switch (props.mode) {
         case SelectDropdownMode.InputChips:
-          for (let i = 0; i < state.chips.length; i++) {
-            const chip = state.chips[i];
+          for (let chip of state.chips) {
             if (props.isInputChipsTitleUnique && chip.title === opt.title) {
               dropdown.value.close();
               return;

@@ -1,11 +1,19 @@
 import { AxiosResponse } from "axios";
 
-export interface SourceDataState<Source> {
-  data: Source;
+import { Tags } from "@/interface/tag";
+export interface Source {
+  id?: string;
+  path?: string;
+  tags?: Tags;
+  labels?: Array<string>;
+  timestamp?: string;
 }
-export interface SourceState<Source> extends SourceDataState<Source> {
-  init: (id: string) => Promise<AxiosResponse<Source>>;
-  reset: () => Promise<AxiosResponse<Source>>;
+export interface SourceDataState<SourceT> {
+  data: SourceT;
+}
+export interface SourceState<SourceT> extends SourceDataState<SourceT> {
+  init: (id: string) => Promise<AxiosResponse<SourceT>>;
+  reset: () => Promise<AxiosResponse<SourceT>>;
   getTimestamp: () => string;
-  save: () => Promise<AxiosResponse<Source>>;
+  save: () => Promise<AxiosResponse<SourceT>>;
 }

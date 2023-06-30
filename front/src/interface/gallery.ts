@@ -1,4 +1,4 @@
-import { Tags } from "@/interface/tag";
+import { Source } from "@/interface/source";
 
 export interface Attributes {
   name: string;
@@ -9,13 +9,8 @@ export interface Attributes {
   src: string;
 }
 
-export interface Gallery {
-  id: string;
-  path: string;
+export interface Gallery extends Source {
   group: string;
-  timestamp: string;
   mtime: string;
   attributes: Attributes;
-  tags: Tags;
-  labels: Array<string>;
 }

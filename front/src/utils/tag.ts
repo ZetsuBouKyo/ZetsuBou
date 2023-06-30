@@ -2,10 +2,8 @@ import { reactive } from "vue";
 
 import SelectDropdown, { SelectDropdownOption, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.vue";
 
-import { Gallery } from "@/interface/gallery";
-import { Video } from "@/interface/video";
-import { TagFieldsPrivateState, Tags } from "@/interface/tag";
-import { SourceDataState } from "@/interface/source";
+import { TagFieldsPrivateState } from "@/interface/tag";
+import { Source, SourceDataState } from "@/interface/source";
 
 import { getTagInterpretation, TagInterpretation } from "@/api/v1/tag/tag";
 import { getTagTokenStartWith } from "@/api/v1/tag/token";
@@ -66,7 +64,7 @@ export function onMouseoverOption(_: any, opt: SelectDropdownOption) {
 export function watchTagsLength(
   privateState?: TagFieldsPrivateState,
   tagFieldsState?: SelectDropdownState,
-  sourceState?: SourceDataState<Gallery | Video>,
+  sourceState?: SourceDataState<Source>,
 ): [any, any] {
   return [
     () => Object.keys(sourceState.data.tags).length,
@@ -94,7 +92,7 @@ export function watchTagsLength(
 export function watchTagFieldsChipsLength(
   privateState?: TagFieldsPrivateState,
   tagFieldsState?: SelectDropdownState,
-  sourceState?: SourceDataState<Gallery | Video>,
+  sourceState?: SourceDataState<Source>,
 ): [any, any] {
   return [
     () => tagFieldsState.chips.length,

@@ -54,39 +54,70 @@
     </div>
     <div class="modal-row h-10">
       <span class="w-28 mr-4 text-white">Category:</span>
-      <input class="modal-input flex-1" type="text" :placeholder="category.value" v-model="category.value" />
+      <select-dropdown
+        class="flex-1"
+        :options-width-class="'w-96'"
+        :origin="Origin.BottomLeft"
+        :state="categories"
+        :is-auto-complete="true"
+        :on-get="onGetCategories"
+        :on-get-to-options="onGetCategoriesToOptions"
+        :on-get-tip="onGetTip"
+        :on-mouseover-option="onMouseoverOption"
+        :mode="SelectDropdownMode.Input" />
     </div>
     <div class="modal-row h-10">
       <span class="w-28 mr-4 text-white">Uploader:</span>
-      <input class="modal-input flex-1" type="text" :placeholder="uploader.value" v-model="uploader.value" />
+      <select-dropdown
+        class="flex-1"
+        :options-width-class="'w-96'"
+        :origin="Origin.BottomLeft"
+        :state="uploader"
+        :is-auto-complete="true"
+        :on-get="onGetUploader"
+        :on-get-to-options="onGetUploaderToOptions"
+        :on-get-tip="onGetTip"
+        :on-mouseover-option="onMouseoverOption"
+        :mode="SelectDropdownMode.Input" />
     </div>
     <div class="modal-row" @keyup.enter.stop="">
       <span class="w-28 mr-4 text-white">Labels:</span>
       <select-dropdown
         class="flex-1"
+        :is-input-chips-title-unique="true"
         :options-width-class="'w-64'"
         :origin="Origin.BottomLeft"
         :state="labels"
+        :on-get="getTagTokenStartWith"
+        :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>
     <div class="modal-row" @keyup.enter.stop="">
       <span class="w-28 mr-4 text-white">Tag Fields:</span>
       <select-dropdown
         class="flex-1"
+        :is-input-chips-title-unique="true"
         :options-width-class="'w-64'"
         :origin="Origin.BottomLeft"
         :state="tagFields"
-        :on-get="getSettingFrontGalleryStartWithTagFields"
+        :on-get="getStartWithTagFields"
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>
-    <div class="modal-row" v-for="(fieldState, field, index) in tags" :key="index" @keyup.enter.stop="">
+    <div
+      class="modal-row"
+      v-for="(_, field) in privateState.tagFields"
+      :key="privateState.tagFields[field]"
+      @keyup.enter.stop="">
       <span class="w-28 mx-4">{{ field }}:</span>
       <select-dropdown
         class="flex-1"
+        :is-input-chips-title-unique="true"
         :options-width-class="'w-64'"
         :origin="Origin.BottomLeft"
-        :state="fieldState"
+        :state="privateState.tagFields[field]"
+        :on-get="privateState.onGets[field]"
+        :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>
     <div class="modal-row">
@@ -105,22 +136,34 @@ import {
   getSettingFrontGalleryStartWithCategories,
   getSettingFrontGalleryStartWithTagFields,
 } from "@/api/v1/setting/front/gallery";
+import {
+  getSettingFrontVideoStartWithCategories,
+  getSettingFrontVideoStartWithTagFields,
+} from "@/api/v1/setting/front/video";
+import { getTagTokenStartWith } from "@/api/v1/tag/token";
 
+import { Source, SourceDataState } from "@/interface/source";
 import { SearchCategory } from "@/interface/search";
+import { TagFieldsPrivateState } from "@/interface/tag";
 
 import { durationToSecond } from "@/utils/datetime";
 import { toTitle } from "@/utils/str";
+import { onGetTip, onMouseoverOption } from "@/utils/tag";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 
 import SelectDropdown, {
+  OnGet,
+  Origin,
   SelectDropdownMode,
   SelectDropdownState,
-  Origin,
 } from "@/elements/Dropdown/SelectDropdown.vue";
 
 import { settingState } from "@/state/setting";
+
+import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
+import { watchTags, watchTagFieldsChipsLength } from "@/utils/tag";
 
 export enum AdvancedSearchFieldType {
   String,
@@ -161,8 +204,15 @@ export default {
   },
   setup(props) {
     const router = useRouter();
-
     const state = props.state;
+
+    const privateState = reactive<TagFieldsPrivateState>({
+      tagFields: {},
+      onGets: {},
+    });
+    const sourceState = reactive<SourceDataState<Source>>({
+      data: { labels: [], tags: {} },
+    });
 
     function load() {
       if (settingState.setting === undefined) {
@@ -217,41 +267,45 @@ export default {
       },
     );
 
-    const category = reactive({ value: undefined });
-    const uploader = reactive({ value: undefined });
+    let onGetCategories: OnGet;
+    let getStartWithTagFields: OnGet;
+    switch (state.category) {
+      case SearchCategory.Gallery:
+        onGetCategories = getSettingFrontGalleryStartWithCategories;
+        getStartWithTagFields = getSettingFrontGalleryStartWithTagFields;
+        break;
+      case SearchCategory.Video:
+        onGetCategories = getSettingFrontVideoStartWithCategories;
+        getStartWithTagFields = getSettingFrontVideoStartWithTagFields;
+    }
+
+    const categories = SelectDropdown.initState() as SelectDropdownState;
+
+    const onGetCategoriesToOptions = tokenToOption;
+
+    const uploader = SelectDropdown.initState() as SelectDropdownState;
+    const onGetUploader = getTagTokenStartWith;
+    const onGetUploaderToOptions = tokenToOption;
 
     const advancedSearch = ref();
-    const labels = SelectDropdown.initState() as SelectDropdownState;
 
-    const tags = reactive<{ [key: string]: SelectDropdownState }>({});
+    const labels = SelectDropdown.initState() as SelectDropdownState;
+    watch(...watchLabels(labels, sourceState));
+    watch(...watchLabelsChipsLength(labels, sourceState));
+
     const tagFields = SelectDropdown.initState() as SelectDropdownState;
-    watch(
-      () => tagFields.chips.length,
-      () => {
-        const chipTitles = [];
-        for (const chip of tagFields.chips) {
-          chipTitles.push(chip.title);
-          if (tags[chip.title] === undefined) {
-            tags[chip.title] = SelectDropdown.initState() as SelectDropdownState;
-          }
-        }
-        for (const title in tags) {
-          if (!chipTitles.includes(title)) {
-            delete tags[title];
-          }
-        }
-      },
-    );
+    watch(...watchTags(privateState, tagFields, sourceState));
+    watch(...watchTagFieldsChipsLength(privateState, tagFields, sourceState));
 
     function search() {
       const queries = {};
 
-      if (category.value !== undefined) {
-        queries["category"] = category.value;
+      if (categories.title !== undefined) {
+        queries["category"] = categories.title;
       }
 
-      if (uploader.value !== undefined) {
-        queries["uploader"] = uploader.value;
+      if (uploader.title !== undefined) {
+        queries["uploader"] = uploader.title;
       }
 
       for (const field of props.state.fields) {
@@ -317,10 +371,10 @@ export default {
       }
 
       k = 1;
-      for (const field in tags) {
-        const chips = tags[field].chips;
+      for (let tagField in sourceState.data.tags) {
+        const chips = privateState.tagFields[tagField].chips;
         for (const chip of chips) {
-          queries[`tag_field_${k}`] = field;
+          queries[`tag_field_${k}`] = tagField;
           queries[`tag_value_${k}`] = chip.title;
           k++;
         }
@@ -351,18 +405,25 @@ export default {
     return {
       advancedSearch,
       AdvancedSearchFieldType,
-      category,
-      getSettingFrontGalleryStartWithCategories,
-      getSettingFrontGalleryStartWithTagFields,
+      categories,
+      getStartWithTagFields,
+      getTagTokenStartWith,
       labels,
+      onGetCategories,
+      onGetCategoriesToOptions,
+      onGetTip,
+      onGetUploader,
+      onGetUploaderToOptions,
+      onMouseoverOption,
       open,
       Origin,
+      privateState,
       reset,
       search,
       SelectDropdownMode,
+      sourceState,
       state,
       tagFields,
-      tags,
       tokenToOption,
       toTitle,
       uploader,

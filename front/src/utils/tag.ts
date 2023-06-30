@@ -1,8 +1,15 @@
 import { reactive } from "vue";
 
-import { SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, { SelectDropdownOption, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.vue";
+
+import { Gallery } from "@/interface/gallery";
+import { Video } from "@/interface/video";
+import { TagFieldsPrivateState, Tags } from "@/interface/tag";
+import { SourceState } from "@/interface/source";
 
 import { getTagInterpretation, TagInterpretation } from "@/api/v1/tag/tag";
+import { getTagTokenStartWith } from "@/api/v1/tag/token";
+import { GetTagTokenStartWithParam } from "@/api/v1/tag/token.d";
 
 const tips = reactive({});
 
@@ -54,4 +61,71 @@ export function onMouseoverOption(_: any, opt: SelectDropdownOption) {
     const tag = response.data as TagInterpretation;
     tips[opt.value] = tag;
   });
+}
+
+export function watchTagsLength(
+  privateState?: TagFieldsPrivateState,
+  tagFieldsState?: SelectDropdownState,
+  sourceState?: SourceState<Gallery> | SourceState<Video>,
+): [any, any] {
+  return [
+    () => Object.keys(sourceState.data.tags).length,
+    (currentLength: number, _: number) => {
+      if (currentLength !== tagFieldsState.chips.length) {
+        tagFieldsState.chips = [];
+        privateState.tagFields = {};
+        for (const field in sourceState.data.tags) {
+          tagFieldsState.chips.push({ title: field, value: undefined });
+          privateState.tagFields[field] = SelectDropdown.initState() as SelectDropdownState;
+          privateState.onGets[field] = (params: GetTagTokenStartWithParam) => {
+            params.category = field;
+            return getTagTokenStartWith(params);
+          };
+
+          for (const tagValue of sourceState.data.tags[field]) {
+            privateState.tagFields[field].chips.push({ title: tagValue, value: undefined });
+          }
+        }
+      }
+    },
+  ];
+}
+
+export function watchTagFieldsChipsLength(
+  privateState?: TagFieldsPrivateState,
+  tagFieldsState?: SelectDropdownState,
+  sourceState?: SourceState<Gallery | Video>,
+): [any, any] {
+  return [
+    () => tagFieldsState.chips.length,
+    (currentLength: number, _: number) => {
+      if (currentLength !== Object.keys(sourceState.data.tags).length) {
+        const chipTitles = [];
+        for (const chip of tagFieldsState.chips) {
+          if (privateState.tagFields[chip.title] === undefined) {
+            privateState.tagFields[chip.title] = SelectDropdown.initState() as SelectDropdownState;
+            privateState.onGets[chip.title] = (params) => {
+              params.category = chip.title;
+              return getTagTokenStartWith(params);
+            };
+          }
+          if (sourceState.data.tags[chip.title] === undefined) {
+            sourceState.data.tags[chip.title] = [];
+          }
+          chipTitles.push(chip.title);
+        }
+        for (const field in privateState.tagFields) {
+          if (!chipTitles.includes(field)) {
+            delete privateState.tagFields[field];
+            delete privateState.onGets[field];
+          }
+        }
+        for (const field in sourceState.data.tags) {
+          if (!chipTitles.includes(field)) {
+            delete sourceState.data.tags[field];
+          }
+        }
+      }
+    },
+  ];
 }

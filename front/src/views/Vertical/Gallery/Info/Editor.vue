@@ -102,11 +102,12 @@ import SelectDropdown, {
   SelectDropdownMode,
   Origin,
   OnGet,
-  reset,
 } from "@/elements/Dropdown/SelectDropdown.vue";
 
 import { galleryState } from "@/state/gallery";
 import { messageState } from "@/state/message";
+
+import { watchTagsLength, watchTagFieldsChipsLength } from "@/utils/tag";
 
 interface TagFields {
   [key: string]: SelectDropdownState;
@@ -207,59 +208,8 @@ export default defineComponent({
     );
 
     const tagFields = SelectDropdown.initState() as SelectDropdownState;
-    watch(
-      () => Object.keys(galleryState.data.tags).length,
-      (cur, _) => {
-        if (cur !== tagFields.chips.length) {
-          tagFields.chips = [];
-          privateState.tagFields = {};
-          for (const field in galleryState.data.tags) {
-            tagFields.chips.push({ title: field, value: undefined });
-            privateState.tagFields[field] = SelectDropdown.initState() as SelectDropdownState;
-            privateState.onGets[field] = (params) => {
-              params.category = field;
-              return getTagTokenStartWith(params);
-            };
-
-            for (const tagValue of galleryState.data.tags[field]) {
-              privateState.tagFields[field].chips.push({ title: tagValue, value: undefined });
-            }
-          }
-        }
-      },
-    );
-    watch(
-      () => tagFields.chips.length,
-      (cur, _) => {
-        if (cur !== Object.keys(galleryState.data.tags).length) {
-          const chipTitles = [];
-          for (const chip of tagFields.chips) {
-            if (privateState.tagFields[chip.title] === undefined) {
-              privateState.tagFields[chip.title] = SelectDropdown.initState() as SelectDropdownState;
-              privateState.onGets[chip.title] = (params) => {
-                params.category = chip.title;
-                return getTagTokenStartWith(params);
-              };
-            }
-            if (galleryState.data.tags[chip.title] === undefined) {
-              galleryState.data.tags[chip.title] = [];
-            }
-            chipTitles.push(chip.title);
-          }
-          for (const field in privateState.tagFields) {
-            if (!chipTitles.includes(field)) {
-              delete privateState.tagFields[field];
-              delete privateState.onGets[field];
-            }
-          }
-          for (const field in galleryState.data.tags) {
-            if (!chipTitles.includes(field)) {
-              delete galleryState.data.tags[field];
-            }
-          }
-        }
-      },
-    );
+    watch(...watchTagsLength(privateState, tagFields, galleryState));
+    watch(...watchTagFieldsChipsLength(privateState, tagFields, galleryState));
 
     function save() {
       for (const field in privateState.tagFields) {

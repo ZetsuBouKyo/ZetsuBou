@@ -1,3 +1,5 @@
+import { Tags } from "@/interface/tag";
+
 export interface VideoAttributes {
   category: string;
   rating: number;
@@ -11,17 +13,13 @@ export interface VideoAttributes {
   src: string;
 }
 
-export interface VideoTags {
-  [key: string]: Array<string>;
-}
-
 export interface Video {
   id: string;
   name: string;
   other_names: Array<string>;
   path: string;
   attributes: VideoAttributes;
-  tags: VideoTags;
+  tags: Tags;
   labels: Array<string>;
   timestamp: string;
 }

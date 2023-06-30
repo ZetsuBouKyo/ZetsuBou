@@ -1,3 +1,5 @@
+import { Tags } from "@/interface/tag";
+
 export interface Attributes {
   name: string;
   raw_name: string;
@@ -5,10 +7,6 @@ export interface Attributes {
   category: string;
   rating: string | number;
   src: string;
-}
-
-export interface Tags {
-  [key: string]: Array<string>;
 }
 
 export interface Gallery {

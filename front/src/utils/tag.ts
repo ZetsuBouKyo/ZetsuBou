@@ -61,13 +61,13 @@ export function onMouseoverOption(_: any, opt: SelectDropdownOption) {
   });
 }
 
-export function watchTagsLength(
+export function watchTags(
   privateState?: TagFieldsPrivateState,
   tagFieldsState?: SelectDropdownState,
   sourceState?: SourceDataState<Source>,
 ): [any, any] {
   return [
-    () => Object.keys(sourceState.data.tags).length,
+    () => JSON.stringify(sourceState.data.tags),
     (currentLength: number, _: number) => {
       if (currentLength !== tagFieldsState.chips.length) {
         tagFieldsState.chips = [];

@@ -2,12 +2,9 @@ import { SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.vue";
 
 import { Source, SourceDataState } from "@/interface/source";
 
-export function watchLabelsLength(
-  labelsState?: SelectDropdownState,
-  sourceState?: SourceDataState<Source>,
-): [any, any] {
+export function watchLabels(labelsState?: SelectDropdownState, sourceState?: SourceDataState<Source>): [any, any] {
   return [
-    () => sourceState.data.labels.length,
+    () => JSON.stringify(sourceState.data.labels),
     () => {
       labelsState.chips = [];
       if (sourceState.data.labels) {

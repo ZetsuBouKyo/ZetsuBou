@@ -107,6 +107,7 @@ import SelectDropdown, {
 import { galleryState } from "@/state/gallery";
 import { messageState } from "@/state/message";
 
+import { watchLabelsLength, watchLabelsChipsLength } from "@/utils/label";
 import { watchTagsLength, watchTagFieldsChipsLength } from "@/utils/tag";
 
 interface TagFields {
@@ -184,28 +185,8 @@ export default defineComponent({
     ];
 
     const labels = SelectDropdown.initState() as SelectDropdownState;
-    watch(
-      () => galleryState.data.labels.length,
-      () => {
-        labels.chips = [];
-        if (galleryState.data.labels) {
-          for (const label of galleryState.data.labels) {
-            labels.chips.push({ title: label, value: undefined });
-          }
-        }
-      },
-    );
-    watch(
-      () => labels.chips.length,
-      () => {
-        if (labels.chips !== undefined) {
-          galleryState.data.labels = [];
-          for (const chip of labels.chips) {
-            galleryState.data.labels.push(chip.title);
-          }
-        }
-      },
-    );
+    watch(...watchLabelsLength(labels, galleryState));
+    watch(...watchLabelsChipsLength(labels, galleryState));
 
     const tagFields = SelectDropdown.initState() as SelectDropdownState;
     watch(...watchTagsLength(privateState, tagFields, galleryState));

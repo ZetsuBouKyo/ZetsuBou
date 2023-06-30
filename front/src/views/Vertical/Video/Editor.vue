@@ -99,6 +99,7 @@ import SelectDropdown, {
 import { videoState } from "@/state/video";
 import { messageState } from "@/state/message";
 
+import { watchLabelsLength, watchLabelsChipsLength } from "@/utils/label";
 import { watchTagsLength, watchTagFieldsChipsLength } from "@/utils/tag";
 
 interface TagFields {
@@ -176,28 +177,8 @@ export default defineComponent({
     ];
 
     const labels = SelectDropdown.initState() as SelectDropdownState;
-    watch(
-      () => videoState.data.labels.length,
-      () => {
-        labels.chips = [];
-        if (videoState.data.labels) {
-          for (const label of videoState.data.labels) {
-            labels.chips.push({ title: label, value: undefined });
-          }
-        }
-      },
-    );
-    watch(
-      () => labels.chips.length,
-      () => {
-        if (labels.chips !== undefined) {
-          videoState.data.labels = [];
-          for (const chip of labels.chips) {
-            videoState.data.labels.push(chip.title);
-          }
-        }
-      },
-    );
+    watch(...watchLabelsLength(labels, videoState));
+    watch(...watchLabelsChipsLength(labels, videoState));
 
     const tagFields = SelectDropdown.initState() as SelectDropdownState;
     watch(...watchTagsLength(privateState, tagFields, videoState));

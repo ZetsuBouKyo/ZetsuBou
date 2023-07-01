@@ -1,22 +1,22 @@
 <template>
   <div class="hidden sm:block fixed right-0 top-20 m-4 bg-opacity-50 rounded-lg p-2">
     <div class="flex flex-col">
-      <div class="flex flex-col" v-if="state.bookmark !== undefined && state.current !== undefined">
-        <icon-mdi-bookmark-outline
-          class="cursor-pointer hover:opacity-50 opacity-100 my-2"
-          style="font-size: 1.5rem; color: white"
-          v-if="!state.isBookmark"
-          @click="addBookmark" />
+      <div class="flex flex-col" v-if="svgState.bookmark !== undefined && svgState.panel.current !== undefined">
         <icon-mdi-bookmark
           class="cursor-pointer hover:opacity-50 opacity-100 my-2"
           style="font-size: 1.5rem; color: white"
-          v-else
+          v-if="svgState.bookmark && svgState.bookmark.isBookmark"
           @click="deleteBookmark" />
+        <icon-mdi-bookmark-outline
+          class="cursor-pointer hover:opacity-50 opacity-100 my-2"
+          style="font-size: 1.5rem; color: white"
+          v-else
+          @click="addBookmark" />
       </div>
       <icon-mdi-file-edit-outline
         class="cursor-pointer hover:opacity-50 opacity-100 my-2"
         style="font-size: 1.5rem; color: white"
-        @click="tagger.toggleTagger" />
+        @click="svgState.sidebar.toggleSidebar" />
     </div>
   </div>
   <div class="fixed left-0 bottom-3 bg-gray-900 bg-opacity-50 rounded-lg m-1 p-1 flex">
@@ -27,8 +27,8 @@
   </div>
   <div class="flex flex-col fixed right-0 bottom-0 m-4 bg-gray-900 bg-opacity-50 rounded-lg p-2">
     <div class="flex mx-auto text-white">
-      <span :key="state.current" v-if="state.current !== undefined">
-        {{ state.current + 1 }} / {{ state.imgs.length }}
+      <span :key="svgState.panel.current" v-if="svgState.panel.current !== undefined">
+        {{ svgState.panel.current + 1 }} / {{ svgState.panel.imgs.length }}
       </span>
       <span v-else>&emsp;</span>
     </div>
@@ -41,7 +41,7 @@
         class="cursor-pointer hover:opacity-50"
         style="font-size: 2rem; color: white"
         @click="startPlay"
-        v-if="!state.isPlay" />
+        v-if="!svgState.panel.isPlay" />
       <icon-ic-round-stop-circle
         class="cursor-pointer hover:opacity-50"
         style="font-size: 2rem; color: white"
@@ -57,7 +57,7 @@
 
 <script lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { reactive, onMounted, onBeforeMount, watch } from "vue";
+import { PropType, onMounted, onBeforeMount, watch } from "vue";
 
 import { getImages } from "@/api/v1/gallery/image";
 import {
@@ -69,24 +69,12 @@ import {
 
 import { userState } from "@/state/user";
 
-interface Bookmark {
-  user_id: number;
-  gallery_id: string;
-  page: number;
-  [key: string]: any;
-}
-
-interface State {
-  bookmark: undefined | null | Bookmark;
-  current: number;
-  isBookmark: boolean;
-  [key: string]: any;
-}
+import { SVG } from "./SvgEditor/svg.d";
 
 export default {
   props: {
-    tagger: {
-      type: Object,
+    svg: {
+      type: Object as PropType<SVG>,
       default: undefined,
     },
   },
@@ -94,36 +82,26 @@ export default {
     const route = useRoute();
     const router = useRouter();
 
-    const tagger = props.tagger;
-
-    const state = reactive<State>({
-      imgs: [],
-      gallery: route.params.gallery as any,
-      imgName: route.params.img,
-      timeInterval: route.query.interval ? parseInt(route.query.interval as string) : 5,
-      current: undefined,
-      isPlay: route.query.play as any,
-      play: undefined,
-      bookmark: undefined,
-      isBookmark: false,
-    });
+    const svgState = props.svg;
 
     function updateBookmarkStatus() {
-      if (state.current === undefined || state.bookmark === undefined) {
+      if (svgState.panel.current === undefined || svgState.bookmark === undefined) {
         return;
       }
-      if (state.bookmark && state.bookmark.page === state.current) {
-        state.isBookmark = true;
-      } else {
-        state.isBookmark = false;
+      if (svgState.bookmark) {
+        if (svgState.bookmark.page === svgState.panel.current) {
+          svgState.bookmark.isBookmark = true;
+        } else {
+          svgState.bookmark.isBookmark = false;
+        }
       }
     }
 
     function checkCurrentPath() {
       const currentPath = route.path;
-      const baseUrl = `/g/${state.gallery}/i/`;
+      const baseUrl = `/g/${svgState.panel.galleryID}/i/`;
       if (!currentPath.startsWith(baseUrl)) {
-        clearInterval(state.play);
+        clearInterval(svgState.panel.play);
       }
     }
 
@@ -133,20 +111,20 @@ export default {
       },
       () => {
         if (route.params.gallery !== undefined) {
-          state.gallery = route.params.gallery;
+          svgState.panel.galleryID = route.params.gallery as string;
         }
         if (route.params.imgName !== undefined) {
-          state.imgName = route.params.imgName;
+          svgState.panel.imgName = route.params.imgName as string;
         }
         if (route.params.timeInterval !== undefined) {
-          state.timeInterval = route.params.timeInterval as any;
+          svgState.panel.timeInterval = parseInt(route.params.timeInterval as string) as number;
         }
         checkCurrentPath();
       },
     );
     watch(
       () => {
-        return [JSON.stringify(state.bookmark), state.current];
+        return [JSON.stringify(svgState.bookmark), svgState.panel.current];
       },
       () => {
         updateBookmarkStatus();
@@ -154,24 +132,24 @@ export default {
     );
 
     function back() {
-      const url = "/g/" + state.gallery;
+      const url = "/g/" + svgState.panel.galleryID;
       router.push(url);
     }
     function getNextPageUrl() {
-      const nextP = state.current + 1;
+      const nextP = svgState.panel.current + 1;
       let url = undefined;
-      if (nextP < state.imgs.length) {
-        url = `/g/${state.gallery}/i/${state.imgs[nextP]}`;
-        state.current = nextP;
+      if (nextP < svgState.panel.imgs.length) {
+        url = `/g/${svgState.panel.galleryID}/i/${svgState.panel.imgs[nextP]}`;
+        svgState.panel.current = nextP;
       }
       return url;
     }
 
     function previousPage() {
-      const previousP = state.current - 1;
+      const previousP = svgState.panel.current - 1;
       if (previousP > -1) {
-        const url = `/g/${state.gallery}/i/${state.imgs[previousP]}`;
-        state.current = previousP;
+        const url = `/g/${svgState.panel.galleryID}/i/${svgState.panel.imgs[previousP]}`;
+        svgState.panel.current = previousP;
         router.push(url);
       }
     }
@@ -184,26 +162,26 @@ export default {
     }
 
     function startPlay() {
-      state.isPlay = true;
-      if (state.current === state.imgs.length - 1) {
-        state.isPlay = false;
+      svgState.panel.isPlay = true;
+      if (svgState.panel.current === svgState.panel.imgs.length - 1) {
+        svgState.panel.isPlay = false;
         return;
       }
-      state.play = setInterval(() => {
+      svgState.panel.play = setInterval(() => {
         const baseUrl = getNextPageUrl();
         if (baseUrl === undefined) {
-          state.isPlay = false;
-          clearInterval(state.play);
+          svgState.panel.isPlay = false;
+          clearInterval(svgState.panel.play);
           return;
         }
-        const url = `${baseUrl}?play=1&interval=${state.timeInterval.toString()}`;
+        const url = `${baseUrl}?play=1&interval=${svgState.panel.timeInterval.toString()}`;
         router.push(url);
-      }, state.timeInterval * 1000);
+      }, svgState.panel.timeInterval * 1000);
     }
 
     function stopPlay() {
-      clearTimeout(state.play);
-      state.isPlay = false;
+      clearTimeout(svgState.panel.play);
+      svgState.panel.isPlay = false;
     }
 
     onBeforeMount(() => {
@@ -217,10 +195,10 @@ export default {
     });
 
     function load() {
-      getImages(state.gallery).then((response) => {
-        state.imgs = response.data;
-        state.current = state.imgs.indexOf(state.imgName);
-        if (state.isPlay) {
+      getImages(svgState.panel.galleryID).then((response) => {
+        svgState.panel.imgs = response.data;
+        svgState.panel.current = svgState.panel.imgs.indexOf(svgState.panel.imgName as never);
+        if (svgState.panel.isPlay) {
           startPlay();
         }
       });
@@ -235,9 +213,9 @@ export default {
       const userID = userState.id;
       const galleryID = route.params.gallery as string;
       getUserBookmarkGallery(userID, galleryID).then((response: any) => {
-        state.bookmark = null;
+        svgState.bookmark = null;
         if (response.data) {
-          state.bookmark = response.data;
+          svgState.bookmark = response.data;
         }
       });
     }
@@ -245,7 +223,7 @@ export default {
     function getNewBookmark() {
       const userID = userState.id;
       const galleryID = route.params.gallery as string;
-      const page = state.current;
+      const page = svgState.panel.current;
       if (userID === undefined || galleryID === undefined || page === undefined) {
         return undefined;
       }
@@ -262,12 +240,12 @@ export default {
         return;
       }
 
-      const bookmark = state.bookmark;
+      const bookmark = svgState.bookmark;
       switch (bookmark) {
         case null:
           postUserBookmarkGallery(newBookmark.user_id, newBookmark).then((response: any) => {
             if (response.status === 200) {
-              state.bookmark = response.data;
+              svgState.bookmark = response.data;
             }
           });
           break;
@@ -277,7 +255,7 @@ export default {
           newBookmark.id = bookmark.id;
           putUserBookmarkGallery(newBookmark.user_id, newBookmark).then((response: any) => {
             if (response.status === 200) {
-              state.bookmark = newBookmark;
+              svgState.bookmark = newBookmark;
             }
           });
       }
@@ -285,11 +263,11 @@ export default {
 
     function deleteBookmark() {
       const userID = userState.id;
-      const bookmark = state.bookmark;
+      const bookmark = svgState.bookmark;
       if (bookmark.id) {
         deleteUserBookmarkGallery(userID, bookmark.id).then((response: any) => {
           if (response.status === 200) {
-            state.bookmark = null;
+            svgState.bookmark = null;
           }
         });
       }
@@ -302,9 +280,8 @@ export default {
       nextPage,
       previousPage,
       startPlay,
-      state,
       stopPlay,
-      tagger,
+      svgState,
     };
   },
 };

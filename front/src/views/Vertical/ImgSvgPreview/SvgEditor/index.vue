@@ -1,44 +1,31 @@
 <template>
   <div class="flex flex-row">
-    <sidebar class="animate-slide-in fixed top-20 left-0" :layerState="layerState" v-if="tagger.isTagger" />
-    <svg-container ref="svg" :tagger="tagger" :layerState="layerState">
-      <svg-layers v-if="tagger.isTagger" :state="layerState" />
+    <sidebar class="animate-slide-in fixed top-20 left-0" :svg="svgState" v-if="svgState.sidebar.isSidebar" />
+    <svg-container ref="svg" :svg="svgState">
+      <svg-layers v-if="svgState.sidebar.isSidebar" :svg="svgState" />
     </svg-container>
   </div>
 </template>
 
 <script lang="ts">
-import { useRoute } from "vue-router";
-import { ref, reactive, onMounted, onBeforeMount, nextTick, watch } from "vue";
+import { PropType, ref } from "vue";
 
 import SvgContainer from "./SvgContainer.vue";
 import SvgLayers from "./SvgLayers.vue";
 import Sidebar from "./Sidebar/index.vue";
-import { LayerState } from "./interface";
+import { SVG } from "./svg.d";
 
 export default {
   components: { SvgLayers, SvgContainer, Sidebar },
   props: {
-    tagger: {
-      type: Object,
+    svg: {
+      type: Object as PropType<SVG>,
       default: undefined,
     },
   },
   setup(props) {
-    const tagger = props.tagger;
-    const route = useRoute();
-    const gallery = route.params.gallery;
-
+    const svgState = props.svg;
     let svg = ref(null);
-
-    const layerState = reactive<LayerState>({
-      current: {
-        layer: 0,
-        selection: 0,
-      },
-      isEdit: false,
-      layers: [],
-    });
 
     function getColor() {
       const r: number = Math.floor(Math.random() * 256);
@@ -48,7 +35,7 @@ export default {
       return `rgb(${rgb.join(",")})`;
     }
 
-    layerState.layers.push({
+    svgState.layers.layers.push({
       name: "Default",
       show: true,
       selections: [
@@ -61,9 +48,8 @@ export default {
     });
 
     return {
-      tagger,
       svg,
-      layerState,
+      svgState,
     };
   },
 };

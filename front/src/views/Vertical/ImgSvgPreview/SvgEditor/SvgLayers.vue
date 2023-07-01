@@ -1,5 +1,5 @@
 <template>
-  <g v-for="(layer, i) in state.layers" :key="i">
+  <g v-for="(layer, i) in svg.layers.layers" :key="i">
     <g v-if="layer.show">
       <g v-for="(selection, i) in layer.selections" :key="i">
         <g>
@@ -38,13 +38,14 @@
 
 <script lang="ts">
 import { PropType } from "vue";
-import { LayerState } from "./interface";
+
+import { SVG } from "./svg.d";
 
 export default {
   components: {},
   props: {
-    state: {
-      type: Object as PropType<LayerState>,
+    svg: {
+      type: Object as PropType<SVG>,
       default: undefined,
     },
   },

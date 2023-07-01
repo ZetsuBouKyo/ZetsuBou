@@ -1,7 +1,7 @@
 <template>
   <svg
     ref="svg"
-    :viewBox="svgState.viewBox"
+    :viewBox="svgState.container.viewBox"
     class="h-app w-screen"
     @click="point"
     @wheel="zoom"
@@ -9,37 +9,32 @@
     @mouseup="stopMoving"
     @mousemove="move">
     <image ref="image" class="h-app w-screen" :href="state.imgUrl" :key="state.imgUrl"></image>
-    <g v-if="svgState.xTopLeft !== undefined && svgState.yTopLeft !== undefined">
-      <circle :cx="svgState.xTopLeft" :cy="svgState.yTopLeft" r="2" />
+    <g v-if="svgState.container.xTopLeft !== undefined && svgState.container.yTopLeft !== undefined">
+      <circle :cx="svgState.container.xTopLeft" :cy="svgState.container.yTopLeft" r="2" />
     </g>
     <slot></slot>
   </svg>
 </template>
 
 <script lang="ts">
-import { useRoute } from "vue-router";
 import { ref, reactive, onBeforeMount, nextTick, watch, PropType } from "vue";
+import { useRoute } from "vue-router";
 
 import { detectRouteChange } from "@/utils/route";
 
 import SvgLayers from "./SvgLayers.vue";
-import { LayerState } from "./interface";
+import { SVG } from "./svg.d";
 
 export default {
   components: { SvgLayers },
   props: {
-    tagger: {
-      type: Object,
-      default: undefined,
-    },
-    layerState: {
-      type: Object as PropType<LayerState>,
+    svg: {
+      type: Object as PropType<SVG>,
       default: undefined,
     },
   },
   setup(props) {
-    const tagger = props.tagger;
-    const layerState = props.layerState;
+    const svgState = props.svg;
 
     const route = useRoute();
 
@@ -52,18 +47,6 @@ export default {
     let svg = ref(null);
     let image = ref(null);
 
-    const svgState = reactive({
-      draggable: false,
-      viewBox: undefined,
-      imgWidth: undefined,
-      imgHeight: undefined,
-      imgSlope: undefined,
-      xTopLeft: undefined,
-      yTopLeft: undefined,
-      xBottomRight: undefined,
-      yBottomRight: undefined,
-    });
-
     function getImgUrl() {
       return `/api/v1/gallery/${state.gallery}/i/${state.imgName}`;
     }
@@ -72,7 +55,7 @@ export default {
       if (route.params.gallery === undefined || route.params.img === undefined) {
         return;
       }
-      svgState.viewBox = undefined;
+      svgState.container.viewBox = undefined;
 
       state.gallery = route.params.gallery;
       state.imgName = route.params.img;
@@ -102,9 +85,9 @@ export default {
       let tmpImg = new Image();
       tmpImg.src = state.imgUrl;
       tmpImg.onload = () => {
-        svgState.imgWidth = tmpImg.width;
-        svgState.imgHeight = tmpImg.height;
-        svgState.imgSlope = svgState.imgHeight / svgState.imgWidth;
+        svgState.container.imgWidth = tmpImg.width;
+        svgState.container.imgHeight = tmpImg.height;
+        svgState.container.imgSlope = svgState.container.imgHeight / svgState.container.imgWidth;
         setOrigin();
       };
     }
@@ -117,44 +100,44 @@ export default {
       const svgHeight = svg.value.getBoundingClientRect().height;
       const svgSlope = svgHeight / svgWidth;
 
-      if (svgSlope > svgState.imgSlope) {
-        svgState.xTopLeft = 0;
-        svgState.yTopLeft = (svgHeight - svgWidth * svgState.imgSlope) / 2;
-        svgState.xBottomRight = svgWidth;
-        svgState.yBottomRight = svgState.yTopLeft + svgWidth * svgState.imgSlope;
+      if (svgSlope > svgState.container.imgSlope) {
+        svgState.container.xTopLeft = 0;
+        svgState.container.yTopLeft = (svgHeight - svgWidth * svgState.container.imgSlope) / 2;
+        svgState.container.xBottomRight = svgWidth;
+        svgState.container.yBottomRight = svgState.container.yTopLeft + svgWidth * svgState.container.imgSlope;
       } else {
-        svgState.xTopLeft = (svgWidth - svgHeight / svgState.imgSlope) / 2;
-        svgState.yTopLeft = 0;
-        svgState.xBottomRight = svgState.xTopLeft + svgHeight / svgState.imgSlope;
-        svgState.yBottomRight = svgHeight;
+        svgState.container.xTopLeft = (svgWidth - svgHeight / svgState.container.imgSlope) / 2;
+        svgState.container.yTopLeft = 0;
+        svgState.container.xBottomRight = svgState.container.xTopLeft + svgHeight / svgState.container.imgSlope;
+        svgState.container.yBottomRight = svgHeight;
       }
     }
 
     onBeforeMount(() => {});
 
     watch(
-      () => [svgState.imgSlope, tagger.isTagger],
+      () => [svgState.container.imgSlope, svgState.sidebar.isSidebar],
       () => {
         setImageSlope();
       },
     );
 
     function startMoving() {
-      if (layerState.isEdit) {
+      if (svgState.layers.isEdit) {
         return;
       }
-      svgState.draggable = true;
+      svgState.container.draggable = true;
     }
 
     function stopMoving() {
-      if (layerState.isEdit) {
+      if (svgState.layers.isEdit) {
         return;
       }
-      svgState.draggable = false;
+      svgState.container.draggable = false;
     }
 
     function move(event) {
-      if (svgState.draggable) {
+      if (svgState.container.draggable) {
         let clientInSvg = svg.value.createSVGPoint();
         clientInSvg.x = event.clientX;
         clientInSvg.y = event.clientY;
@@ -168,16 +151,16 @@ export default {
         let dy = initial.y - final.y;
 
         let viewBoxValues;
-        if (svgState.viewBox === undefined) {
+        if (svgState.container.viewBox === undefined) {
           viewBoxValues = [0, 0, svg.value.width.baseVal.value, svg.value.height.baseVal.value];
         } else {
-          viewBoxValues = svgState.viewBox.split(" ").map((n) => parseFloat(n));
+          viewBoxValues = svgState.container.viewBox.split(" ").map((n) => parseFloat(n));
         }
         let x0 = (viewBoxValues[0] + dx).toString();
         let y0 = (viewBoxValues[1] + dy).toString();
         let w = viewBoxValues[2].toString();
         let h = viewBoxValues[3].toString();
-        svgState.viewBox = `${x0} ${y0} ${w} ${h}`;
+        svgState.container.viewBox = `${x0} ${y0} ${w} ${h}`;
       }
     }
 
@@ -199,10 +182,10 @@ export default {
       const cY = event.clientY;
 
       let viewBoxValues: Array<number>;
-      if (svgState.viewBox === undefined) {
+      if (svgState.container.viewBox === undefined) {
         viewBoxValues = [0, 0, svg.value.width.baseVal.value, svg.value.height.baseVal.value];
       } else {
-        viewBoxValues = svgState.viewBox.split(" ").map((n) => parseFloat(n));
+        viewBoxValues = svgState.container.viewBox.split(" ").map((n) => parseFloat(n));
       }
 
       let [x0, y0, w, h]: Array<number> = viewBoxValues;
@@ -213,15 +196,15 @@ export default {
       clientInSvg.y = cY;
       let ctmInitial = svg.value.getScreenCTM();
       let svgCoorInitial = clientInSvg.matrixTransform(ctmInitial.inverse());
-      svgState.viewBox = `${x0} ${y0} ${w} ${h}`;
+      svgState.container.viewBox = `${x0} ${y0} ${w} ${h}`;
 
       nextTick(() => {
         let ctmFinal = svg.value.getScreenCTM();
         let svgCoorFinal = clientInSvg.matrixTransform(ctmFinal.inverse());
         let dx = svgCoorInitial.x - svgCoorFinal.x ? svgCoorInitial.x - svgCoorFinal.x : 0;
         let dy = svgCoorInitial.y - svgCoorFinal.y ? svgCoorInitial.y - svgCoorFinal.y : 0;
-        let sViewBoxValue2 = svgState.viewBox.split(" ").map((n) => parseFloat(n));
-        svgState.viewBox =
+        let sViewBoxValue2 = svgState.container.viewBox.split(" ").map((n) => parseFloat(n));
+        svgState.container.viewBox =
           (sViewBoxValue2[0] + dx).toString() +
           " " +
           (sViewBoxValue2[1] + dy).toString() +
@@ -234,10 +217,10 @@ export default {
 
     function point(event: any) {
       if (
-        !layerState.isEdit ||
-        !tagger.isTagger ||
-        layerState.current.layer === undefined ||
-        layerState.current.selection === undefined
+        !svgState.layers.isEdit ||
+        !svgState.sidebar.isSidebar ||
+        svgState.layers.current.layer === undefined ||
+        svgState.layers.current.selection === undefined
       ) {
         return;
       }
@@ -250,45 +233,44 @@ export default {
 
       let newPts = pts.matrixTransform(svg.value.getScreenCTM().inverse());
       // console.log(newPts);
-      let newX: Number;
-      if (newPts.x < svgState.xTopLeft) {
-        newX = svgState.xTopLeft;
-      } else if (newPts.x > svgState.xBottomRight) {
-        newX = svgState.xBottomRight;
+      let newX: number;
+      if (newPts.x < svgState.container.xTopLeft) {
+        newX = svgState.container.xTopLeft;
+      } else if (newPts.x > svgState.container.xBottomRight) {
+        newX = svgState.container.xBottomRight;
       } else {
         newX = newPts.x;
       }
-      let newY: Number;
-      if (newPts.y < svgState.yTopLeft) {
-        newY = svgState.yTopLeft;
-      } else if (newPts.y > svgState.yBottomRight) {
-        newY = svgState.yBottomRight;
+      let newY: number;
+      if (newPts.y < svgState.container.yTopLeft) {
+        newY = svgState.container.yTopLeft;
+      } else if (newPts.y > svgState.container.yBottomRight) {
+        newY = svgState.container.yBottomRight;
       } else {
         newY = newPts.y;
       }
 
-      const layerIndex = layerState.current.layer as number;
-      const selectionIndex = layerState.current.selection as number;
+      const layerIndex = svgState.layers.current.layer as number;
+      const selectionIndex = svgState.layers.current.selection as number;
 
-      layerState.layers[layerIndex].selections[selectionIndex].points.push({
+      svgState.layers.layers[layerIndex].selections[selectionIndex].points.push({
         x: newX,
         y: newY,
       });
     }
 
     function finishSelection() {
-      const layerIndex = layerState.current.layer as number;
-      const selectionIndex = layerState.current.selection as number;
+      const layerIndex = svgState.layers.current.layer as number;
+      const selectionIndex = svgState.layers.current.selection as number;
 
-      layerState.layers[layerIndex].selections[selectionIndex].isCompleted = true;
-      layerState.current.layer = undefined;
-      layerState.current.selection = undefined;
+      svgState.layers.layers[layerIndex].selections[selectionIndex].isCompleted = true;
+      svgState.layers.current.layer = undefined;
+      svgState.layers.current.selection = undefined;
     }
 
     return {
       getImgUrl,
       image,
-      layerState,
       move,
       point,
       startMoving,
@@ -296,7 +278,6 @@ export default {
       stopMoving,
       svg,
       svgState,
-      tagger,
       zoom,
     };
   },

@@ -19,24 +19,21 @@
 </template>
 
 <script lang="ts">
-import { useRoute } from "vue-router";
 import { PropType } from "vue";
 
-import { LayerState } from "../interface";
+import { SVG } from "../svg.d";
 import SlidebarIcon from "./SlidebarIcon.vue";
 
 export default {
   components: { SlidebarIcon },
   props: {
-    layerState: {
-      type: Object as PropType<LayerState>,
+    svg: {
+      type: Object as PropType<SVG>,
       default: undefined,
     },
   },
   setup(props) {
-    const route = useRoute();
-    const gallery = route.params.gallery;
-    const layerState = props.layerState;
+    const layerState = props.svg.layers;
 
     function select() {
       layerState.isEdit = false;

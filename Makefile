@@ -42,7 +42,7 @@ check-dev:
 
 .PHONY: build build-docker-app build-docker-airflow build-docker-minio-dev build-dev
 build-docker-app:
-	docker build --force-rm -f docker/Dockerfile.app -t zetsubou-dev/app:0.0.1-python-3.8.16-slim-buster .
+	docker build --force-rm -f docker/Dockerfile.app -t zetsubou/app:0.0.1-python-3.8.16-slim-buster .
 build-docker-airflow:
 	docker build --force-rm -f docker/Dockerfile.airflow -t zetsubou/airflow:2.6.1-python3.8 .
 build-docker-airflow-simple:

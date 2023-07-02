@@ -1,0 +1,99 @@
+version: "3.3"
+
+services:
+  zetsubou-app:
+    image: zetsubou-dev/app:0.0.1-python-3.8.16-slim-buster
+    container_name: zetsubou-app
+    stdin_open: true
+    tty: true
+    command: dockerize -wait tcp://localhost:9200 python app.py
+    network_mode: host
+    expose:
+      - 3000
+    volumes:
+      - ./logs:/workspace/logs
+      - ./etc:/workspace/etc
+      - ./.env:/workspace/.env
+    depends_on:
+      - zetsubou-postgres
+      - zetsubou-elastic
+      - zetsubou-minio
+      - zetsubou-airflow
+
+  zetsubou-minio:
+    image: minio/minio:RELEASE.2022-02-26T02-54-46Z.fips
+    command: server /data --address zetsubou-minio:9000 --console-address "zetsubou-minio:9001"
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      - MINIO_ROOT_USER=${ZETSUBOU_STORAGE_S3_AWS_ACCESS_KEY_ID:-admin}
+      - MINIO_ROOT_PASSWORD=${ZETSUBOU_STORAGE_S3_AWS_SECRET_ACCESS_KEY:-wJalrXUtnFEMI}
+    volumes:
+      # - postgres_data:/var/lib/postgresql/data
+      - ${ZETSUBOU_STORAGE_S3_VOLUME:-./dev/volumes/minio}:/data
+
+  zetsubou-postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: zetsubou
+      POSTGRES_PASSWORD: zetsubou
+      POSTGRES_DB: zetsubou
+      TZ: Asia/Taipei
+      PGTZ: Asia/Taipei
+    ports:
+      - 5430:5432
+    volumes:
+      - ${ZETSUBOU_POSTGRES_DB_VOLUME:-./dev/volumes/postgres}:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "zetsubou"]
+      interval: 5s
+      retries: 5
+    restart: always
+
+  zetsubou-elastic:
+    image: elasticsearch:7.10.1
+    ports:
+      - 9200:9200
+    environment:
+      USER_UID: 1000
+      USER_GID: 1000
+      discovery.type: single-node
+      bootstrap.memory_lock: "true"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - ${ZETSUBOU_ELASTICSEARCH_VOLUME:-./dev/volumes/elasticsearch}:/usr/share/elasticsearch/data
+
+  zetsubou-redis:
+    image: redis:latest
+    ports:
+      - 6380:6380
+    command: redis-server --port 6380
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
+      retries: 50
+    restart: always
+
+  zetsubou-airflow:
+    image: zetsubou/airflow-simple:2.6.2-python3.8
+    container_name: zetsubou-airflow-simple
+    network_mode: host
+    stdin_open: true
+    tty: true
+    command: airflow standalone
+    environment:
+      AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
+      AIRFLOW_HOME: /etc/airflow
+      WEB_SERVER_PORT: 8080
+    volumes:
+      - ${ZETSUBOU_AIRFLOW_SIMPLE_VOLUME:-./dev/volumes/airflow-simple}:/etc/airflow/
+      - ${ZETSUBOU_AIRFLOW_SIMPLE_DAGS_VOLUME:-./dags}:/etc/airflow/dags
+      - ${ZETSUBOU_AIRFLOW_ZETSUBOU_VOLUME:-./}:/opt/airflow/zetsubou
+
+networks:
+  zetsubou:
+    external: true

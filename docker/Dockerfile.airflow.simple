@@ -1,0 +1,33 @@
+FROM python:3.8.16-slim-buster
+LABEL maintainer="ZetsuBouKyo"
+
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+ENV PIPENV_VENV_IN_PROJECT=1
+
+ENV AIRFLOW_HOME=/airflow
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    build-essential libopenmpi-dev \
+    ffmpeg libsm6 libxext6 \
+    && apt-get autoremove -yqq --purge \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY poetry.toml pyproject.toml /opt/airflow/zetsubou-venv/
+
+RUN chmod 755 /opt/airflow/zetsubou-venv/
+
+RUN pip install --no-cache-dir poetry pydantic
+
+RUN pip install --no-cache-dir "apache-airflow[celery]==2.6.2" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.6.2/constraints-3.7.txt"
+
+WORKDIR /opt/airflow/zetsubou-venv
+
+RUN PIP_USER=false poetry install
+
+COPY . /opt/airflow/zetsubou
+
+COPY ./dags /opt/airflow/dags
+
+WORKDIR /opt/airflow

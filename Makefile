@@ -18,7 +18,9 @@ AIRFLOW_LOGS_VOLUME ?= ./dev/volumes/airflow/logs
 AIRFLOW_PLUGINS_VOLUME ?= ./dev/volumes/airflow/plugins
 AIRFLOW_POSTGRES_DB_VOLUME ?= ./dev/volumes/airflow/postgres
 
-APP_DEV_SERVICES := zetsubou-postgres zetsubou-elastic zetsubou-minio zetsubou-redis
+AIRFLOW_SIMPLE_VOLUME ?= ./dev/volumes/airflow-simple
+
+APP_DEV_SERVICES := zetsubou-postgres zetsubou-elastic zetsubou-minio zetsubou-redis zetsubou-airflow
 
 .PHONY: test line check
 
@@ -40,13 +42,15 @@ check-dev:
 
 .PHONY: build build-docker-app build-docker-airflow build-docker-minio-dev build-dev
 build-docker-app:
-	docker build --force-rm -f Dockerfile.app -t zetsubou-dev/app:0.0.1-python-3.8.16-slim-buster .
+	docker build --force-rm -f docker/Dockerfile.app -t zetsubou-dev/app:0.0.1-python-3.8.16-slim-buster .
 build-docker-airflow:
-	docker build --force-rm -f Dockerfile.airflow -t zetsubou/airflow:2.6.1-python3.8 .
-build-dev: build-docker-airflow
+	docker build --force-rm -f docker/Dockerfile.airflow -t zetsubou/airflow:2.6.1-python3.8 .
+build-docker-airflow-simple:
+	docker build --force-rm -f docker/Dockerfile.airflow.simple -t zetsubou/airflow-simple:2.6.2-python3.8 .
+build-dev: build-docker-airflow-simple
 	poetry install
 	source ./.venv/bin/activate; pre-commit install
-build: build-docker-airflow
+build: build-docker-airflow-simple
 
 lint:
 	pre-commit run --all-files
@@ -75,15 +79,17 @@ init-airflow:
 	chown -R $(AIRFLOW_UID):$(AIRFLOW_UID) $(AIRFLOW_LOGS_VOLUME)
 	chown -R $(AIRFLOW_UID):$(AIRFLOW_UID) $(AIRFLOW_PLUGINS_VOLUME)
 
-	docker-compose -f docker-compose.host.airflow.yml up airflow-init
+	docker-compose -f docker/docker-compose.host.airflow.yml up airflow-init
 init-redis:
 	mkdir -p $(ZETSUBOU_REDIS_VOLUME)
 	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
 init: init-env init-app-postgres init-airflow init-app-elastic init-redis
 
-.PHONY: clean clean-all clean-airflow clean-app-elastic clean-app-postgres clean-docker
+.PHONY: clean clean-all clean-airflow clean-airflow-simple clean-app-elastic clean-app-postgres clean-docker
 clean-airflow:
 	rm -rf $(AIRFLOW_VOLUME)
+clean-airflow-simple:
+	rm -rf $(AIRFLOW_SIMPLE_VOLUME)
 clean-app-elastic:
 	rm -rf $(ZETSUBOU_ELASTICSEARCH_VOLUME)
 clean-app-postgres:
@@ -99,47 +105,34 @@ clean-all:
 	rm -rf ./statics
 	rm -rf ./venv
 
-.PHONY: reset-app reset-app-elastic reset-app-postgres
+.PHONY: reset-app reset-app-elastic reset-app-postgres reset-airflow-simple
 reset-app-elastic: clean-app-elastic init-app-elastic
 reset-app-postgres: clean-app-postgres init-app-postgres
 reset-app: reset-app-elastic reset-app-postgres
 
+reset-airflow-simple: clean-airflow-simple
+
 .PHONY: up up-airflow up-app-dev
 up-app:
-	docker-compose -f docker-compose.host.app.yml up -d
-up-app-dev:
-	docker-compose -f docker-compose.host.app.yml up -d $(APP_DEV_SERVICES)
+	docker-compose -f docker-compose.simple.yml up -d
 up-airflow:
-	docker-compose -f docker-compose.host.airflow.yml up -d
-up-dev: up-app-dev up-airflow
+	docker-compose -f docker/docker-compose.host.airflow.yml up -d
+up-airflow-simple:
+	docker-compose -f docker-compose.simple.yml up -d zetsubou-airflow
+up-dev:
+	docker-compose -f docker-compose.simple.yml up -d $(APP_DEV_SERVICES)
 up: up-app up-airflow
 
-log-app:
-	docker-compose -f docker-compose.host.app.yml logs
-
-.PHONY: start-app-dev start-airflow
-start-app-dev:
-	docker-compose -f docker-compose.host.app.yml start $(APP_DEV_SERVICES)
-start-airflow:
-	docker-compose -f docker-compose.host.airflow.yml start
-
-
-.PHONY: stop-app-dev stop-airflow
-stop-app-dev:
-	docker-compose -f docker-compose.host.app.yml stop $(APP_DEV_SERVICES)
-stop-airflow:
-	docker-compose -f docker-compose.host.airflow.yml stop
-
 .PHONY: down
-down-app:
-	docker-compose -f docker-compose.host.app.yml down --remove-orphans
+down-simple:
+	docker-compose -f docker-compose.simple.yml down
 down-airflow:
-	docker-compose -f docker-compose.host.airflow.yml down --remove-orphans
-down: down-app down-airflow
+	docker-compose -f docker/docker-compose.host.airflow.yml down
+down: down-simple
 
 .PHONY: logs
 logs:
-	docker-compose -f docker-compose.host.airflow.yml logs $(service)
+	docker-compose -f docker-compose.simple.yml logs $(service)
 
 requirements.txt:
 	poetry export -f requirements.txt -o requirements.txt --without-hashes

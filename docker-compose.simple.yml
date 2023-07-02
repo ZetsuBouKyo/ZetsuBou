@@ -93,6 +93,7 @@ services:
       - ${ZETSUBOU_AIRFLOW_SIMPLE_VOLUME:-./dev/volumes/airflow-simple}:/etc/airflow/
       - ${ZETSUBOU_AIRFLOW_SIMPLE_DAGS_VOLUME:-./dags}:/etc/airflow/dags
       - ${ZETSUBOU_AIRFLOW_ZETSUBOU_VOLUME:-./}:/opt/airflow/zetsubou
+      - ${ZETSUBOU_AIRFLOW_DOWNLOAD_VOLUME-./dev/volumes/airflow-download}:/opt/airflow/download
 
 networks:
   zetsubou:

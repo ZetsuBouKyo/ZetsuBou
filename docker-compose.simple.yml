@@ -6,10 +6,12 @@ services:
     container_name: zetsubou-app
     stdin_open: true
     tty: true
-    command: dockerize -wait tcp://localhost:9200 python app.py
+    command: dockerize -wait tcp://localhost:${ZETSUBOU_ELASTICSEARCH_PORT:-9200} python app.py
     network_mode: host
     expose:
-      - 3000
+      - ${ZETSUBOU_APP_PORT:-3000}
+    environment:
+      ZETSUBOU_APP_PORT: ${ZETSUBOU_APP_PORT:-3000}
     volumes:
       - ./logs:/workspace/logs
       - ./etc:/workspace/etc
@@ -22,13 +24,13 @@ services:
 
   zetsubou-minio:
     image: minio/minio:RELEASE.2022-02-26T02-54-46Z.fips
-    command: server /data --address zetsubou-minio:9000 --console-address "zetsubou-minio:9001"
+    command: server /data --address zetsubou-minio:${ZETSUBOU_STORAGE_S3_PORT:-9000} --console-address "zetsubou-minio:${ZETSUBOU_STORAGE_S3_CONSOLE_PORT:-9001}"
     ports:
-      - 9000:9000
-      - 9001:9001
+      - ${ZETSUBOU_STORAGE_S3_PORT:-9000}:${ZETSUBOU_STORAGE_S3_PORT:-9000}
+      - ${ZETSUBOU_STORAGE_S3_CONSOLE_PORT:-9001}:${ZETSUBOU_STORAGE_S3_CONSOLE_PORT:-9001}
     environment:
-      - MINIO_ROOT_USER=${ZETSUBOU_STORAGE_S3_AWS_ACCESS_KEY_ID:-admin}
-      - MINIO_ROOT_PASSWORD=${ZETSUBOU_STORAGE_S3_AWS_SECRET_ACCESS_KEY:-wJalrXUtnFEMI}
+      MINIO_ROOT_USER: ${ZETSUBOU_STORAGE_S3_AWS_ACCESS_KEY_ID:-admin}
+      MINIO_ROOT_PASSWORD: ${ZETSUBOU_STORAGE_S3_AWS_SECRET_ACCESS_KEY:-wJalrXUtnFEMI}
     volumes:
       # - postgres_data:/var/lib/postgresql/data
       - ${ZETSUBOU_STORAGE_S3_VOLUME:-./dev/volumes/minio}:/data
@@ -41,8 +43,9 @@ services:
       POSTGRES_DB: zetsubou
       TZ: Asia/Taipei
       PGTZ: Asia/Taipei
+      PGPORT: ${ZETSUBOU_DATABASE_PORT:-5430}
     ports:
-      - 5430:5432
+      - ${ZETSUBOU_DATABASE_PORT:-5430}:${ZETSUBOU_DATABASE_PORT:-5430}
     volumes:
       - ${ZETSUBOU_POSTGRES_DB_VOLUME:-./dev/volumes/postgres}:/var/lib/postgresql/data
     healthcheck:
@@ -54,21 +57,22 @@ services:
   zetsubou-elastic:
     image: elasticsearch:7.10.1
     ports:
-      - 9200:9200
+      - ${ZETSUBOU_ELASTICSEARCH_PORT:-9200}:${ZETSUBOU_ELASTICSEARCH_PORT:-9200}
     environment:
       USER_UID: 1000
       USER_GID: 1000
       discovery.type: single-node
       bootstrap.memory_lock: "true"
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      http.port: ${ZETSUBOU_ELASTICSEARCH_PORT:-9200}
     volumes:
       - ${ZETSUBOU_ELASTICSEARCH_VOLUME:-./dev/volumes/elasticsearch}:/usr/share/elasticsearch/data
 
   zetsubou-redis:
     image: redis:latest
     ports:
-      - 6380:6380
-    command: redis-server --port 6380
+      - ${ZETSUBOU_REDIS_PORT:-6380}:${ZETSUBOU_REDIS_PORT:-6380}
+    command: redis-server --port ${ZETSUBOU_REDIS_PORT:-6380}
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -88,7 +92,7 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
       AIRFLOW_HOME: /etc/airflow
-      WEB_SERVER_PORT: 8080
+      WEB_SERVER_PORT: ${ZETSUBOU_AIRFLOW_WEB_SERVER_PORT:-8080}
     volumes:
       - ${ZETSUBOU_AIRFLOW_SIMPLE_VOLUME:-./dev/volumes/airflow-simple}:/etc/airflow/
       - ${ZETSUBOU_AIRFLOW_SIMPLE_DAGS_VOLUME:-./dags}:/etc/airflow/dags

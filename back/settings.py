@@ -44,7 +44,12 @@ class Setting(BaseSettings):
         default="0.0.0.0", title=f"{TITLE_PREFIX} Host", exmaple="0.0.0.0"
     )
     app_security: bool = True
-    app_port: int = Field(default=3000, title=f"{TITLE_PREFIX} Port", example="3000")
+    app_port: int = Field(
+        default=3000,
+        title=f"{TITLE_PREFIX} Port",
+        description="Environment variable for service and docker-compose.",
+        example="3000",
+    )
     app_mode: AppModeEnum = AppModeEnum.CLUSTER
     app_timezone: str = Field(default="UTC", title="Timezone", example="Asia/Taipei")
 
@@ -117,12 +122,22 @@ class Setting(BaseSettings):
         example="postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou",
     )
     database_echo: bool = False
+    database_port: int = Field(
+        default=None,
+        description="Environment variable for docker-compose.",
+        example="5430",
+    )
 
     elastic_urls: str = Field(default=None, example="http://localhost:9200")
     elastic_size: int = 40
     elastic_index_gallery: str = f"{ELASTIC_INDEX_PREFIX}-gallery"
     elastic_index_video: str = f"{ELASTIC_INDEX_PREFIX}-video"
     elastic_index_tag: str = f"{ELASTIC_INDEX_PREFIX}-tag"
+    elasticsearch_port: int = Field(
+        default=None,
+        description="Environment variable for docker-compose.",
+        example="9200",
+    )
 
     @property
     def elastic_hosts(cls):
@@ -143,12 +158,32 @@ class Setting(BaseSettings):
         description="Environment variable for docker-compose.",
         example="./dev/volumes/minio",
     )
+    storage_s3_port: int = Field(
+        default=None,
+        description="Environment variable for docker-compose.",
+        example="9000",
+    )
+    storage_s3_console_port: int = Field(
+        default=None,
+        description="Environment variable for docker-compose.",
+        example="9001",
+    )
 
     airflow_host: str = Field(default=None, example="http://localhost:8080")
     airflow_username: str = Field(default=None, example="airflow")
     airflow_password: str = Field(default=None, example="airflow")
+    airflow_web_server_port: int = Field(
+        default=None,
+        description="Environment variable for docker-compose.",
+        example="8080",
+    )
 
     redis_url: str = Field(default=None, example="redis://localhost:6380/0")
+    redis_port: int = Field(
+        default=None,
+        description="Environment variable for docker-compose.",
+        example="6380",
+    )
 
     class Config:
         env_prefix = ENV_PREFIX

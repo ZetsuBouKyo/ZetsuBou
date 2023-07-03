@@ -85,7 +85,7 @@ import TextEditor from "@/components/TextEditor/index.vue";
 
 import { galleryState } from "@/state/gallery";
 
-import { ControlPanelState } from "./interface";
+import { ControlPanelState } from "./ControlPanel.d";
 
 import { Gallery } from "@/interface/gallery";
 import { SourceState } from "@/interface/source";

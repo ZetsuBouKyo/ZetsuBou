@@ -7,7 +7,7 @@
 # from back.model.image import Image, Images
 # from back.settings import setting
 # from back.utils.dt import second2iso
-# from back.utils.fs import is_image
+# from back.utils.image import is_image
 # from back.utils.hash import get_md5
 # from cv2 import imread
 

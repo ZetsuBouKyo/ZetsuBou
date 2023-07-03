@@ -5,6 +5,7 @@ from typing import Iterator
 from uuid import uuid4
 
 import typer
+from back.model.image import ImageFormatEnum
 from PIL import Image
 from PIL.Image import registered_extensions
 
@@ -17,7 +18,6 @@ image_sizes = [
     (1280, 191),
     (1280, 581),
 ]
-image_format = [("png", "png"), ("jpeg", "jpg")]
 
 
 def create_img(fpath: Path, format: str = "jpeg"):
@@ -90,6 +90,7 @@ def generate(
     separator: str = typer.Option(
         default=",", help="Separator for `--gallery-names` and `--img-names`."
     ),
+    format: ImageFormatEnum = typer.Option(default=".png", help="Image format."),
 ):
     """
     Generate the gallery.
@@ -115,4 +116,5 @@ def generate(
                 gallery_name,
             ],
             img_names,
+            format=format,
         )

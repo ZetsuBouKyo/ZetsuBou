@@ -30,7 +30,7 @@
               <router-link class="text-white text-base cursor-pointer" :to="toGallery(row)">
                 {{ row.gallery.attributes.name }}
               </router-link>
-              <span class="ml-auto text-gray-400 text-xs w-24">page: {{ row.bookmark.page + 1 }}</span>
+              <span class="ml-auto text-gray-400 text-xs text-right w-24">page: {{ row.bookmark.page + 1 }}</span>
             </div>
             <span class="text-gray-500 text-sm my-1 truncate" v-if="row.gallery.attributes.raw_name">{{
               row.gallery.attributes.raw_name

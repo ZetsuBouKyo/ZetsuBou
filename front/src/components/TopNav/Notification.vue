@@ -1,6 +1,6 @@
 <template>
   <div class="w-10">
-    <dropdown :select-class="''" :is-expand="false">
+    <dropdown :select-class="''" :is-expand="false" :options-width-class="'w-72'">
       <template v-slot:select>
         <ripple-button class="focus:outline-none h-full rounded">
           <icon-mdi-bell-outline

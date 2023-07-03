@@ -57,8 +57,6 @@ lint:
 	npx commitlint --from "HEAD~1" --to "HEAD" --verbose
 
 .PHONY: init init-app init-app-postgres init-airflow init-app-elastic init-redis
-init-env:
-	touch .env
 init-app-elastic:
 	mkdir -p $(ZETSUBOU_ELASTICSEARCH_VOLUME)
 	chown -R 1000:1000 $(ZETSUBOU_ELASTICSEARCH_VOLUME)
@@ -83,7 +81,7 @@ init-airflow:
 init-redis:
 	mkdir -p $(ZETSUBOU_REDIS_VOLUME)
 	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
-init: init-env init-app-postgres init-airflow init-app-elastic init-redis
+init: init-app-postgres init-airflow init-app-elastic init-redis
 
 .PHONY: clean clean-all clean-airflow clean-airflow-simple clean-app-elastic clean-app-postgres clean-docker
 clean-airflow:

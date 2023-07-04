@@ -18,7 +18,7 @@ class AnalyzerEnum(str, Enum):
     URL: str = "url"
 
 
-class QueryBoolean(str, Enum):
+class QueryBooleanEnum(str, Enum):
     MUST: str = "must"
     SHOULD: str = "should"
 

@@ -7,7 +7,7 @@ from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.crud.async_progress import Progress
 from back.logging import logger_webapp
 from back.model.base import SourceBaseModel, SourceProtocolEnum
-from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
+from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
 from back.model.task import ZetsuBouTaskProgressEnum
 from back.session.async_elasticsearch import async_elasticsearch
@@ -127,23 +127,23 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
         keywords: str = None,
         keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         keywords_fuzziness: int = 0,
-        keywords_bool: QueryBoolean = QueryBoolean.SHOULD,
+        keywords_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         name: str = None,
         name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         name_fuzziness: int = 0,
-        name_bool: QueryBoolean = QueryBoolean.SHOULD,
+        name_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         raw_name: str = None,
         raw_name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         raw_name_fuzziness: int = 0,
-        raw_name_bool: QueryBoolean = QueryBoolean.SHOULD,
+        raw_name_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         src: str = None,
         src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
         src_fuzziness: int = 0,
-        src_bool: QueryBoolean = QueryBoolean.SHOULD,
+        src_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         path: str = None,
         path_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
         path_fuzziness: int = 0,
-        path_bool: QueryBoolean = QueryBoolean.SHOULD,
+        path_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         category: str = None,
         uploader: str = None,
         rating_gte: int = None,

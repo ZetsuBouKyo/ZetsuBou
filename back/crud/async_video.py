@@ -8,7 +8,7 @@ from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.crud.async_progress import Progress
 from back.logging import logger_webapp
 from back.model.base import SourceBaseModel, SourceProtocolEnum
-from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
+from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
 from back.model.task import ZetsuBouTaskProgressEnum
 from back.model.video import Video, VideoOrderedFieldEnum, Videos
 from back.session.async_elasticsearch import async_elasticsearch
@@ -119,23 +119,23 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
         keywords: str = None,
         keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         keywords_fuzziness: int = 0,
-        keywords_bool: QueryBoolean = QueryBoolean.SHOULD,
+        keywords_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         name: str = None,
         name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         name_fuzziness: int = 0,
-        name_bool: QueryBoolean = QueryBoolean.SHOULD,
+        name_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         other_names: str = None,
         other_names_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         other_names_fuzziness: int = 0,
-        other_names_bool: QueryBoolean = QueryBoolean.SHOULD,
+        other_names_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         src: str = None,
         src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
         src_fuzziness: int = 0,
-        src_bool: QueryBoolean = QueryBoolean.SHOULD,
+        src_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         path: str = None,
         path_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
         path_fuzziness: int = 0,
-        path_bool: QueryBoolean = QueryBoolean.SHOULD,
+        path_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         category: str = None,
         uploader: str = None,
         rating_gte: int = None,

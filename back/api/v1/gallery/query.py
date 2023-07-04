@@ -4,7 +4,7 @@ from urllib.parse import unquote
 from back.crud.async_gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserElasticSearchQuery
 from back.dependency.security import Token, api_security, extract_token
-from back.model.elasticsearch import AnalyzerEnum, Count, QueryBoolean
+from back.model.elasticsearch import AnalyzerEnum, Count, QueryBooleanEnum
 from back.model.gallery import Galleries, GalleryOrderedFieldEnum
 from back.model.scope import ScopeEnum
 from back.settings import setting
@@ -59,7 +59,7 @@ async def get_random(
     page: int = 1,
     fuzziness: int = 0,
     size: int = ELASTIC_SIZE,
-    boolean: QueryBoolean = QueryBoolean.SHOULD,
+    boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
 ) -> Galleries:
     keywords = unquote(keywords)
     crud = CrudAsyncElasticsearchGallery(
@@ -93,23 +93,23 @@ async def get_advanced_search(
     keywords: str = None,
     keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     keywords_fuzziness: int = 0,
-    keywords_bool: QueryBoolean = QueryBoolean.SHOULD,
+    keywords_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     name: str = None,
     name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     name_fuzziness: int = 0,
-    name_bool: QueryBoolean = QueryBoolean.SHOULD,
+    name_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     raw_name: str = None,
     raw_name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     raw_name_fuzziness: int = 0,
-    raw_name_bool: QueryBoolean = QueryBoolean.SHOULD,
+    raw_name_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     src: str = None,
     src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
     src_fuzziness: int = 0,
-    src_bool: QueryBoolean = QueryBoolean.SHOULD,
+    src_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     path: str = None,
     path_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
     path_fuzziness: int = 0,
-    path_bool: QueryBoolean = QueryBoolean.SHOULD,
+    path_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     category: str = None,
     uploader: str = None,
     rating_gte: int = None,
@@ -176,7 +176,7 @@ async def get_search(
     page: int = 1,
     fuzziness: int = 0,
     size: int = ELASTIC_SIZE,
-    boolean: QueryBoolean = QueryBoolean.SHOULD,
+    boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
 ) -> Galleries:
     user_id = token.sub
     keywords = unquote(keywords)

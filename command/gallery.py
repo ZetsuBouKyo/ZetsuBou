@@ -8,7 +8,7 @@ from back.crud.async_gallery import (
     get_crud_async_gallery,
     get_gallery_by_gallery_id,
 )
-from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
+from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
 from back.settings import setting
 from rich import print_json
 
@@ -84,8 +84,8 @@ async def match(
         default=0,
         help="See Elasticsearch fuzziness (https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#fuzziness).",  # noqa
     ),
-    boolean: QueryBoolean = typer.Option(
-        default=QueryBoolean.SHOULD.value, help="The relation between keywords."
+    boolean: QueryBooleanEnum = typer.Option(
+        default=QueryBooleanEnum.SHOULD.value, help="The relation between keywords."
     ),
     analyzer: AnalyzerEnum = typer.Option(
         default=AnalyzerEnum.DEFAULT.value,
@@ -116,8 +116,8 @@ async def random(
         default=0,
         help="See Elasticsearch fuzziness (https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#fuzziness).",  # noqa
     ),
-    boolean: QueryBoolean = typer.Option(
-        default=QueryBoolean.SHOULD.value, help="The relation between keywords."
+    boolean: QueryBooleanEnum = typer.Option(
+        default=QueryBooleanEnum.SHOULD.value, help="The relation between keywords."
     ),
     analyzer: AnalyzerEnum = typer.Option(
         default=AnalyzerEnum.DEFAULT.value,

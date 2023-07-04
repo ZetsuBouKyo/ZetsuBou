@@ -3,7 +3,7 @@ from typing import Any, Generic, List
 from back.model.elasticsearch import (
     AnalyzerEnum,
     Count,
-    QueryBoolean,
+    QueryBooleanEnum,
     SearchResult,
     SourceT,
 )
@@ -104,7 +104,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         self,
         keywords: str,
         fuzziness: int = 0,
-        boolean: QueryBoolean = QueryBoolean.SHOULD,
+        boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     ) -> dict:
         _keywords = keywords.split()
 
@@ -181,7 +181,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         field_name: str,
         analyzer: AnalyzerEnum,
         fuzziness: int,
-        boolean: QueryBoolean,
+        boolean: QueryBooleanEnum,
     ):
         if type(analyzer) is not str:
             _analyzer = analyzer.value
@@ -278,7 +278,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         page: int,
         keywords: str = "",
         fuzziness: int = 0,
-        boolean: QueryBoolean = QueryBoolean.SHOULD,
+        boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         seed: int = 1048596,
     ) -> SearchResult[SourceT]:
         dsl = self.get_basic_dsl()
@@ -305,7 +305,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         page: int,
         keywords: str,
         fuzziness: int = 0,
-        boolean: QueryBoolean = QueryBoolean.SHOULD,
+        boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     ) -> SearchResult[SourceT]:
         if keywords is None or keywords == "":
             return await self.match_all(page)

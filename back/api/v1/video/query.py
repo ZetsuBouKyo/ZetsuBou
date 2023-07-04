@@ -4,7 +4,7 @@ from urllib.parse import unquote
 from back.crud.async_video import CrudAsyncElasticsearchVideo
 from back.db.crud import CrudUserElasticSearchQuery
 from back.dependency.security import Token, api_security, extract_token
-from back.model.elasticsearch import AnalyzerEnum, QueryBoolean
+from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
 from back.model.scope import ScopeEnum
 from back.model.video import VideoOrderedFieldEnum, Videos
 from back.settings import setting
@@ -29,7 +29,7 @@ async def get_random(
     page: int = 1,
     fuzziness: int = 0,
     size: int = ELASTIC_SIZE,
-    boolean: QueryBoolean = QueryBoolean.SHOULD,
+    boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
 ) -> Videos:
     keywords = unquote(keywords)
     crud = CrudAsyncElasticsearchVideo(
@@ -52,23 +52,23 @@ async def get_advanced_search(
     keywords: str = None,
     keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     keywords_fuzziness: int = 0,
-    keywords_bool: QueryBoolean = QueryBoolean.SHOULD,
+    keywords_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     name: str = None,
     name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     name_fuzziness: int = 0,
-    name_bool: QueryBoolean = QueryBoolean.SHOULD,
+    name_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     other_names: str = None,
     other_names_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     other_names_fuzziness: int = 0,
-    other_names_bool: QueryBoolean = QueryBoolean.SHOULD,
+    other_names_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     src: str = None,
     src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
     src_fuzziness: int = 0,
-    src_bool: QueryBoolean = QueryBoolean.SHOULD,
+    src_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     path: str = None,
     path_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
     path_fuzziness: int = 0,
-    path_bool: QueryBoolean = QueryBoolean.SHOULD,
+    path_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     category: str = None,
     uploader: str = None,
     rating_gte: int = None,
@@ -147,7 +147,7 @@ async def get_search(
     page: int = 1,
     fuzziness: int = 0,
     size: int = ELASTIC_SIZE,
-    boolean: QueryBoolean = QueryBoolean.SHOULD,
+    boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
 ) -> Videos:
     user_id = token.sub
     keywords = unquote(keywords)

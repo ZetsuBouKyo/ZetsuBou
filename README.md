@@ -5,33 +5,31 @@
 [![chrome](https://img.shields.io/badge/Chrome-102.0.5005.63-yellow.svg)](https://www.google.com/intl/en_us/chrome/)
 [![license](https://img.shields.io/badge/License-MIT-yellow.svg)](https://www.google.com/intl/en_us/chrome/)
 
-ZetsuBou is a web-based app to serve your own image galleries and videos.
+ZetsuBou is a web-based app for hosting your own image galleries and videos. The app is written in Python 3 and Vue 3.
 
-**There would be no backward compatibility at all.**
-
-This is written in Python 3 and Vue 3.
+**There would be no backwards compatibility at all.**
 
 ## ⚠️ Warning
 
-ZetsuBou would generate `.tag` folder inside your galleries. Here is the folder structure.
+ZetsuBou would generate a `.tag` folder inside your galleries. Here is an example of the folder structure.
 
 ```text
-+-- Your image gallery 001
-|   +-- .tag
-|   |   +-- gallery.json
-|   |   +-- ...
-|   +-- 1.jpg
-|   +-- 2.jpg
-|   +-- ...
-+-- Your image gallery 002
-|   +-- .tag
-|   |   +-- gallery.json
-|   |   +-- ...
-|   +-- 1.png
-|   +-- 2.bmp
-|   +-- 3.jpg
-|   +-- ...
-+-- ...
+<your image galleries>
+├── <your image gallery 001>
+│   ├── 1.jpg
+│   ├── 2.jpg
+│   ├── 3.jpg
+│   ├── 4.jpg
+│   ├── 5.jpg
+│   └── .tag
+│       └── gallery.json
+└── <your image gallery 002>
+    ├── 1.jpg
+    ├── 2.jpg
+    ├── 3.jpg
+    ├── 4.jpg
+    └── .tag
+        └── gallery.json
 ```
 
 ## Getting started

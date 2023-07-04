@@ -1,11 +1,11 @@
 from back.crud.setting import (
     AIRFLOW_SETTING_PATH,
-    init_settings,
     is_airflow_setting,
     is_setting,
     update_airflow_settings,
     update_settings,
 )
+from back.init.setting import init_settings_with_examples
 from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
 from back.settings import (
@@ -38,7 +38,7 @@ def post_settings(setting: Setting) -> Setting:
         HTTPException(
             status_code=409, detail=f"`{DEFAULT_SETTING_NAME}` already exists."
         )
-    setting = init_settings(setting)
+    setting = init_settings_with_examples(setting)
     update_settings(setting)
     return setting
 
@@ -73,7 +73,7 @@ def post_airflow_settings(setting: Setting) -> Setting:
         HTTPException(
             status_code=409, detail=f"`{DEFAULT_AIRFLOW_SETTING_NAME}` already exists."
         )
-    setting = init_settings(setting)
+    setting = init_settings_with_examples(setting)
     update_airflow_settings(setting)
     return setting
 

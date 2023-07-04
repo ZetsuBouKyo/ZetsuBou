@@ -30,6 +30,9 @@ STORAGE_S3_ENDPOINT_URL = setting.storage_s3_endpoint_url
 
 
 def check_host_port(port: int) -> bool:
+    """
+    Return `False` if host port is available.
+    """
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(("localhost", port)) == 0
 

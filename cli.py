@@ -4,7 +4,6 @@ import shutil
 import tempfile
 from pathlib import Path
 from uuid import uuid4
-
 import typer
 from pdf2image import convert_from_path
 
@@ -26,6 +25,7 @@ from command.tag import app as tag
 from command.test import app as test
 from command.utils import is_empty_dir
 from command.video import app as video
+from back.init.setting import init_example_settings
 
 init_zetsubou_logger()
 
@@ -58,6 +58,11 @@ app.add_typer(video)
 
 if plugin is not None:
     app.add_typer(plugin)
+
+
+@app.command()
+def init():
+    init_example_settings()
 
 
 @app.command()

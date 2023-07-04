@@ -6,12 +6,17 @@ from back.settings import (
     DEFAULT_SETTING_NAME,
     ENV_PREFIX,
     Setting,
+    setting,
 )
 
 DEFAULT_SETTING = Setting()
 SETTING_HOME = Path(DEFAULT_SETTING_HOME)
 SETTING_PATH = SETTING_HOME / DEFAULT_SETTING_NAME
+
 AIRFLOW_SETTING_PATH = SETTING_HOME / DEFAULT_AIRFLOW_SETTING_NAME
+AIRFLOW_SIMPLE_PASSWORD_PATH = (
+    Path(setting.airflow_simple_volume) / "standalone_admin_password.txt"
+)
 
 
 def get_envs(setting: Setting) -> str:
@@ -29,24 +34,29 @@ def get_envs(setting: Setting) -> str:
     return "\n".join(envs)
 
 
-def init_settings(setting: Setting) -> Setting:
-    new_setting = {}
+def get_airflow_simple_password(
+    password_path: Path = AIRFLOW_SIMPLE_PASSWORD_PATH,
+) -> str:
+    if not password_path.exists():
+        raise FileNotFoundError(f"[Errno 2] No such file: '{password_path}'")
+
+    with password_path.open(mode="r") as fp:
+        password = fp.read()
+    return password
+
+
+def get_setting_example(field_name: str):
     schema = Setting.schema()
     properties = schema.get("properties", None)
+    example = properties.get(field_name, {}).get("example", None)
 
-    for field_name, field_value in setting.dict().items():
-        if field_value is None:
-            example = properties.get(field_name, {}).get("example", None)
-            if example is None:
-                continue
-            new_setting[field_name] = example
-        else:
-            new_setting[field_name] = field_value
-
-    return Setting(**new_setting)
+    return example
 
 
-def write_settings(file_path: Path, data: str):
+def write_settings(file_path: Path, data: str, force: bool = False):
+    if file_path.exists() and not force:
+        return
+
     with file_path.open(mode="w") as fp:
         fp.write(data)
 

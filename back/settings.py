@@ -177,6 +177,11 @@ class Setting(BaseSettings):
         description="Environment variable for docker-compose.",
         example="8080",
     )
+    airflow_simple_volume: str = Field(
+        default=None,
+        description="Environment variable for docker-compose.",
+        example="./dev/volumes/airflow-simple",
+    )
 
     redis_url: str = Field(default=None, example="redis://localhost:6380/0")
     redis_port: int = Field(

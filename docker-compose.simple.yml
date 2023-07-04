@@ -13,14 +13,28 @@ services:
     environment:
       ZETSUBOU_APP_PORT: ${ZETSUBOU_APP_PORT:-3000}
     volumes:
-      - ./logs:/workspace/logs
       - ./etc:/workspace/etc
-      - ./.env:/workspace/.env
+      - ./logs:/workspace/logs
     depends_on:
-      - zetsubou-postgres
+      - zetsubou-airflow
       - zetsubou-elastic
       - zetsubou-minio
-      - zetsubou-airflow
+      - zetsubou-postgres
+
+  zetsubou-app-init:
+    image: zetsubou/app:0.0.1-python-3.8.16-slim-buster
+    container_name: zetsubou-app-init
+    command: python cli.py init
+    network_mode: host
+    environment:
+      ZETSUBOU_AIRFLOW_SIMPLE_VOLUME: ${ZETSUBOU_AIRFLOW_SIMPLE_VOLUME:-./dev/volumes/airflow-simple}
+    volumes:
+      - ./dev:/workspace/dev
+      - ./etc:/workspace/etc
+      - ./logs:/workspace/logs
+    depends_on:
+      zetsubou-airflow:
+        condition: service_healthy
 
   zetsubou-minio:
     image: minio/minio:RELEASE.2022-02-26T02-54-46Z.fips
@@ -59,11 +73,11 @@ services:
     ports:
       - ${ZETSUBOU_ELASTICSEARCH_PORT:-9200}:${ZETSUBOU_ELASTICSEARCH_PORT:-9200}
     environment:
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
       USER_UID: 1000
       USER_GID: 1000
-      discovery.type: single-node
       bootstrap.memory_lock: "true"
-      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      discovery.type: single-node
       http.port: ${ZETSUBOU_ELASTICSEARCH_PORT:-9200}
     volumes:
       - ${ZETSUBOU_ELASTICSEARCH_VOLUME:-./dev/volumes/elasticsearch}:/usr/share/elasticsearch/data
@@ -76,8 +90,8 @@ services:
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
-      timeout: 30s
       retries: 50
+      timeout: 30s
     restart: always
 
   zetsubou-airflow:
@@ -87,6 +101,11 @@ services:
     stdin_open: true
     tty: true
     command: airflow standalone
+    healthcheck:
+      test: ["CMD", "bash", "-c", "[ -f /etc/airflow/standalone_admin_password.txt ]"]
+      interval: 5s
+      retries: 50
+      timeout: 30s
     environment:
       AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session"
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"

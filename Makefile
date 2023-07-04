@@ -50,7 +50,7 @@ build-docker-airflow-simple:
 build-dev: build-docker-airflow-simple
 	poetry install
 	source ./.venv/bin/activate; pre-commit install
-build: build-docker-airflow-simple
+build: build-docker-app build-docker-airflow-simple
 
 lint:
 	pre-commit run --all-files
@@ -62,7 +62,8 @@ init-app-elastic:
 	chown -R 1000:1000 $(ZETSUBOU_ELASTICSEARCH_VOLUME)
 init-app-postgres:
 	mkdir -p $(ZETSUBOU_POSTGRES_DB_VOLUME)
-init-app: init-app-elastic init-app-postgres
+init-app:
+	docker-compose -f docker-compose.simple.yml up -d zetsubou-app-init
 init-minio:
 	mkdir -p $(ZETSUBOU_APP_MINIO)
 	mkdir -p $(ZETSUBOU_APP_MINIO_GALLERIES)
@@ -81,7 +82,7 @@ init-airflow:
 init-redis:
 	mkdir -p $(ZETSUBOU_REDIS_VOLUME)
 	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
-init: init-app-postgres init-airflow init-app-elastic init-redis
+init: init-app-postgres init-app-elastic init-minio init-redis init-app
 
 .PHONY: clean clean-all clean-airflow clean-airflow-simple clean-app-elastic clean-app-postgres clean-docker
 clean-airflow:
@@ -94,12 +95,13 @@ clean-app-postgres:
 	rm -rf $(ZETSUBOU_POSTGRES_DB_VOLUME)
 clean-docker:
 	docker rmi $(shell docker images -f "dangling=true" -q)
-clean: clean-airflow clean-docker
+clean: clean-airflow-simple clean-docker
 
 clean-all:
 	rm -f ./.env
 	rm -rf ./dev
 	rm -rf ./etc
+	rm -rf ./logs
 	rm -rf ./statics
 	rm -rf ./venv
 
@@ -110,8 +112,8 @@ reset-app: reset-app-elastic reset-app-postgres
 
 reset-airflow-simple: clean-airflow-simple
 
-.PHONY: up up-airflow up-app-dev
-up-app:
+.PHONY: up-app-simple up-airflow up-airflow-simple up-dev up
+up-app-simple:
 	docker-compose -f docker-compose.simple.yml up -d
 up-airflow:
 	docker-compose -f docker/docker-compose.host.airflow.yml up -d
@@ -119,7 +121,7 @@ up-airflow-simple:
 	docker-compose -f docker-compose.simple.yml up -d zetsubou-airflow
 up-dev:
 	docker-compose -f docker-compose.simple.yml up -d $(APP_DEV_SERVICES)
-up: up-app up-airflow
+up: up-app-simple
 
 .PHONY: down
 down-simple:

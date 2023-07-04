@@ -16,14 +16,14 @@ This is written in Python 3 and Vue 3.
 ZetsuBou would generate `.tag` folder inside your galleries. Here is the folder structure.
 
 ```text
-+-- Gallery 001
++-- Your image gallery 001
 |   +-- .tag
 |   |   +-- gallery.json
 |   |   +-- ...
 |   +-- 1.jpg
 |   +-- 2.jpg
 |   +-- ...
-+-- Gallery 002
++-- Your image gallery 002
 |   +-- .tag
 |   |   +-- gallery.json
 |   |   +-- ...
@@ -34,17 +34,68 @@ ZetsuBou would generate `.tag` folder inside your galleries. Here is the folder 
 +-- ...
 ```
 
+## Getting started
+
+```bash
+# To build docker image
+make build
+# To initialize airflow and create `./etc/settings.env` and `./etc/settings.airflow.env`
+make init
+# To close the services started during initialization
+make down
+
+# To start the services
+make up
+```
+
 ## Development
+
+### Architecture
+
+```mermaid
+---
+title: ZetsuBou architecture
+---
+classDiagram
+    class Network {
+        port: 3000 (ZetsuBou)
+        port: 9000 (MinIO)
+    }
+    class ZetsuBou{
+        port: 3000
+    }
+    class Airflow{
+        port: 8080
+    }
+    class Elasticsearch{
+        port: 9200
+    }
+    class MinIO{
+        port: 9000
+        port: 9001
+    }
+    class PostgreSQL{
+        port: 5430
+    }
+    class Redis{
+        port: 6380
+    }
+    ZetsuBou <|-- Airflow
+    ZetsuBou <|-- Elasticsearch
+    ZetsuBou <|-- MinIO
+    ZetsuBou <|-- PostgreSQL
+    ZetsuBou <|-- Redis
+    Network <|-- ZetsuBou
+    Network <|-- MinIO
+```
 
 ### Set environment
 
 ```bash
 # To install commitlint
-npm install --save-dev @commitlint/{cli,config-conventional}
+npm install --save-dev @commitlint/{cli,config-conventional} conventional-changelog prettier prettier-eslint
 # To test commitlint
 npx commitlint --from "HEAD~1" --to "HEAD" --verbose
-# To install formatter
-npm install --save-dev prettier prettier-eslint
 ```
 
 ### Build

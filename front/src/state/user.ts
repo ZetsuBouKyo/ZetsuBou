@@ -76,7 +76,7 @@ export const userState = reactive<User>({
     return getToken(data).then((response) => {
       const data = response.data;
       if (data) {
-        Cookies.remove("token", { path: "/", domain: window.location.hostname });
+        Cookies.remove("token");
         Cookies.set("token", data.access_token);
       }
     });

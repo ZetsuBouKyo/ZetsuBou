@@ -72,7 +72,7 @@
 
 <script>
 import { reactive, onBeforeMount } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { userState } from "@/state/user";
 import RippleButton from "@/elements/Button/RippleButton.vue";
@@ -81,6 +81,7 @@ export default {
   components: { RippleButton },
   setup() {
     const route = useRoute();
+    const router = useRouter();
 
     const state = reactive({
       email: undefined,
@@ -100,7 +101,7 @@ export default {
       userState
         .signIn(formData)
         .then(() => {
-          window.open(redirect, "_self");
+          router.push(redirect);
         })
         .catch(() => {
           state.wrong = true;

@@ -14,9 +14,12 @@ SETTING_HOME = Path(DEFAULT_SETTING_HOME)
 SETTING_PATH = SETTING_HOME / DEFAULT_SETTING_NAME
 
 AIRFLOW_SETTING_PATH = SETTING_HOME / DEFAULT_AIRFLOW_SETTING_NAME
-AIRFLOW_SIMPLE_PASSWORD_PATH = (
-    Path(setting.airflow_simple_volume) / "standalone_admin_password.txt"
-)
+if setting.airflow_simple_volume is not None:
+    AIRFLOW_SIMPLE_PASSWORD_PATH = (
+        Path(setting.airflow_simple_volume) / "standalone_admin_password.txt"
+    )
+else:
+    AIRFLOW_SIMPLE_PASSWORD_PATH = None
 
 
 def get_envs(setting: Setting) -> str:

@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { PropType, onBeforeMount } from "vue";
+import { PropType } from "vue";
 import { useRouter } from "vue-router";
 
 import PaginationBase from "@/elements/Pagination/index.vue";

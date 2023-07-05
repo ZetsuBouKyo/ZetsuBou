@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { ref, reactive, onBeforeMount, nextTick, watch, PropType } from "vue";
+import { PropType, nextTick, onBeforeMount, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { detectRouteChange } from "@/utils/route";

@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import Star from "./Star.vue";
 import CustomCircle from "./Circle.vue";
+import Star from "./Star.vue";
 
 export default {
   components: { Star, CustomCircle },

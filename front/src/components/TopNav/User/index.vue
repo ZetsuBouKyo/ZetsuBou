@@ -70,9 +70,9 @@
 <script>
 import { reactive, ref } from "vue";
 
-import { userState } from "@/state/user";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import Dropdown from "@/elements/Dropdown/Dropdown.vue";
+import { userState } from "@/state/user";
 
 import { progressState } from "./progress";
 import QuestProgress from "./QuestProgress.vue";

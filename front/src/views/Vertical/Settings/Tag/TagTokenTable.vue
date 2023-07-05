@@ -25,7 +25,7 @@
 <script lang="ts">
 import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
 
-import { getTagTokenTotal, getTagTokens, postTagToken, putTagToken, deleteTagToken } from "@/api/v1/tag/token";
+import { deleteTagToken, getTagTokenTotal, getTagTokens, postTagToken, putTagToken } from "@/api/v1/tag/token";
 
 export interface Row {
   id?: number;

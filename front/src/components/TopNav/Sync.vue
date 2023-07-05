@@ -51,19 +51,19 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, watch } from "vue";
 import { AxiosResponse } from "axios";
+import { reactive, ref, watch } from "vue";
 
 import {
+  deleteTaskAirflowSyncStoragesProgress,
+  getTaskAirflowSyncStoragesProgress,
+  postSyncStoragesMinio,
+} from "@/api/v1/task/airflow";
+import {
+  deleteTaskStandaloneSyncNewProgress,
   getTaskStandaloneSyncNewGalleries,
   getTaskStandaloneSyncNewProgress,
-  deleteTaskStandaloneSyncNewProgress,
 } from "@/api/v1/task/standalone";
-import {
-  postSyncStoragesMinio,
-  getTaskAirflowSyncStoragesProgress,
-  deleteTaskAirflowSyncStoragesProgress,
-} from "@/api/v1/task/airflow";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import Dropdown from "@/elements/Dropdown/Dropdown.vue";

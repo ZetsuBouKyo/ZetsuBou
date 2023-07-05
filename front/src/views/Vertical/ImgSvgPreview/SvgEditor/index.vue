@@ -10,9 +10,9 @@
 <script lang="ts">
 import { PropType, ref } from "vue";
 
+import Sidebar from "./Sidebar/index.vue";
 import SvgContainer from "./SvgContainer.vue";
 import SvgLayers from "./SvgLayers.vue";
-import Sidebar from "./Sidebar/index.vue";
 import { SVG } from "./svg.d";
 
 export default {

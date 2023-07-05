@@ -68,8 +68,8 @@
 </template>
 
 <script lang="ts">
+import { onBeforeMount, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
-import { reactive, ref, onBeforeMount } from "vue";
 
 import { deleteGalleryByID } from "@/api/v1/gallery/operation";
 import { getTaskStandaloneGalleryOpen } from "@/api/v1/task/standalone";
@@ -77,11 +77,11 @@ import { getTaskStandaloneGalleryOpen } from "@/api/v1/task/standalone";
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 import StarRating from "@/elements/Rating/StarRating.vue";
 
-import ControlPanel from "./ControlPanel.vue";
-import Editor from "./Editor.vue";
 import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";
 import TextEditor from "@/components/TextEditor/index.vue";
+import ControlPanel from "./ControlPanel.vue";
+import Editor from "./Editor.vue";
 
 import { galleryState } from "@/state/gallery";
 

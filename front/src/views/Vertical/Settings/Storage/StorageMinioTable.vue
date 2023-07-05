@@ -110,19 +110,19 @@ import { reactive, watch } from "vue";
 
 import { getStorageMinioList } from "@/api/v1/storage/minio/operation";
 import {
+  deleteStorageMinio,
   getStorageMinioCategories,
   getStorageMinioTotalStorages,
   getStorageMinios,
   postStorageMinio,
   putStorageMinio,
-  deleteStorageMinio,
 } from "@/api/v1/storage/minio/storage";
 import { postSyncStorageMinio } from "@/api/v1/task/airflow";
 
 import { ButtonColorEnum } from "@/elements/Button/button";
-import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
-import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 import SelectDropdown, { SelectDropdownState, reset } from "@/elements/Dropdown/SelectDropdown.vue";
+import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
+import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
 
 import { messageState } from "@/state/message";
 

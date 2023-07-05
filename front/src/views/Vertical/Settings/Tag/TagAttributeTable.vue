@@ -26,11 +26,11 @@
 import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
 
 import {
+  deleteTagAttribute,
   getTagAttributeTotal,
   getTagAttributes,
   postTagAttribute,
   putTagAttribute,
-  deleteTagAttribute,
 } from "@/api/v1/tag/attribute";
 
 export interface Row {

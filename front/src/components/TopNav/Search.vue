@@ -105,8 +105,8 @@
 </template>
 
 <script lang="ts">
-import { useRoute, useRouter } from "vue-router";
 import { reactive, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import { SearchAnalyzer, SearchBase, SearchBoolean, SearchCategory, SearchState } from "@/interface/search";
 
@@ -114,25 +114,25 @@ import { userState } from "@/state/user";
 
 import { getUserElasticSearchQueries } from "@/api/v1/user/elasticQuery/search";
 
-import Dropdown from "@/elements/Dropdown/Dropdown.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SearchAutoComplete from "./SearchAutoComplete.vue";
+import Dropdown from "@/elements/Dropdown/Dropdown.vue";
 import SelectDropdown, {
   GetParam,
+  Origin,
   SelectDropdownMode,
   SelectDropdownOption,
   SelectDropdownState,
-  Origin,
   clear,
 } from "@/elements/Dropdown/SelectDropdown.vue";
+import SearchAutoComplete from "./SearchAutoComplete.vue";
 
+import { toTitle } from "@/utils/str";
 import AdvancedSearch, {
   AdvancedSearchField,
   AdvancedSearchFieldKeyEnum,
   AdvancedSearchFieldType,
   AdvancedSearchState,
 } from "./AdvancedSearch.vue";
-import { toTitle } from "@/utils/str";
 
 export default {
   components: { AdvancedSearch, Dropdown, RippleButton, SearchAutoComplete, SelectDropdown },

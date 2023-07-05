@@ -26,8 +26,8 @@
 <script lang="ts">
 import { reactive, watch } from "vue";
 
-import { getGroupTotal, getGroup, putGroup, postGroup, deleteGroup } from "@/api/v1/group";
-import SelectDropdown, { SelectDropdownState, reset } from "@/elements/Dropdown/SelectDropdown.vue";
+import { deleteGroup, getGroup, getGroupTotal, postGroup, putGroup } from "@/api/v1/group";
+import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 
 import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
 

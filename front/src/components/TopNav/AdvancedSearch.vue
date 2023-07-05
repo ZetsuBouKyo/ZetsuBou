@@ -142,8 +142,8 @@ import {
 } from "@/api/v1/setting/front/video";
 import { getTagTokenStartWith } from "@/api/v1/tag/token";
 
-import { Source, SourceDataState } from "@/interface/source";
 import { SearchCategory } from "@/interface/search";
+import { Source, SourceDataState } from "@/interface/source";
 import { TagFieldsPrivateState } from "@/interface/tag";
 
 import { durationToSecond } from "@/utils/datetime";
@@ -163,7 +163,7 @@ import SelectDropdown, {
 import { settingState } from "@/state/setting";
 
 import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
-import { watchTags, watchTagFieldsChipsLength } from "@/utils/tag";
+import { watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
 
 export enum AdvancedSearchFieldType {
   String,

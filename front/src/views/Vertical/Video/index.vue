@@ -97,10 +97,9 @@
 </template>
 
 <script lang="ts">
+import { onBeforeMount, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { reactive, ref, onBeforeMount, watch } from "vue";
 
-import { AirflowDagRunResponse, AirflowDagRunStateEnum, AirflowTask } from "@/interface/airflow";
 import { SearchBase } from "@/interface/search";
 import { SourceState } from "@/interface/source";
 import { Video } from "@/interface/video";
@@ -109,15 +108,15 @@ import { messageState } from "@/state/message";
 import { userState } from "@/state/user";
 import { videoState } from "@/state/video";
 
-import { getAdvancedSearch, getRandom, getSearch, SearchQuery } from "@/api/v1/video/query";
 import { postVideoCreateCover } from "@/api/v1/task/airflow";
+import { getAdvancedSearch, getRandom, getSearch, SearchQuery } from "@/api/v1/video/query";
 
 import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";
 import TextEditor from "@/components/TextEditor/index.vue";
 
-import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
+import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 import StarRating from "@/elements/Rating/StarRating.vue";
 
 import Editor from "./Editor.vue";

@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, watch, PropType } from "vue";
+import { PropType, reactive, watch } from "vue";
 
 import { getTagTokenStartWith } from "@/api/v1/tag/token";
 

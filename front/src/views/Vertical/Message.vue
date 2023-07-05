@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { messageState, Message } from "@/state/message";
+import { Message, messageState } from "@/state/message";
 
 export default {
   setup() {

@@ -84,27 +84,27 @@
 <script lang="ts">
 import { defineComponent, watch } from "vue";
 
-import { onGetTip, onMouseoverOption } from "@/utils/tag";
 import { toTitle } from "@/utils/str";
+import { onGetTip, onMouseoverOption } from "@/utils/tag";
 
 import SelectDropdown, {
+  Origin,
   SelectDropdownMode,
   SelectDropdownState,
-  Origin,
   reset,
 } from "@/elements/Dropdown/SelectDropdown.vue";
 import CrudTable, { CrudTableState, Header, Search } from "@/elements/Table/CrudTable/index.vue";
 
-import { getTagTokenTotal, getTagTokens, getTagTokenStartWith } from "@/api/v1/tag/token";
+import { getTagAttributes } from "@/api/v1/tag/attribute";
 import {
+  TagInterpretation,
+  deleteTag,
   getTagInterpretation,
   postTag,
   putTag,
-  deleteTag,
-  TagInterpretation,
   searchForTagAttributes,
 } from "@/api/v1/tag/tag";
-import { getTagAttributes } from "@/api/v1/tag/attribute";
+import { getTagTokenStartWith, getTagTokenTotal, getTagTokens } from "@/api/v1/tag/token";
 
 export interface Row {
   id?: number;

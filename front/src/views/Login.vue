@@ -71,11 +71,11 @@
 </template>
 
 <script>
-import { reactive, onBeforeMount } from "vue";
+import { onBeforeMount, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { userState } from "@/state/user";
 import RippleButton from "@/elements/Button/RippleButton.vue";
+import { userState } from "@/state/user";
 
 export default {
   components: { RippleButton },

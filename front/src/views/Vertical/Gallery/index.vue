@@ -6,18 +6,18 @@
 </template>
 
 <script lang="ts">
-import { useRoute, useRouter } from "vue-router";
 import { reactive, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import { getImages } from "@/api/v1/gallery/image";
 
-import { userState } from "@/state/user";
 import { Item, Items, Previews } from "@/components/PreviewList/interface";
-import { getPagination } from "@/elements/Pagination/pagination";
 import { Query } from "@/elements/Pagination/interface";
+import { getPagination } from "@/elements/Pagination/pagination";
+import { userState } from "@/state/user";
 
-import Info from "./Info/index.vue";
 import PreviewList from "@/components/PreviewList/index.vue";
+import Info from "./Info/index.vue";
 
 function getItems(id: string, data: any, query: Query) {
   const items: Items = [];

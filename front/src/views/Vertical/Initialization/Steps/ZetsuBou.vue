@@ -53,9 +53,9 @@ import { PropType, reactive, watch } from "vue";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown, {
+  Origin,
   SelectDropdownMode,
   SelectDropdownState,
-  Origin,
 } from "@/elements/Dropdown/SelectDropdown.vue";
 import Step, { StepState } from "../Step.vue";
 

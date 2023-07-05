@@ -31,9 +31,9 @@
 <script lang="ts">
 import { PropType } from "vue";
 
-import { Previews } from "./interface";
 import Pagination from "./Pagination.vue";
 import PreviewImage from "./PreviewImage.vue";
+import { Previews } from "./interface";
 
 export default {
   components: { Pagination, PreviewImage },

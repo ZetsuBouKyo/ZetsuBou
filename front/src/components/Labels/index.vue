@@ -16,9 +16,9 @@
 </template>
 
 <script lang="ts">
-import { PropType } from "vue";
-
 import RippleAnchor from "@/elements/Anchor/RippleAnchor.vue";
+
+import { PropType } from "vue";
 
 export default {
   components: { RippleAnchor },

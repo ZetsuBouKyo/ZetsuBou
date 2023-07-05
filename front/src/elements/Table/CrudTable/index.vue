@@ -94,21 +94,20 @@ import { useRoute } from "vue-router";
 import { isEmpty } from "@/utils/obj";
 
 import { ButtonColorEnum } from "@/elements/Button/button";
-import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
-import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
-import Modal from "@/elements/Modal/Modal.vue";
-import PaginationBase from "@/elements/Pagination/index.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown, {
+  OnGetTip,
+  OnGetToOptions,
+  OnMouseoverOption,
+  Origin,
+  SelectDropdownMode,
   SelectDropdownOption,
   SelectDropdownState,
-  SelectDropdownMode,
-  Origin,
-  OnGetToOptions,
-  OnGetTip,
-  OnMouseoverOption,
-  reset,
 } from "@/elements/Dropdown/SelectDropdown.vue";
+import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
+import Modal from "@/elements/Modal/Modal.vue";
+import PaginationBase from "@/elements/Pagination/index.vue";
+import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 
 import { getPagination } from "@/elements/Pagination/pagination";
 

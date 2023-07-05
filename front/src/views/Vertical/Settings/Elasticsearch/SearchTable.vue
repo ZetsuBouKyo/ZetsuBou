@@ -16,15 +16,15 @@ import { defineComponent } from "vue";
 import { userState } from "@/state/user";
 
 import {
-  getUserElasticSearchQueryTotal,
+  deleteUserElasticSearchQuery,
   getUserElasticSearchQueries,
+  getUserElasticSearchQueryTotal,
   postUserElasticSearchQuery,
   putUserElasticSearchQuery,
-  deleteUserElasticSearchQuery,
 } from "@/api/v1/user/elasticQuery/search";
 
-import ElasticQueryTable, { Row } from "./ElasticQueryTable.vue";
 import { GetParam } from "@/elements/Table/CrudTable/index.vue";
+import ElasticQueryTable, { Row } from "./ElasticQueryTable.vue";
 
 export default defineComponent({
   components: { ElasticQueryTable },

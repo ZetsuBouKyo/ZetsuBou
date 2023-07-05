@@ -55,18 +55,18 @@ import { userState } from "@/state/user";
 
 import { getDatetime } from "@/utils/datetime";
 
-import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown, { GetParam, SelectDropdownState, reset } from "@/elements/Dropdown/SelectDropdown.vue";
+import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
 
-import { getUserElasticCountQuests, getUserElasticCountQuest } from "@/api/v1/user/quest/elasticCountQuest";
+import { getUserElasticCountQuest, getUserElasticCountQuests } from "@/api/v1/user/quest/elasticCountQuest";
 
 import {
+  deleteUserQuest,
   getUserQuestTotal,
   getUserQuests,
   postUserQuest,
   putUserQuest,
-  deleteUserQuest,
 } from "@/api/v1/user/quest/quest";
 
 import { getSettingUserQuestCategories } from "@/api/v1/setting/userQuestCategory";

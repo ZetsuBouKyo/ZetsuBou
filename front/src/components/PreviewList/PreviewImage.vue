@@ -40,10 +40,10 @@
 </template>
 
 <script lang="ts">
-import { ref, reactive, PropType, watch } from "vue";
+import { PropType, reactive, ref, watch } from "vue";
 
-import { Item } from "./interface";
 import StarRating from "@/elements/Rating/StarRating.vue";
+import { Item } from "./interface";
 
 export default {
   components: { StarRating },

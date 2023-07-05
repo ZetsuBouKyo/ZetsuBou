@@ -43,16 +43,16 @@ import CrudTable, {
   CrudTableState,
   Header,
   OnCrudCreate,
+  OnCrudDelete,
   OnCrudGet,
   OnCrudGetTotal,
   OnCrudUpdate,
-  OnCrudDelete,
 } from "@/elements/Table/CrudTable/index.vue";
 
 import SelectDropdown, {
+  Origin,
   SelectDropdownOption,
   SelectDropdownState,
-  Origin,
 } from "@/elements/Dropdown/SelectDropdown.vue";
 
 export interface Row {

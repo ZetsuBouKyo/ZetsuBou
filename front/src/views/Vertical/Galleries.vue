@@ -11,12 +11,12 @@ import { useRoute } from "vue-router";
 import { getDatetime } from "@/utils/datetime";
 import { detectRouteChange } from "@/utils/route";
 
-import { getRandom, getAdvancedSearch, getSearch, SearchQuery } from "@/api/v1/gallery/query";
+import { SearchQuery, getAdvancedSearch, getRandom, getSearch } from "@/api/v1/gallery/query";
 
 import { userState } from "@/state/user";
 
-import { getPagination } from "@/elements/Pagination/pagination";
 import { Item, Items, Previews } from "@/components/PreviewList/interface";
+import { getPagination } from "@/elements/Pagination/pagination";
 
 import PreviewList from "@/components/PreviewList/index.vue";
 

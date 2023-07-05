@@ -72,29 +72,29 @@ import axios from "axios";
 import { reactive, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { ButtonColorEnum } from "@/elements/Button/button";
-import { GetParam } from "@/elements/Table/CrudTable/index.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import StarRating from "@/elements/Rating/StarRating.vue";
-import { getPagination } from "@/elements/Pagination/pagination";
+import { ButtonColorEnum } from "@/elements/Button/button";
 import PaginationBase from "@/elements/Pagination/index.vue";
+import { getPagination } from "@/elements/Pagination/pagination";
+import StarRating from "@/elements/Rating/StarRating.vue";
+import { GetParam } from "@/elements/Table/CrudTable/index.vue";
 
-import {
-  getUserTotalBookmarks,
-  getUserDetailedGalleryBookmarks,
-  deleteUserBookmarkGallery,
-} from "@/api/v1/user/bookmark/gallery";
 import { getImages } from "@/api/v1/gallery/image";
+import {
+  deleteUserBookmarkGallery,
+  getUserDetailedGalleryBookmarks,
+  getUserTotalBookmarks,
+} from "@/api/v1/user/bookmark/gallery";
 
-import { userState } from "@/state/user";
 import { messageState } from "@/state/message";
+import { userState } from "@/state/user";
 
-import { Gallery } from "@/interface/gallery";
 import { Pagination } from "@/elements/Pagination/interface";
+import { Gallery } from "@/interface/gallery";
 
 import { getDatetime } from "@/utils/datetime";
-import { getUUID } from "@/utils/str";
 import { detectRouteChange } from "@/utils/route";
+import { getUUID } from "@/utils/str";
 
 interface Bookmark {
   id: number;

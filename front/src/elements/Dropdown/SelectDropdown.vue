@@ -71,9 +71,9 @@
 import { AxiosResponse } from "axios";
 import { defineComponent, PropType, reactive, ref, watch } from "vue";
 
+import RippleButton from "@/elements/Button/RippleButton.vue";
 import Chip from "@/elements/Chip/Chip.vue";
 import Dropdown, { Origin } from "@/elements/Dropdown/Dropdown.vue";
-import RippleButton from "@/elements/Button/RippleButton.vue";
 
 export { Origin } from "@/elements/Dropdown/Dropdown.vue";
 

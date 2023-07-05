@@ -88,27 +88,27 @@
 import { defineComponent, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { getTagTokenStartWith } from "@/api/v1/tag/token";
 import {
   getSettingFrontGalleryStartWithCategories,
   getSettingFrontGalleryStartWithTagFields,
 } from "@/api/v1/setting/front/gallery";
+import { getTagTokenStartWith } from "@/api/v1/tag/token";
 
-import Modal from "@/elements/Modal/Modal.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
+import Modal from "@/elements/Modal/Modal.vue";
 
 import SelectDropdown, {
-  SelectDropdownState,
-  SelectDropdownMode,
-  Origin,
   OnGet,
+  Origin,
+  SelectDropdownMode,
+  SelectDropdownState,
 } from "@/elements/Dropdown/SelectDropdown.vue";
 
 import { galleryState } from "@/state/gallery";
 import { messageState } from "@/state/message";
 
 import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
-import { watchTags, watchTagFieldsChipsLength } from "@/utils/tag";
+import { watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
 
 interface TagFields {
   [key: string]: SelectDropdownState;

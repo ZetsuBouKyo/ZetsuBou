@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { PropType, ref, reactive } from "vue";
+import { PropType, reactive, ref } from "vue";
 
 export default {
   props: {

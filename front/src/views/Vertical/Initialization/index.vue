@@ -15,9 +15,9 @@ import { reactive } from "vue";
 import { Setting } from "@/interface/setting";
 
 import CheckHostPortsStep from "./Steps/CheckHostPorts.vue";
-import ZetsuBouStep from "./Steps/ZetsuBou.vue";
-import S3 from "./Steps/Storage/S3.vue";
 import Finished from "./Steps/Finished.vue";
+import S3 from "./Steps/Storage/S3.vue";
+import ZetsuBouStep from "./Steps/ZetsuBou.vue";
 
 import { initStepState } from "./Step.vue";
 

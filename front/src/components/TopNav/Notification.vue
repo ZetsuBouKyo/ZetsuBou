@@ -39,8 +39,8 @@
 <script lang="ts">
 import { reactive, watch } from "vue";
 
-import Dropdown from "@/elements/Dropdown/Dropdown.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
+import Dropdown from "@/elements/Dropdown/Dropdown.vue";
 
 import { messageState } from "@/state/message";
 

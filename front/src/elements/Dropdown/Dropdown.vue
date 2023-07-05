@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive, watch, getCurrentInstance, onBeforeMount } from "vue";
+import { PropType, defineComponent, getCurrentInstance, onBeforeMount, reactive, watch } from "vue";
 
 export enum Origin {
   BottomLeft,

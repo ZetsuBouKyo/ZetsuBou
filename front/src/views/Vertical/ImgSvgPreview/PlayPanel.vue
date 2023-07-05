@@ -56,15 +56,15 @@
 </template>
 
 <script lang="ts">
+import { PropType, onBeforeMount, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { PropType, onMounted, onBeforeMount, watch } from "vue";
 
 import { getImages } from "@/api/v1/gallery/image";
 import {
+  deleteUserBookmarkGallery,
   getUserBookmarkGallery,
   postUserBookmarkGallery,
   putUserBookmarkGallery,
-  deleteUserBookmarkGallery,
 } from "@/api/v1/user/bookmark/gallery";
 
 import { userState } from "@/state/user";

@@ -42,9 +42,9 @@ import { onGetTip, onMouseoverOption } from "@/utils/tag";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown, {
-  SelectDropdownState,
-  SelectDropdownMode,
   Origin,
+  SelectDropdownMode,
+  SelectDropdownState,
 } from "@/elements/Dropdown/SelectDropdown.vue";
 
 import { getSettingFrontVideoInterpretation, putSettingFrontVideo } from "@/api/v1/setting/front/video";

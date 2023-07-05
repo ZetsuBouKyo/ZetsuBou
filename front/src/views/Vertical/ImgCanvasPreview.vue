@@ -79,8 +79,8 @@
 </template>
 
 <script>
+import { onBeforeMount, onMounted, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
-import { ref, reactive, onMounted, onBeforeMount } from "vue";
 
 import { getImages } from "@/api/v1/gallery/image";
 

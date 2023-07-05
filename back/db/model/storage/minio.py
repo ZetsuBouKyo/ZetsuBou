@@ -1,5 +1,6 @@
-from back.model.storage import StorageCategoryEnum
 from pydantic import BaseModel
+
+from back.model.storage import StorageCategoryEnum
 
 
 class StorageMinioCreate(BaseModel):

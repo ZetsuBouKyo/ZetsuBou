@@ -3,10 +3,11 @@ from asyncio import run
 from pathlib import Path
 from typing import Any, Callable, Union
 
-from back.api.model.task.airflow import Argument, CommandSchema, KeywordArgument
-from back.session.async_airflow import dags
 from fastapi.dependencies.utils import get_typed_signature
 from typer.models import ArgumentInfo, OptionInfo
+
+from back.api.model.task.airflow import Argument, CommandSchema, KeywordArgument
+from back.session.async_airflow import dags
 
 
 def sync(async_func):

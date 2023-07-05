@@ -1,5 +1,7 @@
 from typing import List, Union
 
+from fastapi import APIRouter, Depends
+
 from back.crud.async_tag import CrudAsyncElasticsearchTag, CrudTag
 from back.db.crud import CrudTagToken
 from back.dependency.base import get_pagination
@@ -7,7 +9,6 @@ from back.dependency.security import api_security
 from back.model.base import Pagination
 from back.model.scope import ScopeEnum
 from back.model.tag import Tag, TagCreate, TagToken, TagUpdate
-from fastapi import APIRouter, Depends
 
 from .attribute import router as attribute
 from .category import router as category

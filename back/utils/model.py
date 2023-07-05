@@ -2,8 +2,9 @@ import json
 from datetime import datetime
 from typing import Any, Dict, Union
 
-from back.utils.dt import datetime_format, datetime_formats
 from pydantic.typing import AnyCallable, Generator
+
+from back.utils.dt import datetime_format, datetime_formats
 
 CallableGenerator = Generator[AnyCallable, None, None]
 

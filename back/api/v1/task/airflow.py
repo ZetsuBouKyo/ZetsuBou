@@ -1,5 +1,7 @@
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException
+
 from back.api.model.task.airflow import CommandRequest, CommandSchema
 from back.crud.async_progress import check_airflow_progress
 from back.dependency.security import api_security
@@ -8,7 +10,6 @@ from back.model.scope import ScopeEnum
 from back.model.task import ZetsuBouTask
 from back.session.async_airflow import AsyncAirflowSession, dags
 from back.session.async_redis import async_redis
-from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter(
     prefix="/cmd", tags=["Task"], dependencies=[api_security(ScopeEnum.task_cmd.name)]

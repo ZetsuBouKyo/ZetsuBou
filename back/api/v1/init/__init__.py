@@ -1,10 +1,11 @@
 from typing import Dict
 
+from fastapi import APIRouter
+
 from back.dependency.security import api_security
 from back.init.check import check_host_port
 from back.init.statics import get_static_file
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter
 
 from .ping import router as ping
 

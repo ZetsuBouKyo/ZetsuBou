@@ -1,8 +1,9 @@
+from fastapi import HTTPException
+
 from back.db.crud import CrudStorageMinio
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.session.storage.async_s3 import AsyncS3Session
 from back.settings import setting
-from fastapi import HTTPException
 
 STORAGE_PROTOCOL = setting.storage_protocol
 STORAGE_S3_AWS_ACCESS_KEY_ID = setting.storage_s3_aws_access_key_id

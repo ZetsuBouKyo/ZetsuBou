@@ -1,8 +1,9 @@
+from fastapi import APIRouter
+from fastapi.responses import FileResponse, RedirectResponse
+
 from back.crud.async_video import get_crud_async_video
 from back.dependency.security import view_security
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter
-from fastapi.responses import FileResponse, RedirectResponse
 
 from .query import router as query
 from .tag import router as tag

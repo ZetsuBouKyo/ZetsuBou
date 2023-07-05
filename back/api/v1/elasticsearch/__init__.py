@@ -1,9 +1,10 @@
 from typing import List
 
+from fastapi import APIRouter
+
 from back.dependency.security import api_security
 from back.model.elasticsearch import AnalyzerEnum
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter
 
 from ...model.elasticsearch import ElasticsearchAnalyzer, ElasticsearchQueryExample
 from ...model.gallery import query_examples

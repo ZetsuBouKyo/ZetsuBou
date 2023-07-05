@@ -1,5 +1,8 @@
 from typing import List
 
+from fastapi import APIRouter
+from fastapi.responses import JSONResponse
+
 from back.db.crud import CrudUser, CrudUserFrontSetting, CrudUserGroup
 from back.db.model import (
     Group,
@@ -12,8 +15,6 @@ from back.db.model import (
 )
 from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
 
 from .bookmark import router as bookmark
 from .elastic_query import router as elastic_query

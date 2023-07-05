@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List
 
 import pytz
+
 from back.settings import setting
 
 TIMEZONE = setting.app_timezone

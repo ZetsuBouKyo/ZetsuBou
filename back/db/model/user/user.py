@@ -1,5 +1,6 @@
-from back.utils.model import DatetimeStr
 from pydantic import BaseModel, EmailStr
+
+from back.utils.model import DatetimeStr
 
 
 class UserCreate(BaseModel):

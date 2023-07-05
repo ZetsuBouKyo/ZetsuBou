@@ -1,10 +1,11 @@
 from typing import List
 
+from fastapi import APIRouter
+
 from back.db.crud import CrudUser
 from back.db.model import User
 from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

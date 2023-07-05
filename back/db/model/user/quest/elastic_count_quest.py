@@ -1,5 +1,6 @@
-from back.utils.model import DatetimeStr
 from pydantic import BaseModel
+
+from back.utils.model import DatetimeStr
 
 
 class UserElasticCountQuestCreate(BaseModel):

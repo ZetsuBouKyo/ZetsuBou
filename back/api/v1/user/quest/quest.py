@@ -1,5 +1,7 @@
 from typing import List, Union
 
+from fastapi import APIRouter, Depends, HTTPException
+
 from back.api.model.user.quest import CurrentQuestProgress
 from back.crud.user_quest import CrudElasticCount
 from back.db.crud import CrudUserElasticCountQuest, CrudUserQuest, CrudUserQuestCategory
@@ -14,7 +16,6 @@ from back.dependency.base import get_pagination
 from back.dependency.security import api_security
 from back.model.base import Pagination
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter(tags=["User Quest"])
 

@@ -1,8 +1,6 @@
 from datetime import datetime
 from typing import Dict, List, Set, Union
 
-from back.db.table import Base
-from back.session.async_db import async_engine, async_session
 from pydantic import BaseModel
 from sqlalchemy import delete, desc, text, update
 from sqlalchemy.engine.cursor import CursorResult
@@ -12,6 +10,9 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 from sqlalchemy.sql import functions as func
 from sqlalchemy.sql.elements import TextClause
+
+from back.db.table import Base
+from back.session.async_db import async_engine, async_session
 
 
 async def create(instance: DeclarativeMeta, data: Union[BaseModel, dict]) -> dict:

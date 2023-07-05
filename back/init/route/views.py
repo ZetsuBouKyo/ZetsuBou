@@ -1,6 +1,7 @@
-from back.route.views import index
 from fastapi import APIRouter
 from fastapi.responses import RedirectResponse
+
+from back.route.views import index
 
 router = APIRouter()
 

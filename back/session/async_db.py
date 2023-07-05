@@ -1,8 +1,9 @@
-from back.settings import DatabaseTypeEnum, setting  # noqa: F401
 from sqlalchemy import event  # noqa: F401
 from sqlalchemy.engine import Engine  # noqa: F401
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+
+from back.settings import DatabaseTypeEnum, setting  # noqa: F401
 
 DATABASE_TYPE = setting.database_type
 DATABASE_URL = setting.database_url

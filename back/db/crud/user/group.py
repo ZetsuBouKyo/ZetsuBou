@@ -1,7 +1,8 @@
 from typing import List
 
-from back.session.async_db import async_session
 from sqlalchemy.future import select
+
+from back.session.async_db import async_session
 
 from ...model import UserGroup, UserGroupCreate
 from ...table import GroupBase, UserBase, UserGroupBase

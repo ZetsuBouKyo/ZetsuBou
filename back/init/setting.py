@@ -1,12 +1,13 @@
-from back.init.check import check_host_port
-from back.crud.setting import (
-    get_setting_example,
-    update_settings,
-    update_airflow_settings,
-    get_airflow_simple_password,
-)
-from back.settings import Setting
 from typing import List
+
+from back.crud.setting import (
+    get_airflow_simple_password,
+    get_setting_example,
+    update_airflow_settings,
+    update_settings,
+)
+from back.init.check import check_host_port
+from back.settings import Setting
 
 
 def get_port(port: int, max_tries: int = 10, excludes: List[int] = []) -> int:

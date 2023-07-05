@@ -1,5 +1,6 @@
-from back.settings import setting
 from elasticsearch import AsyncElasticsearch
+
+from back.settings import setting
 
 HOSTS = setting.elastic_hosts
 

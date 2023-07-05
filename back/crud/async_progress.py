@@ -1,10 +1,11 @@
 import logging
 from uuid import uuid4
 
+from redis.asyncio import Redis
+
 from back.logging import logger_webapp
 from back.model.task import ZetsuBouTaskProgressEnum
 from back.session.async_redis import async_redis as _async_redis
-from redis.asyncio import Redis
 
 
 def get_progress_id(prefix: str = ""):

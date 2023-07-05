@@ -1,13 +1,13 @@
 from typing import List
 
 import typer
+from elasticsearch.helpers import async_reindex
+from rich import print_json
+
 from back.init.async_elasticsearch import create_gallery, create_video, init_indices
 from back.model.elasticsearch import AnalyzerEnum
 from back.session.async_elasticsearch import async_elasticsearch
-from rich import print_json
-
 from command.utils import sync
-from elasticsearch.helpers import async_reindex
 
 _help = """
 Manipulate the Elasticsearch.

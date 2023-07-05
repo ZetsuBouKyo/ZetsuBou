@@ -1,12 +1,12 @@
 from urllib.parse import urlparse
 
 import typer
+from elasticsearch.helpers import async_bulk
+
 from back.crud.async_video import CrudAsyncElasticsearchVideo
 from back.model.video import Video
 from back.session.async_elasticsearch import async_elasticsearch
-
 from command.utils import sync
-from elasticsearch.helpers import async_bulk
 
 app = typer.Typer(name="migrate")
 

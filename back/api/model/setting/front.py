@@ -1,8 +1,9 @@
 from typing import Dict, List
 
+from pydantic import BaseModel
+
 from back.model.elasticsearch import AnalyzerEnum, ElasticsearchField
 from back.settings import AppModeEnum
-from pydantic import BaseModel
 
 
 class FrontGeneralSettingAnalyzerBase(BaseModel):

@@ -1,6 +1,7 @@
+from pydantic import BaseModel
+
 from back.db.model import UserBookmarkGallery
 from back.model.gallery import Gallery
-from pydantic import BaseModel
 
 
 class GalleryBookmark(BaseModel):

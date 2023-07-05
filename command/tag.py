@@ -3,12 +3,12 @@ import time
 from pathlib import Path
 
 import typer
+from tqdm import tqdm
+
 from back.crud.async_tag import CrudTag
 from back.db.crud import CrudTagAttribute, CrudTagToken
 from back.db.model import TagAttributeCreate, TagTokenCreate
 from back.model.tag import TagInsert
-from tqdm import tqdm
-
 from command.utils import sync
 
 

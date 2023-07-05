@@ -1,12 +1,13 @@
 from typing import Union
 
+from fastapi import HTTPException
+
 from back.db.model import (
     UserElasticCountQueryCreate,
     UserElasticCountQueryUpdate,
     UserElasticSearchQueryCreate,
     UserElasticSearchQueryUpdate,
 )
-from fastapi import HTTPException
 
 
 def verify_user_id(

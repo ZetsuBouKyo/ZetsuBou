@@ -1,12 +1,13 @@
 from datetime import timedelta
 from typing import Optional
 
-from back.db.crud import CrudUser
-from back.security import create_access_token
-from back.settings import setting
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.param_functions import Form
 from fastapi.security import OAuth2PasswordRequestForm
+
+from back.db.crud import CrudUser
+from back.security import create_access_token
+from back.settings import setting
 
 EXPIRED_IN_MINUTES = setting.app_security_expired
 

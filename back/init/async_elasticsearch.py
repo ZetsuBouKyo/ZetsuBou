@@ -1,10 +1,11 @@
 from collections import deque
 from typing import Dict, List
 
+from elasticsearch import AsyncElasticsearch
+
 from back.model.elasticsearch import AnalyzerEnum, ElasticsearchField
 from back.session.async_elasticsearch import async_elasticsearch
 from back.settings import setting
-from elasticsearch import AsyncElasticsearch
 
 indices = [
     setting.dict()[key]

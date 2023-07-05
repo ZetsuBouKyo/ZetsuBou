@@ -1,8 +1,9 @@
+from fastapi import APIRouter, HTTPException
+
 from back.crud.async_video import get_crud_async_video, get_video_by_video_id
 from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
 from back.model.video import Video
-from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 

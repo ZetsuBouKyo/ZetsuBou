@@ -1,3 +1,5 @@
+from fastapi import HTTPException
+
 from back.crud.async_gallery import CrudAsyncGallerySync
 from back.crud.async_video import CrudAsyncVideoSync
 from back.db.crud import CrudStorageMinio
@@ -6,7 +8,6 @@ from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.storage import StorageCategoryEnum
 from back.session.storage import get_app_storage_session
 from back.session.storage.async_s3 import AsyncS3Session
-from fastapi import HTTPException
 
 
 def get_root_source_by_storage_minio(storage_minio: StorageMinio) -> SourceBaseModel:

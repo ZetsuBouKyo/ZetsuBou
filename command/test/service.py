@@ -1,8 +1,9 @@
 import typer
+
+from back.init.check import check_host_port
 from back.init.check import ping as _ping
 from back.model.service import ServiceEnum
 from command.utils import sync
-from back.init.check import check_host_port
 
 app = typer.Typer(name="service")
 

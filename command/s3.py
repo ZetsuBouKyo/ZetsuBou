@@ -1,6 +1,8 @@
 import json
 
 import typer
+from rich import print_json
+
 from back.model.base import SourceBaseModel
 from back.session.storage.async_s3 import (
     AsyncS3Session,
@@ -13,8 +15,6 @@ from back.session.storage.async_s3 import (
     list_filenames,
     put_json,
 )
-from rich import print_json
-
 from command.utils import sync
 
 _help = """

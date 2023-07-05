@@ -1,8 +1,9 @@
 from typing import List
 
-from back.session.async_db import async_session
 from sqlalchemy import desc
 from sqlalchemy.future import select
+
+from back.session.async_db import async_session
 
 from ...model import TagToken, TagTokenCreate, TagTokenCreated, TagTokenUpdate
 from ...table import TagCategoryBase, TagTokenBase

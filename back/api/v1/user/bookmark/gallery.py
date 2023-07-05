@@ -1,5 +1,7 @@
 from typing import List, Union
 
+from fastapi import APIRouter, Depends
+
 from back.crud.async_gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserBookmarkGallery
 from back.db.model import (
@@ -14,7 +16,6 @@ from back.model.base import Pagination
 from back.model.bookmark import GalleryBookmark
 from back.model.gallery import Gallery
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter, Depends
 
 router = APIRouter()
 

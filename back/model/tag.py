@@ -1,7 +1,8 @@
 from typing import Dict, List
 
-from back.utils.model import Str
 from pydantic import BaseModel, Field
+
+from back.utils.model import Str
 
 
 class TagInsert(BaseModel):

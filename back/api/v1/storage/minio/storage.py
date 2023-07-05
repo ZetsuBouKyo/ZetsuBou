@@ -1,5 +1,7 @@
 from typing import List
 
+from fastapi import APIRouter, Depends
+
 from back.db.crud import CrudStorageMinio
 from back.db.model import (
     StorageMinio,
@@ -12,7 +14,6 @@ from back.dependency.security import api_security
 from back.model.base import Pagination
 from back.model.scope import ScopeEnum
 from back.model.storage import StorageCategoryEnum
-from fastapi import APIRouter, Depends
 
 router = APIRouter(tags=["Minio Storage"])
 

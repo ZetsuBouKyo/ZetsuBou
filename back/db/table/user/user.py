@@ -1,7 +1,8 @@
-from back.utils.dt import iso2datetime
 from sqlalchemy import TIMESTAMP, VARCHAR, Column, Integer
 from sqlalchemy.orm import validates
 from sqlalchemy.sql import functions as func
+
+from back.utils.dt import iso2datetime
 
 from ..base import Base
 

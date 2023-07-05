@@ -4,8 +4,8 @@ import subprocess
 from pathlib import Path
 
 import typer
-from back.crud.async_video import get_crud_async_video
 
+from back.crud.async_video import get_crud_async_video
 from command.utils import airflow_dag_register, sync
 
 reserved_symbols = ["#"]

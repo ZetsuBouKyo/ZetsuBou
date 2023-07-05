@@ -1,10 +1,11 @@
 from enum import Enum
 from typing import Dict, List
 
+from pydantic import BaseModel
+
 from back.model.base import SourceBaseModel
 from back.model.elasticsearch import SearchResult
 from back.utils.model import DatetimeStr
-from pydantic import BaseModel
 
 
 class VideoOrderedFieldEnum(str, Enum):

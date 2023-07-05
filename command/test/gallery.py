@@ -5,9 +5,10 @@ from typing import Iterator
 from uuid import uuid4
 
 import typer
-from back.model.image import ImageFormatEnum
 from PIL import Image
 from PIL.Image import registered_extensions
+
+from back.model.image import ImageFormatEnum
 
 image_sizes = [
     (300, 200),

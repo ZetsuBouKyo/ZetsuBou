@@ -1,8 +1,9 @@
+from fastapi import APIRouter
+
 from back.api.v1.init import router as init
 from back.api.v1.setting import router as setting
 from back.route.docs import router as docs
 from back.route.statics import router as statics
-from fastapi import APIRouter
 
 from .views import router as views
 

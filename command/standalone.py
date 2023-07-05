@@ -1,6 +1,6 @@
 import typer
-from back.crud.standalone import sync_new_galleries as _sync_new_galleries
 
+from back.crud.standalone import sync_new_galleries as _sync_new_galleries
 from command.utils import sync
 
 _help = """

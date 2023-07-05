@@ -1,4 +1,5 @@
 import typer
+
 from command.test.gallery import app as gallery
 from command.test.service import app as service
 

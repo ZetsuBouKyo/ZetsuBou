@@ -2,7 +2,6 @@ from datetime import datetime
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
-
 from model import Task
 
 PYTHON_PATH = "/opt/airflow/zetsubou-venv/.venv/bin/python3"

@@ -1,5 +1,6 @@
-from back.settings import AppModeEnum, setting
 from fastapi import APIRouter
+
+from back.settings import AppModeEnum, setting
 
 from .airflow import router as airflow
 from .standalone import router as standalone

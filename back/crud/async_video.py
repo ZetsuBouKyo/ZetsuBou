@@ -4,6 +4,10 @@ from typing import Any, Dict, List
 from uuid import uuid4
 
 import cv2
+from elasticsearch import AsyncElasticsearch
+from elasticsearch.helpers import async_bulk, async_scan
+from fastapi import HTTPException
+
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.crud.async_progress import Progress
 from back.logging import logger_webapp
@@ -20,9 +24,6 @@ from back.utils.dt import (
     get_now,
     is_isoformat_with_timezone,
 )
-from elasticsearch import AsyncElasticsearch
-from elasticsearch.helpers import async_bulk, async_scan
-from fastapi import HTTPException
 
 ELASTICSEARCH_INDEX_VIDEO = setting.elastic_index_video
 ELASTICSEARCH_SIZE = setting.elastic_size

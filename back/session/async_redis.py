@@ -1,6 +1,7 @@
 import redis.asyncio as _async_redis
-from back.settings import setting
 from redis.asyncio import Redis
+
+from back.settings import setting
 
 REDIS_URL = setting.redis_url
 

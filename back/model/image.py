@@ -1,9 +1,10 @@
 from enum import Enum
 from typing import Dict
 
-from back.utils.model import DatetimeStr
 from PIL.Image import registered_extensions
 from pydantic import BaseModel
+
+from back.utils.model import DatetimeStr
 
 ImageFormatEnum = Enum(
     "ImageFormatEnum", {val: key for key, val in registered_extensions().items()}

@@ -1,6 +1,6 @@
 import typer
-from back.session.async_redis import async_redis, list_pairs
 
+from back.session.async_redis import async_redis, list_pairs
 from command.utils import sync
 
 app = typer.Typer(name="redis")

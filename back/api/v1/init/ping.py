@@ -1,3 +1,5 @@
+from fastapi import APIRouter, Query
+
 from back.dependency.security import api_security
 from back.init.check import (
     ping,
@@ -9,7 +11,6 @@ from back.init.check import (
 )
 from back.model.base import SourceProtocolEnum
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter, Query
 
 router = APIRouter(prefix="/ping")
 

@@ -1,10 +1,11 @@
+from fastapi import APIRouter, Response, status
+
 from back.crud.standalone import open_folder
 from back.crud.standalone import sync_new_galleries as _sync_new_galleries
 from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
 from back.model.task import ZetsuBouTask, ZetsuBouTaskProgressEnum
 from back.session.async_redis import async_redis
-from fastapi import APIRouter, Response, status
 
 router = APIRouter(prefix="/standalone")
 

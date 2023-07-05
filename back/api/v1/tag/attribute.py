@@ -1,5 +1,7 @@
 from typing import List
 
+from fastapi import APIRouter, Depends
+
 from back.db.crud import CrudTagAttribute
 from back.db.model import (
     TagAttribute,
@@ -11,7 +13,6 @@ from back.dependency.base import get_pagination
 from back.dependency.security import api_security
 from back.model.base import Pagination
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter, Depends
 
 router = APIRouter(prefix="/tag", tags=["Tag Attribute"])
 

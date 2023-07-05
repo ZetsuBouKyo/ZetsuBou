@@ -2,6 +2,8 @@ import shutil
 from pathlib import Path
 
 import typer
+from rich import print_json
+
 from back.crud.async_gallery import (
     CrudAsyncElasticsearchGallery,
     CrudAsyncGallery,
@@ -10,8 +12,6 @@ from back.crud.async_gallery import (
 )
 from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
 from back.settings import setting
-from rich import print_json
-
 from command.utils import sync
 
 ELASTICSEARCH_SIZE = setting.elastic_size

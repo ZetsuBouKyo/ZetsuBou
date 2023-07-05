@@ -1,11 +1,11 @@
 import time
 
 import typer
+
 from back.crud.async_sync import get_crud_sync
 from back.db.crud import CrudStorageMinio
 from back.model.base import SourceProtocolEnum
 from back.model.task import ZetsuBouTaskProgressEnum
-
 from command.utils import airflow_dag_register, sync
 
 _help = """

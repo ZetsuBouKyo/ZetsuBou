@@ -1,5 +1,13 @@
 from typing import Any, List
 
+from elasticsearch import AsyncElasticsearch
+from elasticsearch.exceptions import NotFoundError
+from elasticsearch.helpers import async_bulk, async_scan
+from fastapi import HTTPException
+from sqlalchemy import and_, delete, update
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.db.crud import CrudTagAttribute, CrudTagToken
 from back.db.model import TagRepresentative
@@ -23,13 +31,6 @@ from back.model.tag import (
 from back.session.async_db import async_session
 from back.session.async_elasticsearch import async_elasticsearch
 from back.settings import setting
-from elasticsearch import AsyncElasticsearch
-from elasticsearch.exceptions import NotFoundError
-from elasticsearch.helpers import async_bulk, async_scan
-from fastapi import HTTPException
-from sqlalchemy import and_, delete, update
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 
 INDEX = setting.elastic_index_tag
 BATCH_SIZE = 300

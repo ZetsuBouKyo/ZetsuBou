@@ -1,6 +1,8 @@
 import json
 from urllib.parse import unquote
 
+from fastapi import APIRouter, Depends, Request
+
 from back.crud.async_video import CrudAsyncElasticsearchVideo
 from back.db.crud import CrudUserElasticSearchQuery
 from back.dependency.security import Token, api_security, extract_token
@@ -8,7 +10,6 @@ from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
 from back.model.scope import ScopeEnum
 from back.model.video import VideoOrderedFieldEnum, Videos
 from back.settings import setting
-from fastapi import APIRouter, Depends, Request
 
 from ..utils import get_tags_and_labels_by_query_params
 

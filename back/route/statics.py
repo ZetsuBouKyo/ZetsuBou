@@ -1,6 +1,7 @@
-from back.settings import setting
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
+
+from back.settings import setting
 
 FRONT = setting.app_front
 

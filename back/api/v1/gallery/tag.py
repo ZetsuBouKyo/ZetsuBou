@@ -1,8 +1,9 @@
+from fastapi import APIRouter, HTTPException
+
 from back.crud.async_gallery import get_crud_async_gallery, get_gallery_by_gallery_id
 from back.dependency.security import api_security
 from back.model.gallery import Gallery
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter, HTTPException
 
 router = APIRouter(tags=["Gallery Tag"])
 

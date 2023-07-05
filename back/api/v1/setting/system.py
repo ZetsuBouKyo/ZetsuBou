@@ -1,3 +1,5 @@
+from fastapi import APIRouter, HTTPException
+
 from back.crud.setting import (
     AIRFLOW_SETTING_PATH,
     is_airflow_setting,
@@ -5,8 +7,8 @@ from back.crud.setting import (
     update_airflow_settings,
     update_settings,
 )
-from back.init.setting import init_settings_with_examples
 from back.dependency.security import api_security
+from back.init.setting import init_settings_with_examples
 from back.model.scope import ScopeEnum
 from back.settings import (
     DEFAULT_AIRFLOW_SETTING_NAME,
@@ -14,7 +16,6 @@ from back.settings import (
     Setting,
     setting,
 )
-from fastapi import APIRouter, HTTPException
 
 router = APIRouter(prefix="/system")
 

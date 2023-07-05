@@ -1,5 +1,7 @@
 from typing import List
 
+from fastapi import APIRouter, Depends
+
 from back.db.crud import CrudUserElasticCountQuery
 from back.db.model import (
     UserElasticCountQuery,
@@ -11,7 +13,6 @@ from back.dependency.base import get_pagination
 from back.dependency.security import api_security
 from back.model.base import Pagination
 from back.model.scope import ScopeEnum
-from fastapi import APIRouter, Depends
 
 from .dep import verify_user_id
 

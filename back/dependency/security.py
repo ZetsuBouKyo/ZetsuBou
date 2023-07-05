@@ -1,15 +1,16 @@
 from typing import List
 
-from back.db.crud import CrudGroup, CrudScope
-from back.model.scope import ScopeEnum
-from back.settings import setting
-from back.utils.exceptions import RequiresLoginException
 from fastapi import Cookie, Depends, HTTPException, Security, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import jwt
 from jose.exceptions import ExpiredSignatureError
 from jose.jwt import JWTError
 from pydantic import BaseModel, ValidationError
+
+from back.db.crud import CrudGroup, CrudScope
+from back.model.scope import ScopeEnum
+from back.settings import setting
+from back.utils.exceptions import RequiresLoginException
 
 APP_SECURITY = setting.app_security
 SECRET = setting.app_security_secret

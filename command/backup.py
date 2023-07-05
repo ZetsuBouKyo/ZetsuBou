@@ -4,6 +4,10 @@ from pathlib import Path
 from typing import List, Union
 
 import typer
+from elasticsearch.helpers import async_bulk, async_scan
+from sqlalchemy.orm.decl_api import DeclarativeMeta
+from tqdm import tqdm
+
 from back.db.crud.base import (
     flatten_dependent_tables,
     get_all_rows_order_by_id,
@@ -21,11 +25,7 @@ from back.session.async_elasticsearch import async_elasticsearch
 from back.session.storage import get_app_storage_session
 from back.settings import setting
 from back.utils.dt import get_now
-from sqlalchemy.orm.decl_api import DeclarativeMeta
-from tqdm import tqdm
-
 from command.utils import airflow_dag_register, sync
-from elasticsearch.helpers import async_bulk, async_scan
 
 STORAGE_BACKUP = setting.storage_backup
 

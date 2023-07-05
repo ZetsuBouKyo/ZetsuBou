@@ -1,10 +1,11 @@
+from fastapi import APIRouter, Request
+from fastapi.templating import Jinja2Templates
+
 from back.dependency.security import view_security
 from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
 from back.model.gallery import GalleryOrderedFieldEnum
 from back.model.video import VideoOrderedFieldEnum
 from back.settings import setting
-from fastapi import APIRouter, Request
-from fastapi.templating import Jinja2Templates
 
 FRONT = setting.app_front
 

@@ -1,5 +1,6 @@
-from back.utils.model import DatetimeStr, JsonStr
 from pydantic import BaseModel
+
+from back.utils.model import DatetimeStr, JsonStr
 
 
 class UserElasticCountQueryCreate(BaseModel):

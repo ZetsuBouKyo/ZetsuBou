@@ -1,11 +1,12 @@
 from typing import List, Union
 
-from back.session.async_db import async_session
 from fastapi import HTTPException
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.sql.expression import true
+
+from back.session.async_db import async_session
 
 from ....model import (
     SettingFrontVideo,

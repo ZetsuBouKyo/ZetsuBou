@@ -7,6 +7,9 @@ from shutil import which
 from typing import List
 from uuid import uuid4
 
+from elasticsearch import AsyncElasticsearch
+from fastapi import HTTPException
+
 from back.crud.async_gallery import get_gallery_by_gallery_id
 from back.crud.async_progress import Progress
 from back.db.crud import CrudStorageMinio
@@ -19,9 +22,6 @@ from back.schema.basic import Message
 from back.session.async_elasticsearch import async_elasticsearch as _async_elasticsearch
 from back.settings import setting
 from back.utils.dt import get_now
-from fastapi import HTTPException
-
-from elasticsearch import AsyncElasticsearch
 
 ELASTIC_INDEX_GALLERY = setting.elastic_index_gallery
 

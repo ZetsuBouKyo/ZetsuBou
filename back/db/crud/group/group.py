@@ -1,7 +1,8 @@
 from typing import List
 
-from back.model.scope import ScopeEnum
 from fastapi import HTTPException
+
+from back.model.scope import ScopeEnum
 
 from ...model import Group, GroupCreate, GroupCreated
 from ...table import GroupBase

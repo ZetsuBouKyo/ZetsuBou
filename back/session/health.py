@@ -1,6 +1,7 @@
 from urllib.parse import urljoin
 
 import httpx
+
 from back.model.airflow import AirflowHealthResponse
 from back.model.elasticsearch import ElasticsearchHealthResponse
 from back.settings import setting

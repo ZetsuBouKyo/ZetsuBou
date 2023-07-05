@@ -1,3 +1,5 @@
+from fastapi import APIRouter
+
 from back.api.model.setting.front import FrontGeneralSetting
 from back.crud.async_gallery import elasticsearch_gallery_analyzer
 from back.crud.async_video import elasticsearch_video_analyzer
@@ -9,7 +11,6 @@ from back.init.async_elasticsearch import (
 )
 from back.model.scope import ScopeEnum
 from back.settings import setting
-from fastapi import APIRouter
 
 from .gallery import router as gallery
 from .video import router as video

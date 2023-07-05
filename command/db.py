@@ -1,6 +1,11 @@
 from typing import List
 
 import typer
+from rich import print_json
+from rich.console import Console
+from rich.table import Table
+from sqlalchemy import text
+
 from back.db.crud.base import (
     get_all_rows_order_by_id,
     get_dependent_tables,
@@ -10,11 +15,6 @@ from back.db.crud.base import (
     reset_auto_increment,
 )
 from back.session.async_db import async_engine, async_session
-from rich import print_json
-from rich.console import Console
-from rich.table import Table
-from sqlalchemy import text
-
 from command.utils import sync
 
 _help = """

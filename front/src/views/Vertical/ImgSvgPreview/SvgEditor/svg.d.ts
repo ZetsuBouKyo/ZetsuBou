@@ -21,6 +21,13 @@ export interface Current {
   selection: number;
 }
 
+export interface Ruler {
+  show: boolean;
+  isEdit: boolean;
+  interval: number;
+  color: string;
+}
+
 export interface Layers {
   current: Current;
   isEdit: boolean;
@@ -70,4 +77,5 @@ export interface SVG {
   sidebar: Sidebar;
   panel: Panel;
   layers: Layers;
+  ruler: Ruler;
 }

@@ -61,6 +61,12 @@ export default {
         isEdit: false,
         layers: [],
       },
+      ruler: {
+        show: false,
+        isEdit: false,
+        interval: 5,
+        color: "rgb(0,0,0)",
+      },
     });
 
     return { svgState };

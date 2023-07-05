@@ -5,7 +5,8 @@ from typing import List
 
 from aiobotocore.httpsession import EndpointConnectionError
 from aiobotocore.session import AioSession, ClientCreatorContext
-from back.model.base import SourceBaseModel
+
+from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.s3 import (
     S3DeleteObjectResponse,
     S3DeleteObjectsResponse,
@@ -16,13 +17,29 @@ from back.model.s3 import (
     S3PutObjectResponse,
     S3Response,
 )
+from back.model.storage import StorageStat
 from back.settings import setting
+from back.utils.image import is_image
 
 BUCKET_NAMES = [setting.storage_cache, setting.storage_backup]
 
 STORAGE_S3_AWS_ACCESS_KEY_ID = setting.storage_s3_aws_access_key_id
 STORAGE_S3_AWS_SECRET_ACCESS_KEY = setting.storage_s3_aws_secret_access_key
 STORAGE_S3_ENDPOINT_URL = setting.storage_s3_endpoint_url
+
+
+def get_source(
+    bucket_name: str,
+    prefix: str,
+    protocol: SourceProtocolEnum = SourceProtocolEnum.MINIO.value,
+) -> SourceBaseModel:
+    if bucket_name[-1] == "/":
+        bucket_name = bucket_name[:-1]
+    if prefix[0] == "/":
+        prefix = prefix[1:]
+
+    path = f"{protocol}://{bucket_name}/{prefix}"
+    return SourceBaseModel(path=path)
 
 
 async def generate_presigned_url(
@@ -344,12 +361,62 @@ class AsyncS3Session(AioSession):
             return None
         return json.loads(obj)
 
+    async def get_storage_stat(
+        self, source: SourceBaseModel, depth: int
+    ) -> StorageStat:
+        _bucket_name = source.bucket_name
+        _predix = source.object_name
+
+        if _bucket_name.endswith("/"):
+            _bucket_name = _bucket_name[:-1]
+
+        if _predix is None:
+            _predix = "/"
+        elif not _predix.endswith("/"):
+            _predix += "/"
+
+        _base_path = f"{_bucket_name}{_predix}"
+        _base_depth = len(_base_path.split("/"))
+        _image_depth = _base_depth + depth
+        _gallery_depth = _image_depth - 1
+
+        stat = StorageStat()
+        _galleries_cache = set()
+
+        paginator = self.client.get_paginator("list_objects_v2")
+        async for page in paginator.paginate(
+            Bucket=_bucket_name, Prefix=_predix, Delimiter=""
+        ):
+            _page = S3GetPaginatorResponse(**page)
+            for c in _page.Contents:
+                stat.size += c.Size
+                stat.num_files += 1
+
+                p = c.Key
+                obj_path_str = f"{source.bucket_name}/{p}"
+                obj_path_str_split = obj_path_str.split("/")
+                obj_path = Path(obj_path_str)
+                obj_depth = len(obj_path_str_split)
+
+                gallery_path_str = "/".join(obj_path_str_split[:_gallery_depth])
+                if gallery_path_str != obj_path_str:
+                    _galleries_cache.add(gallery_path_str)
+
+                if is_image(obj_path) and obj_depth == _image_depth:
+                    stat.num_images += 1
+                if depth == -1 and obj_path.suffix.lower() == ".mp4":
+                    stat.num_mp4s += 1
+        stat.num_galleries = len(_galleries_cache)
+        return stat
+
     async def list_nested_sources(
         self, source: SourceBaseModel
     ) -> List[SourceBaseModel]:
         _bucket_name = source.bucket_name
         _predix = source.object_name
-        if not _predix.endswith("/"):
+        if _predix is None:
+            _predix = "/"
+        elif not _predix.endswith("/"):
             _predix += "/"
 
         sources = []

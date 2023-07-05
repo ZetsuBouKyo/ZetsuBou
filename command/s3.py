@@ -3,13 +3,13 @@ import json
 import typer
 from rich import print_json
 
-from back.model.base import SourceBaseModel
 from back.session.storage.async_s3 import (
     AsyncS3Session,
     delete,
     exists,
     generate_presigned_url,
     get_object,
+    get_source,
     iter,
     list_all,
     list_filenames,
@@ -30,16 +30,6 @@ To prevent the keys from showing in the terminal, the default value of following
 """  # noqa
 
 app = typer.Typer(name="s3", help=_help)
-
-
-def _get_minio_source(bucket_name: str, prefix: str) -> SourceBaseModel:
-    if bucket_name[-1] == "/":
-        bucket_name = bucket_name[:-1]
-    if prefix[0] == "/":
-        prefix = prefix[1:]
-
-    path = f"minio://{bucket_name}/{prefix}"
-    return SourceBaseModel(path=path)
 
 
 @app.command(name="generate-presigned-url")
@@ -144,6 +134,40 @@ async def _list_filenames(
         print(f"total: {len(resp)}")
 
 
+@app.command()
+@sync
+async def get_storage_stat(
+    bucket_name: str = typer.Argument(..., help="Bucket name."),
+    prefix: str = typer.Argument(..., help="Prefix, object name or key."),
+    depth: int = typer.Argument(..., help="Depth of path."),
+    aws_access_key_id: str = typer.Option(
+        default=None,
+        help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa
+    ),
+    aws_secret_access_key: str = typer.Option(
+        default=None,
+        help="AWS secret access key or MinIO user password. Default value is `setting.storage_s3_aws_secret_access_key`.",  # noqa
+    ),
+    endpoint_url: str = typer.Option(
+        default=None,
+        help="Endpoint url. Default value is `setting.storage_s3_endpoint_url`.",
+    ),
+    region_name: str = typer.Option(
+        default="ap-northeast-1-tpe-1", help="Region name."
+    ),
+):
+    async with AsyncS3Session(
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key,
+        endpoint_url=endpoint_url,
+        region_name=region_name,
+        is_from_setting_if_none=True,
+    ) as session:
+        source = get_source(bucket_name, prefix)
+        resp = await session.get_storage_stat(source, depth)
+        print(resp)
+
+
 @app.command(name="list-nested-sources")
 @sync
 async def _list_nested_sources(
@@ -172,7 +196,7 @@ async def _list_nested_sources(
         region_name=region_name,
         is_from_setting_if_none=True,
     ) as session:
-        source = _get_minio_source(bucket_name, prefix)
+        source = get_source(bucket_name, prefix)
         resp = await session.list_nested_sources(source)
         for s in resp:
             print(s)

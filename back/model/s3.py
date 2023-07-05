@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class S3Object(BaseModel):
@@ -10,6 +10,7 @@ class S3Object(BaseModel):
 
 class S3GetPaginatorResponseContent(BaseModel):
     Key: str
+    Size: int = Field(..., description="Size in bytes of the object")
 
 
 class S3GetPaginatorResponseCommonPrefix(BaseModel):

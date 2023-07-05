@@ -38,6 +38,7 @@ class ScopeEnum(str, Enum):
     storage_minio: str = "storage.minio"
     storage_minio_list_get: str = "storage.minio.list:get"
     storage_minio_storages_get: str = "storage.minio.storages:get"
+    storage_minio_storage_stat_get: str = "storage.minio.storage.stat:get"
     storage_minio_storage_post: str = "storage.minio.storage:post"
     storage_minio_storage_put: str = "storage.minio.storage:put"
     storage_minio_storage_delete: str = "storage.minio.storage:delete"

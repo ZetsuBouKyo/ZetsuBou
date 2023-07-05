@@ -49,7 +49,7 @@ export default defineComponent({
       },
     },
     title: {
-      type: Object as PropType<ModalState>,
+      type: Object as PropType<string>,
       default: "Message",
     },
     isScrollable: {

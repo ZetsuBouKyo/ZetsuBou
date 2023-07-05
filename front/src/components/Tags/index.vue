@@ -1,7 +1,7 @@
 <template>
   <div class="3xl:text-xl">
     <div v-for="(vals, key) in tags" :key="key">
-      <tag :field-key="key as any" :fieldValues="vals" :searchable="searchable" :searchBaseUrl="searchBaseUrl" />
+      <tag :field-key="key" :field-values="vals" :searchable="searchable" :search-baseUrl="searchBaseUrl" />
     </div>
   </div>
 </template>

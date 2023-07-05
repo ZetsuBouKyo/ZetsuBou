@@ -25,7 +25,7 @@ export default {
   components: { RippleAnchor },
   props: {
     fieldKey: {
-      type: Object as PropType<string>,
+      type: Object as PropType<string | number>,
       required: true,
     },
     fieldValues: {
@@ -42,7 +42,7 @@ export default {
     },
   },
   setup(props) {
-    function search(field: string, value: string) {
+    function search(field: string | number, value: string) {
       return `${props.searchBaseUrl}?tag_field_1=${field}&tag_value_1=${value}`;
     }
     return { ...props, search };

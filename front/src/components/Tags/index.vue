@@ -1,7 +1,7 @@
 <template>
   <div class="3xl:text-xl">
     <div v-for="(vals, key) in tags" :key="key">
-      <tag :fieldKey="key" :fieldValues="vals" :searchable="searchable" :searchBaseUrl="searchBaseUrl" />
+      <tag :field-key="key as any" :fieldValues="vals" :searchable="searchable" :searchBaseUrl="searchBaseUrl" />
     </div>
   </div>
 </template>
@@ -9,8 +9,8 @@
 <script lang="ts">
 import { PropType } from "vue";
 
+import { Tags } from "@/interface/tag";
 import Tag from "./Tag.vue";
-import { Tags } from "@/interface/gallery";
 
 export default {
   components: { Tag },

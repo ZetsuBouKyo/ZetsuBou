@@ -1,32 +1,32 @@
 {
+    "[css]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
+    },
     "[html]": {
-        "editor.tabSize": 2,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
     },
     "[javascript]": {
-        "editor.tabSize": 2,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[css]": {
-        "editor.tabSize": 2,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
     },
     "[json]": {
-        "editor.tabSize": 4,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[md]": {
-        "editor.tabSize": 2,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 4
     },
     "[markdown]": {
-        "editor.tabSize": 2,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.quickSuggestions": {
             "comments": "on",
-            "strings": "on",
-            "other": "on"
+            "other": "on",
+            "strings": "on"
         },
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.tabSize": 2
+    },
+    "[md]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
     },
     "[python]": {
         "editor.codeActionsOnSave": {
@@ -37,42 +37,48 @@
         "editor.tabSize": 4
     },
     "[typescript]": {
-        "editor.tabSize": 2,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
     },
-    "[yaml]": {
-        "editor.tabSize": 2,
-        "editor.quickSuggestions": {
-            "other": true,
-            "comments": false,
-            "strings": true
+    "[vue]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": true,
+            "source.organizeImports": true,
+            "source.sortImports": true
         },
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
+    "[yaml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.quickSuggestions": {
+            "comments": false,
+            "other": true,
+            "strings": true
+        },
+        "editor.tabSize": 2
+    },
     "[yml]": {
-        "editor.tabSize": 2,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
     },
-    "[vue]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
+    "editor.formatOnSave": true,
+    "editor.rulers": [88, 120],
     "files.exclude": {
         "frontend/node_modules": true
     },
+    "isort.args": ["--profile", "black"],
+    "prettier.useEditorConfig": true,
+    "python.defaultInterpreterPath": "./.venv/bin/python",
     "python.formatting.blackArgs": ["--line-length", "88"],
     "python.formatting.provider": "black",
     "python.linting.enabled": true,
     "python.linting.flake8Args": ["--max-line-length=88", "--ignore=E203,W503"],
     "python.linting.flake8Enabled": false,
     "python.linting.pylintEnabled": false,
+    "python.testing.pytestArgs": ["tests"],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
     "search.exclude": {
         "**/.git": true
-    },
-    "editor.rulers": [88, 120],
-    "python.defaultInterpreterPath": "./.venv/bin/python",
-    "prettier.useEditorConfig": true,
-    "editor.formatOnSave": true,
-    "python.testing.pytestArgs": ["tests"],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    }
 }

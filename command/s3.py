@@ -32,6 +32,16 @@ To prevent the keys from showing in the terminal, the default value of following
 app = typer.Typer(name="s3", help=_help)
 
 
+def _get_minio_source(bucket_name: str, prefix: str) -> SourceBaseModel:
+    if bucket_name[-1] == "/":
+        bucket_name = bucket_name[:-1]
+    if prefix[0] == "/":
+        prefix = prefix[1:]
+
+    path = f"minio://{bucket_name}/{prefix}"
+    return SourceBaseModel(path=path)
+
+
 @app.command(name="generate-presigned-url")
 @sync
 async def _generate_presigned_url(
@@ -162,13 +172,7 @@ async def _list_nested_sources(
         region_name=region_name,
         is_from_setting_if_none=True,
     ) as session:
-        if bucket_name[-1] == "/":
-            bucket_name = bucket_name[:-1]
-        if prefix[0] == "/":
-            prefix = prefix[1:]
-
-        path = f"minio://{bucket_name}/{prefix}"
-        source = SourceBaseModel(path=path)
+        source = _get_minio_source(bucket_name, prefix)
         resp = await session.list_nested_sources(source)
         for s in resp:
             print(s)

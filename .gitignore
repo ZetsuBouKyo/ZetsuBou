@@ -10,6 +10,7 @@ dags/.venv
 dags/plugins.py
 dev
 etc
+front/components.d.ts
 front/package-lock.json
 logs
 node_modules

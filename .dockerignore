@@ -13,6 +13,7 @@ dags/me
 dev
 etc
 front/*.*
+front/components.d.ts
 front/node_modules
 front/public
 front/src

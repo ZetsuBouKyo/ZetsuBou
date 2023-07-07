@@ -62,7 +62,7 @@
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>
-    <div class="modal-row" v-for="(_, field) in privateState.tagFields" :key="privateState.tagFields[field]">
+    <div class="modal-row" v-for="(_, field) in privateState.tagFields" :key="field">
       <span class="w-24 ml-8 mr-4">{{ field }}:</span>
       <select-dropdown
         class="flex-1"

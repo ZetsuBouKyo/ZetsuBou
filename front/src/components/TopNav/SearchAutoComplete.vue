@@ -37,7 +37,7 @@ export default {
           for (const token of data) {
             state.options.push(token.name);
           }
-          state.options = [...new Set(state.options)];
+          state.options = Array.from(new Set(state.options));
         });
       },
     );

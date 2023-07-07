@@ -5,7 +5,7 @@ export interface Attributes {
   raw_name: string;
   uploader: string;
   category: string;
-  rating: string | number;
+  rating: number;
   src: string;
 }
 

@@ -12,7 +12,7 @@ import { PropType } from "vue";
 import { useRouter } from "vue-router";
 
 import PaginationBase from "@/elements/Pagination/index.vue";
-import { Pagination } from "@/elements/Pagination/interface";
+import { Pagination } from "@/elements/Pagination/pagination.d";
 
 export default {
   components: { PaginationBase },

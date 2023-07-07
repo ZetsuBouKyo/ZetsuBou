@@ -1,6 +1,6 @@
-import { GetParam } from "@/elements/Dropdown/SelectDropdown.vue";
+import { SelectDropdownGetParam } from "@/elements/Dropdown/SelectDropdown.vue";
 
-export interface GetTagTokenStartWithParam extends GetParam {
+export interface GetTagTokenStartWithParam extends SelectDropdownGetParam {
   category?: string;
   category_id?: number;
 }

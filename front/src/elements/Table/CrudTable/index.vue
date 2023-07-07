@@ -111,7 +111,7 @@ import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 
 import { getPagination } from "@/elements/Pagination/pagination";
 
-import { Pagination } from "@/elements/Pagination/interface";
+import { Pagination, PaginationGetParam } from "@/elements/Pagination/pagination.d";
 
 export interface Header {
   title: string;
@@ -124,10 +124,7 @@ export interface Row {
   [key: string]: any;
 }
 
-export interface GetParam {
-  page: number | string;
-  size: number | string;
-  is_desc?: boolean;
+export interface CrudGetParam extends PaginationGetParam {
   [key: string]: any;
 }
 
@@ -153,7 +150,7 @@ export interface Editor {
 }
 
 export interface OnSearch {
-  (params: GetParam): Promise<AxiosResponse<Array<Row>>>;
+  (params: CrudGetParam): Promise<AxiosResponse<Array<Row>>>;
 }
 
 export interface SearchOption {
@@ -173,7 +170,7 @@ export interface OnCrudCreate {
 }
 
 export interface OnCrudGet {
-  (params: GetParam): Promise<AxiosResponse<Array<Row>>>;
+  (params: CrudGetParam): Promise<AxiosResponse<Array<Row>>>;
 }
 
 export interface OnCrudGetTotal {
@@ -284,7 +281,7 @@ export default defineComponent({
     const editor = ref();
 
     const route = useRoute();
-    const params: GetParam = {
+    const params: CrudGetParam = {
       page: route.query.page ? parseInt(route.query.page as string) : 1,
       size: route.query.size ? parseInt(route.query.size as string) : 20,
     };
@@ -357,8 +354,8 @@ export default defineComponent({
         if (route.query.page === undefined || route.query.size === undefined) {
           return;
         }
-        params.page = route.query.page as string;
-        params.size = route.query.size as string;
+        params.page = parseInt(route.query.page as string);
+        params.size = parseInt(route.query.size as string);
         load();
       },
     );

@@ -23,7 +23,7 @@ import {
   putUserElasticSearchQuery,
 } from "@/api/v1/user/elasticQuery/search";
 
-import { GetParam } from "@/elements/Table/CrudTable/index.vue";
+import { CrudGetParam } from "@/elements/Table/CrudTable/index.vue";
 import ElasticQueryTable, { Row } from "./ElasticQueryTable.vue";
 
 export default defineComponent({
@@ -34,7 +34,7 @@ export default defineComponent({
     function onCrudCreate(row: Row) {
       return postUserElasticSearchQuery(userID, row);
     }
-    function onCrudGet(params: GetParam) {
+    function onCrudGet(params: CrudGetParam) {
       return getUserElasticSearchQueries(userID, params);
     }
     function onCrudGetTotal() {

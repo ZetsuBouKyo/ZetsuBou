@@ -75,11 +75,11 @@ import RippleButton from "@/elements/Button/RippleButton.vue";
 import Chip from "@/elements/Chip/Chip.vue";
 import Dropdown, { Origin } from "@/elements/Dropdown/Dropdown.vue";
 
-export { Origin } from "@/elements/Dropdown/Dropdown.vue";
+import { PaginationGetParam } from "@/elements/Pagination/pagination.d";
 
-export interface GetParam {
-  page: number;
-  size: number;
+export { Origin };
+
+export interface SelectDropdownGetParam extends PaginationGetParam {
   s: string;
   [key: string]: any;
 }
@@ -105,7 +105,7 @@ export interface SelectDropdownState {
 }
 
 export interface OnGet {
-  (params: GetParam): Promise<AxiosResponse<Array<any>>>;
+  (params: SelectDropdownGetParam): Promise<AxiosResponse<Array<any>>>;
 }
 
 export interface OnGetToOptions {
@@ -232,7 +232,7 @@ export default defineComponent({
       state.options = JSON.parse(JSON.stringify(privateState.options));
     }
 
-    const params: GetParam = {
+    const params: SelectDropdownGetParam = {
       page: 1,
       size: 20,
       s: "",

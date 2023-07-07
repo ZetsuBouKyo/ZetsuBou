@@ -1,6 +1,7 @@
-export interface Query {
-  size: string | number;
-  page: string | number;
+export interface PaginationGetParam {
+  page?: number;
+  size?: number;
+  is_desc?: boolean;
 }
 
 export interface Page {

@@ -1,4 +1,4 @@
-import { Pagination } from "@/elements/Pagination/interface";
+import { Pagination } from "@/elements/Pagination/pagination.d";
 
 export interface Item {
   category?: string;

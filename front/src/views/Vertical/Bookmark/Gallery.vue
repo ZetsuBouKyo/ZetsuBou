@@ -77,7 +77,7 @@ import { ButtonColorEnum } from "@/elements/Button/button";
 import PaginationBase from "@/elements/Pagination/index.vue";
 import { getPagination } from "@/elements/Pagination/pagination";
 import StarRating from "@/elements/Rating/StarRating.vue";
-import { GetParam } from "@/elements/Table/CrudTable/index.vue";
+import { CrudGetParam } from "@/elements/Table/CrudTable/index.vue";
 
 import { getImages } from "@/api/v1/gallery/image";
 import {
@@ -89,7 +89,7 @@ import {
 import { messageState } from "@/state/message";
 import { userState } from "@/state/user";
 
-import { Pagination } from "@/elements/Pagination/interface";
+import { Pagination } from "@/elements/Pagination/pagination.d";
 import { Gallery } from "@/interface/gallery";
 
 import { getDatetime } from "@/utils/datetime";
@@ -127,7 +127,7 @@ export default {
     });
     const router = useRouter();
     const route = useRoute();
-    const params: GetParam = {
+    const params: CrudGetParam = {
       page: undefined,
       size: undefined,
       is_desc: undefined,

@@ -60,7 +60,7 @@
 <script lang="ts">
 import { PropType } from "vue";
 
-import { Pagination } from "./interface";
+import { Pagination } from "./pagination.d";
 
 export default {
   props: {
@@ -78,3 +78,4 @@ export default {
   },
 };
 </script>
+./pagination

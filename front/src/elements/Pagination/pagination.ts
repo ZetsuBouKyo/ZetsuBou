@@ -1,6 +1,6 @@
-import { Pagination, Page, Query } from "./interface";
+import { Pagination, Page, PaginationGetParam } from "./pagination.d";
 
-function getPageUrl(page: number, path: string, query: Query) {
+function getPageUrl(page: number, path: string, query: PaginationGetParam) {
   let paras = [];
   for (let key in query) {
     if (query[key] !== undefined) {
@@ -17,12 +17,12 @@ function getPageUrl(page: number, path: string, query: Query) {
   return path;
 }
 
-export function getPagination(path: string, totalItems: number, query: Query) {
+export function getPagination(path: string, totalItems: number, query: PaginationGetParam) {
   const totalPage = Math.ceil(totalItems / (query.size as number));
   if (totalPage === 0) {
     return undefined;
   }
-  const current = parseInt(query.page as string) as number;
+  const current = query.page as number;
   if (isNaN(current)) {
     return undefined;
   }

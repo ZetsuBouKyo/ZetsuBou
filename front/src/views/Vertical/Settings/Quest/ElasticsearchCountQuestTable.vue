@@ -50,7 +50,7 @@ import { userState } from "@/state/user";
 import { getDatetime } from "@/utils/datetime";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown, { GetParam, SelectDropdownState, reset } from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, { SelectDropdownState, reset } from "@/elements/Dropdown/SelectDropdown.vue";
 import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
 
 import { getUserElasticCountQueries, getUserElasticCountQuery } from "@/api/v1/user/elasticQuery/count";
@@ -62,6 +62,8 @@ import {
   postUserElasticCountQuest,
   putUserElasticCountQuest,
 } from "@/api/v1/user/quest/elasticCountQuest";
+
+import { PaginationGetParam } from "@/elements/Pagination/pagination.d";
 
 export interface Row {
   id?: number;
@@ -83,7 +85,7 @@ export default defineComponent({
 
     const numerator = SelectDropdown.initState() as SelectDropdownState;
     const denominator = SelectDropdown.initState() as SelectDropdownState;
-    function onGet(params: GetParam) {
+    function onGet(params: PaginationGetParam) {
       return getUserElasticCountQueries(userID, params);
     }
     function onGetToOptions(data: { name: string | number; id: number }) {
@@ -162,7 +164,7 @@ export default defineComponent({
     function onCrudCreate(row: Row) {
       return postUserElasticCountQuest(userID, row);
     }
-    function onCrudGet(params: GetParam) {
+    function onCrudGet(params: PaginationGetParam) {
       return getUserElasticCountQuests(userID, params);
     }
     function onCrudGetTotal() {

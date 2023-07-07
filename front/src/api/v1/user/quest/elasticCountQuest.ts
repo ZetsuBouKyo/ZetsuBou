@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import { PaginationGetParam } from "@/elements/Pagination/pagination.d";
 
 export function getUserElasticCountQuestTotal(id: string | number) {
   return request({
@@ -7,7 +8,7 @@ export function getUserElasticCountQuestTotal(id: string | number) {
   });
 }
 
-export function getUserElasticCountQuests(id: string | number, params: any) {
+export function getUserElasticCountQuests(id: string | number, params: PaginationGetParam) {
   return request({
     url: `/api/v1/user/${id}/elastic-count-quests`,
     method: "get",

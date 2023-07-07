@@ -39,7 +39,11 @@
         <div class="modal-row h-10" v-else></div>
         <div class="modal-row" v-if="category.title">
           <span class="w-20 mr-4">Priority:</span>
-          <input class="w-1/2 modal-input" type="text" :placeholder="table.row.priority" v-model="table.row.priority" />
+          <input
+            class="w-1/2 modal-input"
+            type="text"
+            :placeholder="table.row.priority as any"
+            v-model="table.row.priority" />
         </div>
         <div class="modal-row h-10" v-else></div>
       </template>
@@ -56,7 +60,11 @@ import { userState } from "@/state/user";
 import { getDatetime } from "@/utils/datetime";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown, { GetParam, SelectDropdownState, reset } from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, {
+  SelectDropdownGetParam,
+  SelectDropdownState,
+  reset,
+} from "@/elements/Dropdown/SelectDropdown.vue";
 import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
 
 import { getUserElasticCountQuest, getUserElasticCountQuests } from "@/api/v1/user/quest/elasticCountQuest";
@@ -97,7 +105,7 @@ export default {
     });
 
     const category = SelectDropdown.initState() as SelectDropdownState;
-    function onGetCategory(params: GetParam) {
+    function onGetCategory(params: SelectDropdownGetParam) {
       return getSettingUserQuestCategories(params);
     }
     function onGetCategoryToOptions(data: { name: string | number; id: number }) {
@@ -105,7 +113,7 @@ export default {
     }
 
     const quest = SelectDropdown.initState() as SelectDropdownState;
-    function onGetQuest(params: GetParam) {
+    function onGetQuest(params: SelectDropdownGetParam) {
       return state.onGetQuest(params);
     }
     function onGetQuestToOptions(data: { name: string | number; id: number }) {
@@ -227,7 +235,7 @@ export default {
     function onCrudCreate(row: Row) {
       return postUserQuest(userID, row);
     }
-    function onCrudGet(params: GetParam) {
+    function onCrudGet(params: SelectDropdownGetParam) {
       return getUserQuests(userID, params);
     }
     function onCrudGetTotal() {

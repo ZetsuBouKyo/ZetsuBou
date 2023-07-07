@@ -38,17 +38,17 @@
       <div class="flex flex-col" v-else-if="field.type === AdvancedSearchFieldType.Range">
         <div class="modal-row h-10">
           <span class="w-28 mr-4 text-white">{{ toTitle(field.name) }}:</span>
-          <input class="modal-input flex-1" type="text" :placeholder="field.gte" v-model="field.gte" />
+          <input class="modal-input flex-1" type="text" :placeholder="field.gte as string" v-model="field.gte" />
           <span class="mx-4">to</span>
-          <input class="modal-input flex-1" type="text" :placeholder="field.lte" v-model="field.lte" />
+          <input class="modal-input flex-1" type="text" :placeholder="field.lte as string" v-model="field.lte" />
         </div>
       </div>
       <div class="flex flex-col" v-else-if="field.type === AdvancedSearchFieldType.Duration">
         <div class="modal-row h-10">
           <span class="w-28 mr-4 text-white">{{ toTitle(field.name) }}:</span>
-          <input class="modal-input flex-1" type="text" :placeholder="field.gte" v-model="field.gte" />
+          <input class="modal-input flex-1" type="text" :placeholder="field.gte as string" v-model="field.gte" />
           <span class="mx-4">to</span>
-          <input class="modal-input flex-1" type="text" :placeholder="field.lte" v-model="field.lte" />
+          <input class="modal-input flex-1" type="text" :placeholder="field.lte as string" v-model="field.lte" />
         </div>
       </div>
     </div>
@@ -104,11 +104,7 @@
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>
-    <div
-      class="modal-row"
-      v-for="(_, field) in privateState.tagFields"
-      :key="privateState.tagFields[field]"
-      @keyup.enter.stop="">
+    <div class="modal-row" v-for="(_, field) in privateState.tagFields" :key="field" @keyup.enter.stop="">
       <span class="w-28 mx-4">{{ field }}:</span>
       <select-dropdown
         class="flex-1"

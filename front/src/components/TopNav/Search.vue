@@ -117,7 +117,6 @@ import { getUserElasticSearchQueries } from "@/api/v1/user/elasticQuery/search";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import Dropdown from "@/elements/Dropdown/Dropdown.vue";
 import SelectDropdown, {
-  GetParam,
   Origin,
   SelectDropdownMode,
   SelectDropdownOption,
@@ -133,6 +132,8 @@ import AdvancedSearch, {
   AdvancedSearchFieldType,
   AdvancedSearchState,
 } from "./AdvancedSearch.vue";
+
+import { PaginationGetParam } from "@/elements/Pagination/pagination.d";
 
 export default {
   components: { AdvancedSearch, Dropdown, RippleButton, SearchAutoComplete, SelectDropdown },
@@ -350,14 +351,14 @@ export default {
     );
 
     const userID = userState.id;
-    function onGet(params: GetParam) {
+    function onGet(params: PaginationGetParam) {
       return getUserElasticSearchQueries(userID, params);
     }
     function onGetToOptions(data: { name: string | number; id: number }) {
       return { title: data.name, value: data.id };
     }
     function onGetTip(opt: SelectDropdownOption) {
-      return opt.title;
+      return opt.title as string;
     }
 
     watch(

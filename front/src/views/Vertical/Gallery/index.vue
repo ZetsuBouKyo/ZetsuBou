@@ -12,17 +12,18 @@ import { useRoute, useRouter } from "vue-router";
 import { getImages } from "@/api/v1/gallery/image";
 
 import { Item, Items, Previews } from "@/components/PreviewList/interface";
-import { Query } from "@/elements/Pagination/interface";
 import { getPagination } from "@/elements/Pagination/pagination";
+import { PaginationGetParam } from "@/elements/Pagination/pagination.d";
 import { userState } from "@/state/user";
 
 import PreviewList from "@/components/PreviewList/index.vue";
 import Info from "./Info/index.vue";
 
-function getItems(id: string, data: any, query: Query) {
+function getItems(id: string, data: any, query: PaginationGetParam) {
   const items: Items = [];
   const page = query.page as number;
-  for (let i = (page - 1) * query.size; i < data.length && i < page * query.size; i++) {
+  const size = query.size as number;
+  for (let i = (page - 1) * size; i < data.length && i < page * size; i++) {
     let item: Item = {
       imgUrl: `/api/v1/gallery/${id}/i/${data[i]}`,
       linkUrl: `/g/${id}/i/${data[i]}`,
@@ -48,8 +49,9 @@ export default {
       if (userState.frontSetting.img_preview_size === undefined) {
         return;
       }
-      const query: Query = {
-        page: route.query.page ? parseInt(route.query.page as string) : 1,
+      const page = parseInt(route.query.page as string);
+      const query: PaginationGetParam = {
+        page: page ? page : 1,
         size: userState.frontSetting.img_preview_size,
       };
 

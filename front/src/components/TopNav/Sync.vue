@@ -145,8 +145,8 @@ export default {
           if (response.status === 200) {
           }
         })
-        .catch(() => {
-          // console.log(error);
+        .catch((error: any) => {
+          messageState.pushError(error);
           state.isSync = false;
         });
     }

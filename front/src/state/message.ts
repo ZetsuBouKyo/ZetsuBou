@@ -26,6 +26,7 @@ export interface MessageState {
   push: (detail: string) => void;
   pushWithLink: (detail: string, link: string) => void;
   pushHistory: (message: Message) => void;
+  pushError: (error: any) => void;
   shiftQueue: (id: string) => void;
   getAirflowTasks: () => Array<AirflowTask>;
   pushAirflowTask: (task: AirflowTask) => void;
@@ -81,6 +82,14 @@ export const messageState = reactive<MessageState>({
     const history = messageState.getHistory();
     history.unshift(message);
     localStorage.setItem(localStorageKey.Message, JSON.stringify(history));
+  },
+  pushError: (error: any) => {
+    const detail = error.response.data.detail;
+    if (detail !== undefined) {
+      messageState.push(detail);
+    } else {
+      messageState.push(error);
+    }
   },
   shiftQueue: (id: string) => {
     messageState.queue = messageState.queue.filter(function (_message: Message) {

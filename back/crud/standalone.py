@@ -17,11 +17,15 @@ from back.db.model import StorageMinio
 from back.logging import logger_webapp
 from back.model.base import SourceProtocolEnum
 from back.model.gallery import Gallery
+from back.model.storage import StorageStat
 from back.model.task import ZetsuBouTaskProgressEnum
 from back.schema.basic import Message
 from back.session.async_elasticsearch import async_elasticsearch as _async_elasticsearch
+from back.session.storage.async_s3 import get_source
 from back.settings import setting
 from back.utils.dt import get_now
+from back.utils.image import is_image
+from back.utils.video import is_video
 
 ELASTIC_INDEX_GALLERY = setting.elastic_index_gallery
 
@@ -270,3 +274,37 @@ async def open_folder(gallery_id: str):
         )
         return Message(detail="ok")
     return Message(detail=f"{preferred_app}: command not found")
+
+
+async def get_storage_stat(
+    protocol: SourceProtocolEnum, storage_id: int
+) -> StorageStat:
+    if protocol == SourceProtocolEnum.MINIO.value:
+        storage = await CrudStorageMinio.get_row_by_id(storage_id)
+        source = get_source(storage.bucket_name, storage.prefix)
+        source_path = source.path
+        storage_path_at_host = _get_path_at_host(source_path)
+
+        image_depth = storage.depth + 1
+
+        stat = StorageStat()
+        for f in storage_path_at_host.glob("**/*"):
+            relative_f = f.relative_to(storage_path_at_host)
+            relative_f_str = str(relative_f)
+            relative_f_depth = len(relative_f_str.split("/"))
+
+            if not f.is_file():
+                if relative_f_depth == storage.depth:
+                    stat.num_galleries += 1
+                continue
+
+            stat.num_files += 1
+            stat.size += f.stat().st_size
+
+            if relative_f_depth == image_depth and is_image(f):
+                stat.num_images += 1
+
+            if storage.depth == -1 and is_video(f):
+                stat.num_mp4s += 1
+
+        return stat

@@ -87,6 +87,7 @@ async def _check_storage_minios(relative_path: Path) -> bool:
         return True
 
     while len(storage_minios) > 0:
+        skip += limit
         storage_minios = await CrudStorageMinio.get_rows_order_by_id(
             skip=skip,
             limit=limit,
@@ -248,11 +249,18 @@ class _SyncNewGalleries:
 
     async def _sync_new_storage(self):
         if self.storage_protocol == SourceProtocolEnum.MINIO:
+            storage = await CrudStorageMinio.get_row_by_id(self.storage_id)
+            if storage is None:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"{self.storage_protocol}: {self.storage_id} not found",
+                )
             await self._sync_new_minio_storage()
 
     async def sync(self):
         if not await self.async_elasticsearch.ping():
             raise HTTPException(status_code=404, detail="Elasticsearch not found")
+
         await self._sync_new_storage()
 
 

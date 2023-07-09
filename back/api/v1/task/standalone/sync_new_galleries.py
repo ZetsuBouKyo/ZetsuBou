@@ -1,25 +1,16 @@
 from fastapi import APIRouter, Response, status
 
-from back.crud.standalone import open_folder
 from back.crud.standalone import sync_new_galleries as _sync_new_galleries
 from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
 from back.model.task import ZetsuBouTask, ZetsuBouTaskProgressEnum
 from back.session.async_redis import async_redis
 
-router = APIRouter(prefix="/standalone")
+router = APIRouter(prefix="/sync-new-galleries")
 
 
 @router.get(
-    "/gallery/g/{gallery_id}/open",
-    dependencies=[api_security([ScopeEnum.task_standalone_gallery_open_get.name])],
-)
-async def get_open_gallery(gallery_id: str):
-    await open_folder(gallery_id)
-
-
-@router.get(
-    "/sync-new-galleries",
+    "",
     dependencies=[
         api_security([ScopeEnum.task_standalone_gallery_sync_new_galleries_get.name])
     ],
@@ -33,7 +24,7 @@ async def sync_new_galleries(response: Response):
 
 
 @router.get(
-    "/sync-new-galleries/progress",
+    "/progress",
     response_model=ZetsuBouTask,
     dependencies=[
         api_security([ScopeEnum.task_standalone_gallery_sync_new_galleries_get.name]),
@@ -51,7 +42,7 @@ async def get_progress():
 
 
 @router.delete(
-    "/sync-new-galleries/progress",
+    "/progress",
     dependencies=[
         api_security([ScopeEnum.task_standalone_gallery_sync_new_galleries_get.name]),
     ],

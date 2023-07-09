@@ -117,5 +117,5 @@ def generate(
                 gallery_name,
             ],
             img_names,
-            format=format,
+            format=format.value,
         )

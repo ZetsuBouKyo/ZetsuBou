@@ -6,9 +6,12 @@ from pydantic import BaseModel
 
 from back.utils.model import DatetimeStr
 
-ImageFormatEnum = Enum(
-    "ImageFormatEnum", {val: key for key, val in registered_extensions().items()}
-)
+_image_formats = {}
+for extension in registered_extensions().keys():
+    key = extension.replace(".", "").upper()
+    _image_formats[key] = extension
+
+ImageFormatEnum = Enum("ImageFormatEnum", _image_formats)
 
 
 class Image(BaseModel):

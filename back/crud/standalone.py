@@ -93,6 +93,25 @@ async def _check_storage_minios(relative_path: Path) -> bool:
     return False
 
 
+def _get_path_at_host(
+    source_path: str, storage_volume: str = STANDALONE_STORAGE_MINIO_VOLUME
+) -> Path:
+    if storage_volume is None:
+        raise HTTPException(
+            status_code=404, detail="'STANDALONE_STORAGE_MINIO_VOLUME' not found"
+        )
+
+    relative_path = source_path.split("//")[-1]
+    if len(relative_path) > 0 and relative_path[0] == "/":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Path in storage path after removing '{SourceProtocolEnum.MINIO.value}' should not start with '/'",  # noqa
+        )
+
+    path_at_host = Path(storage_volume, relative_path)
+    return path_at_host
+
+
 class _SyncNewGalleries:
     def __init__(
         self,
@@ -240,21 +259,7 @@ async def sync_new_galleries():
 
 async def open_folder(gallery_id: str):
     gallery = await get_gallery_by_gallery_id(gallery_id)
-    gallery_path = gallery.path
-
-    if STANDALONE_STORAGE_MINIO_VOLUME is None:
-        raise HTTPException(
-            status_code=404, detail="'STANDALONE_STORAGE_MINIO_VOLUME' not found"
-        )
-
-    relative_path = gallery_path.split("//")[-1]
-    if len(relative_path) > 0 and relative_path[0] == "/":
-        raise HTTPException(
-            status_code=409,
-            detail=f"Path in Minio path after removing '{SourceProtocolEnum.MINIO.value}' should not start with '/'",  # noqa
-        )
-
-    path_at_host = Path(STANDALONE_STORAGE_MINIO_VOLUME, relative_path)
+    path_at_host = _get_path_at_host(gallery.path)
     logger_webapp.info(path_at_host)
 
     preferred_app = "nautilus"

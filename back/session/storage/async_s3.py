@@ -20,6 +20,7 @@ from back.model.s3 import (
 from back.model.storage import StorageStat
 from back.settings import setting
 from back.utils.image import is_image
+from back.utils.video import is_video
 
 BUCKET_NAMES = [setting.storage_cache, setting.storage_backup]
 
@@ -404,7 +405,7 @@ class AsyncS3Session(AioSession):
 
                 if is_image(obj_path) and obj_depth == _image_depth:
                     stat.num_images += 1
-                if depth == -1 and obj_path.suffix.lower() == ".mp4":
+                if depth == -1 and is_video(obj_path):
                     stat.num_mp4s += 1
         stat.num_galleries = len(_galleries_cache)
         return stat

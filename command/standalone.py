@@ -16,4 +16,7 @@ app = typer.Typer(name="standalone", help=_help)
 @app.command(name="sync-new-galleries")
 @sync
 async def _sync_new_galleries():
+    """
+    Synchonize the galleries from the host path to the storage volume.
+    """
     await sync_new_galleries()

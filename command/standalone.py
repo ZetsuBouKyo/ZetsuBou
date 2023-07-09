@@ -1,6 +1,6 @@
 import typer
 
-from back.crud.standalone import sync_new_galleries as _sync_new_galleries
+from back.crud.standalone import sync_new_galleries
 from command.utils import sync
 
 _help = """
@@ -13,7 +13,7 @@ must be run in terminal not in docker container.
 app = typer.Typer(name="standalone", help=_help)
 
 
-@app.command()
+@app.command(name="sync-new-galleries")
 @sync
-async def sync_new_galleries():
-    await _sync_new_galleries()
+async def _sync_new_galleries():
+    await sync_new_galleries()

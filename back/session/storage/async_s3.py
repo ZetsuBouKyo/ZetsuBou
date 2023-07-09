@@ -36,7 +36,9 @@ def get_source(
 ) -> SourceBaseModel:
     if bucket_name[-1] == "/":
         bucket_name = bucket_name[:-1]
-    if prefix[0] == "/":
+
+    # Prefix should not start with "/".
+    if len(prefix) > 0 and prefix[0] == "/":
         prefix = prefix[1:]
 
     path = f"{protocol}://{bucket_name}/{prefix}"
@@ -405,7 +407,7 @@ class AsyncS3Session(AioSession):
 
                 if is_image(obj_path) and obj_depth == _image_depth:
                     stat.num_images += 1
-                if depth == -1 and is_video(obj_path):
+                if depth == -1 and is_video(obj_path).suffix.lower() == ".mp4":
                     stat.num_mp4s += 1
         stat.num_galleries = len(_galleries_cache)
         return stat

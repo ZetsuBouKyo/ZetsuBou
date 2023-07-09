@@ -192,6 +192,11 @@ export default defineComponent({
     watch(...watchTags(privateState, tagFields, galleryState));
     watch(...watchTagFieldsChipsLength(privateState, tagFields, galleryState));
 
+    function saved() {
+      editor.value.close();
+      messageState.pushWithLink("Gallery tag saved", route.path);
+    }
+
     function save() {
       for (const field in privateState.tagFields) {
         galleryState.data.tags[field] = [];
@@ -199,10 +204,7 @@ export default defineComponent({
           galleryState.data.tags[field].push(chip.title as string);
         }
       }
-      galleryState.save().then(() => {
-        editor.value.close();
-        messageState.pushWithLink("Gallery tag saved", route.path);
-      });
+      galleryState.save(saved).then(() => {});
     }
 
     function reset() {

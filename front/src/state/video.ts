@@ -44,7 +44,7 @@ export const videoState = reactive<SourceState<Video>>({
   getTimestamp: () => {
     return getDatetime(videoState.data.timestamp);
   },
-  save: async () => {
+  save: async (successEvent) => {
     for (const attr in videoState.data.attributes) {
       if (typeof videoState.data.attributes[attr] === "string") {
         if (videoState.data.attributes[attr].length === 0) {
@@ -68,17 +68,11 @@ export const videoState = reactive<SourceState<Video>>({
         if (response.status === 200) {
           videoState.reset();
         }
+        successEvent(response);
         return response.data;
       })
       .catch((error) => {
-        const code = error.response.status;
-        const detail = error.response.data.detail;
-        if (detail !== undefined) {
-          messageState.push(detail);
-        } else {
-          messageState.push(error);
-        }
-        return Promise.reject(error);
+        return messageState.pushError(error);
       });
   },
 });

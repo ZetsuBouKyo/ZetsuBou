@@ -184,6 +184,11 @@ export default defineComponent({
     watch(...watchTags(privateState, tagFields, videoState));
     watch(...watchTagFieldsChipsLength(privateState, tagFields, videoState));
 
+    function saved() {
+      editor.value.close();
+      messageState.pushWithLink("Video tag saved", route.path);
+    }
+
     function save() {
       for (const field in privateState.tagFields) {
         videoState.data.tags[field] = [];
@@ -191,10 +196,7 @@ export default defineComponent({
           videoState.data.tags[field].push(chip.title as string);
         }
       }
-      videoState.save().then(() => {
-        editor.value.close();
-        messageState.pushWithLink("Video tag saved", route.path);
-      });
+      videoState.save(saved).then(() => {});
     }
 
     function reset() {

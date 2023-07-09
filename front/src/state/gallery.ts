@@ -39,7 +39,7 @@ export const galleryState = reactive<SourceState<Gallery>>({
   getTimestamp: () => {
     return getDatetime(galleryState.data.timestamp);
   },
-  save: async () => {
+  save: async (successEvent) => {
     for (const attr in galleryState.data.attributes) {
       if (typeof galleryState.data.attributes[attr] === "string") {
         if (galleryState.data.attributes[attr].length === 0) {
@@ -63,17 +63,11 @@ export const galleryState = reactive<SourceState<Gallery>>({
         if (response.status === 200) {
           galleryState.reset();
         }
-        return response.data;
+        successEvent(response);
+        return response;
       })
       .catch((error) => {
-        const code = error.response.status;
-        const detail = error.response.data.detail;
-        if (detail !== undefined) {
-          messageState.push(detail);
-        } else {
-          messageState.push(error);
-        }
-        return Promise.reject(error);
+        return messageState.pushError(error);
       });
   },
 });

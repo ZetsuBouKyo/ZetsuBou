@@ -63,15 +63,17 @@ export default {
       json: undefined,
     });
 
+    function saved() {
+      editor.value.close();
+      messageState.pushWithLink(props.saveMessage, route.path);
+    }
+
     function save() {
       overwrite().then((status) => {
         if (!status) {
           return;
         }
-        state.save().then(() => {
-          editor.value.close();
-          messageState.pushWithLink(props.saveMessage, route.path);
-        });
+        state.save(saved).then(() => {});
       });
     }
 

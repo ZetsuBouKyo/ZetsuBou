@@ -118,13 +118,7 @@ export const userState = reactive<User>({
         }
       })
       .catch((error) => {
-        const detail = error.response.data.detail;
-        if (detail !== undefined) {
-          messageState.push(detail);
-        } else {
-          messageState.push(error);
-        }
-        return error.response;
+        return messageState.pushError(error);
       });
   },
 });

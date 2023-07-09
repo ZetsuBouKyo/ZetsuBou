@@ -26,7 +26,7 @@ export interface MessageState {
   push: (detail: string) => void;
   pushWithLink: (detail: string, link: string) => void;
   pushHistory: (message: Message) => void;
-  pushError: (error: any) => void;
+  pushError: (error: any) => Promise<AxiosResponse<any>>;
   shiftQueue: (id: string) => void;
   getAirflowTasks: () => Array<AirflowTask>;
   pushAirflowTask: (task: AirflowTask) => void;
@@ -90,6 +90,7 @@ export const messageState = reactive<MessageState>({
     } else {
       messageState.push(error);
     }
+    return Promise.reject(error);
   },
   shiftQueue: (id: string) => {
     messageState.queue = messageState.queue.filter(function (_message: Message) {

@@ -15,5 +15,5 @@ export interface SourceState<SourceT> extends SourceDataState<SourceT> {
   init: (id: string) => Promise<AxiosResponse<SourceT>>;
   reset: () => Promise<AxiosResponse<SourceT>>;
   getTimestamp: () => string;
-  save: () => Promise<AxiosResponse<SourceT>>;
+  save: (successEvent: (response: any) => void) => Promise<AxiosResponse<SourceT>>;
 }

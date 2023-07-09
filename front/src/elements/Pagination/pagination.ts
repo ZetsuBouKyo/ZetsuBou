@@ -18,6 +18,9 @@ function getPageUrl(page: number, path: string, query: PaginationGetParam) {
 }
 
 export function getPagination(path: string, totalItems: number, query: PaginationGetParam) {
+  query.page = parseInt(query.page.toString());
+  query.size = parseInt(query.size.toString());
+
   const totalPage = Math.ceil(totalItems / (query.size as number));
   if (totalPage === 0) {
     return undefined;

@@ -2,12 +2,15 @@ import asyncio
 import sys
 from functools import wraps
 from inspect import iscoroutinefunction
+from typing import Optional
 
 from typer import Typer
 
 
 class ZetsuBouTyper(Typer):
-    def __init__(self, *args, loop_factory=None, **kwargs):
+    def __init__(
+        self, *args, loop_factory: Optional[asyncio.AbstractEventLoop] = None, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.loop_factory = loop_factory
 

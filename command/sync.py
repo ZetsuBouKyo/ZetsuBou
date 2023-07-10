@@ -6,7 +6,6 @@ from back.crud.async_sync import get_crud_sync
 from back.db.crud import CrudStorageMinio
 from back.model.base import SourceProtocolEnum
 from back.model.task import ZetsuBouTaskProgressEnum
-from command.utils import airflow_dag_register
 from lib.typer import ZetsuBouTyper
 
 _help = """
@@ -22,8 +21,11 @@ so on).
 app = ZetsuBouTyper(name="sync", help=_help)
 
 
-@app.command(name="storage")
-@airflow_dag_register("sync-storage", "sync storage")
+@app.command(
+    name="storage",
+    airflow_dag_id="sync-storage",
+    airflow_dag_sub_command="sync storage",
+)
 async def _storage(
     protocol: SourceProtocolEnum = typer.Argument(..., help="Storage protocol."),
     storage_id: int = typer.Argument(..., help="Storage ID."),
@@ -41,8 +43,11 @@ async def _storage(
     print(f"total time: {td}(s)")
 
 
-@app.command(name="storages")
-@airflow_dag_register("sync-storages", "sync storages")
+@app.command(
+    name="storages",
+    airflow_dag_id="sync-storages",
+    airflow_dag_sub_command="sync storages",
+)
 async def _storages(
     progress: bool = typer.Option(
         default=True, help="Send progress information to Redis."

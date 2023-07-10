@@ -6,7 +6,6 @@ from pathlib import Path
 import typer
 
 from back.crud.async_video import get_crud_async_video
-from command.utils import airflow_dag_register
 from lib.typer import ZetsuBouTyper
 
 reserved_symbols = ["#"]
@@ -128,8 +127,10 @@ def to_h264(
     print(f"convert: {c}")
 
 
-@app.command()
-@airflow_dag_register("video-generate-cover", "video generate-cover")
+@app.command(
+    airflow_dag_id="video-generate-cover",
+    airflow_dag_sub_command="video generate-cover",
+)
 async def generate_cover(
     video_id: str = typer.Argument(..., help="Video ID."),
     time: float = typer.Option(default=None, help="Current time in seconds."),

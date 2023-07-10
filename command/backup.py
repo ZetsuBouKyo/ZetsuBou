@@ -25,7 +25,6 @@ from back.session.async_elasticsearch import async_elasticsearch
 from back.session.storage import get_app_storage_session
 from back.settings import setting
 from back.utils.dt import get_now
-from command.utils import airflow_dag_register
 from lib.typer import ZetsuBouTyper
 
 STORAGE_BACKUP = setting.storage_backup
@@ -102,8 +101,7 @@ Export the SQL databases and Elasticsearch indices into minio repository in the 
 app = ZetsuBouTyper(name="backup", help=_help)
 
 
-@app.command()
-@airflow_dag_register("backup-dump", "backup dump")
+@app.command(airflow_dag_id="backup-dump", airflow_dag_sub_command="backup dump")
 async def dump(
     encoding: str = typer.Option(
         default="utf-8", help="The encoding of the output JSON files."
@@ -152,8 +150,7 @@ async def dump(
             )
 
 
-@app.command()
-@airflow_dag_register("backup-load", "backup load")
+@app.command(airflow_dag_id="backup-load", airflow_dag_sub_command="backup load")
 async def load(
     date: str = typer.Argument(
         ...,
@@ -204,8 +201,7 @@ async def load(
                 batch = rows[i * size : (i + 1) * size]
 
 
-@app.command()
-@airflow_dag_register("backup-load", "backup load")
+@app.command(airflow_dag_id="backup-load", airflow_dag_sub_command="backup load")
 async def load_table(
     table: str = typer.Argument(..., help="Table JSON path."),
     table_name: str = typer.Option(default=None, help="Table JSON path."),

@@ -6,13 +6,12 @@ from elasticsearch.helpers import async_bulk
 from back.crud.async_video import CrudAsyncElasticsearchVideo
 from back.model.video import Video
 from back.session.async_elasticsearch import async_elasticsearch
-from command.utils import sync
+from lib.typer import ZetsuBouTyper
 
-app = typer.Typer(name="migrate")
+app = ZetsuBouTyper(name="migrate")
 
 
 @app.command()
-@sync
 async def video(index: str = typer.Argument(..., help="Video index name.")):
     batch_size = 300
     crud = CrudAsyncElasticsearchVideo(

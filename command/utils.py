@@ -1,5 +1,4 @@
 import inspect
-from asyncio import run
 from pathlib import Path
 from typing import Any, Callable, Union
 
@@ -8,17 +7,6 @@ from typer.models import ArgumentInfo, OptionInfo
 
 from back.api.model.task.airflow import Argument, CommandSchema, KeywordArgument
 from back.session.async_airflow import dags
-
-
-def sync(async_func):
-    def magic(*args, **kwargs):
-        return run(async_func(*args, **kwargs))
-
-    magic.__signature__ = inspect.signature(async_func)
-    magic.__name__ = async_func.__name__
-    magic.__doc__ = async_func.__doc__
-
-    return magic
 
 
 def is_empty_dir(path: Union[str, Path]) -> bool:

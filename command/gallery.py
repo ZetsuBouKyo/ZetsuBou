@@ -12,7 +12,7 @@ from back.crud.async_gallery import (
 )
 from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
 from back.settings import setting
-from command.utils import sync
+from lib.typer import ZetsuBouTyper
 
 ELASTICSEARCH_SIZE = setting.elastic_size
 ELASTICSEARCH_INDEX_GALLERY = setting.elastic_index_gallery
@@ -23,7 +23,7 @@ GALLERY_TAG_FNAME = setting.gallery_tag_fname
 _help = """
 Manipulate the Galleries.
 """
-app = typer.Typer(name="gallery", help=_help)
+app = ZetsuBouTyper(name="gallery", help=_help)
 
 
 @app.command()
@@ -56,7 +56,6 @@ def clone_tags(
 
 
 @app.command()
-@sync
 async def get_gallery_tag(gallery_id: str = typer.Argument(..., help="Gallery ID.")):
     crud_elastic = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
     elastic_gallery = await crud_elastic.get_by_id(gallery_id)
@@ -70,7 +69,6 @@ async def get_gallery_tag(gallery_id: str = typer.Argument(..., help="Gallery ID
 
 
 @app.command()
-@sync
 async def match(
     page: int = typer.Argument(..., help="Page number."),
     index: str = typer.Option(
@@ -102,7 +100,6 @@ async def match(
 
 
 @app.command()
-@sync
 async def random(
     page: int = typer.Argument(..., help="Page number."),
     index: str = typer.Option(
@@ -135,7 +132,6 @@ async def random(
 
 
 @app.command()
-@sync
 async def get_image_filenames(
     gallery_id: str = typer.Argument(..., help="Gallery ID.")
 ):
@@ -145,7 +141,6 @@ async def get_image_filenames(
 
 
 @app.command()
-@sync
 async def update_gallery_tag(
     gallery_id: str = typer.Argument(..., help="Gallery ID."),
     name: str = typer.Option(default=None, help="Gallery name."),
@@ -171,7 +166,6 @@ async def update_gallery_tag(
 
 
 @app.command()
-@sync
 async def delete(gallery_id: str = typer.Argument(..., help="Gallery ID.")):
     crud_async_gallery = CrudAsyncGallery(gallery_id, is_from_setting_if_none=True)
     await crud_async_gallery.init()

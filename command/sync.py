@@ -6,7 +6,8 @@ from back.crud.async_sync import get_crud_sync
 from back.db.crud import CrudStorageMinio
 from back.model.base import SourceProtocolEnum
 from back.model.task import ZetsuBouTaskProgressEnum
-from command.utils import airflow_dag_register, sync
+from command.utils import airflow_dag_register
+from lib.typer import ZetsuBouTyper
 
 _help = """
 Synchronize the information of Gallery and Video from Minio storages.
@@ -18,11 +19,10 @@ The synchronization would be based on the `[gallery]/.tag/gallery.json` if it ex
 The synchronization would be based on video file (file name, first frame of video, and
 so on).
 """  # noqa
-app = typer.Typer(name="sync", help=_help)
+app = ZetsuBouTyper(name="sync", help=_help)
 
 
 @app.command(name="storage")
-@sync
 @airflow_dag_register("sync-storage", "sync storage")
 async def _storage(
     protocol: SourceProtocolEnum = typer.Argument(..., help="Storage protocol."),
@@ -42,7 +42,6 @@ async def _storage(
 
 
 @app.command(name="storages")
-@sync
 @airflow_dag_register("sync-storages", "sync storages")
 async def _storages(
     progress: bool = typer.Option(

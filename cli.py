@@ -27,6 +27,7 @@ from command.tag import app as tag
 from command.test import app as test
 from command.utils import is_empty_dir
 from command.video import app as video
+from lib.typer import ZetsuBouTyper
 
 init_zetsubou_logger()
 
@@ -42,7 +43,7 @@ _help = """
 The CLI for ZetsuBou
 """
 
-app = typer.Typer(rich_markup_mode="rich", help=_help)
+app = ZetsuBouTyper(rich_markup_mode="rich", help=_help)
 app.add_typer(backup)
 app.add_typer(build)
 app.add_typer(db)

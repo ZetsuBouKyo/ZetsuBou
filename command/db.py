@@ -15,16 +15,15 @@ from back.db.crud.base import (
     reset_auto_increment,
 )
 from back.session.async_db import async_engine, async_session
-from command.utils import sync
+from lib.typer import ZetsuBouTyper
 
 _help = """
 Manipulate the SQL databases.
 """
-app = typer.Typer(name="db", help=_help)
+app = ZetsuBouTyper(name="db", help=_help)
 
 
 @app.command()
-@sync
 async def execute(sql: str = typer.Argument(..., help="SQL.")):
     async with async_engine.begin() as conn:
         statement = text(sql)
@@ -35,7 +34,6 @@ async def execute(sql: str = typer.Argument(..., help="SQL.")):
 
 
 @app.command()
-@sync
 async def list_schemas():
     """
     List the schemas.
@@ -68,7 +66,6 @@ async def list_schemas():
 
 
 @app.command()
-@sync
 async def drop_table(table_name: str = typer.Argument(..., help="Table name.")):
     tables = list_tables()
     if table_name not in tables:
@@ -136,7 +133,6 @@ def tree():
 
 
 @app.command(name="reset-auto-increment")
-@sync
 async def _reset_auto_increment(
     table_name: str = typer.Argument(..., help="Table name.")
 ):
@@ -147,7 +143,6 @@ async def _reset_auto_increment(
 
 
 @app.command()
-@sync
 async def list_seqs():
     """
     List the sequences.
@@ -160,7 +155,6 @@ async def list_seqs():
 
 
 @app.command(name="list")
-@sync
 async def _list(table_name: str = typer.Argument(..., help="Table name.")):
     table_instances = get_table_instances()
     table_class = table_instances[table_name]

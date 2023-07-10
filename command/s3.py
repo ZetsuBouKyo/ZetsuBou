@@ -15,7 +15,7 @@ from back.session.storage.async_s3 import (
     list_filenames,
     put_json,
 )
-from command.utils import sync
+from lib.typer import ZetsuBouTyper
 
 _help = """
 Manipulate the S3 service.
@@ -29,11 +29,10 @@ To prevent the keys from showing in the terminal, the default value of following
 
 """  # noqa
 
-app = typer.Typer(name="s3", help=_help)
+app = ZetsuBouTyper(name="s3", help=_help)
 
 
 @app.command(name="generate-presigned-url")
-@sync
 async def _generate_presigned_url(
     bucket_name: str = typer.Argument(..., help="Bucket name."),
     object_name: str = typer.Argument(..., help="Object name or key."),
@@ -69,10 +68,9 @@ async def _generate_presigned_url(
 
 
 @app.command(name="list")
-@sync
 async def _list(
     bucket_name: str = typer.Argument(default="", help="Bucket name."),
-    prefix: str = typer.Option(default="", help="Prefix, object name or key."),
+    prefix: str = typer.Argument(default="", help="Prefix, object name or key."),
     aws_access_key_id: str = typer.Option(
         default=None,
         help="AWS access key id or MinIO user name. Default value is `setting.storage_s3_aws_access_key_id`.",  # noqa
@@ -102,7 +100,6 @@ async def _list(
 
 
 @app.command(name="list-filenames")
-@sync
 async def _list_filenames(
     bucket_name: str = typer.Argument(..., help="Bucket name."),
     prefix: str = typer.Argument(..., help="Prefix, object name or key."),
@@ -135,7 +132,6 @@ async def _list_filenames(
 
 
 @app.command()
-@sync
 async def get_storage_stat(
     bucket_name: str = typer.Argument(..., help="Bucket name."),
     prefix: str = typer.Argument(..., help="Prefix, object name or key."),
@@ -169,7 +165,6 @@ async def get_storage_stat(
 
 
 @app.command(name="list-nested-sources")
-@sync
 async def _list_nested_sources(
     bucket_name: str = typer.Argument(..., help="Bucket name."),
     prefix: str = typer.Argument(..., help="Prefix, object name or key."),
@@ -204,7 +199,6 @@ async def _list_nested_sources(
 
 
 @app.command(name="exists")
-@sync
 async def _exists(
     bucket_name: str = typer.Argument(..., help="Bucket name."),
     prefix: str = typer.Argument(..., help="Prefix, object name or key."),
@@ -236,7 +230,6 @@ async def _exists(
 
 
 @app.command(name="get-object")
-@sync
 async def _get_object(
     bucket_name: str = typer.Argument(..., help="Bucket name."),
     object_name: str = typer.Argument(..., help="Prefix, object name or key."),
@@ -268,7 +261,6 @@ async def _get_object(
 
 
 @app.command(name="put-json")
-@sync
 async def _put_json(
     bucket_name: str = typer.Argument(..., help="Bucket name."),
     object_name: str = typer.Argument(..., help="Prefix, object name or key."),
@@ -304,7 +296,6 @@ async def _put_json(
 
 
 @app.command(name="delete")
-@sync
 async def _delete(
     bucket_name: str = typer.Argument(..., help="Bucket name."),
     prefix: str = typer.Argument(..., help="Prefix, object name or key."),
@@ -336,7 +327,6 @@ async def _delete(
 
 
 @app.command(name="iter")
-@sync
 async def _iter(
     bucket_name: str = typer.Argument(..., help="Bucket name."),
     prefix: str = typer.Argument(..., help="Prefix, object name or key."),

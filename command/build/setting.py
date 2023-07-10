@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-
+from lib.typer import ZetsuBouTyper
 import pytz
 import typer
 from back.settings import Setting, setting
@@ -8,7 +8,7 @@ from back.settings import Setting, setting
 _help = """
 Manipulate the setting.
 """
-app = typer.Typer(name="setting", help=_help)
+app = ZetsuBouTyper(name="setting", help=_help)
 
 
 @app.command()

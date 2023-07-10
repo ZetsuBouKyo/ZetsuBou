@@ -6,7 +6,8 @@ from pathlib import Path
 import typer
 
 from back.crud.async_video import get_crud_async_video
-from command.utils import airflow_dag_register, sync
+from command.utils import airflow_dag_register
+from lib.typer import ZetsuBouTyper
 
 reserved_symbols = ["#"]
 
@@ -37,7 +38,7 @@ _help = """
 Manipulate the video.
 """
 
-app = typer.Typer(name="video", help=_help)
+app = ZetsuBouTyper(name="video", help=_help)
 
 
 @app.command(name="remove-reserved-symbols")
@@ -128,7 +129,6 @@ def to_h264(
 
 
 @app.command()
-@sync
 @airflow_dag_register("video-generate-cover", "video generate-cover")
 async def generate_cover(
     video_id: str = typer.Argument(..., help="Video ID."),

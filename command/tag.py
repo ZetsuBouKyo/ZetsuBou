@@ -9,7 +9,7 @@ from back.crud.async_tag import CrudTag
 from back.db.crud import CrudTagAttribute, CrudTagToken
 from back.db.model import TagAttributeCreate, TagTokenCreate
 from back.model.tag import TagInsert
-from command.utils import sync
+from lib.typer import ZetsuBouTyper
 
 
 def load_json(fpath: Path):
@@ -21,11 +21,10 @@ def load_json(fpath: Path):
 _help = """
 Manipulate the tag.
 """
-app = typer.Typer(name="tag", help=_help)
+app = ZetsuBouTyper(name="tag", help=_help)
 
 
 @app.command()
-@sync
 async def dump(
     out: str = typer.Argument(..., help="The repository for the output JSON files."),
     force: bool = typer.Option(default=False, help="Overwrite the output JSON files."),
@@ -84,7 +83,6 @@ async def dump(
 
 
 @app.command()
-@sync
 async def load(
     attr: str = typer.Argument(..., help="The JSON file of the attributes."),
     tag: str = typer.Argument(..., help="The JSON file of the tags."),

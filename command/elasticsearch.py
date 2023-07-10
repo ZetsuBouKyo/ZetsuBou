@@ -7,28 +7,25 @@ from rich import print_json
 from back.init.async_elasticsearch import create_gallery, create_video, init_indices
 from back.model.elasticsearch import AnalyzerEnum
 from back.session.async_elasticsearch import async_elasticsearch
-from command.utils import sync
+from lib.typer import ZetsuBouTyper
 
 _help = """
 Manipulate the Elasticsearch.
 """
-app = typer.Typer(name="elasticsearch", help=_help)
+app = ZetsuBouTyper(name="elasticsearch", help=_help)
 
 
 @app.command()
-@sync
 async def create_gallery_index(index: str = typer.Argument(..., help="Index name.")):
     await create_gallery(async_elasticsearch, index)
 
 
 @app.command()
-@sync
 async def create_video_index(index: str = typer.Argument(..., help="Index name.")):
     await create_video(async_elasticsearch, index)
 
 
 @app.command()
-@sync
 async def delete(index: str = typer.Argument(..., help="Index name.")):
     """
     Delete the index.
@@ -43,7 +40,6 @@ async def delete(index: str = typer.Argument(..., help="Index name.")):
 
 
 @app.command()
-@sync
 async def list_indices():
     """
     List the indices.
@@ -55,7 +51,6 @@ async def list_indices():
 
 
 @app.command()
-@sync
 async def init():
     """
     Initialize the indices if the index does not exist.
@@ -65,7 +60,6 @@ async def init():
 
 
 @app.command()
-@sync
 async def reset():
     """
     Delete the indices and Initialize the indices.
@@ -78,7 +72,6 @@ async def reset():
 
 
 @app.command()
-@sync
 async def reindex(
     source_index: str = typer.Argument(..., help="Index name."),
     target_index: str = typer.Argument(..., help="Index name."),
@@ -101,7 +94,6 @@ async def reindex(
 
 
 @app.command()
-@sync
 async def analyze(
     text: str = typer.Argument(..., help="Text for analyzing."),
     analyzer: AnalyzerEnum = typer.Option(
@@ -121,7 +113,6 @@ async def analyze(
 
 
 @app.command()
-@sync
 async def match_all(index: str = typer.Argument(..., help="Index name.")):
     query = {"match_all": {}}
     _resp = await async_elasticsearch.search(
@@ -131,7 +122,6 @@ async def match_all(index: str = typer.Argument(..., help="Index name.")):
 
 
 @app.command()
-@sync
 async def match_phrase_prefix(
     index: str = typer.Argument(..., help="Index name."),
     field: List[str] = typer.Option(default=..., help="Field name."),

@@ -9,6 +9,7 @@ from PIL import Image
 from PIL.Image import registered_extensions
 
 from back.model.image import ImageFormatEnum
+from lib.typer import ZetsuBouTyper
 
 image_sizes = [
     (300, 200),
@@ -70,7 +71,7 @@ def generate_galleries_by_random_names(
     generate_galleries(root, gallery_names, img_names, format)
 
 
-app = typer.Typer(name="gallery")
+app = ZetsuBouTyper(name="gallery")
 
 
 @app.command()

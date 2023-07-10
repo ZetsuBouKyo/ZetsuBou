@@ -83,6 +83,10 @@ classDiagram
     ZetsuBou <|-- MinIO
     ZetsuBou <|-- PostgreSQL
     ZetsuBou <|-- Redis
+    Airflow <|-- Elasticsearch
+    Airflow <|-- MinIO
+    Airflow <|-- PostgreSQL
+    Airflow <|-- Redis
     Network <|-- ZetsuBou
     Network <|-- MinIO
 ```

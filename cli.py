@@ -77,30 +77,17 @@ def init():
 @app.command()
 def run(
     app_host: str = typer.Option(default=APP_HOST, help="ZetsuBou app host."),
-    app_port: str = typer.Option(default=APP_PORT, help="ZetsuBou app port."),
-    log_level: UvicornLogLevelEnum = typer.Option(
-        default=LOG_LEVEL.lower(), help="Log level."
-    ),
-    setting_path: str = typer.Option(
-        default=str(DEFAULT_SETTING_PATH), help="Setting path."
-    ),
-    uvicorn_path: str = typer.Option(default="uvicorn", help="Uvicorn path."),
+    app_port: int = typer.Option(default=APP_PORT, help="ZetsuBou app port."),
+    reload: bool = typer.Option(default=True, help="Uvicorn reload."),
 ):
-    command = [
-        uvicorn_path,
-        "--host",
-        app_host,
-        "--port",
-        app_port,
-        "--log-level",
-        log_level.value,
-        "--reload",
-        "--reload-include",
-        setting_path,
+    from lib import uvicorn
+
+    uvicorn.run(
         "app:app",
-    ]
-    print(" ".join(command))
-    subprocess.run(command)
+        host=app_host,
+        port=app_port,
+        reload=reload,
+    )
 
 
 @app.command()

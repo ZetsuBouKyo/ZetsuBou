@@ -57,14 +57,14 @@ lint:
 	pre-commit run --all-files
 	npx commitlint --from "HEAD~1" --to "HEAD" --verbose
 
-.PHONY: init init-app init-app-postgres init-airflow init-app-elastic init-redis
+.PHONY: init init-app-example init-app-postgres init-airflow init-app-elastic init-redis
 init-app-elastic:
 	mkdir -p $(ZETSUBOU_ELASTICSEARCH_VOLUME)
 	chown -R 1000:1000 $(ZETSUBOU_ELASTICSEARCH_VOLUME)
 init-app-postgres:
 	mkdir -p $(ZETSUBOU_POSTGRES_DB_VOLUME)
-init-app:
-	docker-compose -f docker-compose.simple.yml up -d zetsubou-app-init
+init-app-example:
+	docker-compose -f docker-compose.simple.yml up -d zetsubou-app-example
 init-minio:
 	mkdir -p $(ZETSUBOU_APP_MINIO)
 	mkdir -p $(ZETSUBOU_APP_MINIO_GALLERIES)
@@ -83,7 +83,7 @@ init-airflow:
 init-redis:
 	mkdir -p $(ZETSUBOU_REDIS_VOLUME)
 	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
-init: init-app-postgres init-app-elastic init-minio init-redis init-app
+init-example: init-app-postgres init-app-elastic init-minio init-redis init-app-example
 
 .PHONY: clean clean-all clean-airflow clean-airflow-simple clean-app-elastic clean-app-postgres clean-docker
 clean-airflow:

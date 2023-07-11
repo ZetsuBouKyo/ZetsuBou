@@ -34,17 +34,21 @@ ZetsuBou would generate a `.tag` folder inside your galleries. Here is an exampl
 
 ## Getting started
 
+### Run example
+
 ```bash
-# To build docker image
+# To build the docker images
 make build
 # To initialize airflow and create `./etc/settings.env` and `./etc/settings.airflow.env`
-make init
+make init-example
 # To close the services started during initialization
 make down
 
 # To start the services
 make up
 ```
+
+You can find the ZetusBou webapp username (`ZETSUBOU_APP_ADMIN_EMAIL`), password (`ZETSUBOU_APP_ADMIN_PASSWORD`) and other information in `./etc/settings.env`.
 
 ## Development
 

@@ -25,9 +25,9 @@ services:
       zetsubou-postgres:
         condition: service_healthy
 
-  zetsubou-app-init:
+  zetsubou-app-example:
     image: zetsubou/app:0.0.1-python-3.8.16-slim-buster
-    container_name: zetsubou-app-init
+    container_name: zetsubou-app-example
     command: python cli.py init
     network_mode: host
     environment:

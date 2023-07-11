@@ -15,6 +15,14 @@
             "request": "launch",
             "program": "app.py",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: CLI run",
+            "type": "python",
+            "request": "launch",
+            "program": "cli.py",
+            "args": ["run"],
+            "console": "integratedTerminal"
         }
     ]
 }

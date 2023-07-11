@@ -20,7 +20,8 @@ AIRFLOW_POSTGRES_DB_VOLUME ?= ./dev/volumes/airflow/postgres
 
 AIRFLOW_SIMPLE_VOLUME ?= ./dev/volumes/airflow-simple
 
-APP_DEV_SERVICES := zetsubou-postgres zetsubou-elastic zetsubou-minio zetsubou-redis zetsubou-airflow
+APP_SERVICES := zetsubou-app zetsubou-airflow zetsubou-elastic zetsubou-minio zetsubou-postgres zetsubou-redis
+APP_DEV_SERVICES := zetsubou-airflow zetsubou-elastic zetsubou-minio zetsubou-postgres zetsubou-redis
 
 .PHONY: test line check
 
@@ -114,7 +115,7 @@ reset-airflow-simple: clean-airflow-simple
 
 .PHONY: up-app-simple up-airflow up-airflow-simple up-dev up
 up-app-simple:
-	docker-compose -f docker-compose.simple.yml up -d
+	docker-compose -f docker-compose.simple.yml up -d $(APP_SERVICES)
 up-airflow:
 	docker-compose -f docker/docker-compose.host.airflow.yml up -d
 up-airflow-simple:

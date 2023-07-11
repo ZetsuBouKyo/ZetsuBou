@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import subprocess
 import tempfile
 from pathlib import Path
 from uuid import uuid4
@@ -11,7 +12,8 @@ from pdf2image import convert_from_path
 from back.init.logger import init_zetsubou_logger
 from back.init.setting import init_example_settings
 from back.model.gallery import Gallery as GalleryModel
-from back.settings import setting
+from back.model.uvicorn import UvicornLogLevelEnum
+from back.settings import DEFAULT_SETTING_PATH, setting
 from back.utils.dt import get_now
 from command.backup import app as backup
 from command.build import app as build
@@ -39,6 +41,11 @@ except ModuleNotFoundError:
 DIR_FNAME = setting.gallery_dir_fname
 TAG_FNAME = setting.gallery_tag_fname
 
+APP_PORT = setting.app_port
+APP_HOST = setting.app_host
+LOG_LEVEL = setting.app_logging_level
+
+
 _help = """
 The CLI for ZetsuBou
 """
@@ -65,6 +72,35 @@ if plugin is not None:
 @app.command()
 def init():
     init_example_settings()
+
+
+@app.command()
+def run(
+    app_host: str = typer.Option(default=APP_HOST, help="ZetsuBou app host."),
+    app_port: str = typer.Option(default=APP_PORT, help="ZetsuBou app port."),
+    log_level: UvicornLogLevelEnum = typer.Option(
+        default=LOG_LEVEL.lower(), help="Log level."
+    ),
+    setting_path: str = typer.Option(
+        default=str(DEFAULT_SETTING_PATH), help="Setting path."
+    ),
+    uvicorn_path: str = typer.Option(default="uvicorn", help="Uvicorn path."),
+):
+    command = [
+        uvicorn_path,
+        "--host",
+        app_host,
+        "--port",
+        app_port,
+        "--log-level",
+        log_level.value,
+        "--reload",
+        "--reload-include",
+        setting_path,
+        "app:app",
+    ]
+    print(" ".join(command))
+    subprocess.run(command)
 
 
 @app.command()

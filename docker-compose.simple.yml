@@ -4,7 +4,7 @@ services:
   zetsubou-app:
     image: zetsubou/app:0.0.1-python-3.8.16-slim-buster
     container_name: zetsubou-app
-    command: dockerize -wait tcp://localhost:${ZETSUBOU_ELASTICSEARCH_PORT:-9200} python app.py
+    command: python cli.py run
     network_mode: host
     stdin_open: true
     tty: true
@@ -18,10 +18,10 @@ services:
     depends_on:
       zetsubou-airflow:
         condition: service_healthy
-      zetsubou-elastic:
-        condition: service_healthy
-      zetsubou-minio:
-        condition: service_healthy
+      # zetsubou-elastic:
+      #   condition: service_healthy
+      # zetsubou-minio:
+      #   condition: service_healthy
       zetsubou-postgres:
         condition: service_healthy
 
@@ -67,12 +67,15 @@ services:
     ports:
       - ${ZETSUBOU_ELASTICSEARCH_PORT:-9200}:${ZETSUBOU_ELASTICSEARCH_PORT:-9200}
     healthcheck:
+      # This test command would freeze. We need to find out a way to pass environment variables into the test command.
+      # Refs: https://stackoverflow.com/questions/54988792/docker-compose-healthcheck-use-environment-variables
       test:
-        ["CMD", "curl", "-s", "http://localhost:${ZETSUBOU_ELASTICSEARCH_PORT:-9200}", ">/dev/null", "||", "exit", "1"]
+        ["CMD-SHELL", "curl", "-s", "http://localhost:$$ZETSUBOU_ELASTICSEARCH_PORT", ">/dev/null", "||", "exit", "1"]
       interval: 5s
       retries: 50
       timeout: 30s
     environment:
+      ZETSUBOU_ELASTICSEARCH_PORT: ${ZETSUBOU_ELASTICSEARCH_PORT:-9200}
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
       USER_UID: 1000
       USER_GID: 1000
@@ -89,11 +92,14 @@ services:
       - ${ZETSUBOU_STORAGE_S3_PORT:-9000}:${ZETSUBOU_STORAGE_S3_PORT:-9000}
       - ${ZETSUBOU_STORAGE_S3_CONSOLE_PORT:-9001}:${ZETSUBOU_STORAGE_S3_CONSOLE_PORT:-9001}
     healthcheck:
-      test: ["CMD", "curl", "-s", "http://localhost:${ZETSUBOU_STORAGE_S3_PORT:-9000}", ">/dev/null", "||", "exit", "1"]
+      # This test command would freeze. We need to find out a way to pass environment variables into the test command.
+      # Refs: https://stackoverflow.com/questions/54988792/docker-compose-healthcheck-use-environment-variables
+      test: ["CMD-SHELL", "curl", "-s", "http://localhost:$$ZETSUBOU_STORAGE_S3_PORT", ">/dev/null", "||", "exit", "1"]
       interval: 5s
       retries: 50
       timeout: 30s
     environment:
+      ZETSUBOU_STORAGE_S3_PORT: ${ZETSUBOU_STORAGE_S3_PORT:-9000}
       MINIO_ROOT_USER: ${ZETSUBOU_STORAGE_S3_AWS_ACCESS_KEY_ID:-admin}
       MINIO_ROOT_PASSWORD: ${ZETSUBOU_STORAGE_S3_AWS_SECRET_ACCESS_KEY:-wJalrXUtnFEMI}
     volumes:

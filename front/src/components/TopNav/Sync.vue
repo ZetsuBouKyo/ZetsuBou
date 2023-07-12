@@ -92,11 +92,11 @@ export default {
     });
 
     function load() {
-      if (settingState.setting === undefined) {
+      if (settingState.data === undefined) {
         return;
       }
-      state.appMode = settingState.setting.app_mode;
-      switch (settingState.setting.app_mode) {
+      state.appMode = settingState.data.app_mode;
+      switch (settingState.data.app_mode) {
         case AppModeEnum.Standalone:
           state.action = SyncMode.New;
           break;
@@ -107,8 +107,8 @@ export default {
     load();
     watch(
       () => {
-        if (settingState.setting !== undefined) {
-          return settingState.setting.app_mode;
+        if (settingState.data !== undefined) {
+          return settingState.data.app_mode;
         }
         return undefined;
       },

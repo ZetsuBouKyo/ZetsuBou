@@ -3,7 +3,7 @@
     <ripple-button
       class="flex mt-4 ml-4 btn btn-primary"
       @click="state.openGallery"
-      v-if="settingState.setting && settingState.setting.app_mode === AppModeEnum.Standalone">
+      v-if="settingState.data && settingState.data.app_mode === AppModeEnum.Standalone">
       Open
     </ripple-button>
     <ripple-button class="flex mt-4 ml-4 btn btn-primary" @click="state.openTextEditor"> JSON </ripple-button>

@@ -211,7 +211,7 @@ export default {
     });
 
     function load() {
-      if (settingState.setting === undefined) {
+      if (settingState.data === undefined) {
         return;
       }
 
@@ -232,13 +232,13 @@ export default {
 
             switch (field.keyType) {
               case AdvancedSearchFieldKeyEnum.BuiltIn:
-                analyzers = settingState.setting[props.state.category].analyzer.keyword as object;
+                analyzers = settingState.data[props.state.category].analyzer.keyword as object;
                 for (let analyzer in analyzers) {
                   field.analyzer.options.push({ title: toTitle(analyzer), value: analyzer });
                 }
                 break;
               case AdvancedSearchFieldKeyEnum.ElasticsearchField:
-                analyzers = settingState.setting[props.state.category].analyzer.field[field.key] as Array<string>;
+                analyzers = settingState.data[props.state.category].analyzer.field[field.key] as Array<string>;
                 for (let analyzer of analyzers) {
                   field.analyzer.options.push({ title: toTitle(analyzer), value: analyzer });
                 }
@@ -257,7 +257,7 @@ export default {
     load();
 
     watch(
-      () => JSON.stringify(settingState.setting) + JSON.stringify(state.category),
+      () => JSON.stringify(settingState.data) + JSON.stringify(state.category),
       () => {
         load();
       },

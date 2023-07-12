@@ -1,5 +1,6 @@
 import { reactive } from "vue";
 
+import { BaseState } from "@/interface/state";
 import { userState } from "@/state/user";
 import { getUserCurrentQuestProgress } from "@/api/v1/user/quest/quest";
 
@@ -8,12 +9,7 @@ export interface Progress {
   style: string;
 }
 
-export interface ProgressState {
-  data: Progress;
-  init: Function;
-}
-
-export const progressState = reactive<ProgressState>({
+export const progressState = reactive<BaseState<Progress>>({
   data: {
     title: undefined,
     style: undefined,

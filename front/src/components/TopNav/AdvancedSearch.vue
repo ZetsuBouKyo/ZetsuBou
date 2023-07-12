@@ -156,7 +156,7 @@ import SelectDropdown, {
   SelectDropdownState,
 } from "@/elements/Dropdown/SelectDropdown.vue";
 
-import { settingState } from "@/state/setting";
+import { settingState } from "@/state/Setting/front";
 
 import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
 import { watchTagFieldsChipsLength, watchTags } from "@/utils/tag";

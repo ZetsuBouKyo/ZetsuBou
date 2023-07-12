@@ -19,7 +19,7 @@ import { PropType } from "vue";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 
-import { settingState } from "@/state/setting";
+import { settingState } from "@/state/Setting/front";
 
 import { AppModeEnum } from "@/interface/setting";
 import { ControlPanelState } from "./ControlPanel.d";

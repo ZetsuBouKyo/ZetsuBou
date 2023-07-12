@@ -70,7 +70,7 @@ import Dropdown from "@/elements/Dropdown/Dropdown.vue";
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 
 import { messageState } from "@/state/message";
-import { settingState } from "@/state/setting";
+import { settingState } from "@/state/Setting/front";
 
 import { AppModeEnum } from "@/interface/setting";
 

@@ -17,7 +17,7 @@
             v-model="state.title"
             @click.stop="toggleDropdown"
             @focus="focusOpenDropdown" />
-          <icon-ic-round-expand-more class="absolute right-0 mx-2" style="font-size: 1rem" />
+          <icon-ic-round-expand-more class="absolute text-white right-0 ml-2 mr-3" style="font-size: 1rem" />
         </div>
         <div
           v-if="mode === SelectDropdownMode.InputChips"

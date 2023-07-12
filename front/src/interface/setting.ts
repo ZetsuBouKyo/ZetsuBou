@@ -13,13 +13,13 @@ export enum DatabaseTypeEnum {
 }
 
 export enum LoggingLevelEnum {
-  Critical = "CRITICAL ",
-  Fatal = "FATAL ",
-  Error = "ERROR ",
-  Warning = "WARNING ",
-  Info = "INFO ",
-  Debug = "DEBUG ",
-  Notset = "NOTSET ",
+  Critical = "CRITICAL",
+  Fatal = "FATAL",
+  Error = "ERROR",
+  Warning = "WARNING",
+  Info = "INFO",
+  Debug = "DEBUG",
+  Notset = "NOTSET",
 }
 
 export interface Setting {

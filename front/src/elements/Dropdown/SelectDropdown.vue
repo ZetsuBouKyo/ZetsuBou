@@ -154,6 +154,15 @@ export function clear(state: SelectDropdownState) {
   state.selectedValue = undefined;
 }
 
+export function getOptionsFromEnum(e: any): Array<SelectDropdownOption> {
+  const keys = Object.keys(e);
+  const options = [];
+  for (let key of keys) {
+    options.push({ title: e[key], value: e[key] });
+  }
+  return options;
+}
+
 export default defineComponent({
   components: { Chip, Dropdown, RippleButton },
   initState,

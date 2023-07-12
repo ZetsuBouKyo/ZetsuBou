@@ -60,7 +60,7 @@ import SelectDropdown, {
 import Step, { StepState } from "../Step.vue";
 
 import { isEmail } from "@/utils/email";
-import { timezones } from "@/utils/timezone";
+import { getTimezoneOptions } from "@/utils/timezone";
 
 export default {
   components: { RippleButton, SelectDropdown, Step },
@@ -76,10 +76,7 @@ export default {
     const state = reactive({ password: undefined, confirmedEmail: undefined, confirmedPassword: undefined });
 
     const timezone = SelectDropdown.initState() as SelectDropdownState;
-    const timezoneOptions = [];
-    for (const t of timezones) {
-      timezoneOptions.push({ title: t, value: t });
-    }
+    const timezoneOptions = getTimezoneOptions();
 
     watch(
       () => {

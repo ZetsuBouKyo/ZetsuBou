@@ -1,3 +1,5 @@
+import { SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.vue";
+
 export const timezones = [
   "Africa/Abidjan",
   "Africa/Accra",
@@ -596,3 +598,11 @@ export const timezones = [
   "WET",
   "Zulu",
 ];
+
+export function getTimezoneOptions(): Array<SelectDropdownOption> {
+  const timezoneOptions = [];
+  for (const t of timezones) {
+    timezoneOptions.push({ title: t, value: t });
+  }
+  return timezoneOptions;
+}

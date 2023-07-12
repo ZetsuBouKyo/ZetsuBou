@@ -39,6 +39,17 @@ class AppModeEnum(str, Enum):
     CLUSTER: str = "cluster"
 
 
+class LoggingLevelEnum(str, Enum):
+    CRITICAL: str = "CRITICAL"
+    FATAL: str = "FATAL"
+    ERROR: str = "ERROR"
+    WARNING: str = "WARNING"
+    WARN: str = "WARN"
+    INFO: str = "INFO"
+    DEBUG: str = "DEBUG"
+    NOTSET: str = "NOTSET"
+
+
 class Setting(BaseSettings):
     app_host: str = Field(
         default="0.0.0.0", title=f"{TITLE_PREFIX} Host", exmaple="0.0.0.0"
@@ -102,7 +113,7 @@ class Setting(BaseSettings):
         description="Used to encrypt token. Must be changed.",
     )
 
-    app_logging_level: str = "WARNING"
+    app_logging_level: LoggingLevelEnum = LoggingLevelEnum.WARNING.value
     app_logging_formatter_fmt: str = "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"  # noqa
 
     standalone_storage_protocol: SourceProtocolEnum = None

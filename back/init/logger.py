@@ -3,9 +3,9 @@ from logging.handlers import RotatingFileHandler
 
 from back.logging import logger_webapp
 from back.logging.utils import get_all_loggers
-from back.settings import setting
+from back.settings import LoggingLevelEnum, setting
 
-APP_LOGGING_LEVEL = setting.app_logging_level
+APP_LOGGING_LEVEL = setting.app_logging_level.value
 APP_LOGGING_Path = "./logs/app.log"
 APP_LOGGING_FORMATTER_FMT = setting.app_logging_formatter_fmt
 IGNORE_LOGGERS = ["sqlalchemy", "botocore", "httpcore"]
@@ -15,7 +15,9 @@ formatter = Formatter(fmt=APP_LOGGING_FORMATTER_FMT)
 handler.setFormatter(formatter)
 
 
-def init_loggers():
+def init_loggers(logging_level: LoggingLevelEnum = APP_LOGGING_LEVEL):
+    if type(logging_level) is not str:
+        logging_level = logging_level.value
     loggers = get_all_loggers()
     for logger in loggers:
         skip = False
@@ -25,10 +27,12 @@ def init_loggers():
                 continue
         if skip:
             continue
-        logger.setLevel(APP_LOGGING_LEVEL)
+        logger.setLevel(logging_level)
         logger.addHandler(handler)
 
 
-def init_zetsubou_logger():
-    logger_webapp.setLevel(APP_LOGGING_LEVEL)
+def init_zetsubou_logger(logging_level: LoggingLevelEnum = APP_LOGGING_LEVEL):
+    if type(logging_level) is not str:
+        logging_level = logging_level.value
+    logger_webapp.setLevel(logging_level)
     logger_webapp.addHandler(handler)

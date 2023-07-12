@@ -18,6 +18,7 @@ import SettingGroup from "./views/Vertical/Settings/Group/GroupTable.vue";
 import SettingQuest from "./views/Vertical/Settings/Quest/QuestTable.vue";
 import Settings from "./views/Vertical/Settings/index.vue";
 import SettingStorageMinioTable from "./views/Vertical/Settings/Storage/StorageMinioTable.vue";
+import SettingSystem from "./views/Vertical/Settings/System/index.vue";
 import SettingTag from "./views/Vertical/Settings/Tag/TagTable.vue";
 import SettingTagAttribute from "./views/Vertical/Settings/Tag/TagAttributeTable.vue";
 import SettingTagFrontUI from "./views/Vertical/Settings/Tag/FrontUI/index.vue";
@@ -25,7 +26,6 @@ import SettingTagToken from "./views/Vertical/Settings/Tag/TagTokenTable.vue";
 import Vertical from "./views/Vertical/index.vue";
 import Video from "./views/Vertical/Video/index.vue";
 import Videos from "./views/Vertical/Videos.vue";
-
 /** @type {import('vue-router').RouterOptions['routes']} */
 
 export const routes = [
@@ -77,6 +77,7 @@ export const routes = [
             meta: { title: "Elasticsearch Count Quest" },
           },
           { path: "group", component: SettingGroup, meta: { title: "Group" } },
+          { path: "system", component: SettingSystem, meta: { title: "System" } },
         ],
       },
       { path: "/NotFound", component: NotFound },

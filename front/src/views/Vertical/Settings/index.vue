@@ -42,6 +42,9 @@
           <icon-mdi-storage class="views-setting-action-icon" style="font-size: 1.4rem" />
         </template>
       </setting-action-dropdown>
+      <setting-action :title="'System'" :path="'/settings/system'">
+        <icon-ant-design-setting-filled class="views-setting-action-icon" style="font-size: 1.4rem" />
+      </setting-action>
     </div>
   </setting>
 </template>

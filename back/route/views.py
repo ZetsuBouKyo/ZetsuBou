@@ -168,6 +168,7 @@ private_router.add_api_route("/settings/account", index)
 private_router.add_api_route("/settings/appearance", index)
 private_router.add_api_route("/settings/authentication", index)
 private_router.add_api_route("/settings/storage-minio", table)
+private_router.add_api_route("/settings/system", index)
 
 private_router.add_api_route("/settings/elasticsearch-count", table)
 private_router.add_api_route("/settings/elasticsearch-search", table)

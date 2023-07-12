@@ -50,7 +50,7 @@ def post_settings(setting: Setting) -> Setting:
     dependencies=[api_security([ScopeEnum.setting_system_put.name])],
 )
 def put_settings(setting: Setting) -> Setting:
-    update_settings(setting)
+    update_settings(setting, force=True)
     return setting
 
 

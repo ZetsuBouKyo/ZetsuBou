@@ -12,6 +12,16 @@ export enum DatabaseTypeEnum {
   Postgresql = "postgresql",
 }
 
+export enum LoggingLevelEnum {
+  Critical = "CRITICAL ",
+  Fatal = "FATAL ",
+  Error = "ERROR ",
+  Warning = "WARNING ",
+  Info = "INFO ",
+  Debug = "DEBUG ",
+  Notset = "NOTSET ",
+}
+
 export interface Setting {
   app_host?: string;
   app_security?: boolean;
@@ -51,11 +61,13 @@ export interface Setting {
   database_type?: DatabaseTypeEnum;
   database_url?: string;
   database_echo?: boolean;
+  database_port?: number;
   elastic_urls?: string;
   elastic_size?: number;
   elastic_index_gallery?: string;
   elastic_index_video?: string;
   elastic_index_tag?: string;
+  elasticsearch_port?: number;
   storage_protocol?: SourceProtocolEnum;
   storage_expires_in_minutes?: number;
   storage_cache?: string;
@@ -64,8 +76,13 @@ export interface Setting {
   storage_s3_aws_secret_access_key?: string;
   storage_s3_endpoint_url?: string;
   storage_s3_volume?: string;
+  storage_s3_port?: number;
+  storage_s3_console_port?: number;
   airflow_host?: string;
   airflow_username?: string;
   airflow_password?: string;
+  airflow_web_server_port?: number;
+  airflow_simple_volume?: string;
   redis_url?: string;
+  redis_port?: number;
 }

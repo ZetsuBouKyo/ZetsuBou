@@ -72,13 +72,15 @@ def is_airflow_setting(setting_path: Path = AIRFLOW_SETTING_PATH) -> bool:
     return setting_path.exists()
 
 
-def update_settings(setting: Setting, setting_path: Path = SETTING_PATH):
+def update_settings(
+    setting: Setting, setting_path: Path = SETTING_PATH, force: bool = False
+):
     envs = get_envs(setting)
-    write_settings(setting_path, envs)
+    write_settings(setting_path, envs, force=force)
 
 
 def update_airflow_settings(
-    setting: Setting, setting_path: Path = AIRFLOW_SETTING_PATH
+    setting: Setting, setting_path: Path = AIRFLOW_SETTING_PATH, force: bool = False
 ):
     envs = get_envs(setting)
-    write_settings(setting_path, envs)
+    write_settings(setting_path, envs, force=force)

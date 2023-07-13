@@ -9,11 +9,11 @@ from uuid import uuid4
 import typer
 from pdf2image import convert_from_path
 
+from back.crud.setting import update_settings
 from back.init.logger import init_zetsubou_logger
 from back.init.setting import init_example_settings
 from back.model.gallery import Gallery as GalleryModel
-from back.model.uvicorn import UvicornLogLevelEnum
-from back.settings import DEFAULT_SETTING_PATH, setting
+from back.settings import LoggingLevelEnum, setting
 from back.utils.dt import get_now
 from command.backup import app as backup
 from command.build import app as build
@@ -78,12 +78,24 @@ def init():
 def run(
     app_host: str = typer.Option(default=APP_HOST, help="ZetsuBou app host."),
     app_port: int = typer.Option(default=APP_PORT, help="ZetsuBou app port."),
+    log_level: LoggingLevelEnum = typer.Option(
+        default=LOG_LEVEL, help="Logging level."
+    ),
     reload: bool = typer.Option(default=True, help="Uvicorn reload."),
 ):
     from lib import uvicorn
 
+    if LOG_LEVEL != log_level:
+        setting.app_logging_level = log_level
+        update_settings(setting, force=True)
+
+    if type(log_level) is not str:
+        log_level = log_level.value
+    uvicorn_log_level = log_level.lower()
+
     uvicorn.run(
         "app:app",
+        log_level=uvicorn_log_level,
         host=app_host,
         port=app_port,
         reload=reload,

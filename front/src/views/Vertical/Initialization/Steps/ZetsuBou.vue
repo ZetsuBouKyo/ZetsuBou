@@ -51,12 +51,10 @@
 <script lang="ts">
 import { PropType, reactive, watch } from "vue";
 
+import { SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
+
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown, {
-  Origin,
-  SelectDropdownMode,
-  SelectDropdownState,
-} from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, { Origin } from "@/elements/Dropdown/SelectDropdown.vue";
 import Step, { StepState } from "../Step.vue";
 
 import { isEmail } from "@/utils/email";

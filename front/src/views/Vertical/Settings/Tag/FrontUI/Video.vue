@@ -41,11 +41,9 @@
 import { onGetTip, onMouseoverOption } from "@/utils/tag";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown, {
-  Origin,
-  SelectDropdownMode,
-  SelectDropdownState,
-} from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, { Origin } from "@/elements/Dropdown/SelectDropdown.vue";
+
+import { SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
 
 import { getSettingFrontVideoInterpretation, putSettingFrontVideo } from "@/api/v1/setting/front/video";
 import { getTagTokenStartWith } from "@/api/v1/tag/token";

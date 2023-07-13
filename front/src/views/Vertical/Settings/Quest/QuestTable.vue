@@ -60,12 +60,10 @@ import { userState } from "@/state/user";
 import { getDatetime } from "@/utils/datetime";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown, {
-  SelectDropdownGetParam,
-  SelectDropdownState,
-  reset,
-} from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, { reset } from "@/elements/Dropdown/SelectDropdown.vue";
 import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
+
+import { SelectDropdownGetParam, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
 
 import { getUserElasticCountQuest, getUserElasticCountQuests } from "@/api/v1/user/quest/elasticCountQuest";
 

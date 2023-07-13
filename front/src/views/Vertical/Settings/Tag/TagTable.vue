@@ -87,13 +87,10 @@ import { defineComponent, watch } from "vue";
 import { toTitle } from "@/utils/str";
 import { onGetTip, onMouseoverOption } from "@/utils/tag";
 
-import SelectDropdown, {
-  Origin,
-  SelectDropdownMode,
-  SelectDropdownState,
-  reset,
-} from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, { Origin, reset } from "@/elements/Dropdown/SelectDropdown.vue";
 import CrudTable, { CrudTableState, Header, Search } from "@/elements/Table/CrudTable/index.vue";
+
+import { SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
 
 import { getTagAttributes } from "@/api/v1/tag/attribute";
 import {

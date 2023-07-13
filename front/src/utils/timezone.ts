@@ -1,4 +1,4 @@
-import { SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.vue";
+import { SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.d";
 
 export const timezones = [
   "Africa/Abidjan",

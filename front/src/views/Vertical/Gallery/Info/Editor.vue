@@ -97,12 +97,9 @@ import { getTagTokenStartWith } from "@/api/v1/tag/token";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 
-import SelectDropdown, {
-  OnGet,
-  Origin,
-  SelectDropdownMode,
-  SelectDropdownState,
-} from "@/elements/Dropdown/SelectDropdown.vue";
+import { OnGet, SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
+
+import SelectDropdown, { Origin } from "@/elements/Dropdown/SelectDropdown.vue";
 
 import { galleryState } from "@/state/gallery";
 import { messageState } from "@/state/message";

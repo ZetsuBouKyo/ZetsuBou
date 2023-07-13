@@ -231,15 +231,11 @@
 
 <script lang="ts">
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown, {
-  Origin,
-  SelectDropdownMode,
-  SelectDropdownState,
-  getOptionsFromEnum,
-} from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, { Origin, getOptionsFromEnum } from "@/elements/Dropdown/SelectDropdown.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 import { watch } from "vue";
 
+import { SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
 import { AppModeEnum, LoggingLevelEnum } from "@/interface/setting";
 
 import { getTimezoneOptions } from "@/utils/timezone";

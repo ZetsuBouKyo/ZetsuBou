@@ -120,9 +120,11 @@ import {
 import { postSyncStorageMinio } from "@/api/v1/task/airflow";
 
 import { ButtonColorEnum } from "@/elements/Button/button";
-import SelectDropdown, { SelectDropdownState, reset } from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, { reset } from "@/elements/Dropdown/SelectDropdown.vue";
 import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
+
+import { SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
 
 import { messageState } from "@/state/message";
 

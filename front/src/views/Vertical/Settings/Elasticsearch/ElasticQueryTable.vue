@@ -39,6 +39,7 @@ import { getDatetime } from "@/utils/datetime";
 
 import { getQueryExample } from "@/api/v1/elasticsearch";
 
+import SelectDropdown, { Origin } from "@/elements/Dropdown/SelectDropdown.vue";
 import CrudTable, {
   CrudTableState,
   Header,
@@ -49,11 +50,7 @@ import CrudTable, {
   OnCrudUpdate,
 } from "@/elements/Table/CrudTable/index.vue";
 
-import SelectDropdown, {
-  Origin,
-  SelectDropdownOption,
-  SelectDropdownState,
-} from "@/elements/Dropdown/SelectDropdown.vue";
+import { SelectDropdownOption, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
 
 export interface Row {
   id?: number;

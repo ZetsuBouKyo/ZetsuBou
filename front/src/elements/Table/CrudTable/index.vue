@@ -95,15 +95,7 @@ import { isEmpty } from "@/utils/obj";
 
 import { ButtonColorEnum } from "@/elements/Button/button";
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown, {
-  OnGetTip,
-  OnGetToOptions,
-  OnMouseoverOption,
-  Origin,
-  SelectDropdownMode,
-  SelectDropdownOption,
-  SelectDropdownState,
-} from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, { Origin } from "@/elements/Dropdown/SelectDropdown.vue";
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 import PaginationBase from "@/elements/Pagination/index.vue";
@@ -111,6 +103,14 @@ import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 
 import { getPagination } from "@/elements/Pagination/pagination";
 
+import {
+  OnGetTip,
+  OnGetToOptions,
+  OnMouseoverOption,
+  SelectDropdownMode,
+  SelectDropdownOption,
+  SelectDropdownState,
+} from "@/elements/Dropdown/SelectDropdown.d";
 import { Pagination, PaginationGetParam } from "@/elements/Pagination/pagination.d";
 
 export interface Header {

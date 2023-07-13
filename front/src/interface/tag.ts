@@ -1,4 +1,4 @@
-import { SelectDropdownState, OnGet } from "@/elements/Dropdown/SelectDropdown.vue";
+import { SelectDropdownState, OnGet } from "@/elements/Dropdown/SelectDropdown.d";
 
 export interface Tags {
   [key: string]: Array<string>;

@@ -1,9 +1,10 @@
 import { reactive } from "vue";
 
-import SelectDropdown, { SelectDropdownOption, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 
 import { TagFieldsPrivateState } from "@/interface/tag";
 import { Source, SourceDataState } from "@/interface/source";
+import { SelectDropdownOption, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
 
 import { getTagInterpretation, TagInterpretation } from "@/api/v1/tag/tag";
 import { getTagTokenStartWith } from "@/api/v1/tag/token";

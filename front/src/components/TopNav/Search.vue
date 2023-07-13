@@ -116,13 +116,7 @@ import { getUserElasticSearchQueries } from "@/api/v1/user/elasticQuery/search";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import Dropdown from "@/elements/Dropdown/Dropdown.vue";
-import SelectDropdown, {
-  Origin,
-  SelectDropdownMode,
-  SelectDropdownOption,
-  SelectDropdownState,
-  clear,
-} from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, { Origin, clear } from "@/elements/Dropdown/SelectDropdown.vue";
 import SearchAutoComplete from "./SearchAutoComplete.vue";
 
 import { toTitle } from "@/utils/str";
@@ -133,6 +127,7 @@ import AdvancedSearch, {
   AdvancedSearchState,
 } from "./AdvancedSearch.vue";
 
+import { SelectDropdownMode, SelectDropdownOption, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
 import { PaginationGetParam } from "@/elements/Pagination/pagination.d";
 
 export default {

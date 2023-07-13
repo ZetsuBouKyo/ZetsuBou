@@ -138,6 +138,7 @@ import {
 } from "@/api/v1/setting/front/video";
 import { getTagTokenStartWith } from "@/api/v1/tag/token";
 
+import { OnGet, SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
 import { SearchCategory } from "@/interface/search";
 import { Source, SourceDataState } from "@/interface/source";
 import { TagFieldsPrivateState } from "@/interface/tag";
@@ -149,12 +150,7 @@ import { onGetTip, onMouseoverOption } from "@/utils/tag";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 
-import SelectDropdown, {
-  OnGet,
-  Origin,
-  SelectDropdownMode,
-  SelectDropdownState,
-} from "@/elements/Dropdown/SelectDropdown.vue";
+import SelectDropdown, { Origin } from "@/elements/Dropdown/SelectDropdown.vue";
 
 import { settingState } from "@/state/Setting/front";
 

@@ -100,7 +100,7 @@
 import { onBeforeMount, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { SearchBase } from "@/interface/search";
+import { SearchBase, SearchQuery } from "@/interface/search";
 import { SourceState } from "@/interface/source";
 import { Video } from "@/interface/video";
 
@@ -109,7 +109,7 @@ import { userState } from "@/state/user";
 import { videoState } from "@/state/video";
 
 import { postVideoCreateCover } from "@/api/v1/task/airflow";
-import { getAdvancedSearch, getRandom, getSearch, SearchQuery } from "@/api/v1/video/query";
+import { getAdvancedSearch, getRandom, getSearch } from "@/api/v1/video/query";
 
 import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";

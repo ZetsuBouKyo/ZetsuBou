@@ -1,16 +1,5 @@
 import request from "@/utils/request";
-
-export interface SearchQuery {
-  analyzer: string;
-  query_id: number;
-  keywords: string;
-  page: number;
-  fuzziness: number;
-  size: number;
-  boolean: "must" | "should";
-  seed?: number;
-  [key: string]: any;
-}
+import { SearchQuery } from "@/interface/search";
 
 export function getAdvancedSearch(query: any) {
   return request({

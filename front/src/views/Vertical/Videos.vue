@@ -10,11 +10,13 @@ import { useRoute } from "vue-router";
 
 import { getDatetime } from "@/utils/datetime";
 
-import { getAdvancedSearch, getRandom, getSearch, SearchQuery } from "@/api/v1/video/query";
+import { getAdvancedSearch, getRandom, getSearch } from "@/api/v1/video/query";
 
 import { userState } from "@/state/user";
 
 import { Item, Items, Previews } from "@/components/PreviewList/interface";
+import { SearchQuery } from "@/interface/search";
+
 import { getPagination } from "@/elements/Pagination/pagination";
 
 import PreviewList from "@/components/PreviewList/index.vue";

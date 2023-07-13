@@ -22,6 +22,18 @@ export enum SearchBoolean {
   Should = "should",
 }
 
+export interface SearchQuery {
+  analyzer: string;
+  query_id: number;
+  keywords: string;
+  page: number;
+  fuzziness: number;
+  size: number;
+  boolean: "must" | "should";
+  seed?: number;
+  [key: string]: any;
+}
+
 export interface SearchStateQuery {
   analyzer?: SearchAnalyzer;
   query_id?: number;

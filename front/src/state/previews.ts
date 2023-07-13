@@ -1,6 +1,6 @@
 import { reactive } from "vue";
 
-import { SearchQuery } from "@/api/v1/gallery/query";
+import { SearchQuery } from "@/interface/search";
 
 export interface Page {
   total: Number;

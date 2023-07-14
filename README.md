@@ -123,9 +123,7 @@ make init
 # To run the services
 make up-dev
 # To run the app
-poetry run python app.py
-# (Optional) To run standalone
-poetry run python standalone.py
+poetry run python cli.py run
 ```
 
 ### Run before push

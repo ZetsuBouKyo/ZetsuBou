@@ -137,4 +137,4 @@ make lint
 
 ## Contact
 
-[My twitch channel](https://www.twitch.tv/demonic22)
+[My twitch channel](https://www.twitch.tv/zetsuboukyo)

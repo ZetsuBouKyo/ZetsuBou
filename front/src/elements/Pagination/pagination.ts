@@ -1,4 +1,4 @@
-import { Pagination, Page, PaginationGetParam } from "./pagination.d";
+import { Pagination, Page, PaginationGetParam } from "./pagination.interface";
 
 function getPageUrl(page: number, path: string, query: PaginationGetParam) {
   let paras = [];

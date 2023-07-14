@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import { userState } from "@/state/user";
+</script>
+
 <template>
   <div class="views-setting-container">
     <div class="views-setting-section">
@@ -34,13 +38,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { userState } from "@/state/user";
-
-export default {
-  setup() {
-    return { userState };
-  },
-};
-</script>

@@ -1,19 +1,14 @@
 <template></template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { PropType } from "vue";
 
-import { SVG } from "./svg.d";
+import { SVG } from "./svg.interface";
 
-export default {
-  props: {
-    svg: {
-      type: Object as PropType<SVG>,
-      default: undefined,
-    },
+const props = defineProps({
+  svg: {
+    type: Object as PropType<SVG>,
+    required: true,
   },
-  setup(props) {
-    return { ...props };
-  },
-};
+});
 </script>

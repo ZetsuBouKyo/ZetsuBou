@@ -1,3 +1,244 @@
+<script setup lang="ts">
+import axios from "axios";
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
+
+import { ButtonColorEnum } from "@/elements/Button/button.interface";
+import { Origin } from "@/elements/Dropdown/Dropdown.interface";
+import {
+  SelectDropdownMode,
+  SelectDropdownOption,
+  SelectDropdownState,
+} from "@/elements/Dropdown/SelectDropdown.interface";
+import {
+  CrudGetParam,
+  CrudTableState,
+  Header,
+  OnCloseEditor,
+  OnCrudCreate,
+  OnCrudDelete,
+  OnCrudGet,
+  OnCrudGetTotal,
+  OnCrudUpdate,
+  OnOpenEditor,
+  Row,
+  Search,
+} from "./interface";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
+import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
+import Modal from "@/elements/Modal/Modal.vue";
+import PaginationBase from "@/elements/Pagination/index.vue";
+import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
+
+import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
+
+import { getPagination } from "@/elements/Pagination/pagination";
+import { isEmpty } from "@/utils/obj";
+import { initCrudTableState } from "./CrudTable";
+
+interface Props {
+  state: CrudTableState<Row>;
+  colspan: string;
+  headers: Array<Header>;
+  search: Search;
+  editorTitle: string;
+  editorClass: string;
+  isEditorScrollable: boolean;
+  isAddible: boolean;
+  isRowEditable: boolean;
+  isRowDeletable: boolean;
+  areRowsCustom: boolean;
+  deleteConfirmMessage: string;
+  onCrudCreate: OnCrudCreate;
+  onCrudGet: OnCrudGet;
+  onCrudGetTotal: OnCrudGetTotal;
+  onCrudUpdate: OnCrudUpdate;
+  onCrudDelete: OnCrudDelete;
+  onOpenEditor: OnOpenEditor;
+  onCloseEditor: OnCloseEditor;
+}
+const props = withDefaults(defineProps<Props>(), {
+  state: () => initCrudTableState(),
+  colspan: undefined,
+  headers: undefined,
+  search: () => <Search>{},
+  editorTitle: "Editor",
+  editorClass: "w-1/2 top-1/4 left-1/4",
+  isEditorScrollable: false,
+  isAddible: true,
+  isRowEditable: true,
+  isRowDeletable: true,
+  areRowsCustom: false,
+  deleteConfirmMessage: undefined,
+  onCrudCreate: undefined,
+  onCrudGet: undefined,
+  onCrudGetTotal: undefined,
+  onCrudUpdate: undefined,
+  onCrudDelete: undefined,
+  onOpenEditor: undefined,
+  onCloseEditor: undefined,
+});
+
+const state = props.state;
+const headers = props.headers;
+const editor = ref();
+
+const route = useRoute();
+const params: CrudGetParam = {
+  page: route.query.page ? parseInt(route.query.page as string) : 1,
+  size: route.query.size ? parseInt(route.query.size as string) : 20,
+};
+
+const searchFieldState = initSelectDropdownState() as SelectDropdownState;
+if (!isEmpty(props.search)) {
+  const keys = Object.keys(props.search);
+  const key = keys[0];
+  searchFieldState.title = props.search[key].title;
+}
+for (const title in props.search) {
+  searchFieldState.options.push({ title: title, value: title });
+}
+function onSearch(params: any) {
+  return props.search[searchFieldState.title].onSearch(params);
+}
+function onSearchToOptions(data: any) {
+  return props.search[searchFieldState.title].onSearchToOptions(data);
+}
+
+function onSearchGetTip(opt: SelectDropdownOption) {
+  return props.search[searchFieldState.title].onSearchGetTip(opt);
+}
+
+function onSearchMouseoverOption(event, opt: SelectDropdownOption) {
+  return props.search[searchFieldState.title].onSearchMouseoverOption(event, opt);
+}
+
+const searchValueState = initSelectDropdownState() as SelectDropdownState;
+watch(
+  () => searchValueState.options.length,
+  () => {
+    if (searchValueState.title === undefined) {
+      load();
+      return;
+    }
+    if (typeof searchValueState.title === "string" && searchValueState.title.length > 0) {
+      state.pagination = undefined;
+      state.sheet.rows = [];
+      for (const opt of searchValueState.options) {
+        state.sheet.rows.push(opt.raw);
+      }
+    } else {
+      load();
+    }
+  },
+);
+
+function load() {
+  if (props.onCrudGet !== undefined && props.onCrudGetTotal !== undefined) {
+    axios.all<any>([props.onCrudGetTotal(), props.onCrudGet(params)]).then(
+      axios.spread((response1, response2) => {
+        const totalItems = response1.data;
+        const rows = response2.data;
+        state.pagination = getPagination(route.path, totalItems, params);
+        state.sheet = { headers: headers, rows: rows };
+      }),
+    );
+  } else {
+    state.sheet = { headers: headers, rows: [] };
+  }
+}
+load();
+
+watch(
+  () => {
+    return [route.path, JSON.stringify(route.query)];
+  },
+  () => {
+    if (route.query.page === undefined || route.query.size === undefined) {
+      return;
+    }
+    params.page = parseInt(route.query.page as string);
+    params.size = parseInt(route.query.size as string);
+    load();
+  },
+);
+
+function onOpenEditor() {
+  if (state.row) {
+    state.cache = JSON.parse(JSON.stringify(state.row));
+  }
+  if (props.onOpenEditor !== undefined) {
+    props.onOpenEditor();
+  }
+}
+
+function onCloseEditor() {
+  if (state.cache) {
+    for (let key in state.cache) {
+      state.row[key] = state.cache[key];
+    }
+  }
+  if (props.onCloseEditor !== undefined) {
+    props.onCloseEditor();
+  }
+}
+
+function create() {
+  state.row = {};
+  state.editor.handler = () => {
+    props.onCrudCreate(state.row).then((response: any) => {
+      if (response.status === 200) {
+        editor.value.close();
+        window.location.reload();
+      }
+    });
+  };
+  editor.value.open();
+}
+
+function update(row: Row) {
+  if (!props.isRowEditable) {
+    return;
+  }
+  state.row = row;
+  state.editor.handler = () => {
+    props.onCrudUpdate(state.row).then((response: any) => {
+      if (response.status !== 200) {
+      } else {
+        editor.value.close();
+        window.location.reload();
+      }
+    });
+  };
+  editor.value.open();
+}
+
+function deleteById(id: any) {
+  props.onCrudDelete(id).then((response: any) => {
+    if (response.status === 200) {
+    }
+  });
+}
+
+const confirm = ref();
+
+function onConfirm() {
+  deleteById(state.row.id);
+  state.row = undefined;
+  window.location.reload();
+}
+
+function confirmRemove(row: any) {
+  if (!props.isRowDeletable) {
+    return;
+  }
+  state.row = row;
+  confirm.value.open();
+}
+</script>
+
 <template>
   <confirm-modal
     ref="confirm"
@@ -85,375 +326,3 @@
       :key="state.pagination.current" />
   </div>
 </template>
-
-<script lang="ts">
-import axios, { AxiosResponse } from "axios";
-import { defineComponent, PropType, reactive, ref, watch } from "vue";
-import { useRoute } from "vue-router";
-
-import { isEmpty } from "@/utils/obj";
-
-import { ButtonColorEnum } from "@/elements/Button/button";
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown, { Origin } from "@/elements/Dropdown/SelectDropdown.vue";
-import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
-import Modal from "@/elements/Modal/Modal.vue";
-import PaginationBase from "@/elements/Pagination/index.vue";
-import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
-
-import { getPagination } from "@/elements/Pagination/pagination";
-
-import {
-  OnGetTip,
-  OnGetToOptions,
-  OnMouseoverOption,
-  SelectDropdownMode,
-  SelectDropdownOption,
-  SelectDropdownState,
-} from "@/elements/Dropdown/SelectDropdown.d";
-import { Pagination, PaginationGetParam } from "@/elements/Pagination/pagination.d";
-
-export interface Header {
-  title: string;
-  key: string;
-  handler?: (value: string | number) => string | number;
-}
-
-export interface Row {
-  id?: number;
-  [key: string]: any;
-}
-
-export interface CrudGetParam extends PaginationGetParam {
-  [key: string]: any;
-}
-
-export interface Sheet {
-  headers: Array<Header>;
-  rows: Array<Row>;
-}
-
-export interface CrudTableState<Row> {
-  sheet: Sheet;
-  pagination: Pagination;
-  row: Row;
-  cache: Row;
-  editor: {
-    handler: () => void;
-    title: string;
-  };
-  [key: string]: any;
-}
-
-export interface Editor {
-  popout: boolean;
-}
-
-export interface OnSearch {
-  (params: CrudGetParam): Promise<AxiosResponse<Array<Row>>>;
-}
-
-export interface SearchOption {
-  title: string;
-  onSearch: OnSearch;
-  onSearchToOptions: OnGetToOptions;
-  onSearchGetTip?: OnGetTip;
-  onSearchMouseoverOption?: OnMouseoverOption;
-}
-
-export interface Search {
-  [key: string]: SearchOption;
-}
-
-export interface OnCrudCreate {
-  (row: Row): Promise<AxiosResponse<Row>>;
-}
-
-export interface OnCrudGet {
-  (params: CrudGetParam): Promise<AxiosResponse<Array<Row>>>;
-}
-
-export interface OnCrudGetTotal {
-  (): Promise<AxiosResponse<number>>;
-}
-
-export interface OnCrudUpdate {
-  (row: Row): Promise<AxiosResponse<any>>;
-}
-
-export interface OnCrudDelete {
-  (id: number): Promise<AxiosResponse<Array<any>>>;
-}
-
-export interface OnOpenEditor {
-  (): void;
-}
-
-export interface OnCloseEditor {
-  (): void;
-}
-
-function initState(row?: Row): CrudTableState<Row> {
-  return reactive<CrudTableState<Row>>({
-    sheet: undefined,
-    pagination: undefined,
-    row: row,
-    cache: undefined,
-    editor: {
-      handler: undefined,
-      title: undefined,
-    },
-  });
-}
-
-export default defineComponent({
-  components: { ConfirmModal, CrudTableButton, Modal, PaginationBase, RippleButton, SelectDropdown },
-  initState,
-  props: {
-    state: {
-      type: Object as PropType<CrudTableState<Row>>,
-      default: initState(),
-    },
-    colspan: {
-      type: Object as PropType<string>,
-      default: undefined,
-    },
-    headers: {
-      type: Object as PropType<Array<Header>>,
-      default: undefined,
-    },
-    search: {
-      type: Object as PropType<Search>,
-      default: {},
-    },
-    editorTitle: {
-      type: Object as PropType<string>,
-      default: "Editor",
-    },
-    editorClass: {
-      type: Object as PropType<string>,
-      default: "w-1/2 top-1/4 left-1/4",
-    },
-    isEditorScrollable: {
-      type: Object as PropType<boolean>,
-      default: false,
-    },
-    isAddible: { type: Object as PropType<boolean>, default: true },
-    isRowEditable: { type: Object as PropType<boolean>, default: true },
-    isRowDeletable: { type: Object as PropType<boolean>, default: true },
-    areRowsCustom: { type: Object as PropType<boolean>, default: false },
-    deleteConfirmMessage: {
-      type: Object as PropType<string>,
-      default: undefined,
-    },
-    onCrudCreate: {
-      type: Object as PropType<OnCrudCreate>,
-      default: undefined,
-    },
-    onCrudGet: {
-      type: Object as PropType<OnCrudGet>,
-      default: undefined,
-    },
-    onCrudGetTotal: {
-      type: Object as PropType<OnCrudGetTotal>,
-      default: undefined,
-    },
-    onCrudUpdate: {
-      type: Object as PropType<OnCrudUpdate>,
-      default: undefined,
-    },
-    onCrudDelete: {
-      type: Object as PropType<OnCrudDelete>,
-      default: undefined,
-    },
-    onOpenEditor: {
-      type: Object as PropType<OnOpenEditor>,
-      default: undefined,
-    },
-    onCloseEditor: {
-      type: Object as PropType<OnCloseEditor>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    const state = props.state;
-    const headers = props.headers;
-    const editor = ref();
-
-    const route = useRoute();
-    const params: CrudGetParam = {
-      page: route.query.page ? parseInt(route.query.page as string) : 1,
-      size: route.query.size ? parseInt(route.query.size as string) : 20,
-    };
-
-    const searchFieldState = SelectDropdown.initState() as SelectDropdownState;
-    if (!isEmpty(props.search)) {
-      const keys = Object.keys(props.search);
-      const key = keys[0];
-      searchFieldState.title = props.search[key].title;
-    }
-    for (const title in props.search) {
-      searchFieldState.options.push({ title: title, value: title });
-    }
-    function onSearch(params: any) {
-      return props.search[searchFieldState.title].onSearch(params);
-    }
-    function onSearchToOptions(data: any) {
-      return props.search[searchFieldState.title].onSearchToOptions(data);
-    }
-
-    function onSearchGetTip(opt: SelectDropdownOption) {
-      return props.search[searchFieldState.title].onSearchGetTip(opt);
-    }
-
-    function onSearchMouseoverOption(event, opt: SelectDropdownOption) {
-      return props.search[searchFieldState.title].onSearchMouseoverOption(event, opt);
-    }
-
-    const searchValueState = SelectDropdown.initState() as SelectDropdownState;
-    watch(
-      () => searchValueState.options.length,
-      () => {
-        if (searchValueState.title === undefined) {
-          load();
-          return;
-        }
-        if (typeof searchValueState.title === "string" && searchValueState.title.length > 0) {
-          state.pagination = undefined;
-          state.sheet.rows = [];
-          for (const opt of searchValueState.options) {
-            state.sheet.rows.push(opt.raw);
-          }
-        } else {
-          load();
-        }
-      },
-    );
-
-    function load() {
-      if (props.onCrudGet !== undefined && props.onCrudGetTotal !== undefined) {
-        axios.all<any>([props.onCrudGetTotal(), props.onCrudGet(params)]).then(
-          axios.spread((response1, response2) => {
-            const totalItems = response1.data;
-            const rows = response2.data;
-            state.pagination = getPagination(route.path, totalItems, params);
-            state.sheet = { headers: headers, rows: rows };
-          }),
-        );
-      } else {
-        state.sheet = { headers: headers, rows: [] };
-      }
-    }
-    load();
-
-    watch(
-      () => {
-        return [route.path, JSON.stringify(route.query)];
-      },
-      () => {
-        if (route.query.page === undefined || route.query.size === undefined) {
-          return;
-        }
-        params.page = parseInt(route.query.page as string);
-        params.size = parseInt(route.query.size as string);
-        load();
-      },
-    );
-
-    function onOpenEditor() {
-      if (state.row) {
-        state.cache = JSON.parse(JSON.stringify(state.row));
-      }
-      if (props.onOpenEditor !== undefined) {
-        props.onOpenEditor();
-      }
-    }
-
-    function onCloseEditor() {
-      if (state.cache) {
-        for (let key in state.cache) {
-          state.row[key] = state.cache[key];
-        }
-      }
-      if (props.onCloseEditor !== undefined) {
-        props.onCloseEditor();
-      }
-    }
-
-    function create() {
-      state.row = {};
-      state.editor.handler = () => {
-        props.onCrudCreate(state.row).then((response: any) => {
-          if (response.status === 200) {
-            editor.value.close();
-            window.location.reload();
-          }
-        });
-      };
-      editor.value.open();
-    }
-
-    function update(row: Row) {
-      if (!props.isRowEditable) {
-        return;
-      }
-      state.row = row;
-      state.editor.handler = () => {
-        props.onCrudUpdate(state.row).then((response: any) => {
-          if (response.status !== 200) {
-          } else {
-            editor.value.close();
-            window.location.reload();
-          }
-        });
-      };
-      editor.value.open();
-    }
-
-    function deleteById(id: any) {
-      props.onCrudDelete(id).then((response: any) => {
-        if (response.status === 200) {
-        }
-      });
-    }
-
-    const confirm = ref();
-
-    function onConfirm() {
-      deleteById(state.row.id);
-      state.row = undefined;
-      window.location.reload();
-    }
-
-    function confirmRemove(row: any) {
-      if (!props.isRowDeletable) {
-        return;
-      }
-      state.row = row;
-      confirm.value.open();
-    }
-
-    return {
-      ButtonColorEnum,
-      SelectDropdownMode,
-      Origin,
-      isEmpty,
-      state,
-      searchFieldState,
-      searchValueState,
-      onSearch,
-      onSearchToOptions,
-      onSearchGetTip,
-      onSearchMouseoverOption,
-      editor,
-      onOpenEditor,
-      onCloseEditor,
-      confirm,
-      onConfirm,
-      confirmRemove,
-      create,
-      update,
-    };
-  },
-});
-</script>

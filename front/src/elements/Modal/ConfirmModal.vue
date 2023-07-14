@@ -1,83 +1,57 @@
-<script lang="ts">
-import { PropType, reactive } from "vue";
+<script setup lang="ts">
+import { reactive } from "vue";
 
 import Modal from "./Modal.vue";
 
-export interface ConfirmModalState {
+interface ConfirmModalState {
   popout: boolean;
 }
 
-export interface OnOpen {
-  (): void;
+interface Props {
+  state: ConfirmModalState;
+  title: string;
+  message: string;
+  onOpen: () => void;
+  onClose: () => void;
+  onConfirm: () => void;
 }
 
-export interface OnClose {
-  (): void;
+const props = withDefaults(defineProps<Props>(), {
+  state: () =>
+    reactive<ConfirmModalState>({
+      popout: false,
+    }),
+  title: "Confirm",
+  message: "Are you sure?",
+  onOpen: undefined,
+  onClose: undefined,
+  onConfirm: undefined,
+});
+
+const state = props.state;
+
+function open() {
+  state.popout = true;
+  if (props.onOpen !== undefined) {
+    props.onOpen();
+  }
 }
 
-export interface OnConfirm {
-  (): void;
+function close() {
+  state.popout = false;
+  if (props.onClose !== undefined) {
+    props.onClose();
+  }
 }
 
-export default {
-  components: { Modal },
-  props: {
-    state: {
-      type: Object as PropType<ConfirmModalState>,
-      default: () => {
-        return reactive<ConfirmModalState>({
-          popout: false,
-        });
-      },
-    },
-    title: {
-      type: Object as PropType<string>,
-      default: "Confirm",
-    },
-    message: {
-      type: Object as PropType<string>,
-      default: "Are you sure?",
-    },
-    onOpen: {
-      type: Object as PropType<OnOpen>,
-      default: undefined,
-    },
-    onClose: {
-      type: Object as PropType<OnClose>,
-      default: undefined,
-    },
-    onConfirm: {
-      type: Object as PropType<OnConfirm>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    const state = props.state;
+function confirm() {
+  state.popout = false;
+  if (props.onConfirm !== undefined) {
+    props.onConfirm();
+  }
+}
 
-    function open() {
-      state.popout = true;
-      if (props.onOpen !== undefined) {
-        props.onOpen();
-      }
-    }
-
-    function close() {
-      state.popout = false;
-      if (props.onClose !== undefined) {
-        props.onClose();
-      }
-    }
-
-    function confirm() {
-      state.popout = false;
-      if (props.onConfirm !== undefined) {
-        props.onConfirm();
-      }
-    }
-
-    return { ...props, open, close, confirm };
-  },
-};
+defineExpose({ open });
 </script>
 
 <template>

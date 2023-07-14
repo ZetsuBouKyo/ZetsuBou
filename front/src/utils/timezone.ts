@@ -1,4 +1,4 @@
-import { SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.d";
+import { SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.interface";
 
 export const timezones = [
   "Africa/Abidjan",

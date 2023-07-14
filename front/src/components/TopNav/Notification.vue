@@ -1,3 +1,28 @@
+<script setup lang="ts">
+import { reactive, watch } from "vue";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+import Dropdown from "@/elements/Dropdown/Dropdown.vue";
+
+import { messageState } from "@/state/message";
+
+const state = reactive({
+  clear: messageState.getHistory().length,
+});
+
+watch(
+  () => JSON.stringify(messageState.history),
+  () => {
+    state.clear = messageState.getHistory().length;
+  },
+);
+
+function clearHistory() {
+  messageState.clearHistory();
+  state.clear = messageState.getHistory().length;
+}
+</script>
+
 <template>
   <div class="w-10">
     <dropdown :select-class="''" :is-expand="false" :options-width-class="'w-72'">
@@ -35,35 +60,3 @@
     </dropdown>
   </div>
 </template>
-
-<script lang="ts">
-import { reactive, watch } from "vue";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import Dropdown from "@/elements/Dropdown/Dropdown.vue";
-
-import { messageState } from "@/state/message";
-
-export default {
-  components: { Dropdown, RippleButton },
-  setup() {
-    const state = reactive({
-      clear: messageState.getHistory().length,
-    });
-
-    watch(
-      () => JSON.stringify(messageState.history),
-      () => {
-        state.clear = messageState.getHistory().length;
-      },
-    );
-
-    function clearHistory() {
-      messageState.clearHistory();
-      state.clear = messageState.getHistory().length;
-    }
-
-    return { state, messageState, clearHistory };
-  },
-};
-</script>

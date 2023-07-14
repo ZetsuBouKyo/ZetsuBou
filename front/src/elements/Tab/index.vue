@@ -1,3 +1,25 @@
+<script setup lang="ts">
+import { useRoute } from "vue-router";
+
+import { Tabs } from "./interface";
+
+interface Props {
+  tabs: Tabs;
+}
+const props = withDefaults(defineProps<Props>(), {
+  tabs: undefined,
+});
+
+const route = useRoute();
+const tabs = props.tabs;
+
+for (let i = 0; i < tabs.length; i++) {
+  if (tabs[i].link === route.path) {
+    tabs[i].active = true;
+  }
+}
+</script>
+
 <template>
   <div class="flex mx-auto overflow-x-hidden">
     <a
@@ -14,30 +36,3 @@
     >
   </div>
 </template>
-
-<script lang="ts">
-import { PropType } from "vue";
-import { useRoute } from "vue-router";
-
-import { Tabs } from "./interface";
-
-export default {
-  props: {
-    tabs: {
-      type: Object as PropType<Tabs>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    const route = useRoute();
-    const tabs = props.tabs;
-
-    for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].link === route.path) {
-        tabs[i].active = true;
-      }
-    }
-    return { tabs };
-  },
-};
-</script>

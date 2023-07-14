@@ -1,3 +1,24 @@
+<script setup lang="ts">
+import CustomCircle from "./Circle.vue";
+import Star from "./Star.vue";
+interface Props {
+  isFilled: boolean;
+  shape: "STAR" | "CIRCLE";
+}
+const props = withDefaults(defineProps<Props>(), {
+  isFilled: false,
+  shape: "STAR",
+});
+
+let fill: string;
+const shape = props.shape;
+if (!props.isFilled) {
+  fill = "none";
+} else {
+  fill = "currentColor";
+}
+</script>
+
 <template>
   <svg
     :fill="fill"
@@ -11,35 +32,3 @@
     <custom-circle v-else-if="shape === 'CIRCLE'" />
   </svg>
 </template>
-
-<script>
-import CustomCircle from "./Circle.vue";
-import Star from "./Star.vue";
-
-export default {
-  components: { Star, CustomCircle },
-  props: {
-    isFilled: {
-      type: Boolean,
-      default: false,
-    },
-    shape: {
-      type: "STAR" | "CIRCLE",
-      default: "STAR",
-    },
-  },
-  setup(props) {
-    let fill;
-    const shape = props.shape;
-    if (!props.isFilled) {
-      fill = "none";
-    } else {
-      fill = "currentColor";
-    }
-    return {
-      fill,
-      shape,
-    };
-  },
-};
-</script>

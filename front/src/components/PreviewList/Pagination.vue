@@ -1,3 +1,28 @@
+<script setup lang="ts">
+import { PropType } from "vue";
+
+import { Pagination } from "@/elements/Pagination/pagination.interface";
+
+import PaginationBase from "@/elements/Pagination/index.vue";
+
+defineProps({
+  pagination: {
+    type: Object as PropType<Pagination>,
+    required: true,
+  },
+});
+
+// onBeforeMount(() => {
+//   document.addEventListener.call(window, "keyup", (event) => {
+//     if (event.keyCode === 34 && pagination.current < pagination.totalPage) {
+//       router.push(pagination.toNextPage);
+//     } else if (event.keyCode === 33 && pagination.current > 1) {
+//       router.push(pagination.toPreviousPage);
+//     }
+//   });
+// });
+</script>
+
 <template>
   <div
     v-if="pagination && pagination.pages.length > 0"
@@ -6,38 +31,3 @@
     <pagination-base :pagination="pagination" />
   </div>
 </template>
-
-<script lang="ts">
-import { PropType } from "vue";
-import { useRouter } from "vue-router";
-
-import PaginationBase from "@/elements/Pagination/index.vue";
-import { Pagination } from "@/elements/Pagination/pagination.d";
-
-export default {
-  components: { PaginationBase },
-  props: {
-    pagination: {
-      type: Object as PropType<Pagination>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    const router = useRouter();
-
-    let pagination: Pagination = props.pagination;
-
-    // onBeforeMount(() => {
-    //   document.addEventListener.call(window, "keyup", (event) => {
-    //     if (event.keyCode === 34 && pagination.current < pagination.totalPage) {
-    //       router.push(pagination.toNextPage);
-    //     } else if (event.keyCode === 33 && pagination.current > 1) {
-    //       router.push(pagination.toPreviousPage);
-    //     }
-    //   });
-    // });
-
-    return { pagination };
-  },
-};
-</script>

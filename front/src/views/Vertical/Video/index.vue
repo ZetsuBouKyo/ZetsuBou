@@ -1,3 +1,127 @@
+<script setup lang="ts">
+import { onBeforeMount, reactive, ref, watch } from "vue";
+import { useRoute } from "vue-router";
+
+import { SearchBase, SearchQuery } from "@/interface/search";
+import { SourceState } from "@/interface/source";
+import { Video } from "@/interface/video";
+
+import Labels from "@/components/Labels/index.vue";
+import Tags from "@/components/Tags/index.vue";
+import TextEditor from "@/components/TextEditor/index.vue";
+import RippleButton from "@/elements/Button/RippleButton.vue";
+import StarRating from "@/elements/Rating/StarRating.vue";
+import Editor from "./Editor.vue";
+
+import { postVideoCreateCover } from "@/api/v1/task/airflow";
+import { getAdvancedSearch, getRandom, getSearch } from "@/api/v1/video/query";
+
+import { messageState } from "@/state/message";
+import { userState } from "@/state/user";
+import { videoState } from "@/state/video";
+
+interface Item {
+  title: string;
+  rating: number;
+  imgUrl: string;
+  linkUrl: string;
+}
+
+interface State {
+  items: Array<Item>;
+}
+
+const route = useRoute();
+const id = route.params.video as string;
+
+onBeforeMount(() => {
+  videoState.init(id);
+});
+
+const state = reactive<State>({
+  items: [],
+});
+
+watch(
+  () => userState.frontSetting.video_preview_size,
+  () => {
+    const searchQuery = JSON.parse(JSON.stringify(route.query)) as SearchQuery;
+    if (searchQuery.size === undefined) {
+      searchQuery.size = userState.frontSetting.video_preview_size;
+    }
+
+    let getQuery = getSearch;
+    if (searchQuery["search_base"] === SearchBase.Random) {
+      getQuery = getRandom;
+    } else if (searchQuery["search_base"] === SearchBase.AdvancedSearch) {
+      getQuery = getAdvancedSearch;
+    }
+
+    const queryList = [];
+    for (const key in searchQuery) {
+      queryList.push(`${key}=${searchQuery[key]}`);
+    }
+    const queries = queryList.join("&");
+
+    getQuery(searchQuery).then((response) => {
+      const hits = response.data.hits.hits ? response.data.hits.hits : [];
+      for (const hit of hits) {
+        const video = hit._source as Video;
+        state.items.push({
+          title: video.name,
+          rating: video.attributes.rating,
+          imgUrl: `/api/v1/video/v/${video.id}/cover`,
+          linkUrl: `/v/${video.id}?${queries}`,
+        });
+      }
+    });
+  },
+);
+
+const video = ref();
+function makeCover() {
+  const currentTime = video.value.currentTime;
+
+  const videoID = videoState.data.id;
+  const fps = videoState.data.attributes.fps;
+  const frames = videoState.data.attributes.frames;
+  const duration = frames / fps;
+  let currentFrame = Math.floor((currentTime / duration) * frames);
+
+  postVideoCreateCover(videoID, currentFrame).then((response: any) => {
+    messageState.sendAirflowMessage(response, "Making Cover", "Successfully made cover", "Failed to make Cover");
+  });
+}
+
+const textEditor = ref();
+function openTextEditor() {
+  textEditor.value.open();
+}
+
+const editor = ref();
+function openEditor() {
+  editor.value.open();
+}
+
+function onOverwrite(state: SourceState<Video>, data: Video) {
+  if (data.name !== undefined) {
+    state.data.name = data.name;
+  }
+  if (data.attributes !== undefined) {
+    state.data.attributes = data.attributes;
+  }
+  if (data.tags !== undefined) {
+    state.data.tags = data.tags;
+  }
+  if (data.labels !== undefined) {
+    state.data.labels = data.labels;
+  }
+  if (data.other_names !== undefined && data.other_names.length > 0) {
+    state.data.other_names = data.other_names;
+  }
+}
+</script>
+
 <template>
   <text-editor
     ref="textEditor"
@@ -95,137 +219,3 @@
     </div>
   </section>
 </template>
-
-<script lang="ts">
-import { onBeforeMount, reactive, ref, watch } from "vue";
-import { useRoute } from "vue-router";
-
-import { SearchBase, SearchQuery } from "@/interface/search";
-import { SourceState } from "@/interface/source";
-import { Video } from "@/interface/video";
-
-import { messageState } from "@/state/message";
-import { userState } from "@/state/user";
-import { videoState } from "@/state/video";
-
-import { postVideoCreateCover } from "@/api/v1/task/airflow";
-import { getAdvancedSearch, getRandom, getSearch } from "@/api/v1/video/query";
-
-import Labels from "@/components/Labels/index.vue";
-import Tags from "@/components/Tags/index.vue";
-import TextEditor from "@/components/TextEditor/index.vue";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
-import StarRating from "@/elements/Rating/StarRating.vue";
-
-import Editor from "./Editor.vue";
-
-interface Item {
-  title: string;
-  rating: number;
-  imgUrl: string;
-  linkUrl: string;
-}
-
-interface State {
-  items: Array<Item>;
-}
-
-export default {
-  components: { ConfirmModal, Editor, Labels, RippleButton, StarRating, Tags, TextEditor },
-  setup() {
-    const route = useRoute();
-    const id = route.params.video as string;
-
-    onBeforeMount(() => {
-      videoState.init(id);
-    });
-
-    const state = reactive<State>({
-      items: [],
-    });
-
-    watch(
-      () => userState.frontSetting.video_preview_size,
-      () => {
-        const searchQuery = JSON.parse(JSON.stringify(route.query)) as SearchQuery;
-        if (searchQuery.size === undefined) {
-          searchQuery.size = userState.frontSetting.video_preview_size;
-        }
-
-        let getQuery = getSearch;
-        if (searchQuery["search_base"] === SearchBase.Random) {
-          getQuery = getRandom;
-        } else if (searchQuery["search_base"] === SearchBase.AdvancedSearch) {
-          getQuery = getAdvancedSearch;
-        }
-
-        const queryList = [];
-        for (const key in searchQuery) {
-          queryList.push(`${key}=${searchQuery[key]}`);
-        }
-        const queries = queryList.join("&");
-
-        getQuery(searchQuery).then((response) => {
-          const hits = response.data.hits.hits ? response.data.hits.hits : [];
-          for (const hit of hits) {
-            const video = hit._source as Video;
-            state.items.push({
-              title: video.name,
-              rating: video.attributes.rating,
-              imgUrl: `/api/v1/video/v/${video.id}/cover`,
-              linkUrl: `/v/${video.id}?${queries}`,
-            });
-          }
-        });
-      },
-    );
-
-    const video = ref();
-    function makeCover() {
-      const currentTime = video.value.currentTime;
-
-      const videoID = videoState.data.id;
-      const fps = videoState.data.attributes.fps;
-      const frames = videoState.data.attributes.frames;
-      const duration = frames / fps;
-      let currentFrame = Math.floor((currentTime / duration) * frames);
-
-      postVideoCreateCover(videoID, currentFrame).then((response: any) => {
-        messageState.sendAirflowMessage(response, "Making Cover", "Successfully made cover", "Failed to make Cover");
-      });
-    }
-
-    const textEditor = ref();
-    function openTextEditor() {
-      textEditor.value.open();
-    }
-
-    const editor = ref();
-    function openEditor() {
-      editor.value.open();
-    }
-
-    function onOverwrite(state: SourceState<Video>, data: Video) {
-      if (data.name !== undefined) {
-        state.data.name = data.name;
-      }
-      if (data.attributes !== undefined) {
-        state.data.attributes = data.attributes;
-      }
-      if (data.tags !== undefined) {
-        state.data.tags = data.tags;
-      }
-      if (data.labels !== undefined) {
-        state.data.labels = data.labels;
-      }
-      if (data.other_names !== undefined && data.other_names.length > 0) {
-        state.data.other_names = data.other_names;
-      }
-    }
-
-    return { state, videoState, textEditor, editor, makeCover, openTextEditor, openEditor, onOverwrite, video };
-  },
-};
-</script>

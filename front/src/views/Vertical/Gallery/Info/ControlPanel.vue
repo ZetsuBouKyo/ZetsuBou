@@ -1,3 +1,21 @@
+<script setup lang="ts">
+import { PropType } from "vue";
+
+import { AppModeEnum } from "@/interface/setting";
+import { ControlPanelState } from "./ControlPanel.interface";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+
+import { settingState } from "@/state/Setting/front";
+
+defineProps({
+  state: {
+    type: Object as PropType<ControlPanelState>,
+    required: true,
+  },
+});
+</script>
+
 <template>
   <div class="lg:flex hidden flex-row-reverse">
     <ripple-button
@@ -13,27 +31,3 @@
     </ripple-button>
   </div>
 </template>
-
-<script lang="ts">
-import { PropType } from "vue";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-
-import { settingState } from "@/state/Setting/front";
-
-import { AppModeEnum } from "@/interface/setting";
-import { ControlPanelState } from "./ControlPanel.d";
-
-export default {
-  components: { RippleButton },
-  props: {
-    state: {
-      type: Object as PropType<ControlPanelState>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    return { ...props, AppModeEnum, settingState };
-  },
-};
-</script>

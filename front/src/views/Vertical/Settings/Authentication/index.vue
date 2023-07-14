@@ -1,3 +1,32 @@
+<script setup lang="ts">
+import { reactive } from "vue";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+
+import { getToken } from "@/api/v1/token";
+
+const state = reactive({
+  email: undefined,
+  password: undefined,
+  expires: 30 as any,
+  token: undefined,
+});
+
+function getNewToken() {
+  const formData = new FormData();
+  formData.append("username", state.email);
+  formData.append("password", state.password);
+  formData.append("expires", state.expires);
+
+  getToken(formData).then((response) => {
+    const data = response.data;
+    if (data) {
+      state.token = data.access_token;
+    }
+  });
+}
+</script>
+
 <template>
   <div class="views-setting-container">
     <div class="views-setting-section">
@@ -26,39 +55,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { reactive } from "vue";
-
-import { getToken } from "@/api/v1/token";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-
-export default {
-  components: { RippleButton },
-  setup() {
-    const state = reactive({
-      email: undefined,
-      password: undefined,
-      expires: 30 as any,
-      token: undefined,
-    });
-
-    function getNewToken() {
-      const formData = new FormData();
-      formData.append("username", state.email);
-      formData.append("password", state.password);
-      formData.append("expires", state.expires);
-
-      getToken(formData).then((response) => {
-        const data = response.data;
-        if (data) {
-          state.token = data.access_token;
-        }
-      });
-    }
-
-    return { state, getNewToken };
-  },
-};
-</script>

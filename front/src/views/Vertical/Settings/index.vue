@@ -1,3 +1,26 @@
+<script setup lang="ts">
+import Setting from "@/layouts/Setting/index.vue";
+import SettingAction from "@/layouts/Setting/SettingAction.vue";
+import SettingActionDropdown from "@/layouts/Setting/SettingActionDropdown.vue";
+
+const tagOptions = [
+  { title: "Tag", path: "/settings/tag" },
+  { title: "Token", path: "/settings/tag-token" },
+  { title: "Attribute", path: "/settings/tag-attribute" },
+  { title: "Front UI", path: "/settings/tag-front-ui" },
+];
+
+const elasticsearchQueryOptions = [
+  { title: "Count", path: "/settings/elasticsearch-count" },
+  { title: "Search", path: "/settings/elasticsearch-search" },
+];
+const questOptions = [
+  { title: "Quest", path: "/settings/quest" },
+  { title: "Elastic Count Quest", path: "/settings/elasticsearch-count-quest" },
+];
+const storageOptions = [{ title: "MinIO", path: "/settings/storage-minio" }];
+</script>
+
 <template>
   <setting>
     <div class="views-setting-actions">
@@ -48,35 +71,3 @@
     </div>
   </setting>
 </template>
-
-<script>
-import RippleButton from "@/elements/Button/RippleButton.vue";
-
-import Setting from "@/layouts/Setting/index.vue";
-import SettingAction from "@/layouts/Setting/SettingAction.vue";
-import SettingActionDropdown from "@/layouts/Setting/SettingActionDropdown.vue";
-
-export default {
-  components: { RippleButton, Setting, SettingAction, SettingActionDropdown },
-  setup() {
-    const tagOptions = [
-      { title: "Tag", path: "/settings/tag" },
-      { title: "Token", path: "/settings/tag-token" },
-      { title: "Attribute", path: "/settings/tag-attribute" },
-      { title: "Front UI", path: "/settings/tag-front-ui" },
-    ];
-
-    const elasticsearchQueryOptions = [
-      { title: "Count", path: "/settings/elasticsearch-count" },
-      { title: "Search", path: "/settings/elasticsearch-search" },
-    ];
-    const questOptions = [
-      { title: "Quest", path: "/settings/quest" },
-      { title: "Elastic Count Quest", path: "/settings/elasticsearch-count-quest" },
-    ];
-    const storageOptions = [{ title: "MinIO", path: "/settings/storage-minio" }];
-
-    return { tagOptions, elasticsearchQueryOptions, questOptions, storageOptions };
-  },
-};
-</script>

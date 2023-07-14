@@ -1,22 +1,14 @@
-<script>
+<script setup lang="ts">
 import Token from "./Token.vue";
 
-export default {
-  components: { Token },
-  props: {
-    max: {
-      type: Number,
-      default: 5,
-    },
-    filled: {
-      type: Number,
-      default: 0,
-    },
-  },
-  setup(props) {
-    return { ...props };
-  },
-};
+interface Props {
+  max: number;
+  filled: number;
+}
+withDefaults(defineProps<Props>(), {
+  max: 5,
+  filled: 0,
+});
 </script>
 
 <template>

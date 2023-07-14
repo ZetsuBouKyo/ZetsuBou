@@ -1,3 +1,20 @@
+<script setup lang="ts">
+import { Tags } from "@/interface/tag";
+
+import Tag from "./Tag.vue";
+
+interface Props {
+  tags?: Tags;
+  searchable?: boolean;
+  searchBaseUrl?: string;
+}
+withDefaults(defineProps<Props>(), {
+  tags: () => <Tags>{},
+  searchable: true,
+  searchBaseUrl: undefined,
+});
+</script>
+
 <template>
   <div class="3xl:text-xl">
     <div v-for="(vals, key) in tags" :key="key">
@@ -5,31 +22,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { PropType } from "vue";
-
-import { Tags } from "@/interface/tag";
-import Tag from "./Tag.vue";
-
-export default {
-  components: { Tag },
-  props: {
-    tags: {
-      type: Object as PropType<Tags>,
-      default: {},
-    },
-    searchable: {
-      type: Object as PropType<boolean>,
-      default: true,
-    },
-    searchBaseUrl: {
-      type: Object as PropType<string>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    return { ...props };
-  },
-};
-</script>

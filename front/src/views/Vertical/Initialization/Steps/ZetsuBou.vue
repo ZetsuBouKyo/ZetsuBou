@@ -1,3 +1,74 @@
+<script setup lang="ts">
+import { PropType, reactive, watch } from "vue";
+
+import { Origin } from "@/elements/Dropdown/Dropdown.interface";
+import { SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import { StepState } from "@/views/Vertical/Initialization/Step.interface";
+
+import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
+import Step from "../Step.vue";
+
+import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
+
+import { isEmail } from "@/utils/email";
+import { getTimezoneOptions } from "@/utils/timezone";
+
+const props = defineProps({
+  step: {
+    type: Object as PropType<StepState>,
+    required: true,
+  },
+});
+
+const step = props.step;
+
+const state = reactive({ password: undefined, confirmedEmail: undefined, confirmedPassword: undefined });
+
+const timezone = initSelectDropdownState() as SelectDropdownState;
+const timezoneOptions = getTimezoneOptions();
+
+watch(
+  () => {
+    return [
+      step.setting.app_admin_name,
+      step.setting.app_admin_email,
+      step.setting.app_admin_password,
+      state.password,
+      timezone.selectedValue,
+    ];
+  },
+  () => {
+    if (step.setting.app_admin_email) {
+      if (isEmail(step.setting.app_admin_email)) {
+        state.confirmedEmail = true;
+      } else {
+        state.confirmedEmail = false;
+        return;
+      }
+    } else {
+      state.confirmedEmail = undefined;
+      return;
+    }
+    if (step.setting.app_admin_password && state.password) {
+      if (step.setting.app_admin_password === state.password) {
+        state.confirmedPassword = true;
+      } else {
+        state.confirmedPassword = false;
+        return;
+      }
+    } else {
+      state.confirmedPassword = undefined;
+      return;
+    }
+    if (step.setting.app_admin_name && timezone.selectedValue) {
+      step.next = true;
+    } else {
+      step.next = false;
+    }
+  },
+);
+</script>
+
 <template>
   <step :state="step">
     <template v-slot:body>
@@ -47,77 +118,3 @@
     </template>
   </step>
 </template>
-
-<script lang="ts">
-import { PropType, reactive, watch } from "vue";
-
-import { SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown, { Origin } from "@/elements/Dropdown/SelectDropdown.vue";
-import Step, { StepState } from "../Step.vue";
-
-import { isEmail } from "@/utils/email";
-import { getTimezoneOptions } from "@/utils/timezone";
-
-export default {
-  components: { RippleButton, SelectDropdown, Step },
-  props: {
-    step: {
-      type: Object as PropType<StepState>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    const step = props.step;
-
-    const state = reactive({ password: undefined, confirmedEmail: undefined, confirmedPassword: undefined });
-
-    const timezone = SelectDropdown.initState() as SelectDropdownState;
-    const timezoneOptions = getTimezoneOptions();
-
-    watch(
-      () => {
-        return [
-          step.setting.app_admin_name,
-          step.setting.app_admin_email,
-          step.setting.app_admin_password,
-          state.password,
-          timezone.selectedValue,
-        ];
-      },
-      () => {
-        if (step.setting.app_admin_email) {
-          if (isEmail(step.setting.app_admin_email)) {
-            state.confirmedEmail = true;
-          } else {
-            state.confirmedEmail = false;
-            return;
-          }
-        } else {
-          state.confirmedEmail = undefined;
-          return;
-        }
-        if (step.setting.app_admin_password && state.password) {
-          if (step.setting.app_admin_password === state.password) {
-            state.confirmedPassword = true;
-          } else {
-            state.confirmedPassword = false;
-            return;
-          }
-        } else {
-          state.confirmedPassword = undefined;
-          return;
-        }
-        if (step.setting.app_admin_name && timezone.selectedValue) {
-          step.next = true;
-        } else {
-          step.next = false;
-        }
-      },
-    );
-
-    return { state, step, SelectDropdownMode, timezone, timezoneOptions, Origin };
-  },
-};
-</script>

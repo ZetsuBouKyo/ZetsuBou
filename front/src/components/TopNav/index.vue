@@ -1,3 +1,15 @@
+<script setup lang="ts">
+import Icon from "./Icon.vue";
+import Notification from "./Notification.vue";
+import Search from "./Search.vue";
+import Sync from "./Sync.vue";
+import User from "./User/index.vue";
+
+function toTop() {
+  window.scrollTo(0, 0);
+}
+</script>
+
 <template>
   <section class="sticky top-0 shadow-black">
     <header class="text-gray-400 bg-gray-900 body-font xl:px-8 md:px-4 sm:px-2">
@@ -25,21 +37,3 @@
     </header>
   </section>
 </template>
-
-<script lang="ts">
-import Icon from "./Icon.vue";
-import Notification from "./Notification.vue";
-import Search from "./Search.vue";
-import Sync from "./Sync.vue";
-import User from "./User/index.vue";
-
-export default {
-  components: { Icon, Notification, Search, Sync, User },
-  setup() {
-    function toTop() {
-      window.scrollTo(0, 0);
-    }
-    return { toTop };
-  },
-};
-</script>

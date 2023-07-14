@@ -1,3 +1,16 @@
+<script setup lang="ts">
+import { PropType } from "vue";
+
+import { SVG } from "./svg.interface";
+
+defineProps({
+  svg: {
+    type: Object as PropType<SVG>,
+    required: true,
+  },
+});
+</script>
+
 <template>
   <g v-for="(layer, i) in svg.layers.layers" :key="i">
     <g v-if="layer.show">
@@ -35,22 +48,3 @@
     </g>
   </g>
 </template>
-
-<script lang="ts">
-import { PropType } from "vue";
-
-import { SVG } from "./svg.d";
-
-export default {
-  components: {},
-  props: {
-    svg: {
-      type: Object as PropType<SVG>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    return { ...props };
-  },
-};
-</script>

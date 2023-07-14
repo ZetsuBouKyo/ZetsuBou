@@ -1,26 +1,19 @@
-<template>
-  <div>
-    <preview-list :previews="previews" />
-  </div>
-</template>
-
-<script lang="ts">
+<script setup lang="ts">
 import { reactive, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { getDatetime } from "@/utils/datetime";
-import { detectRouteChange } from "@/utils/route";
+import { Item, Items, Previews } from "@/components/PreviewList/interface";
+import { SearchQuery } from "@/interface/search";
+
+import PreviewList from "@/components/PreviewList/index.vue";
 
 import { getAdvancedSearch, getRandom, getSearch } from "@/api/v1/gallery/query";
 
 import { userState } from "@/state/user";
 
-import { Item, Items, Previews } from "@/components/PreviewList/interface";
-import { SearchQuery } from "@/interface/search";
-
 import { getPagination } from "@/elements/Pagination/pagination";
-
-import PreviewList from "@/components/PreviewList/index.vue";
+import { getDatetime } from "@/utils/datetime";
+import { detectRouteChange } from "@/utils/route";
 
 function getItems(hits: any) {
   let items: Items = [];
@@ -40,54 +33,54 @@ function getItems(hits: any) {
   return items;
 }
 
-export default {
-  components: { PreviewList },
-  setup() {
-    const route = useRoute();
-    const previews = reactive<Previews>({
-      pagination: undefined,
-      items: undefined,
-    });
+const route = useRoute();
+const previews = reactive<Previews>({
+  pagination: undefined,
+  items: undefined,
+});
 
-    function load() {
-      const searchQuery = JSON.parse(JSON.stringify(route.query)) as SearchQuery;
-      if (searchQuery.size === undefined) {
-        searchQuery.size = userState.frontSetting.gallery_preview_size;
-      }
-      if (searchQuery.page === undefined) {
-        searchQuery.page = 1;
-      }
+function load() {
+  const searchQuery = JSON.parse(JSON.stringify(route.query)) as SearchQuery;
+  if (searchQuery.size === undefined) {
+    searchQuery.size = userState.frontSetting.gallery_preview_size;
+  }
+  if (searchQuery.page === undefined) {
+    searchQuery.page = 1;
+  }
 
-      if (searchQuery.size === undefined) {
-        return;
-      }
+  if (searchQuery.size === undefined) {
+    return;
+  }
 
-      let getQuery = getSearch;
-      if (route.path === "/gallery/random") {
-        getQuery = getRandom;
-      } else if (route.path === "/gallery/advanced-search") {
-        getQuery = getAdvancedSearch;
-      }
+  let getQuery = getSearch;
+  if (route.path === "/gallery/random") {
+    getQuery = getRandom;
+  } else if (route.path === "/gallery/advanced-search") {
+    getQuery = getAdvancedSearch;
+  }
 
-      getQuery(searchQuery).then((response) => {
-        const hits = response.data.hits.hits ? response.data.hits.hits : [];
-        const totalItems = response.data.hits.total.value as number;
+  getQuery(searchQuery).then((response) => {
+    const hits = response.data.hits.hits ? response.data.hits.hits : [];
+    const totalItems = response.data.hits.total.value as number;
 
-        previews.pagination = getPagination(route.path, totalItems, searchQuery);
-        previews.items = getItems(hits);
-      });
-    }
-    load();
+    previews.pagination = getPagination(route.path, totalItems, searchQuery);
+    previews.items = getItems(hits);
+  });
+}
+load();
 
-    watch(
-      () => {
-        return [userState.frontSetting.gallery_preview_size, detectRouteChange(route)];
-      },
-      () => {
-        load();
-      },
-    );
-    return { previews };
+watch(
+  () => {
+    return [userState.frontSetting.gallery_preview_size, detectRouteChange(route)];
   },
-};
+  () => {
+    load();
+  },
+);
 </script>
+
+<template>
+  <div>
+    <preview-list :previews="previews" />
+  </div>
+</template>

@@ -1,3 +1,86 @@
+<script setup lang="ts">
+import { watch } from "vue";
+
+import { Origin } from "@/elements/Dropdown/Dropdown.interface";
+import { SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import { AppModeEnum, LoggingLevelEnum } from "@/interface/setting";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
+
+import { getOptionsFromEnum, initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
+import { settingSystemState } from "@/state/Setting/system";
+
+import { getTimezoneOptions } from "@/utils/timezone";
+
+settingSystemState.init();
+
+const appMode = initSelectDropdownState() as SelectDropdownState;
+const appModeOptions = getOptionsFromEnum(AppModeEnum);
+
+const timezone = initSelectDropdownState() as SelectDropdownState;
+const timezoneOptions = getTimezoneOptions();
+
+const loggingLevel = initSelectDropdownState() as SelectDropdownState;
+const loggingLevelOptions = getOptionsFromEnum(LoggingLevelEnum);
+
+function init() {
+  if (settingSystemState.data === undefined) {
+    return;
+  }
+
+  appMode.title = settingSystemState.data.app_mode;
+  appMode.selectedValue = settingSystemState.data.app_mode;
+  timezone.title = settingSystemState.data.app_timezone;
+  timezone.selectedValue = settingSystemState.data.app_timezone;
+  loggingLevel.title = settingSystemState.data.app_logging_level;
+  loggingLevel.selectedValue = settingSystemState.data.app_logging_level;
+}
+
+init();
+
+watch(
+  () => JSON.stringify(settingSystemState.data),
+  () => {
+    init();
+  },
+);
+
+watch(
+  () => appMode.selectedValue,
+  () => {
+    if (settingSystemState.data === undefined || appMode.selectedValue === undefined) {
+      return;
+    }
+    settingSystemState.data.app_mode = appMode.selectedValue as AppModeEnum;
+  },
+);
+
+watch(
+  () => timezone.selectedValue,
+  () => {
+    if (settingSystemState.data === undefined || timezone.selectedValue === undefined) {
+      return;
+    }
+    settingSystemState.data.app_timezone = timezone.selectedValue as string;
+  },
+);
+
+watch(
+  () => loggingLevel.selectedValue,
+  () => {
+    if (settingSystemState.data === undefined || loggingLevel.selectedValue === undefined) {
+      return;
+    }
+    settingSystemState.data.app_logging_level = loggingLevel.selectedValue as string;
+  },
+);
+
+function save() {
+  settingSystemState.save();
+}
+</script>
+
 <template>
   <div class="views-setting-container" v-if="settingSystemState.data !== undefined">
     <div class="views-setting-section">
@@ -228,102 +311,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown, { Origin, getOptionsFromEnum } from "@/elements/Dropdown/SelectDropdown.vue";
-import Modal from "@/elements/Modal/Modal.vue";
-import { watch } from "vue";
-
-import { SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
-import { AppModeEnum, LoggingLevelEnum } from "@/interface/setting";
-
-import { getTimezoneOptions } from "@/utils/timezone";
-
-import { settingSystemState } from "@/state/Setting/system";
-
-export default {
-  components: { Modal, RippleButton, SelectDropdown },
-  setup() {
-    settingSystemState.init();
-
-    const appMode = SelectDropdown.initState() as SelectDropdownState;
-    const appModeOptions = getOptionsFromEnum(AppModeEnum);
-
-    const timezone = SelectDropdown.initState() as SelectDropdownState;
-    const timezoneOptions = getTimezoneOptions();
-
-    const loggingLevel = SelectDropdown.initState() as SelectDropdownState;
-    const loggingLevelOptions = getOptionsFromEnum(LoggingLevelEnum);
-
-    function init() {
-      if (settingSystemState.data === undefined) {
-        return;
-      }
-
-      appMode.title = settingSystemState.data.app_mode;
-      appMode.selectedValue = settingSystemState.data.app_mode;
-      timezone.title = settingSystemState.data.app_timezone;
-      timezone.selectedValue = settingSystemState.data.app_timezone;
-      loggingLevel.title = settingSystemState.data.app_logging_level;
-      loggingLevel.selectedValue = settingSystemState.data.app_logging_level;
-    }
-
-    init();
-
-    watch(
-      () => JSON.stringify(settingSystemState.data),
-      () => {
-        init();
-      },
-    );
-
-    watch(
-      () => appMode.selectedValue,
-      () => {
-        if (settingSystemState.data === undefined || appMode.selectedValue === undefined) {
-          return;
-        }
-        settingSystemState.data.app_mode = appMode.selectedValue as AppModeEnum;
-      },
-    );
-
-    watch(
-      () => timezone.selectedValue,
-      () => {
-        if (settingSystemState.data === undefined || timezone.selectedValue === undefined) {
-          return;
-        }
-        settingSystemState.data.app_timezone = timezone.selectedValue as string;
-      },
-    );
-
-    watch(
-      () => loggingLevel.selectedValue,
-      () => {
-        if (settingSystemState.data === undefined || loggingLevel.selectedValue === undefined) {
-          return;
-        }
-        settingSystemState.data.app_logging_level = loggingLevel.selectedValue as string;
-      },
-    );
-
-    function save() {
-      settingSystemState.save();
-    }
-
-    return {
-      appMode,
-      appModeOptions,
-      loggingLevel,
-      loggingLevelOptions,
-      Origin,
-      save,
-      SelectDropdownMode,
-      settingSystemState,
-      timezone,
-      timezoneOptions,
-    };
-  },
-};
-</script>

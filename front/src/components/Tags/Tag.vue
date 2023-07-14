@@ -1,3 +1,22 @@
+<script setup lang="ts">
+import RippleAnchor from "@/elements/Anchor/RippleAnchor.vue";
+
+interface Props {
+  fieldKey: string | number;
+  fieldValues: Array<string>;
+  searchable?: boolean;
+  searchBaseUrl?: string;
+}
+const props = withDefaults(defineProps<Props>(), {
+  searchable: true,
+  searchBaseUrl: undefined,
+});
+
+function search(field: string | number, value: string) {
+  return `${props.searchBaseUrl}?tag_field_1=${field}&tag_value_1=${value}`;
+}
+</script>
+
 <template>
   <div class="flex flex-row my-2">
     <span class="w-min my-1 3xl:py-2 py-1 text-gray-100">{{ fieldKey }}:&nbsp;&nbsp;</span>
@@ -15,37 +34,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { PropType } from "vue";
-
-import RippleAnchor from "@/elements/Anchor/RippleAnchor.vue";
-
-export default {
-  components: { RippleAnchor },
-  props: {
-    fieldKey: {
-      type: Object as PropType<string | number>,
-      required: true,
-    },
-    fieldValues: {
-      type: Object as PropType<Array<string>>,
-      required: true,
-    },
-    searchable: {
-      type: Object as PropType<boolean>,
-      default: true,
-    },
-    searchBaseUrl: {
-      type: Object as PropType<string>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    function search(field: string | number, value: string) {
-      return `${props.searchBaseUrl}?tag_field_1=${field}&tag_value_1=${value}`;
-    }
-    return { ...props, search };
-  },
-};
-</script>

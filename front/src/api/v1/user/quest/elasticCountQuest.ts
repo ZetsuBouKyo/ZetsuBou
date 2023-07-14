@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-import { PaginationGetParam } from "@/elements/Pagination/pagination.d";
+import { PaginationGetParam } from "@/elements/Pagination/pagination.interface";
 
 export function getUserElasticCountQuestTotal(id: string | number) {
   return request({

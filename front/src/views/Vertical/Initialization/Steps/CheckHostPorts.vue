@@ -1,3 +1,40 @@
+<script setup lang="ts">
+import { PropType } from "vue";
+
+import { StepState } from "@/views/Vertical/Initialization/Step.interface";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+import Step from "../Step.vue";
+
+import { checkHostPorts } from "@/api/v1/init/init";
+
+const props = defineProps({
+  step: {
+    type: Object as PropType<StepState>,
+    required: true,
+  },
+});
+
+const step = props.step;
+
+function check() {
+  checkHostPorts().then((response) => {
+    if (response.status === 200) {
+      const ports = response.data;
+      step.ports = ports;
+
+      for (const port in ports) {
+        if (!ports[port]) {
+          return;
+        }
+      }
+
+      step.next = true;
+    }
+  });
+}
+</script>
+
 <template>
   <step :state="step">
     <template v-slot:body>
@@ -20,44 +57,3 @@
     </template>
   </step>
 </template>
-
-<script lang="ts">
-import { PropType } from "vue";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import Step, { StepState } from "../Step.vue";
-
-import { checkHostPorts } from "@/api/v1/init/init";
-
-export default {
-  components: { RippleButton, Step },
-  props: {
-    step: {
-      type: Object as PropType<StepState>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    const step = props.step;
-
-    function check() {
-      checkHostPorts().then((response) => {
-        if (response.status === 200) {
-          const ports = response.data;
-          step.ports = ports;
-
-          for (const port in ports) {
-            if (!ports[port]) {
-              return;
-            }
-          }
-
-          step.next = true;
-        }
-      });
-    }
-
-    return { check, step };
-  },
-};
-</script>

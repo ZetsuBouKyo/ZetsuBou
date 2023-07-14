@@ -1,4 +1,4 @@
-import { SelectDropdownState, OnGet } from "@/elements/Dropdown/SelectDropdown.d";
+import { SelectDropdownState, OnGet } from "@/elements/Dropdown/SelectDropdown.interface";
 
 export interface Tags {
   [key: string]: Array<string>;

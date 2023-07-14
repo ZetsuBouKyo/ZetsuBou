@@ -1,3 +1,18 @@
+<script setup lang="ts">
+import { Message, messageState } from "@/state/message";
+
+function lock(message: Message) {
+  message.lock = true;
+}
+
+function unlock(message: Message) {
+  message.lock = false;
+  if (message.timeout === undefined) {
+    messageState.shiftQueue(message.id);
+  }
+}
+</script>
+
 <template>
   <div class="fixed top-20 right-8 z-50">
     <div class="flex flex-col">
@@ -10,24 +25,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { Message, messageState } from "@/state/message";
-
-export default {
-  setup() {
-    function lock(message: Message) {
-      message.lock = true;
-    }
-
-    function unlock(message: Message) {
-      message.lock = false;
-      if (message.timeout === undefined) {
-        messageState.shiftQueue(message.id);
-      }
-    }
-
-    return { messageState, lock, unlock };
-  },
-};
-</script>

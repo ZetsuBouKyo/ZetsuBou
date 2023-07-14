@@ -1,3 +1,20 @@
+<script setup lang="ts">
+import { PropType } from "vue";
+
+import { Pagination } from "./pagination.interface";
+
+defineProps({
+  pagination: {
+    type: Object as PropType<Pagination>,
+    required: true,
+  },
+});
+
+function toTop() {
+  window.scrollTo(0, 0);
+}
+</script>
+
 <template>
   <div class="flex text-gray-400" :key="pagination.current">
     <div
@@ -56,26 +73,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { PropType } from "vue";
-
-import { Pagination } from "./pagination.d";
-
-export default {
-  props: {
-    pagination: {
-      type: Object as PropType<Pagination>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    function toTop() {
-      window.scrollTo(0, 0);
-    }
-
-    return { ...props, toTop };
-  },
-};
-</script>
-./pagination

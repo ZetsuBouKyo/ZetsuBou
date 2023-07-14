@@ -1,3 +1,28 @@
+<script setup lang="ts">
+import { PropType } from "vue";
+
+import { SVG } from "../svg.interface";
+
+import SlidebarIcon from "./SlidebarIcon.vue";
+
+const props = defineProps({
+  svg: {
+    type: Object as PropType<SVG>,
+    required: true,
+  },
+});
+
+const layerState = props.svg.layers;
+
+function select() {
+  layerState.isEdit = false;
+}
+
+function edit() {
+  layerState.isEdit = true;
+}
+</script>
+
 <template>
   <div class="h-app bg-gray-900 flex flex-col items-center">
     <slidebar-icon class="mt-4">
@@ -17,37 +42,3 @@
     </slidebar-icon>
   </div>
 </template>
-
-<script lang="ts">
-import { PropType } from "vue";
-
-import { SVG } from "../svg.d";
-import SlidebarIcon from "./SlidebarIcon.vue";
-
-export default {
-  components: { SlidebarIcon },
-  props: {
-    svg: {
-      type: Object as PropType<SVG>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    const layerState = props.svg.layers;
-
-    function select() {
-      layerState.isEdit = false;
-    }
-
-    function edit() {
-      layerState.isEdit = true;
-    }
-
-    return {
-      edit,
-      layerState,
-      select,
-    };
-  },
-};
-</script>

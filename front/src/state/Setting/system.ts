@@ -2,7 +2,7 @@ import { reactive } from "vue";
 
 import { getSettingSystem, putSettingSystem } from "@/api/v1/setting/system";
 
-import { SettingSystemState } from "@/interface/Setting/system.d";
+import { SettingSystemState } from "@/interface/Setting/system.interface";
 import { Setting } from "@/interface/setting";
 
 import { messageState } from "@/state/message";

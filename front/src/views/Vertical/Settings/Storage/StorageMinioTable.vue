@@ -1,3 +1,319 @@
+<script setup lang="ts">
+import { reactive, watch } from "vue";
+
+import { ButtonColorEnum } from "@/elements/Button/button.interface";
+import { SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import { CrudTableState, Header } from "@/elements/Table/CrudTable/interface";
+
+import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
+import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
+import CrudTable from "@/elements/Table/CrudTable/index.vue";
+
+import { getStorageMinioList } from "@/api/v1/storage/minio/operation";
+import {
+  deleteStorageMinio,
+  getStorageMinioCategories,
+  getStorageMinioTotalStorages,
+  getStorageMinios,
+  postStorageMinio,
+  putStorageMinio,
+} from "@/api/v1/storage/minio/storage";
+import { postSyncStorageMinio } from "@/api/v1/task/airflow";
+
+import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
+import { initCrudTableState } from "@/elements/Table/CrudTable/CrudTable";
+import { messageState } from "@/state/message";
+
+interface Row {
+  id?: number;
+  category: number;
+  name: string;
+  endpoint: string;
+  bucket_name: string;
+  prefix: string;
+  depth: number;
+  access_key: string;
+  secret_key: string;
+}
+
+interface GetStorageMinioListParams {
+  bucket_name?: string;
+  prefix?: string;
+  endpoint: string;
+  access_key: string;
+  secret_key: string;
+}
+
+enum ConnectionStatus {
+  Connected = 1,
+  Failed = 0,
+  Connecting = -1,
+}
+
+const table = initCrudTableState() as CrudTableState<Row>;
+table.connected = ConnectionStatus.Failed;
+
+const prefix = reactive({
+  options: [],
+});
+
+const bucketsDropdown = initSelectDropdownState() as SelectDropdownState;
+const categoriesDropdown = initSelectDropdownState() as SelectDropdownState;
+
+function updateOptions(params) {
+  if (table.connected === ConnectionStatus.Connecting) {
+    return;
+  }
+  table.connected = ConnectionStatus.Connecting;
+  return getStorageMinioList(params)
+    .then((response) => {
+      const s3Objects = response.data;
+      if (response.status !== 200) {
+        minioConnectError();
+        return;
+      }
+      prefix.options = [];
+      table.connected = ConnectionStatus.Connected;
+      if (s3Objects) {
+        for (const s3Object of s3Objects) {
+          if (s3Object.prefix.slice(-1) === "/") {
+            prefix.options.push(s3Object.prefix);
+          }
+          bucketsDropdown.options.push({ title: s3Object.bucket_name, value: s3Object.bucket_name });
+        }
+      }
+    })
+    .catch(() => {
+      minioConnectError();
+    });
+}
+
+function updatePrefixes() {
+  const bucketName = table.row.bucket_name;
+  if (!bucketName) {
+    return;
+  }
+  let prefix = table.row.prefix;
+
+  if (!prefix) {
+    prefix = "";
+  } else if (!prefix.endsWith("/")) {
+    return;
+  }
+
+  const params: GetStorageMinioListParams = {
+    bucket_name: bucketName,
+    prefix: prefix,
+    endpoint: table.row.endpoint,
+    access_key: table.row.access_key,
+    secret_key: table.row.secret_key,
+  };
+
+  updateOptions(params);
+}
+
+function getPrefixAutoComplete(bucketName: string, prefixName: string) {
+  prefix.options = [];
+
+  if (!bucketName) {
+    return;
+  }
+  if (!table.row.endpoint || !table.row.access_key || !table.row.secret_key) {
+    return;
+  }
+
+  const params: GetStorageMinioListParams = {
+    endpoint: table.row.endpoint,
+    access_key: table.row.access_key,
+    secret_key: table.row.secret_key,
+  };
+  params.bucket_name = bucketName;
+  if (prefixName) {
+    params.prefix = prefixName;
+  }
+
+  updateOptions(params);
+}
+
+function checkConnection() {
+  const params = {
+    endpoint: table.row.endpoint,
+    access_key: table.row.access_key,
+    secret_key: table.row.secret_key,
+  };
+  updateOptions(params);
+}
+
+watch(
+  () => {
+    if (!table.row) {
+      return undefined;
+    }
+    return table.row.prefix;
+  },
+  () => {
+    const bucketName = bucketsDropdown.selectedValue as string;
+    let prefixName = table.row.prefix as string;
+    if (table.connected !== ConnectionStatus.Connected || bucketName === undefined) {
+      return;
+    }
+
+    if (prefixName === undefined) {
+      prefixName = "";
+    }
+
+    if (prefixName.slice(-1) === "/" || !prefixName) {
+      getPrefixAutoComplete(bucketName, prefixName);
+    }
+  },
+);
+
+function minioConnectError() {
+  bucketsDropdown.options = [];
+  prefix.options = [];
+  table.row.prefix = undefined;
+  table.row.bucket_name = undefined;
+  table.connected = ConnectionStatus.Failed;
+}
+function onSelectBucket() {
+  table.row.prefix = "";
+  const bucketName = bucketsDropdown.selectedValue as string;
+  table.row.bucket_name = bucketName;
+  getPrefixAutoComplete(bucketName, undefined);
+}
+
+watch(
+  () => {
+    if (table.row) {
+      return table.row.bucket_name;
+    }
+    return false;
+  },
+  () => {
+    const bucketName = table.row.bucket_name;
+    bucketsDropdown.selectedValue = bucketName;
+    bucketsDropdown.title = bucketName;
+  },
+);
+watch(
+  () => {
+    if (table.row === undefined) {
+      return false;
+    }
+    if (
+      table.row.endpoint !== undefined &&
+      table.row.access_key !== undefined &&
+      table.row.secret_key !== undefined &&
+      table.row.endpoint.length > 0 &&
+      table.row.access_key.length > 0 &&
+      table.row.secret_key.length > 0
+    ) {
+      return [table.row.endpoint, table.row.access_key, table.row.secret_key];
+    }
+    return undefined;
+  },
+  (status, _) => {
+    if (!status) {
+      return;
+    }
+    checkConnection();
+  },
+);
+
+function onSelectCategory() {
+  table.row.prefix = "";
+  const category = categoriesDropdown.selectedValue as number;
+  table.row.category = category;
+}
+watch(
+  () => {
+    if (table.row) {
+      return table.row.category;
+    }
+    return false;
+  },
+  () => {
+    const categoryID = table.row.category;
+    categoriesDropdown.selectedValue = categoryID;
+    categoriesDropdown.title = getCategoryName(categoryID);
+  },
+);
+
+const categories = reactive({});
+function getCategoryName(id: number) {
+  return categories[id];
+}
+getStorageMinioCategories().then((response) => {
+  const data = response.data;
+  if (data) {
+    for (let key in data) {
+      categories[data[key]] = key;
+    }
+  }
+});
+
+function load() {
+  getStorageMinioCategories().then((response) => {
+    const data = response.data;
+    if (data) {
+      for (let key in data) {
+        categoriesDropdown.options.push({ title: key, value: data[key] });
+      }
+    }
+  });
+}
+
+const headers: Array<Header> = [
+  { title: "Id", key: "id" },
+  { title: "Name", key: "name" },
+  { title: "Category", key: "category", handler: getCategoryName },
+  { title: "Bucket Name", key: "bucket_name" },
+  { title: "Prefix", key: "prefix" },
+  { title: "Depth", key: "depth" },
+];
+
+const onCrudCreate = postStorageMinio;
+const onCrudGet = getStorageMinios;
+const onCrudGetTotal = getStorageMinioTotalStorages;
+const onCrudUpdate = putStorageMinio;
+const onCrudDelete = deleteStorageMinio;
+
+function onOpenEditor() {
+  load();
+}
+
+function onCloseEditor() {
+  table.row = {
+    category: undefined,
+    name: undefined,
+    endpoint: undefined,
+    bucket_name: undefined,
+    prefix: undefined,
+    depth: undefined,
+    access_key: undefined,
+    secret_key: undefined,
+  };
+  table.connected = ConnectionStatus.Failed;
+  categoriesDropdown.reset();
+  bucketsDropdown.reset();
+}
+
+function sync(row: Row) {
+  if (row === undefined || row.id === undefined) {
+    return;
+  }
+  const id = row.id;
+  postSyncStorageMinio(id).then((response: any) => {
+    messageState.sendAirflowMessage(
+      response,
+      `Synchronizing storage: ${id}`,
+      `Successfully synchronized storage: ${id}`,
+      "Failed to synchronize",
+    );
+  });
+}
+</script>
+
 <template>
   <div class="views-setting-container">
     <crud-table
@@ -91,7 +407,7 @@
             class="flex-1 modal-input"
             type="number"
             list="admin-minio-storage-depth"
-            :placeholder="table.row.depth"
+            :placeholder="table.row.depth as any"
             v-model="table.row.depth" />
           <datalist id="admin-minio-storage-depth">
             <option v-for="(p, i) in [1, 2, 3, 4, 5, 6, 7]" :value="p" :key="i" />
@@ -104,343 +420,3 @@
     </crud-table>
   </div>
 </template>
-
-<script lang="ts">
-import { reactive, watch } from "vue";
-
-import { getStorageMinioList } from "@/api/v1/storage/minio/operation";
-import {
-  deleteStorageMinio,
-  getStorageMinioCategories,
-  getStorageMinioTotalStorages,
-  getStorageMinios,
-  postStorageMinio,
-  putStorageMinio,
-} from "@/api/v1/storage/minio/storage";
-import { postSyncStorageMinio } from "@/api/v1/task/airflow";
-
-import { ButtonColorEnum } from "@/elements/Button/button";
-import SelectDropdown, { reset } from "@/elements/Dropdown/SelectDropdown.vue";
-import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
-import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
-
-import { SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
-
-import { messageState } from "@/state/message";
-
-export interface Row {
-  id?: number;
-  category: number;
-  name: string;
-  endpoint: string;
-  bucket_name: string;
-  prefix: string;
-  depth: number;
-  access_key: string;
-  secret_key: string;
-}
-
-interface GetStorageMinioListParams {
-  bucket_name?: string;
-  prefix?: string;
-  endpoint: string;
-  access_key: string;
-  secret_key: string;
-}
-
-enum ConnectionStatus {
-  Connected = 1,
-  Failed = 0,
-  Connecting = -1,
-}
-
-export default {
-  components: { CrudTable, CrudTableButton, SelectDropdown },
-  setup() {
-    const table = CrudTable.initState() as CrudTableState<Row>;
-    table.connected = ConnectionStatus.Failed;
-
-    const prefix = reactive({
-      options: [],
-    });
-
-    const bucketsDropdown = SelectDropdown.initState() as SelectDropdownState;
-    const categoriesDropdown = SelectDropdown.initState() as SelectDropdownState;
-
-    function updateOptions(params) {
-      if (table.connected === ConnectionStatus.Connecting) {
-        return;
-      }
-      table.connected = ConnectionStatus.Connecting;
-      return getStorageMinioList(params)
-        .then((response) => {
-          const s3Objects = response.data;
-          if (response.status !== 200) {
-            minioConnectError();
-            return;
-          }
-          prefix.options = [];
-          table.connected = ConnectionStatus.Connected;
-          if (s3Objects) {
-            for (const s3Object of s3Objects) {
-              if (s3Object.prefix.slice(-1) === "/") {
-                prefix.options.push(s3Object.prefix);
-              }
-              bucketsDropdown.options.push({ title: s3Object.bucket_name, value: s3Object.bucket_name });
-            }
-          }
-        })
-        .catch(() => {
-          minioConnectError();
-        });
-    }
-
-    function updatePrefixes() {
-      const bucketName = table.row.bucket_name;
-      if (!bucketName) {
-        return;
-      }
-      let prefix = table.row.prefix;
-
-      if (!prefix) {
-        prefix = "";
-      } else if (!prefix.endsWith("/")) {
-        return;
-      }
-
-      const params: GetStorageMinioListParams = {
-        bucket_name: bucketName,
-        prefix: prefix,
-        endpoint: table.row.endpoint,
-        access_key: table.row.access_key,
-        secret_key: table.row.secret_key,
-      };
-
-      updateOptions(params);
-    }
-
-    function getPrefixAutoComplete(bucketName: string, prefixName: string) {
-      prefix.options = [];
-
-      if (!bucketName) {
-        return;
-      }
-      if (!table.row.endpoint || !table.row.access_key || !table.row.secret_key) {
-        return;
-      }
-
-      const params: GetStorageMinioListParams = {
-        endpoint: table.row.endpoint,
-        access_key: table.row.access_key,
-        secret_key: table.row.secret_key,
-      };
-      params.bucket_name = bucketName;
-      if (prefixName) {
-        params.prefix = prefixName;
-      }
-
-      updateOptions(params);
-    }
-
-    function checkConnection() {
-      const params = {
-        endpoint: table.row.endpoint,
-        access_key: table.row.access_key,
-        secret_key: table.row.secret_key,
-      };
-      updateOptions(params);
-    }
-
-    watch(
-      () => {
-        if (!table.row) {
-          return undefined;
-        }
-        return table.row.prefix;
-      },
-      () => {
-        const bucketName = bucketsDropdown.selectedValue as string;
-        let prefixName = table.row.prefix as string;
-        if (table.connected !== ConnectionStatus.Connected || bucketName === undefined) {
-          return;
-        }
-
-        if (prefixName === undefined) {
-          prefixName = "";
-        }
-
-        if (prefixName.slice(-1) === "/" || !prefixName) {
-          getPrefixAutoComplete(bucketName, prefixName);
-        }
-      },
-    );
-
-    function minioConnectError() {
-      bucketsDropdown.options = [];
-      prefix.options = [];
-      table.row.prefix = undefined;
-      table.row.bucket_name = undefined;
-      table.connected = ConnectionStatus.Failed;
-    }
-    function onSelectBucket() {
-      table.row.prefix = "";
-      const bucketName = bucketsDropdown.selectedValue as string;
-      table.row.bucket_name = bucketName;
-      getPrefixAutoComplete(bucketName, undefined);
-    }
-
-    watch(
-      () => {
-        if (table.row) {
-          return table.row.bucket_name;
-        }
-        return false;
-      },
-      () => {
-        const bucketName = table.row.bucket_name;
-        bucketsDropdown.selectedValue = bucketName;
-        bucketsDropdown.title = bucketName;
-      },
-    );
-    watch(
-      () => {
-        if (table.row === undefined) {
-          return false;
-        }
-        if (
-          table.row.endpoint !== undefined &&
-          table.row.access_key !== undefined &&
-          table.row.secret_key !== undefined &&
-          table.row.endpoint.length > 0 &&
-          table.row.access_key.length > 0 &&
-          table.row.secret_key.length > 0
-        ) {
-          return [table.row.endpoint, table.row.access_key, table.row.secret_key];
-        }
-        return undefined;
-      },
-      (status, _) => {
-        if (!status) {
-          return;
-        }
-        checkConnection();
-      },
-    );
-
-    function onSelectCategory() {
-      table.row.prefix = "";
-      const category = categoriesDropdown.selectedValue as number;
-      table.row.category = category;
-    }
-    watch(
-      () => {
-        if (table.row) {
-          return table.row.category;
-        }
-        return false;
-      },
-      () => {
-        const categoryID = table.row.category;
-        categoriesDropdown.selectedValue = categoryID;
-        categoriesDropdown.title = getCategoryName(categoryID);
-      },
-    );
-
-    const categories = reactive({});
-    function getCategoryName(id: number) {
-      return categories[id];
-    }
-    getStorageMinioCategories().then((response) => {
-      const data = response.data;
-      if (data) {
-        for (let key in data) {
-          categories[data[key]] = key;
-        }
-      }
-    });
-
-    function load() {
-      getStorageMinioCategories().then((response) => {
-        const data = response.data;
-        if (data) {
-          for (let key in data) {
-            categoriesDropdown.options.push({ title: key, value: data[key] });
-          }
-        }
-      });
-    }
-
-    const headers: Array<Header> = [
-      { title: "Id", key: "id" },
-      { title: "Name", key: "name" },
-      { title: "Category", key: "category", handler: getCategoryName },
-      { title: "Bucket Name", key: "bucket_name" },
-      { title: "Prefix", key: "prefix" },
-      { title: "Depth", key: "depth" },
-    ];
-
-    const onCrudCreate = postStorageMinio;
-    const onCrudGet = getStorageMinios;
-    const onCrudGetTotal = getStorageMinioTotalStorages;
-    const onCrudUpdate = putStorageMinio;
-    const onCrudDelete = deleteStorageMinio;
-
-    function onOpenEditor() {
-      load();
-    }
-
-    function onCloseEditor() {
-      table.row = {
-        category: undefined,
-        name: undefined,
-        endpoint: undefined,
-        bucket_name: undefined,
-        prefix: undefined,
-        depth: undefined,
-        access_key: undefined,
-        secret_key: undefined,
-      };
-      table.connected = ConnectionStatus.Failed;
-      reset(categoriesDropdown);
-      reset(bucketsDropdown);
-    }
-
-    function sync(row: Row) {
-      if (row === undefined || row.id === undefined) {
-        return;
-      }
-      const id = row.id;
-      postSyncStorageMinio(id).then((response: any) => {
-        messageState.sendAirflowMessage(
-          response,
-          `Synchronizing storage: ${id}`,
-          `Successfully synchronized storage: ${id}`,
-          "Failed to synchronize",
-        );
-      });
-    }
-
-    return {
-      bucketsDropdown,
-      ButtonColorEnum,
-      categoriesDropdown,
-      checkConnection,
-      ConnectionStatus,
-      headers,
-      onCloseEditor,
-      onCrudCreate,
-      onCrudDelete,
-      onCrudGet,
-      onCrudGetTotal,
-      onCrudUpdate,
-      onOpenEditor,
-      onSelectBucket,
-      onSelectCategory,
-      prefix,
-      sync,
-      table,
-      updatePrefixes,
-    };
-  },
-};
-</script>

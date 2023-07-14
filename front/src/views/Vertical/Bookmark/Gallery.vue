@@ -1,3 +1,129 @@
+<script setup lang="ts">
+import axios from "axios";
+import { reactive, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+import { Pagination } from "@/elements/Pagination/pagination.interface";
+import { CrudGetParam } from "@/elements/Table/CrudTable/interface";
+import { Gallery } from "@/interface/gallery";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+import PaginationBase from "@/elements/Pagination/index.vue";
+import StarRating from "@/elements/Rating/StarRating.vue";
+
+import { getImages } from "@/api/v1/gallery/image";
+import {
+  deleteUserBookmarkGallery,
+  getUserDetailedGalleryBookmarks,
+  getUserTotalBookmarks,
+} from "@/api/v1/user/bookmark/gallery";
+
+import { messageState } from "@/state/message";
+import { userState } from "@/state/user";
+
+import { ButtonColorEnum } from "@/elements/Button/button.interface";
+import { getPagination } from "@/elements/Pagination/pagination";
+import { getDatetime } from "@/utils/datetime";
+import { detectRouteChange } from "@/utils/route";
+import { getUUID } from "@/utils/str";
+
+interface Bookmark {
+  id: number;
+  user_id: number;
+  gallery_id: string;
+  page: number;
+  modified: string;
+}
+
+interface Row {
+  bookmark: Bookmark;
+  gallery: Gallery;
+}
+
+interface State {
+  uuid: string;
+  userID: number;
+  pagination: Pagination;
+  rows: Array<Row>;
+}
+
+const state = reactive<State>({
+  uuid: getUUID(),
+  userID: undefined,
+  pagination: undefined,
+  rows: [],
+});
+const router = useRouter();
+const route = useRoute();
+const params: CrudGetParam = {
+  page: undefined,
+  size: undefined,
+  is_desc: undefined,
+};
+
+function updateParams() {
+  params.page = route.query.page ? parseInt(route.query.page as string) : 1;
+  params.size = route.query.size ? parseInt(route.query.size as string) : 20;
+  params.is_desc = route.query.is_desc ? Boolean(route.query.is_desc) : true;
+}
+
+state.userID = userState.id;
+
+function load() {
+  updateParams();
+  axios.all<any>([getUserTotalBookmarks(state.userID), getUserDetailedGalleryBookmarks(state.userID, params)]).then(
+    axios.spread((response1, response2) => {
+      const totalItems = response1.data;
+      const rows = response2.data;
+      state.pagination = getPagination(route.path, totalItems, params);
+      state.rows = rows;
+      state.uuid = getUUID();
+    }),
+  );
+}
+load();
+
+watch(
+  () => detectRouteChange(route),
+  () => {
+    load();
+  },
+);
+
+function getCover(row: Row) {
+  const galleryID = row.bookmark.gallery_id;
+  return `/api/v1/gallery/${galleryID}/cover`;
+}
+
+function toGallery(row: Row) {
+  const galleryID = row.bookmark.gallery_id;
+  return `/g/${galleryID}`;
+}
+
+function deleteBookmark(row: Row) {
+  const bookmarkID = row.bookmark.id;
+  if (state.userID === undefined || bookmarkID === undefined) {
+    return;
+  }
+  deleteUserBookmarkGallery(state.userID, bookmarkID).then((response) => {
+    if (response.status === 200) {
+      messageState.push("Deleted bookmark");
+      load();
+    }
+  });
+}
+
+function toBookmark(row: Row) {
+  const galleryID = row.bookmark.gallery_id;
+  getImages(galleryID).then((response) => {
+    const imgs = response.data;
+    const imgName = imgs[row.bookmark.page];
+    const url = `/g/${galleryID}/i/${imgName}`;
+    router.push(url);
+  });
+}
+</script>
+
 <template>
   <div class="views-setting-container">
     <div
@@ -66,146 +192,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import axios from "axios";
-import { reactive, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import { ButtonColorEnum } from "@/elements/Button/button";
-import PaginationBase from "@/elements/Pagination/index.vue";
-import { getPagination } from "@/elements/Pagination/pagination";
-import StarRating from "@/elements/Rating/StarRating.vue";
-import { CrudGetParam } from "@/elements/Table/CrudTable/index.vue";
-
-import { getImages } from "@/api/v1/gallery/image";
-import {
-  deleteUserBookmarkGallery,
-  getUserDetailedGalleryBookmarks,
-  getUserTotalBookmarks,
-} from "@/api/v1/user/bookmark/gallery";
-
-import { messageState } from "@/state/message";
-import { userState } from "@/state/user";
-
-import { Pagination } from "@/elements/Pagination/pagination.d";
-import { Gallery } from "@/interface/gallery";
-
-import { getDatetime } from "@/utils/datetime";
-import { detectRouteChange } from "@/utils/route";
-import { getUUID } from "@/utils/str";
-
-interface Bookmark {
-  id: number;
-  user_id: number;
-  gallery_id: string;
-  page: number;
-  modified: string;
-}
-
-export interface Row {
-  bookmark: Bookmark;
-  gallery: Gallery;
-}
-
-interface State {
-  uuid: string;
-  userID: number;
-  pagination: Pagination;
-  rows: Array<Row>;
-}
-
-export default {
-  components: { PaginationBase, RippleButton, StarRating },
-  setup() {
-    const state = reactive<State>({
-      uuid: getUUID(),
-      userID: undefined,
-      pagination: undefined,
-      rows: [],
-    });
-    const router = useRouter();
-    const route = useRoute();
-    const params: CrudGetParam = {
-      page: undefined,
-      size: undefined,
-      is_desc: undefined,
-    };
-
-    function updateParams() {
-      params.page = route.query.page ? parseInt(route.query.page as string) : 1;
-      params.size = route.query.size ? parseInt(route.query.size as string) : 20;
-      params.is_desc = route.query.is_desc ? Boolean(route.query.is_desc) : true;
-    }
-
-    state.userID = userState.id;
-
-    function load() {
-      updateParams();
-      axios.all<any>([getUserTotalBookmarks(state.userID), getUserDetailedGalleryBookmarks(state.userID, params)]).then(
-        axios.spread((response1, response2) => {
-          const totalItems = response1.data;
-          const rows = response2.data;
-          state.pagination = getPagination(route.path, totalItems, params);
-          state.rows = rows;
-          state.uuid = getUUID();
-        }),
-      );
-    }
-    load();
-
-    watch(
-      () => detectRouteChange(route),
-      () => {
-        load();
-      },
-    );
-
-    function getCover(row: Row) {
-      const galleryID = row.bookmark.gallery_id;
-      return `/api/v1/gallery/${galleryID}/cover`;
-    }
-
-    function toGallery(row: Row) {
-      const galleryID = row.bookmark.gallery_id;
-      return `/g/${galleryID}`;
-    }
-
-    function deleteBookmark(row: Row) {
-      const bookmarkID = row.bookmark.id;
-      if (state.userID === undefined || bookmarkID === undefined) {
-        return;
-      }
-      deleteUserBookmarkGallery(state.userID, bookmarkID).then((response) => {
-        if (response.status === 200) {
-          messageState.push("Deleted bookmark");
-          load();
-        }
-      });
-    }
-
-    function toBookmark(row: Row) {
-      const galleryID = row.bookmark.gallery_id;
-      getImages(galleryID).then((response) => {
-        const imgs = response.data;
-        const imgName = imgs[row.bookmark.page];
-        const url = `/g/${galleryID}/i/${imgName}`;
-        router.push(url);
-      });
-    }
-
-    return {
-      state,
-      route,
-      ButtonColorEnum,
-      getCover,
-      toGallery,
-      toBookmark,
-      getDatetime,
-      deleteBookmark,
-      detectRouteChange,
-    };
-  },
-};
-</script>

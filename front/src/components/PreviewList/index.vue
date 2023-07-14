@@ -1,3 +1,19 @@
+<script setup lang="ts">
+import { PropType } from "vue";
+
+import { Previews } from "./interface";
+
+import Pagination from "./Pagination.vue";
+import PreviewImage from "./PreviewImage.vue";
+
+defineProps({
+  previews: {
+    type: Object as PropType<Previews>,
+    required: true,
+  },
+});
+</script>
+
 <template>
   <section class="body-font min-h-screen" v-if="previews && previews.items && previews.items.length > 0">
     <pagination
@@ -27,24 +43,3 @@
     </header>
   </section>
 </template>
-
-<script lang="ts">
-import { PropType } from "vue";
-
-import Pagination from "./Pagination.vue";
-import PreviewImage from "./PreviewImage.vue";
-import { Previews } from "./interface";
-
-export default {
-  components: { Pagination, PreviewImage },
-  props: {
-    previews: {
-      type: Object as PropType<Previews>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    return { ...props };
-  },
-};
-</script>

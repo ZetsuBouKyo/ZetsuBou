@@ -1,3 +1,38 @@
+<script setup lang="ts">
+import { PropType, reactive, ref, watch } from "vue";
+
+import { Item } from "./interface";
+
+import StarRating from "@/elements/Rating/StarRating.vue";
+
+const props = defineProps({
+  item: {
+    type: Object as PropType<Item>,
+    required: true,
+  },
+});
+
+const image = ref(null);
+const state = reactive({
+  loading: true,
+  width: undefined,
+  height: undefined,
+});
+
+function getIntrinsicSize(event) {
+  state.width = event.target.naturalWidth;
+  state.height = event.target.naturalHeight;
+  state.loading = false;
+}
+
+watch(
+  () => props.item.imgUrl,
+  () => {
+    state.loading = true;
+  },
+);
+</script>
+
 <template>
   <div class="block relative overflow-hidden rounded-lg my-4 bg-gray-900 hover:shadow-black hover:mt-2 hover:mb-6">
     <div class="m-4">
@@ -38,43 +73,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { PropType, reactive, ref, watch } from "vue";
-
-import StarRating from "@/elements/Rating/StarRating.vue";
-import { Item } from "./interface";
-
-export default {
-  components: { StarRating },
-  props: {
-    item: {
-      type: Object as PropType<Item>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    let image = ref(null);
-    const state = reactive({
-      loading: true,
-      width: undefined,
-      height: undefined,
-    });
-
-    function getIntrinsicSize(event) {
-      state.width = event.target.naturalWidth;
-      state.height = event.target.naturalHeight;
-      state.loading = false;
-    }
-
-    watch(
-      () => props.item.imgUrl,
-      () => {
-        state.loading = true;
-      },
-    );
-
-    return { ...props, state, image, getIntrinsicSize };
-  },
-};
-</script>

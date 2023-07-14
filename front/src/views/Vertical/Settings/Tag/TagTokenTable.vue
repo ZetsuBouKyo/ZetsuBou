@@ -1,3 +1,30 @@
+<script setup lang="ts">
+import { CrudTableState, Header } from "@/elements/Table/CrudTable/interface";
+
+import CrudTable from "@/elements/Table/CrudTable/index.vue";
+
+import { deleteTagToken, getTagTokenTotal, getTagTokens, postTagToken, putTagToken } from "@/api/v1/tag/token";
+
+import { initCrudTableState } from "@/elements/Table/CrudTable/CrudTable";
+
+interface Row {
+  id?: number;
+  name: string;
+}
+
+const table = initCrudTableState() as CrudTableState<Row>;
+const headers: Array<Header> = [
+  { title: "Id", key: "id" },
+  { title: "Name", key: "name" },
+];
+
+const onCrudCreate = postTagToken;
+const onCrudGet = getTagTokens;
+const onCrudGetTotal = getTagTokenTotal;
+const onCrudUpdate = putTagToken;
+const onCrudDelete = deleteTagToken;
+</script>
+
 <template>
   <div class="views-setting-container">
     <crud-table
@@ -21,33 +48,3 @@
     </crud-table>
   </div>
 </template>
-
-<script lang="ts">
-import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
-
-import { deleteTagToken, getTagTokenTotal, getTagTokens, postTagToken, putTagToken } from "@/api/v1/tag/token";
-
-export interface Row {
-  id?: number;
-  name: string;
-}
-
-export default {
-  components: { CrudTable },
-  setup() {
-    const table = CrudTable.initState() as CrudTableState<Row>;
-    const headers: Array<Header> = [
-      { title: "Id", key: "id" },
-      { title: "Name", key: "name" },
-    ];
-
-    const onCrudCreate = postTagToken;
-    const onCrudGet = getTagTokens;
-    const onCrudGetTotal = getTagTokenTotal;
-    const onCrudUpdate = putTagToken;
-    const onCrudDelete = deleteTagToken;
-
-    return { table, headers, onCrudCreate, onCrudGet, onCrudGetTotal, onCrudUpdate, onCrudDelete };
-  },
-};
-</script>

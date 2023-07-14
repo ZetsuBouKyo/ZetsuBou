@@ -1,3 +1,40 @@
+<script setup lang="ts">
+import { reactive, ref } from "vue";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+import Dropdown from "@/elements/Dropdown/Dropdown.vue";
+import QuestProgress from "./QuestProgress.vue";
+
+import { userState } from "@/state/user";
+import { progressState } from "./progress";
+
+const dropdown = ref();
+
+const dropdownState = reactive({
+  popout: false,
+  close: () => {
+    dropdownState.popout = false;
+  },
+  activate: () => {
+    dropdownState.popout = true;
+  },
+  toggle: () => {
+    dropdownState.popout = !dropdownState.popout;
+  },
+});
+
+function signOut() {
+  userState.signOut();
+  window.open("/", "_self");
+}
+
+progressState.init();
+
+function close() {
+  dropdown.value.close();
+}
+</script>
+
 <template>
   <div class="relative mx-1">
     <dropdown
@@ -66,47 +103,3 @@
     </dropdown>
   </div>
 </template>
-
-<script>
-import { reactive, ref } from "vue";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import Dropdown from "@/elements/Dropdown/Dropdown.vue";
-import { userState } from "@/state/user";
-
-import { progressState } from "./progress";
-import QuestProgress from "./QuestProgress.vue";
-
-export default {
-  components: { RippleButton, Dropdown, QuestProgress },
-  setup() {
-    const dropdown = ref();
-
-    const dropdownState = reactive({
-      popout: false,
-      close: () => {
-        dropdownState.popout = false;
-      },
-      activate: () => {
-        dropdownState.popout = true;
-      },
-      toggle: () => {
-        dropdownState.popout = !dropdownState.popout;
-      },
-    });
-
-    function signOut() {
-      userState.signOut();
-      window.open("/", "_self");
-    }
-
-    progressState.init();
-
-    function close() {
-      dropdown.value.close();
-    }
-
-    return { userState, dropdown, dropdownState, progressState, signOut, close };
-  },
-};
-</script>

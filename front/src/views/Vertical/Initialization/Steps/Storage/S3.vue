@@ -1,3 +1,48 @@
+<script setup lang="ts">
+import { PropType, reactive, watch } from "vue";
+
+import { StepState } from "@/views/Vertical/Initialization/Step.interface";
+
+import Step from "@/views/Vertical/Initialization/Step.vue";
+
+const props = defineProps({
+  step: {
+    type: Object as PropType<StepState>,
+    required: true,
+  },
+});
+
+const step = props.step;
+
+const state = reactive({
+  secretAccessKey: undefined,
+});
+
+watch(
+  () => {
+    return [
+      step.setting.storage_s3_aws_access_key_id,
+      step.setting.storage_s3_aws_secret_access_key,
+      state.secretAccessKey,
+      step.setting.storage_s3_volume,
+    ];
+  },
+  () => {
+    if (
+      step.setting.storage_s3_aws_access_key_id &&
+      step.setting.storage_s3_aws_secret_access_key &&
+      state.secretAccessKey &&
+      step.setting.storage_s3_aws_secret_access_key === state.secretAccessKey &&
+      step.setting.storage_s3_volume
+    ) {
+      step.next = true;
+    } else {
+      step.next = false;
+    }
+  },
+);
+</script>
+
 <template>
   <step :state="step">
     <template v-slot:body>
@@ -37,53 +82,3 @@
     </template>
   </step>
 </template>
-
-<script lang="ts">
-import { PropType, reactive, watch } from "vue";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import Step, { StepState } from "@/views/Vertical/Initialization/Step.vue";
-
-export default {
-  components: { RippleButton, Step },
-  props: {
-    step: {
-      type: Object as PropType<StepState>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    const step = props.step;
-
-    const state = reactive({
-      secretAccessKey: undefined,
-    });
-
-    watch(
-      () => {
-        return [
-          step.setting.storage_s3_aws_access_key_id,
-          step.setting.storage_s3_aws_secret_access_key,
-          state.secretAccessKey,
-          step.setting.storage_s3_volume,
-        ];
-      },
-      () => {
-        if (
-          step.setting.storage_s3_aws_access_key_id &&
-          step.setting.storage_s3_aws_secret_access_key &&
-          state.secretAccessKey &&
-          step.setting.storage_s3_aws_secret_access_key === state.secretAccessKey &&
-          step.setting.storage_s3_volume
-        ) {
-          step.next = true;
-        } else {
-          step.next = false;
-        }
-      },
-    );
-
-    return { state, step };
-  },
-};
-</script>

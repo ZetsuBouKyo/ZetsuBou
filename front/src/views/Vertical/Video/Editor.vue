@@ -1,3 +1,135 @@
+<script setup lang="ts">
+import { reactive, ref, watch } from "vue";
+import { useRoute } from "vue-router";
+
+import { Origin } from "@/elements/Dropdown/Dropdown.interface";
+import { OnGet, SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
+import Modal from "@/elements/Modal/Modal.vue";
+
+import {
+  getSettingFrontVideoStartWithCategories,
+  getSettingFrontVideoStartWithTagFields,
+} from "@/api/v1/setting/front/video";
+import { getTagTokenStartWith } from "@/api/v1/tag/token";
+
+import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
+import { messageState } from "@/state/message";
+import { videoState } from "@/state/video";
+
+import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
+import { watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
+
+interface TagFields {
+  [key: string]: SelectDropdownState;
+}
+
+interface OnGets {
+  [key: string]: OnGet;
+}
+
+interface PrivateState {
+  json: string;
+  tagFields: TagFields;
+  onGets: OnGets;
+}
+
+const route = useRoute();
+
+function tokenToOption(token: { id: number; name: string }) {
+  return { title: token.name, value: token.id };
+}
+
+const editor = ref();
+const privateState = reactive<PrivateState>({
+  json: undefined,
+  tagFields: {},
+  onGets: {},
+});
+
+const category = initSelectDropdownState() as SelectDropdownState;
+watch(
+  () => videoState.data.attributes.category,
+  () => {
+    if (category.title !== videoState.data.attributes.category) {
+      category.title = videoState.data.attributes.category;
+    }
+  },
+);
+watch(
+  () => category.title,
+  () => {
+    if (category.title && category.title !== videoState.data.attributes.category) {
+      videoState.data.attributes.category = category.title as string;
+    }
+  },
+);
+
+const rating = initSelectDropdownState() as SelectDropdownState;
+watch(
+  () => videoState.data.attributes.rating,
+  () => {
+    if (videoState.data.attributes.rating && videoState.data.attributes.rating !== rating.title) {
+      rating.title = videoState.data.attributes.rating;
+    }
+  },
+);
+watch(
+  () => rating.title,
+  () => {
+    if (rating.title && videoState.data.attributes.rating !== rating.title) {
+      videoState.data.attributes.rating = rating.title as number;
+    }
+  },
+);
+rating.options = [
+  { title: 0, value: 0 },
+  { title: 1, value: 1 },
+  { title: 2, value: 2 },
+  { title: 3, value: 3 },
+  { title: 4, value: 4 },
+  { title: 5, value: 5 },
+];
+
+const labels = initSelectDropdownState() as SelectDropdownState;
+watch(...watchLabels(labels, videoState));
+watch(...watchLabelsChipsLength(labels, videoState));
+
+const tagFields = initSelectDropdownState() as SelectDropdownState;
+watch(...watchTags(privateState, tagFields, videoState));
+watch(...watchTagFieldsChipsLength(privateState, tagFields, videoState));
+
+function saved() {
+  editor.value.close();
+  messageState.pushWithLink("Video tag saved", route.path);
+}
+
+function save() {
+  for (const field in privateState.tagFields) {
+    videoState.data.tags[field] = [];
+    for (const chip of privateState.tagFields[field].chips) {
+      videoState.data.tags[field].push(chip.title as string);
+    }
+  }
+  videoState.save(saved).then(() => {});
+}
+
+function reset() {
+  videoState.reset();
+  messageState.push("Reset");
+}
+
+function open() {
+  editor.value.open();
+}
+
+function close() {
+  editor.value.close();
+}
+</script>
+
 <template>
   <modal ref="editor" :title="'Video Editor'" class="w-1/2 top-12 left-1/4 text-gray-300">
     <div class="modal-row-10">
@@ -75,158 +207,3 @@
     </div>
   </modal>
 </template>
-
-<script lang="ts">
-import { defineComponent, reactive, ref, watch } from "vue";
-import { useRoute } from "vue-router";
-
-import {
-  getSettingFrontVideoStartWithCategories,
-  getSettingFrontVideoStartWithTagFields,
-} from "@/api/v1/setting/front/video";
-import { getTagTokenStartWith } from "@/api/v1/tag/token";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown, { Origin } from "@/elements/Dropdown/SelectDropdown.vue";
-import Modal from "@/elements/Modal/Modal.vue";
-
-import { OnGet, SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.d";
-
-import { messageState } from "@/state/message";
-import { videoState } from "@/state/video";
-
-import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
-import { watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
-
-interface TagFields {
-  [key: string]: SelectDropdownState;
-}
-
-interface OnGets {
-  [key: string]: OnGet;
-}
-
-export interface PrivateState {
-  json: string;
-  tagFields: TagFields;
-  onGets: OnGets;
-}
-
-export default defineComponent({
-  components: { Modal, RippleButton, SelectDropdown },
-  setup() {
-    const route = useRoute();
-
-    function tokenToOption(token: { id: number; name: string }) {
-      return { title: token.name, value: token.id };
-    }
-
-    const editor = ref();
-    const privateState = reactive<PrivateState>({
-      json: undefined,
-      tagFields: {},
-      onGets: {},
-    });
-
-    const category = SelectDropdown.initState() as SelectDropdownState;
-    watch(
-      () => videoState.data.attributes.category,
-      () => {
-        if (category.title !== videoState.data.attributes.category) {
-          category.title = videoState.data.attributes.category;
-        }
-      },
-    );
-    watch(
-      () => category.title,
-      () => {
-        if (category.title && category.title !== videoState.data.attributes.category) {
-          videoState.data.attributes.category = category.title as string;
-        }
-      },
-    );
-
-    const rating = SelectDropdown.initState() as SelectDropdownState;
-    watch(
-      () => videoState.data.attributes.rating,
-      () => {
-        if (videoState.data.attributes.rating && videoState.data.attributes.rating !== rating.title) {
-          rating.title = videoState.data.attributes.rating;
-        }
-      },
-    );
-    watch(
-      () => rating.title,
-      () => {
-        if (rating.title && videoState.data.attributes.rating !== rating.title) {
-          videoState.data.attributes.rating = rating.title as number;
-        }
-      },
-    );
-    rating.options = [
-      { title: 0, value: 0 },
-      { title: 1, value: 1 },
-      { title: 2, value: 2 },
-      { title: 3, value: 3 },
-      { title: 4, value: 4 },
-      { title: 5, value: 5 },
-    ];
-
-    const labels = SelectDropdown.initState() as SelectDropdownState;
-    watch(...watchLabels(labels, videoState));
-    watch(...watchLabelsChipsLength(labels, videoState));
-
-    const tagFields = SelectDropdown.initState() as SelectDropdownState;
-    watch(...watchTags(privateState, tagFields, videoState));
-    watch(...watchTagFieldsChipsLength(privateState, tagFields, videoState));
-
-    function saved() {
-      editor.value.close();
-      messageState.pushWithLink("Video tag saved", route.path);
-    }
-
-    function save() {
-      for (const field in privateState.tagFields) {
-        videoState.data.tags[field] = [];
-        for (const chip of privateState.tagFields[field].chips) {
-          videoState.data.tags[field].push(chip.title as string);
-        }
-      }
-      videoState.save(saved).then(() => {});
-    }
-
-    function reset() {
-      videoState.reset();
-      messageState.push("Reset");
-    }
-
-    function open() {
-      editor.value.open();
-    }
-
-    function close() {
-      editor.value.close();
-    }
-
-    return {
-      SelectDropdownMode,
-      Origin,
-      getTagTokenStartWith,
-      getSettingFrontVideoStartWithCategories,
-      getSettingFrontVideoStartWithTagFields,
-      editor,
-      privateState,
-      videoState,
-      category,
-      rating,
-      labels,
-      tagFields,
-      save,
-      reset,
-      open,
-      close,
-      tokenToOption,
-    };
-  },
-});
-</script>

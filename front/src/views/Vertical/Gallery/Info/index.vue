@@ -1,3 +1,83 @@
+<script setup lang="ts">
+import { onBeforeMount, reactive, ref } from "vue";
+import { useRoute } from "vue-router";
+
+import { Gallery } from "@/interface/gallery";
+import { SourceState } from "@/interface/source";
+import { ControlPanelState } from "./ControlPanel.interface";
+
+import Labels from "@/components/Labels/index.vue";
+import Tags from "@/components/Tags/index.vue";
+import TextEditor from "@/components/TextEditor/index.vue";
+import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
+import StarRating from "@/elements/Rating/StarRating.vue";
+import ControlPanel from "./ControlPanel.vue";
+import Editor from "./Editor.vue";
+
+import { deleteGalleryByID } from "@/api/v1/gallery/operation";
+import { getTaskStandaloneGalleryOpen } from "@/api/v1/task/standalone";
+
+import { galleryState } from "@/state/gallery";
+
+const route = useRoute();
+const id = route.params.gallery as string;
+
+onBeforeMount(() => {
+  galleryState.init(id);
+});
+
+const confirmDelete = ref();
+const editor = ref();
+const textEditor = ref();
+
+function onOpenConfirmDelete() {
+  confirmDelete.value.open();
+}
+
+function openEditor() {
+  editor.value.open();
+}
+
+function openTextEditor() {
+  textEditor.value.open();
+}
+
+function onConfirmDelete() {
+  deleteGalleryByID(id).then(() => {
+    if (window.history.back() === undefined) {
+      window.close();
+    }
+  });
+}
+
+const controlPanelState = reactive<ControlPanelState>({
+  openGallery: () => {
+    getTaskStandaloneGalleryOpen(id).then(() => {});
+  },
+  openEditor: openEditor,
+  openTextEditor: openTextEditor,
+  openConfirmDeleteMessage: onOpenConfirmDelete,
+});
+
+function copy(event: any) {
+  navigator.clipboard.writeText(event.target.textContent);
+}
+
+const cover = `/api/v1/gallery/${id}/cover`;
+
+function onOverwrite(state: SourceState<Gallery>, data: Gallery) {
+  if (data.attributes !== undefined) {
+    state.data.attributes = data.attributes;
+  }
+  if (data.tags !== undefined) {
+    state.data.tags = data.tags;
+  }
+  if (data.labels !== undefined) {
+    state.data.labels = data.labels;
+  }
+}
+</script>
+
 <template>
   <text-editor
     ref="textEditor"
@@ -66,102 +146,3 @@
       :on-confirm="onConfirmDelete" />
   </section>
 </template>
-
-<script lang="ts">
-import { onBeforeMount, reactive, ref } from "vue";
-import { useRoute } from "vue-router";
-
-import { deleteGalleryByID } from "@/api/v1/gallery/operation";
-import { getTaskStandaloneGalleryOpen } from "@/api/v1/task/standalone";
-
-import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
-import StarRating from "@/elements/Rating/StarRating.vue";
-
-import Labels from "@/components/Labels/index.vue";
-import Tags from "@/components/Tags/index.vue";
-import TextEditor from "@/components/TextEditor/index.vue";
-import ControlPanel from "./ControlPanel.vue";
-import Editor from "./Editor.vue";
-
-import { galleryState } from "@/state/gallery";
-
-import { ControlPanelState } from "./ControlPanel.d";
-
-import { Gallery } from "@/interface/gallery";
-import { SourceState } from "@/interface/source";
-
-export default {
-  components: { StarRating, Labels, Tags, ControlPanel, TextEditor, Editor, ConfirmModal },
-  setup() {
-    const route = useRoute();
-    const id = route.params.gallery as string;
-
-    onBeforeMount(() => {
-      galleryState.init(id);
-    });
-
-    const confirmDelete = ref();
-    const editor = ref();
-    const textEditor = ref();
-
-    function onOpenConfirmDelete() {
-      confirmDelete.value.open();
-    }
-
-    function openEditor() {
-      editor.value.open();
-    }
-
-    function openTextEditor() {
-      textEditor.value.open();
-    }
-
-    function onConfirmDelete() {
-      deleteGalleryByID(id).then(() => {
-        if (window.history.back() === undefined) {
-          window.close();
-        }
-      });
-    }
-
-    const controlPanelState = reactive<ControlPanelState>({
-      openGallery: () => {
-        getTaskStandaloneGalleryOpen(id).then(() => {});
-      },
-      openEditor: openEditor,
-      openTextEditor: openTextEditor,
-      openConfirmDeleteMessage: onOpenConfirmDelete,
-    });
-
-    function copy(event) {
-      navigator.clipboard.writeText(event.target.textContent);
-    }
-
-    const cover = `/api/v1/gallery/${id}/cover`;
-
-    function onOverwrite(state: SourceState<Gallery>, data: Gallery) {
-      if (data.attributes !== undefined) {
-        state.data.attributes = data.attributes;
-      }
-      if (data.tags !== undefined) {
-        state.data.tags = data.tags;
-      }
-      if (data.labels !== undefined) {
-        state.data.labels = data.labels;
-      }
-    }
-
-    return {
-      cover,
-      galleryState,
-      confirmDelete,
-      editor,
-      textEditor,
-      onConfirmDelete,
-      onOverwrite,
-      controlPanelState,
-      copy,
-    };
-  },
-};
-</script>

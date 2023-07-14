@@ -1,3 +1,6 @@
+import { AxiosResponse } from "axios";
+import { PaginationGetParam } from "@/elements/Pagination/pagination.interface";
+
 export interface SelectDropdownGetParam extends PaginationGetParam {
   s: string;
   [key: string]: any;
@@ -21,6 +24,8 @@ export interface SelectDropdownState {
   chips?: Array<SelectDropdownOption>;
   selectedValue?: string | number;
   isFocus?: boolean;
+  clear: () => void;
+  reset: () => void;
 }
 
 export interface OnGet {

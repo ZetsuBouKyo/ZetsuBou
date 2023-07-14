@@ -1,3 +1,49 @@
+<script setup lang="ts">
+import { onBeforeMount, reactive } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+
+import { userState } from "@/state/user";
+
+const route = useRoute();
+const router = useRouter();
+
+const state = reactive({
+  email: undefined,
+  password: undefined,
+  remembered: false,
+  wrong: false,
+});
+
+function submit() {
+  const redirect = (route.query.redirect ? route.query.redirect : "/") as string;
+  state.wrong = false;
+
+  const formData = new FormData();
+  formData.append("username", state.email);
+  formData.append("password", state.password);
+
+  userState
+    .signIn(formData)
+    .then(() => {
+      router.push(redirect);
+    })
+    .catch(() => {
+      state.wrong = true;
+      state.password = "";
+    });
+}
+
+onBeforeMount(() => {
+  document.addEventListener.call(window, "keyup", (event) => {
+    if (event.keyCode === 13 || event.keyCode === 108) {
+      submit();
+    }
+  });
+});
+</script>
+
 <template>
   <div class="w-full h-100v flex flex-col items-center justify-center">
     <div class="w-96 h-120 flex flex-col rounded-lg border-white shadow-black bg-gray-900">
@@ -16,7 +62,7 @@
               name="email"
               type="email"
               autocomplete="email"
-              required=""
+              required="true"
               placeholder="Email address"
               v-model="state.email" />
           </div>
@@ -29,7 +75,7 @@
               name="password"
               type="password"
               autocomplete="current-password"
-              required=""
+              required="true"
               placeholder="Password"
               v-model="state.password" />
           </div>
@@ -69,55 +115,3 @@
     </div>
   </div>
 </template>
-
-<script>
-import { onBeforeMount, reactive } from "vue";
-import { useRoute, useRouter } from "vue-router";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import { userState } from "@/state/user";
-
-export default {
-  components: { RippleButton },
-  setup() {
-    const route = useRoute();
-    const router = useRouter();
-
-    const state = reactive({
-      email: undefined,
-      password: undefined,
-      remembered: false,
-      wrong: false,
-    });
-
-    function submit() {
-      const redirect = route.query.redirect ? route.query.redirect : "/";
-      state.wrong = false;
-
-      const formData = new FormData();
-      formData.append("username", state.email);
-      formData.append("password", state.password);
-
-      userState
-        .signIn(formData)
-        .then(() => {
-          router.push(redirect);
-        })
-        .catch(() => {
-          state.wrong = true;
-          state.password = "";
-        });
-    }
-
-    onBeforeMount(() => {
-      document.addEventListener.call(window, "keyup", (event) => {
-        if (event.keyCode === 13 || event.keyCode === 108) {
-          submit();
-        }
-      });
-    });
-
-    return { state, submit };
-  },
-};
-</script>

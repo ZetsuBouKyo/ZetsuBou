@@ -1,3 +1,46 @@
+<script setup lang="ts">
+import { OnFinish, StepState } from "./Step.interface";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+
+import { initStepState } from "./Step";
+
+interface Props {
+  state: StepState;
+  onFinish: OnFinish;
+}
+const props = withDefaults(defineProps<Props>(), {
+  state: () => initStepState(0, "", false),
+  onFinish: undefined,
+});
+
+const state = props.state;
+
+function previous(state: StepState) {
+  if (state.index > 0) {
+    state.close = true;
+    const previousIndex = state.index - 1;
+    const previousStep = state.steps[previousIndex];
+    previousStep.close = false;
+  }
+}
+
+function next(state: StepState) {
+  state.ok = true;
+  state.close = true;
+  const nextIndex = state.index + 1;
+  if (state.steps && nextIndex < state.steps.length) {
+    state.steps[nextIndex].close = false;
+  }
+}
+
+function finish(state: StepState) {
+  if (props.onFinish !== undefined) {
+    props.onFinish(state);
+  }
+}
+</script>
+
 <template>
   <li class="ml-4 my-4">
     <svg
@@ -52,73 +95,3 @@
     </div>
   </li>
 </template>
-
-<script lang="ts">
-import { PropType, reactive } from "vue";
-
-import { Setting } from "@/interface/setting";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-
-export interface StepState {
-  index: number;
-  title: string;
-  ok: boolean;
-  close: boolean;
-  next: boolean;
-  setting?: Setting;
-  steps?: Array<StepState>;
-  [key: string]: any;
-}
-
-export interface OnFinish {
-  (state: StepState): void;
-}
-
-export function initStepState(index: number, title: string, close: boolean) {
-  return reactive<StepState>({ index: index, title: title, ok: false, close: close, ports: undefined, next: false });
-}
-
-export default {
-  components: { RippleButton },
-  props: {
-    state: {
-      type: Object as PropType<StepState>,
-      default: initStepState(0, "", false),
-    },
-    onFinish: {
-      type: Object as PropType<OnFinish>,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    const state = props.state;
-
-    function previous(state: StepState) {
-      if (state.index > 0) {
-        state.close = true;
-        const previousIndex = state.index - 1;
-        const previousStep = state.steps[previousIndex];
-        previousStep.close = false;
-      }
-    }
-
-    function next(state: StepState) {
-      state.ok = true;
-      state.close = true;
-      const nextIndex = state.index + 1;
-      if (state.steps && nextIndex < state.steps.length) {
-        state.steps[nextIndex].close = false;
-      }
-    }
-
-    function finish(state: StepState) {
-      if (props.onFinish !== undefined) {
-        props.onFinish(state);
-      }
-    }
-
-    return { state, previous, next, finish };
-  },
-};
-</script>

@@ -1,3 +1,12 @@
+<script setup lang="ts">
+import Rating from "./index.vue";
+
+interface Props {
+  filled: number;
+}
+withDefaults(defineProps<Props>(), { filled: undefined });
+</script>
+
 <template>
   <div v-if="filled !== null && filled !== undefined">
     <rating :filled="filled" />
@@ -6,20 +15,3 @@
     <rating :filled="0" />
   </div>
 </template>
-
-<script lang="ts">
-import Rating from "./index.vue";
-
-export default {
-  components: { Rating },
-  props: {
-    filled: {
-      type: Number,
-      default: undefined,
-    },
-  },
-  setup(props) {
-    return { ...props };
-  },
-};
-</script>

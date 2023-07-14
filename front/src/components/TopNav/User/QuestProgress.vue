@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import { progressState } from "./progress";
+</script>
+
 <template>
   <div>
     <div class="overflow-hidden h-1 text-xxs flex rounded bg-gray-300" v-if="progressState.data.style">
@@ -7,12 +11,3 @@
     </div>
   </div>
 </template>
-
-<script>
-import { progressState } from "./progress";
-export default {
-  setup() {
-    return { progressState };
-  },
-};
-</script>

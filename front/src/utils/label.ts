@@ -1,4 +1,4 @@
-import { SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.vue";
+import { SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
 
 import { Source, SourceDataState } from "@/interface/source";
 
@@ -26,7 +26,7 @@ export function watchLabelsChipsLength(
       if (labelsState.chips !== undefined) {
         sourceState.data.labels = [];
         for (const chip of labelsState.chips) {
-          sourceState.data.labels.push(chip.title);
+          sourceState.data.labels.push(chip.title as string);
         }
       }
     },

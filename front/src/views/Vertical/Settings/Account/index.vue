@@ -1,3 +1,40 @@
+<script setup lang="ts">
+import { reactive, ref } from "vue";
+
+import RippleButton from "@/elements/Button/RippleButton.vue";
+import Modal from "@/elements/Modal/Modal.vue";
+
+import { userState } from "@/state/user";
+
+const state = reactive({
+  isNameEditable: false,
+});
+
+const changeUser = ref();
+
+function makeNameEditable() {
+  state.isNameEditable = true;
+}
+
+function resetPassword() {
+  userState.password = undefined;
+}
+
+function confirmChangeUser() {
+  userState.update();
+  changeUser.value.close();
+}
+
+function openChangeUser() {
+  changeUser.value.open();
+}
+
+function closeChangeUser() {
+  changeUser.value.close();
+  resetPassword();
+}
+</script>
+
 <template>
   <modal ref="changeUser" :title="'Confirm'" class="w-1/3 top-1/4 left-1/3" :on-close="resetPassword">
     <div class="modal-row">
@@ -81,56 +118,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { reactive, ref } from "vue";
-
-import RippleButton from "@/elements/Button/RippleButton.vue";
-import Modal from "@/elements/Modal/Modal.vue";
-
-import { userState } from "@/state/user";
-
-export default {
-  components: { RippleButton, Modal },
-  setup() {
-    const state = reactive({
-      isNameEditable: false,
-    });
-
-    const changeUser = ref();
-
-    function makeNameEditable() {
-      state.isNameEditable = true;
-    }
-
-    function resetPassword() {
-      userState.password = undefined;
-    }
-
-    function confirmChangeUser() {
-      userState.update();
-      changeUser.value.close();
-    }
-
-    function openChangeUser() {
-      changeUser.value.open();
-    }
-
-    function closeChangeUser() {
-      changeUser.value.close();
-      resetPassword();
-    }
-
-    return {
-      changeUser,
-      closeChangeUser,
-      confirmChangeUser,
-      makeNameEditable,
-      openChangeUser,
-      resetPassword,
-      state,
-      userState,
-    };
-  },
-};
-</script>

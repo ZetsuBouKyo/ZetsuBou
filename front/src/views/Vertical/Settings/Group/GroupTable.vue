@@ -1,3 +1,82 @@
+<script setup lang="ts">
+import { reactive, watch } from "vue";
+
+import { CrudTableState, Header } from "@/elements/Table/CrudTable/interface";
+
+import CrudTable from "@/elements/Table/CrudTable/index.vue";
+
+import { deleteGroup, getGroup, getGroupTotal, postGroup, putGroup } from "@/api/v1/group";
+
+import { initCrudTableState } from "@/elements/Table/CrudTable/CrudTable";
+
+interface Scope {
+  group_id: number;
+  id: number;
+  name?: string;
+}
+
+interface Row {
+  id?: number;
+  name: string;
+  scopes: Array<Scope>;
+}
+
+const table = initCrudTableState() as CrudTableState<Row>;
+
+const prefix = reactive({
+  options: [],
+});
+
+watch(
+  () => table.row,
+  () => {
+    // const bucketName = bucketsDropdown.selectedValue as string;
+    // const prefixName = table.row.prefix as string;
+    // if (bucketName === undefined || prefixName === undefined) {
+    //   return;
+    // }
+    // if (prefixName.slice(-1) === "/") {
+    //   getPrefixAutoComplete(bucketName, prefixName);
+    // }
+  },
+);
+
+function load() {
+  // getMinioStorageCategories().then((response) => {
+  //   const data = response.data;
+  //   if (data) {
+  //     for (let key in data) {
+  //       categoriesDropdown.options.push({ title: key, value: data[key] });
+  //     }
+  //   }
+  // });
+}
+
+const headers: Array<Header> = [
+  { title: "Id", key: "id" },
+  { title: "Name", key: "name" },
+];
+
+const onCrudCreate = postGroup;
+const onCrudGet = getGroup;
+const onCrudGetTotal = getGroupTotal;
+const onCrudUpdate = putGroup;
+const onCrudDelete = deleteGroup;
+
+function onOpenEditor() {
+  load();
+}
+
+function onCloseEditor() {
+  table.row = {
+    name: undefined,
+    scopes: [],
+  };
+  // reset(categoriesDropdown);
+  // reset(bucketsDropdown);
+}
+</script>
+
 <template>
   <div class="views-setting-container">
     <crud-table
@@ -22,97 +101,3 @@
     </crud-table>
   </div>
 </template>
-
-<script lang="ts">
-import { reactive, watch } from "vue";
-
-import { deleteGroup, getGroup, getGroupTotal, postGroup, putGroup } from "@/api/v1/group";
-import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
-
-import CrudTable, { CrudTableState, Header } from "@/elements/Table/CrudTable/index.vue";
-
-interface Scope {
-  group_id: number;
-  id: number;
-  name?: string;
-}
-
-export interface Row {
-  id?: number;
-  name: string;
-  scopes: Array<Scope>;
-}
-
-export default {
-  components: { CrudTable, SelectDropdown },
-  setup() {
-    const table = CrudTable.initState() as CrudTableState<Row>;
-
-    const prefix = reactive({
-      options: [],
-    });
-
-    watch(
-      () => table.row,
-      () => {
-        // const bucketName = bucketsDropdown.selectedValue as string;
-        // const prefixName = table.row.prefix as string;
-        // if (bucketName === undefined || prefixName === undefined) {
-        //   return;
-        // }
-        // if (prefixName.slice(-1) === "/") {
-        //   getPrefixAutoComplete(bucketName, prefixName);
-        // }
-      },
-    );
-
-    function load() {
-      // getMinioStorageCategories().then((response) => {
-      //   const data = response.data;
-      //   if (data) {
-      //     for (let key in data) {
-      //       categoriesDropdown.options.push({ title: key, value: data[key] });
-      //     }
-      //   }
-      // });
-    }
-
-    const headers: Array<Header> = [
-      { title: "Id", key: "id" },
-      { title: "Name", key: "name" },
-    ];
-
-    const onCrudCreate = postGroup;
-    const onCrudGet = getGroup;
-    const onCrudGetTotal = getGroupTotal;
-    const onCrudUpdate = putGroup;
-    const onCrudDelete = deleteGroup;
-
-    function onOpenEditor() {
-      load();
-    }
-
-    function onCloseEditor() {
-      table.row = {
-        name: undefined,
-        scopes: [],
-      };
-      // reset(categoriesDropdown);
-      // reset(bucketsDropdown);
-    }
-
-    return {
-      table,
-      headers,
-      prefix,
-      onCrudCreate,
-      onCrudGet,
-      onCrudGetTotal,
-      onCrudUpdate,
-      onCrudDelete,
-      onOpenEditor,
-      onCloseEditor,
-    };
-  },
-};
-</script>

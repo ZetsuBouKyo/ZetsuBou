@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import Setting from "@/layouts/Setting/index.vue";
+import SettingAction from "@/layouts/Setting/SettingAction.vue";
+</script>
+
 <template>
   <setting>
     <div class="views-setting-actions">
@@ -10,9 +15,3 @@
     </div>
   </setting>
 </template>
-
-<script lang="ts">
-import Setting from "@/layouts/Setting/index.vue";
-import SettingAction from "@/layouts/Setting/SettingAction.vue";
-export default { components: { Setting, SettingAction } };
-</script>

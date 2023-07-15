@@ -102,6 +102,8 @@ classDiagram
 npm install --save-dev @commitlint/{cli,config-conventional} conventional-changelog prettier prettier-eslint
 # To test commitlint
 npx commitlint --from "HEAD~1" --to "HEAD" --verbose
+# To install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 ### Build

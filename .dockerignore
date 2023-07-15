@@ -8,6 +8,7 @@ __pycache__
 .vscode
 *.code-workspace
 *.db
+Cargo.lock
 dags/.venv
 dags/me
 dev
@@ -21,3 +22,4 @@ logs
 node_modules
 package-lock.json
 poetry.lock
+target

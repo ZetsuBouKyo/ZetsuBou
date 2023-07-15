@@ -6,6 +6,7 @@ __pycache__
 .venv
 *.code-workspace
 *.db
+Cargo.lock
 dags/.venv
 dags/plugins.py
 dev
@@ -18,3 +19,4 @@ package-lock.json
 plugins
 poetry.lock*
 statics
+target

@@ -155,6 +155,9 @@ class CrudUser(UserBase):
                             select(cls).where(cls.email == email)
                         )
                         first = row.scalars().first()
-        if first is None:
-            return None
+                    else:
+                        return None
+                else:
+                    return None
+
         return User(**first.__dict__)

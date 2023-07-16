@@ -4,6 +4,8 @@ from typing import List
 
 from pydantic import BaseModel
 
+from back.logging import logger_webapp
+
 
 class PathPattern(BaseModel):
     pattern: str
@@ -37,6 +39,7 @@ excludes = _get_both_side_patterns(
         "logs",
         "package-lock.json",
         "poetry.lock*",
+        "target",
     ]
 )
 
@@ -54,7 +57,8 @@ def get_watched_files(
         relative_p = p.relative_to(home)
         for ignore in excludes:
             if not ignore.left:
-                if relative_p.match(ignore.pattern):
+                first_path = Path(relative_p.parts[0])
+                if first_path.match(ignore.pattern):
                     skip = True
                     continue
             elif relative_p.name == ignore.pattern:
@@ -74,5 +78,5 @@ def get_watched_files(
         p = home / include
         for next_p in p.glob("**/*"):
             watched.append(next_p)
-
+    logger_webapp.info(f"watched files: {len(watched)}")
     return watched

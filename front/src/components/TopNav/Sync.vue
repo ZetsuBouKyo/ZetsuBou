@@ -72,6 +72,9 @@ function synchronize() {
   if (state.isSync) {
     return;
   }
+  if (state.progress === 0) {
+    state.progress = 100;
+  }
   switch (state.action) {
     case SyncMode.New:
       confirmNew.value.open();

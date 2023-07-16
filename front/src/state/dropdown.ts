@@ -4,7 +4,6 @@ import { DropdownsState, DropdownComponent } from "@/elements/Dropdown/Dropdown.
 
 export const dropdownsState = reactive<DropdownsState>({
   data: {},
-  init: () => {},
   add: (key: number, dropdown: DropdownComponent) => {
     dropdownsState.data[key] = dropdown;
   },

@@ -38,13 +38,13 @@ const previews = reactive<Previews>({
 });
 
 function load() {
-  if (userState.frontSetting.img_preview_size === undefined) {
+  if (userState.data.frontSetting.img_preview_size === undefined) {
     return;
   }
   const page = parseInt(route.query.page as string);
   const query: PaginationGetParam = {
     page: page ? page : 1,
-    size: userState.frontSetting.img_preview_size,
+    size: userState.data.frontSetting.img_preview_size,
   };
 
   getImages(id)
@@ -63,7 +63,7 @@ load();
 
 watch(
   () => {
-    return [userState.frontSetting.img_preview_size, JSON.stringify(route.path), JSON.stringify(route.query.page)];
+    return [userState.data.frontSetting.img_preview_size, JSON.stringify(route.path), JSON.stringify(route.query.page)];
   },
   () => {
     load();

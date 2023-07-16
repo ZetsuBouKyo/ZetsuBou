@@ -12,18 +12,21 @@ import { userState } from "@/state/user";
           <input
             class="views-setting-cell w-72"
             type="text"
-            :placeholder="userState.frontSetting.gallery_preview_size" />
+            :placeholder="userState.data.frontSetting.gallery_preview_size" />
         </div>
         <div class="views-setting-row">
           <div class="views-setting-cell w-64">Image preview size:</div>
-          <input class="views-setting-cell w-72" type="text" :placeholder="userState.frontSetting.img_preview_size" />
+          <input
+            class="views-setting-cell w-72"
+            type="text"
+            :placeholder="userState.data.frontSetting.img_preview_size" />
         </div>
         <div class="views-setting-row">
           <div class="views-setting-cell w-64">Autoplay Interval (seconds):</div>
           <input
             class="views-setting-cell w-72"
             type="text"
-            :placeholder="userState.frontSetting.auto_play_time_interval" />
+            :placeholder="userState.data.frontSetting.auto_play_time_interval" />
         </div>
       </div>
     </div>
@@ -32,7 +35,10 @@ import { userState } from "@/state/user";
       <div class="views-setting-rows">
         <div class="views-setting-row">
           <div class="views-setting-cell w-56">Preview size:</div>
-          <input class="views-setting-cell w-72" type="text" :placeholder="userState.frontSetting.video_preview_size" />
+          <input
+            class="views-setting-cell w-72"
+            type="text"
+            :placeholder="userState.data.frontSetting.video_preview_size" />
         </div>
       </div>
     </div>

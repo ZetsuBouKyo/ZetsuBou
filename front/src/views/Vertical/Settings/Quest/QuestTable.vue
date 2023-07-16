@@ -38,7 +38,7 @@ interface Row {
 
 const router = useRouter();
 
-const userID = userState.id;
+const userID = userState.data.id;
 const table = initCrudTableState() as CrudTableState<Row>;
 
 const state = reactive({

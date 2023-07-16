@@ -15,7 +15,7 @@ export const progressState = reactive<BaseState<Progress>>({
     style: undefined,
   },
   init: () => {
-    const user_id = userState.id;
+    const user_id = userState.data.id;
     getUserCurrentQuestProgress(user_id).then((response) => {
       const data = response.data;
       if (data) {

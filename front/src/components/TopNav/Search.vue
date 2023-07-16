@@ -238,7 +238,7 @@ watch(
   },
 );
 
-const userID = userState.id;
+const userID = userState.data.id;
 function onGet(params: PaginationGetParam) {
   return getUserElasticSearchQueries(userID, params);
 }

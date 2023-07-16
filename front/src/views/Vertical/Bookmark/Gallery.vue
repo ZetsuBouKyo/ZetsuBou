@@ -67,7 +67,7 @@ function updateParams() {
   params.is_desc = route.query.is_desc ? Boolean(route.query.is_desc) : true;
 }
 
-state.userID = userState.id;
+state.userID = userState.data.id;
 
 function load() {
   updateParams();

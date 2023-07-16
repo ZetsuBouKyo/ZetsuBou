@@ -14,7 +14,7 @@ import {
 
 import { userState } from "@/state/user";
 
-const userID = userState.id;
+const userID = userState.data.id;
 
 function onCrudCreate(row: Row) {
   return postUserElasticCountQuery(userID, row);

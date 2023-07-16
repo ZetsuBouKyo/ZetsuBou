@@ -49,7 +49,7 @@ function close() {
             <icon-ph-user-bold class="m-1 h-8" style="font-size: 1.4rem" />
             <div class="w-32 mr-2 hidden lg:flex lg:flex-col">
               <span class="text-left truncate" :class="progressState.data.style ? 'text-sm' : ''">{{
-                userState.name
+                userState.data.name
               }}</span>
               <quest-progress />
             </div>

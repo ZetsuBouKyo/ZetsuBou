@@ -152,7 +152,7 @@ onMounted(() => {
 });
 
 function loadBookmark() {
-  const userID = userState.id;
+  const userID = userState.data.id;
   const galleryID = route.params.gallery as string;
   getUserBookmarkGallery(userID, galleryID).then((response: any) => {
     svgState.bookmark = null;
@@ -163,7 +163,7 @@ function loadBookmark() {
 }
 
 function getNewBookmark() {
-  const userID = userState.id;
+  const userID = userState.data.id;
   const galleryID = route.params.gallery as string;
   const page = svgState.panel.current;
   if (userID === undefined || galleryID === undefined || page === undefined) {
@@ -204,7 +204,7 @@ function addBookmark() {
 }
 
 function deleteBookmark() {
-  const userID = userState.id;
+  const userID = userState.data.id;
   const bookmark = svgState.bookmark;
   if (bookmark.id) {
     deleteUserBookmarkGallery(userID, bookmark.id).then((response: any) => {

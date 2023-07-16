@@ -19,6 +19,7 @@ import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { galleryState } from "@/state/gallery";
 import { messageState } from "@/state/message";
 
+import { initRippleButtonState } from "@/elements/Button/RippleButton";
 import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
 import { watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
 
@@ -101,11 +102,11 @@ const tagFields = initSelectDropdownState() as SelectDropdownState;
 watch(...watchTags(privateState, tagFields, galleryState));
 watch(...watchTagFieldsChipsLength(privateState, tagFields, galleryState));
 
+const saveState = initRippleButtonState();
 function saved() {
   editor.value.close();
   messageState.pushWithLink("Gallery tag saved", route.path);
 }
-
 function save() {
   for (const field in privateState.tagFields) {
     galleryState.data.tags[field] = [];
@@ -113,7 +114,10 @@ function save() {
       galleryState.data.tags[field].push(chip.title as string);
     }
   }
-  galleryState.save(saved).then(() => {});
+  saveState.lock();
+  galleryState.save(saved).then(() => {
+    saveState.unlock();
+  });
 }
 
 function reset() {
@@ -212,7 +216,7 @@ defineExpose({ open, close, reset });
     <div class="modal-row-10">
       <div class="flex ml-auto">
         <ripple-button class="flex mr-2 btn btn-primary" @click="reset"> Reset </ripple-button>
-        <ripple-button class="flex btn btn-primary" @click="save"> Save </ripple-button>
+        <ripple-button class="flex btn btn-primary" :state="saveState" @click="save"> Save </ripple-button>
       </div>
     </div>
   </modal>

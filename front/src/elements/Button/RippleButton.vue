@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 
+import { RippleButtonState } from "./RippleButton.interface";
+
 interface Props {
+  state?: RippleButtonState;
   disabled: boolean;
 }
-withDefaults(defineProps<Props>(), { disabled: false });
+const props = withDefaults(defineProps<Props>(), { state: undefined, disabled: false });
 
 const bt = ref(null);
 const ripple = ref(null);
-const state = reactive({
+const privateState = reactive({
   isRipple: false,
 });
-function rippleEffect(event) {
-  state.isRipple = true;
+function rippleEffect(event: any) {
+  privateState.isRipple = true;
   const btn = bt.value;
   if (btn === undefined || btn === null) {
     return;
@@ -30,8 +33,16 @@ function rippleEffect(event) {
   circle.style.top = `${y - radius}px`;
 
   setTimeout(() => {
-    state.isRipple = false;
+    privateState.isRipple = false;
   }, 600);
+}
+
+function isDisabled() {
+  if (props.state && props.state.data !== undefined && props.state.data.lock) {
+    return true;
+  }
+
+  return props.disabled;
 }
 </script>
 
@@ -41,8 +52,8 @@ function rippleEffect(event) {
     class="relative overflow-hidden focus:outline-none"
     type="button"
     @click="rippleEffect"
-    :disabled="disabled">
+    :disabled="isDisabled()">
     <slot></slot>
-    <span ref="ripple" :class="state.isRipple ? 'zetsubou-ripple' : 'hidden'"></span>
+    <span ref="ripple" :class="privateState.isRipple ? 'zetsubou-ripple' : 'hidden'"></span>
   </button>
 </template>

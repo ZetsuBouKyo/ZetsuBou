@@ -8,6 +8,7 @@ import { OnOverwrite } from "./interface";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 
+import { initRippleButtonState } from "@/elements/Button/RippleButton";
 import { messageState } from "@/state/message";
 
 interface Props {
@@ -35,17 +36,20 @@ const privateState = reactive<{ json: string }>({
   json: undefined,
 });
 
+const saveState = initRippleButtonState();
 function saved() {
   editor.value.close();
   messageState.pushWithLink(props.saveMessage, route.path);
 }
-
 function save() {
+  saveState.lock();
   overwrite().then((status) => {
     if (!status) {
       return;
     }
-    state.save(saved).then(() => {});
+    state.save(saved).then(() => {
+      saveState.unlock();
+    });
   });
 }
 
@@ -93,7 +97,7 @@ defineExpose({ open });
       <div class="flex ml-auto">
         <ripple-button class="flex mr-2 btn btn-primary" @click="reset"> Reset </ripple-button>
         <ripple-button class="flex mr-2 btn btn-primary" @click="overwrite"> Overwrite </ripple-button>
-        <ripple-button class="flex btn btn-primary" @click="save"> Save </ripple-button>
+        <ripple-button class="flex btn btn-primary" :state="saveState" @click="save"> Save </ripple-button>
       </div>
     </div>
   </modal>

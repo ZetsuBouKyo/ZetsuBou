@@ -21,45 +21,21 @@ from ....table import (
     SettingFrontGalleryTagFieldBase,
     TagTokenBase,
 )
+from ...base import get_all_rows_by_condition_order_by_id
 
 
 class CrudSettingFrontGallery:
     @classmethod
-    async def _get_all_rows(
-        cls,
-        base: Union[SettingFrontGalleryCategoryBase, SettingFrontGalleryTagFieldBase],
-        model: Union[SettingFrontGalleryCategory, SettingFrontGalleryTagField],
-    ):
-        out = []
-        rows = 1
-        skip = 0
-        limit = 100
-        async with async_session() as session:
-            async with session.begin():
-                while rows:
-                    statement = (
-                        select(base)
-                        .where(base.enable == true())
-                        .offset(skip)
-                        .limit(limit)
-                    )
-                    rows = await session.execute(statement)
-                    skip += limit
-                    rows = rows.scalars().all()
-                    if len(rows) == 0:
-                        break
-                    for row in rows:
-                        row = model(**row.__dict__)
-                        out.append(row.id)
-        return out
-
-    @classmethod
     async def get(cls) -> SettingFrontGallery:
-        category_ids = await cls._get_all_rows(
-            SettingFrontGalleryCategoryBase, SettingFrontGalleryCategory
+        category_ids = await get_all_rows_by_condition_order_by_id(
+            SettingFrontGalleryCategoryBase,
+            SettingFrontGalleryCategoryBase.enable == true(),
+            SettingFrontGalleryCategory,
         )
-        tag_field_ids = await cls._get_all_rows(
-            SettingFrontGalleryTagFieldBase, SettingFrontGalleryTagField
+        tag_field_ids = await get_all_rows_by_condition_order_by_id(
+            SettingFrontGalleryTagFieldBase,
+            SettingFrontGalleryTagFieldBase.enable == true(),
+            SettingFrontGalleryTagField,
         )
         return SettingFrontGallery(
             category_ids=category_ids,

@@ -21,45 +21,21 @@ from ....table import (
     SettingFrontVideoTagFieldBase,
     TagTokenBase,
 )
+from ...base import get_all_rows_by_condition_order_by_id
 
 
 class CrudSettingFrontVideo:
     @classmethod
-    async def _get_all_rows(
-        cls,
-        base: Union[SettingFrontVideoCategoryBase, SettingFrontVideoTagFieldBase],
-        model: Union[SettingFrontVideoCategory, SettingFrontVideoTagField],
-    ):
-        out = []
-        rows = 1
-        skip = 0
-        limit = 100
-        async with async_session() as session:
-            async with session.begin():
-                while rows:
-                    statement = (
-                        select(base)
-                        .where(base.enable == true())
-                        .offset(skip)
-                        .limit(limit)
-                    )
-                    rows = await session.execute(statement)
-                    skip += limit
-                    rows = rows.scalars().all()
-                    if len(rows) == 0:
-                        break
-                    for row in rows:
-                        row = model(**row.__dict__)
-                        out.append(row.id)
-        return out
-
-    @classmethod
     async def get(cls) -> SettingFrontVideo:
-        category_ids = await cls._get_all_rows(
-            SettingFrontVideoCategoryBase, SettingFrontVideoCategory
+        category_ids = await get_all_rows_by_condition_order_by_id(
+            SettingFrontVideoCategoryBase,
+            SettingFrontVideoCategoryBase.enable == true(),
+            SettingFrontVideoCategory,
         )
-        tag_field_ids = await cls._get_all_rows(
-            SettingFrontVideoTagFieldBase, SettingFrontVideoTagField
+        tag_field_ids = await get_all_rows_by_condition_order_by_id(
+            SettingFrontVideoTagFieldBase,
+            SettingFrontVideoTagFieldBase.enable == true(),
+            SettingFrontVideoTagField,
         )
         return SettingFrontVideo(
             category_ids=category_ids,

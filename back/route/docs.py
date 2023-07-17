@@ -18,7 +18,7 @@ router = APIRouter()
 
 if IS_SWAGGER:
 
-    @router.get("/docs", include_in_schema=False)
+    @router.get("/swagger", include_in_schema=False)
     def overridden_swagger():
         return get_swagger_ui_html(
             openapi_url="/openapi.json",

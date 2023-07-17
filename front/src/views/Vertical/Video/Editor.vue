@@ -128,6 +128,7 @@ function open() {
 function close() {
   editor.value.close();
 }
+defineExpose({ open, close, reset });
 </script>
 
 <template>

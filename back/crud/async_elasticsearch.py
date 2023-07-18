@@ -1,4 +1,5 @@
-from typing import Any, Generic, List
+from collections import deque
+from typing import Any, Generic, List, Set, Tuple
 
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import NotFoundError
@@ -14,6 +15,7 @@ from back.model.elasticsearch import (
 )
 from back.session.async_elasticsearch import async_elasticsearch
 from back.settings import setting
+from back.utils.keyword import KeywordParser
 
 ELASTICSEARCH_SIZE = setting.elastic_size
 ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000
@@ -81,6 +83,29 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             resp = SearchResult[SourceT](**doc)
             yield resp
 
+    async def get_field_names(self):
+        resp = await self.async_elasticsearch.indices.get_mapping(self.index)
+        mappings = resp.get(self.index, {}).get("mappings", None)
+        if mappings is None:
+            return set()
+        field_names = set()
+        stack = deque([(mappings, "")])
+        while stack:
+            current_mappings, parent_field_name = stack.popleft()
+            properties = current_mappings.get("properties", None)
+
+            if properties is None:
+                field_names.add(parent_field_name)
+                continue
+
+            for field_name, next_mappings in properties.items():
+                if parent_field_name:
+                    stack.append((next_mappings, f"{parent_field_name}.{field_name}"))
+                else:
+                    stack.append((next_mappings, field_name))
+
+        return field_names
+
     def get_basic_dsl(self, dsl: dict = None) -> dict:
         if dsl is None:
             return {
@@ -101,79 +126,140 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             return (page - 1) * self.size
         return 0
 
-    def get_match_query(
+    def _filter_field_names(
+        self, pairs: Tuple[str, str], field_names: Set[str]
+    ) -> Tuple[List[Tuple[str, str]], List[str]]:
+        new_pairs = []
+        remaining_keywords = []
+        for name, value in pairs:
+            if name in field_names:
+                new_pairs.append((name, value))
+            else:
+                remaining_keywords.append(name)
+                remaining_keywords.append(value)
+
+        return new_pairs, remaining_keywords
+
+    def _get_ngram_constant_score_query(self, keywords: List[str], fuzziness: int = 0):
+        _keywords_ngram = "".join(keywords)
+
+        ngram_fields = []
+        non_ngram_fields = []
+        for field in self.fields:
+            if field.endswith(AnalyzerEnum.NGRAM.value):
+                ngram_fields.append(field)
+            else:
+                non_ngram_fields.append(field)
+
+        ngram_constant_score_query = [
+            {
+                "constant_score": {
+                    "filter": {
+                        "multi_match": {
+                            "query": keyword,
+                            "fuzziness": fuzziness,
+                            "fields": ngram_fields,
+                        }
+                    }
+                }
+            }
+            for keyword in _keywords_ngram
+        ]
+
+        non_ngram_constant_score_query = [
+            {
+                "constant_score": {
+                    "filter": {
+                        "multi_match": {
+                            "query": keyword,
+                            "fuzziness": fuzziness,
+                            "fields": non_ngram_fields,
+                        }
+                    }
+                }
+            }
+            for keyword in keywords
+        ]
+
+        return ngram_constant_score_query + non_ngram_constant_score_query
+
+    def _get_constant_score_query(self, keywords: str, fuzziness: int = 0):
+        return [
+            {
+                "constant_score": {
+                    "filter": {
+                        "multi_match": {
+                            "query": keyword,
+                            "fuzziness": fuzziness,
+                            "fields": self.fields,
+                        }
+                    }
+                }
+            }
+            for keyword in keywords
+        ]
+
+    async def get_match_query(
         self,
         keywords: str,
         fuzziness: int = 0,
         boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
     ) -> dict:
-        _keywords = keywords.split()
+        field_names = await self.get_field_names()
+        parser = KeywordParser()
+        parsed_keywords = parser.parse(keywords)
+        remaining_keywords = parsed_keywords.remaining_keywords.split()
+        includes, remaining_keywords_from_includes = self._filter_field_names(
+            parsed_keywords.includes, field_names
+        )
+        excludes, remaining_keywords_from_excludes = self._filter_field_names(
+            parsed_keywords.excludes, field_names
+        )
+        new_remaining_keywords = (
+            remaining_keywords
+            + remaining_keywords_from_includes
+            + remaining_keywords_from_excludes
+        )
 
         if self.analyzer == AnalyzerEnum.NGRAM.value:
-            _keywords_ngram = keywords.replace(" ", "")
-            ngram_fields = []
-            non_ngram_fields = []
-            for field in self.fields:
-                if field.endswith(AnalyzerEnum.NGRAM.value):
-                    ngram_fields.append(field)
-                else:
-                    non_ngram_fields.append(field)
-
-            ngram_constant_score_query = [
-                {
-                    "constant_score": {
-                        "filter": {
-                            "multi_match": {
-                                "query": keyword,
-                                "fuzziness": fuzziness,
-                                "fields": ngram_fields,
-                            }
-                        }
-                    }
-                }
-                for keyword in _keywords_ngram
-            ]
-
-            non_ngram_constant_score_query = [
-                {
-                    "constant_score": {
-                        "filter": {
-                            "multi_match": {
-                                "query": keyword,
-                                "fuzziness": fuzziness,
-                                "fields": non_ngram_fields,
-                            }
-                        }
-                    }
-                }
-                for keyword in _keywords
-            ]
-
-            constant_score_query = (
-                ngram_constant_score_query + non_ngram_constant_score_query
+            constant_score_query = self._get_ngram_constant_score_query(
+                new_remaining_keywords, fuzziness
             )
         else:
-            constant_score_query = [
-                {
-                    "constant_score": {
-                        "filter": {
-                            "multi_match": {
-                                "query": keyword,
-                                "fuzziness": fuzziness,
-                                "fields": self.fields,
-                            }
-                        }
-                    }
-                }
-                for keyword in _keywords
-            ]
+            constant_score_query = self._get_constant_score_query(
+                new_remaining_keywords, fuzziness
+            )
 
         if type(boolean) is not str:
             _boolean = boolean.value
         else:
             _boolean = boolean
 
-        return {"bool": {_boolean: constant_score_query}}
+        for field_name, field_value in includes:
+            constant_score_query.append(
+                {
+                    "constant_score": {
+                        "filter": {
+                            "multi_match": {
+                                "query": field_value,
+                                "fuzziness": fuzziness,
+                                "fields": f"{field_name}.*",
+                            }
+                        }
+                    }
+                }
+            )
+
+        must_not = []
+        for field_name, field_value in excludes:
+            if field_value:
+                must_not.append(
+                    {"term": {f"{field_name}.keyword": {"value": field_value}}}
+                )
+            else:
+                must_not.append({"exists": {"field": field_name}})
+
+        return {"bool": {_boolean: constant_score_query, "must_not": must_not}}
 
     def add_advanced_query(
         self,
@@ -293,7 +379,9 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         if keywords:
             dsl["query"]["function_score"]["query"] = dsl[
                 "query"
-            ] = self.get_match_query(keywords, fuzziness=fuzziness, boolean=boolean)
+            ] = await self.get_match_query(
+                keywords, fuzziness=fuzziness, boolean=boolean
+            )
 
         return await self.query(page, dsl)
 
@@ -313,7 +401,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
         dsl = self.get_basic_dsl()
 
-        dsl["query"] = self.get_match_query(
+        dsl["query"] = await self.get_match_query(
             keywords, fuzziness=fuzziness, boolean=boolean
         )
 

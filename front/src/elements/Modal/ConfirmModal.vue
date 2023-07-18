@@ -1,14 +1,9 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { ref } from "vue";
 
 import Modal from "./Modal.vue";
 
-interface ConfirmModalState {
-  popout: boolean;
-}
-
 interface Props {
-  state: ConfirmModalState;
   title: string;
   message: string;
   onOpen: () => void;
@@ -17,10 +12,6 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  state: () =>
-    reactive<ConfirmModalState>({
-      popout: false,
-    }),
   title: "Confirm",
   message: "Are you sure?",
   onOpen: undefined,
@@ -28,34 +19,34 @@ const props = withDefaults(defineProps<Props>(), {
   onConfirm: undefined,
 });
 
-const state = props.state;
+const modalComponent = ref();
 
 function open() {
-  state.popout = true;
   if (props.onOpen !== undefined) {
     props.onOpen();
   }
+  modalComponent.value.open();
 }
 
 function close() {
-  state.popout = false;
   if (props.onClose !== undefined) {
     props.onClose();
   }
+  modalComponent.value.close();
 }
 
 function confirm() {
-  state.popout = false;
   if (props.onConfirm !== undefined) {
     props.onConfirm();
   }
+  modalComponent.value.close();
 }
 
-defineExpose({ open });
+defineExpose({ open, close });
 </script>
 
 <template>
-  <modal :state="state" :title="title" :on-close="onClose" class="w-1/2 lg:w-1/3 top-32 left-1/4 lg:left-1/3">
+  <modal ref="modalComponent" :title="title" :on-close="onClose" class="w-1/2 lg:w-1/3 top-32 left-1/4 lg:left-1/3">
     <div class="flex h-full 3xl:px-6 px-3 py-2 text-gray-100">
       <span>{{ message }}</span>
     </div>

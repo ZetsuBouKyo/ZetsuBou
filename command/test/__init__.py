@@ -1,6 +1,6 @@
 import typer
 
-from back.utils.keyword import parse_keywords
+from back.utils.keyword import KeywordParser
 from command.test.gallery import app as gallery
 from command.test.service import app as service
 from lib.typer import ZetsuBouTyper
@@ -17,7 +17,8 @@ app.add_typer(service)
 
 @app.command(name="parse-keywords")
 def _parse_keywords(keywords: str = typer.Argument(..., help="Keywords.")):
-    parse_keywords(keywords=keywords)
+    parser = KeywordParser()
+    print(parser.parse(keywords=keywords))
 
 
 @app.command()

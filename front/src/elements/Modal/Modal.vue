@@ -40,7 +40,6 @@ const state = props.state;
 
 function open() {
   state.popout = true;
-  document.body.style.position = "fixed";
   if (props.onOpen !== undefined) {
     props.onOpen();
   }
@@ -48,7 +47,6 @@ function open() {
 
 function close() {
   state.popout = false;
-  document.body.style.position = "static";
   if (props.onClose !== undefined) {
     props.onClose();
   }

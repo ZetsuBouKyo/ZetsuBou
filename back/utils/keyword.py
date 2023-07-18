@@ -15,19 +15,23 @@ class KeywordParser:
         self._in_quotes = False
 
     def _update(self, c=""):
-        if not self._is_field_name and self._field_name and self._field_value:
-            if self._included:
-                self._parsed_keywords.includes.append(
-                    (self._field_name.strip(), self._field_value.strip())
-                )
-            else:
-                self._parsed_keywords.excludes.append(
-                    (self._field_name.strip(), self._field_value.strip())
-                )
+        if not self._is_field_name:
+            if self._field_name and self._field_value:
+                if self._included:
+                    self._parsed_keywords.includes.append(
+                        (self._field_name.strip(), self._field_value.strip())
+                    )
+                else:
+                    self._parsed_keywords.excludes.append(
+                        (self._field_name.strip(), self._field_value.strip())
+                    )
         else:
-            self._parsed_keywords.remaining_keywords += (
-                self._field_name + self._field_value + c
-            )
+            if not self._included:
+                self._parsed_keywords.excludes.append((self._field_name.strip(), ""))
+            else:
+                self._parsed_keywords.remaining_keywords += (
+                    self._field_name + self._field_value + c
+                )
 
     def parse(self, keywords: str, value_sep: str = "=") -> ParsedKeywords:
         self._init()

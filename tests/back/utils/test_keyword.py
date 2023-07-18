@@ -3,6 +3,7 @@ from back.utils.keyword import KeywordParser
 
 def test():
     data = [
+        ("-language", "", [], [("language", "")]),
         ("-language=english", "", [], [("language", "english")]),
         ('-language="english"', "", [], [("language", "english")]),
         ('-"language"=english', "", [], [("language", "english")]),

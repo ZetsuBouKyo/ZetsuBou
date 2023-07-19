@@ -5,8 +5,6 @@ import { SourceState } from "@/interface/source";
 import { getGalleryTag, postGalleryTag } from "@/api/v1/gallery/tag";
 import { getDatetime } from "@/utils/datetime";
 
-import { messageState } from "./message";
-
 export const galleryState = reactive<SourceState<Gallery>>({
   data: {
     id: undefined,

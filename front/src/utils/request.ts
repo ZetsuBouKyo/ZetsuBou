@@ -1,6 +1,8 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
+import { messageState } from "@/state/message";
+
 const request = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: 30000,
@@ -30,7 +32,7 @@ request.interceptors.response.use(
     return response;
   },
   function (error) {
-    // TODO: add err msg
+    messageState.pushError(error);
     return Promise.reject(error);
   },
 );

@@ -93,8 +93,7 @@ async function synchronizeHandler(syncRequest: any, getProgressRequest: any, del
       if (response.status === 200) {
       }
     })
-    .catch((error: any) => {
-      messageState.pushError(error);
+    .catch(() => {
       state.isSync = false;
     });
 }

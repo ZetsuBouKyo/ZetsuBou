@@ -63,16 +63,12 @@ export const videoState = reactive<SourceState<Video>>({
     for (const field of emptyTagFields) {
       delete videoState.data.tags[field];
     }
-    return postTag(videoState.data.id, videoState.data)
-      .then((response) => {
-        if (response.status === 200) {
-          videoState.reset();
-        }
-        successEvent(response);
-        return response.data;
-      })
-      .catch((error) => {
-        return messageState.pushError(error);
-      });
+    return postTag(videoState.data.id, videoState.data).then((response) => {
+      if (response.status === 200) {
+        videoState.reset();
+      }
+      successEvent(response);
+      return response.data;
+    });
   },
 });

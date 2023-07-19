@@ -109,21 +109,17 @@ export const userState = reactive<UserState>({
       user.new_password = userState.data.newPassword;
     }
 
-    return putUser(userState.data.id as number, user)
-      .then((response) => {
-        const data = response.data;
-        if (response.status === 200) {
-          messageState.push("Saved");
-          userState.data.name = data.name;
-          userState.data.newName = undefined;
-          userState.data.password = undefined;
-          userState.data.oldPassword = undefined;
-          userState.data.newPassword = undefined;
-          userState.data.passwordConfirmation = undefined;
-        }
-      })
-      .catch((error) => {
-        return messageState.pushError(error);
-      });
+    return putUser(userState.data.id as number, user).then((response) => {
+      const data = response.data;
+      if (response.status === 200) {
+        messageState.push("Saved");
+        userState.data.name = data.name;
+        userState.data.newName = undefined;
+        userState.data.password = undefined;
+        userState.data.oldPassword = undefined;
+        userState.data.newPassword = undefined;
+        userState.data.passwordConfirmation = undefined;
+      }
+    });
   },
 });

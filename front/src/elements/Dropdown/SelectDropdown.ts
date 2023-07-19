@@ -1,6 +1,8 @@
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 
-import { SelectDropdownState, SelectDropdownOption } from "./SelectDropdown.interface";
+import { SelectDropdownState, SelectDropdownOption, SelectDropdownAssignedValue } from "./SelectDropdown.interface";
+
+import { getValue, setValue } from "@/utils/obj";
 
 export function initSelectDropdownState(): SelectDropdownState {
   const state = reactive<SelectDropdownState>({
@@ -20,6 +22,49 @@ export function initSelectDropdownState(): SelectDropdownState {
       for (let key in state) {
         state[key] = newState[key];
       }
+    },
+    addInputWatch: (
+      source: any,
+      key: string,
+      assigned: SelectDropdownAssignedValue = SelectDropdownAssignedValue.Title,
+    ) => {
+      watch(
+        () => getValue(source, key),
+        () => {
+          let assignedValue: any;
+          let assignedKey: "title" | "selectedValue";
+          switch (assigned) {
+            case SelectDropdownAssignedValue.Title:
+              assignedValue = state.title;
+              assignedKey = "title";
+              break;
+            case SelectDropdownAssignedValue.SelectedValue:
+              assignedValue = state.selectedValue;
+              assignedKey = "selectedValue";
+              break;
+          }
+          if (assignedValue !== getValue(source, key)) {
+            setValue(state, assignedKey, getValue(source, key));
+          }
+        },
+      );
+      watch(
+        () => String(state.title) + String(state.selectedValue),
+        () => {
+          let assignedValue: any;
+          switch (assigned) {
+            case SelectDropdownAssignedValue.Title:
+              assignedValue = state.title;
+              break;
+            case SelectDropdownAssignedValue.SelectedValue:
+              assignedValue = state.selectedValue;
+              break;
+          }
+          if (assignedValue !== undefined && assignedValue !== getValue(source, key)) {
+            setValue(source, key, assignedValue);
+          }
+        },
+      );
     },
   });
   return state;

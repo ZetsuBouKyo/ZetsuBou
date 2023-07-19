@@ -51,40 +51,10 @@ const privateState = reactive<PrivateState>({
 });
 
 const category = initSelectDropdownState() as SelectDropdownState;
-watch(
-  () => galleryState.data.attributes.category,
-  () => {
-    if (category.title !== galleryState.data.attributes.category) {
-      category.title = galleryState.data.attributes.category;
-    }
-  },
-);
-watch(
-  () => category.title,
-  () => {
-    if (category.title && category.title !== galleryState.data.attributes.category) {
-      galleryState.data.attributes.category = category.title as string;
-    }
-  },
-);
+category.addInputWatch(galleryState, "data.attributes.category");
 
 const rating = initSelectDropdownState() as SelectDropdownState;
-watch(
-  () => galleryState.data.attributes.rating,
-  () => {
-    if (galleryState.data.attributes.rating && galleryState.data.attributes.rating !== rating.title) {
-      rating.title = galleryState.data.attributes.rating;
-    }
-  },
-);
-watch(
-  () => rating.title,
-  () => {
-    if (rating.title && galleryState.data.attributes.rating !== rating.title) {
-      galleryState.data.attributes.rating = rating.title;
-    }
-  },
-);
+rating.addInputWatch(galleryState, "data.attributes.rating");
 rating.options = [
   { title: 0, value: 0 },
   { title: 1, value: 1 },

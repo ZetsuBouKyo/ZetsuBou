@@ -47,7 +47,7 @@ function save() {
     if (!status) {
       return;
     }
-    state.save(saved).then(() => {
+    state.save(saved).finally(() => {
       saveState.unlock();
     });
   });

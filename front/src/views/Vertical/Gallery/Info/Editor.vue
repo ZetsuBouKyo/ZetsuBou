@@ -115,7 +115,7 @@ function save() {
     }
   }
   saveState.lock();
-  galleryState.save(saved).then(() => {
+  galleryState.save(saved).finally(() => {
     saveState.unlock();
   });
 }

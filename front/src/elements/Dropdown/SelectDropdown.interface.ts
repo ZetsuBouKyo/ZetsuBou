@@ -31,7 +31,8 @@ export interface SelectDropdownState {
   isFocus?: boolean;
   clear: () => void;
   reset: () => void;
-  addInputWatch: (source: any, key: string) => void;
+  addInputWatch: (source: any, key: string, assigned: SelectDropdownAssignedValue) => void;
+  addInputChipsWatch: (source: any, key: string) => void;
 }
 
 export interface OnGet {

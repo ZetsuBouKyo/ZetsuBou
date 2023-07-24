@@ -95,11 +95,7 @@ export function initSelectDropdownState(): SelectDropdownState {
         state[key] = newState[key];
       }
     },
-    addInputWatch: (
-      source: any,
-      key: string,
-      assigned: SelectDropdownAssignedValue = SelectDropdownAssignedValue.Title,
-    ) => {
+    addInputWatch: (source: any, key: string, assigned: SelectDropdownAssignedValue) => {
       addInputWatch(state, source, key, assigned);
     },
     addInputChipsWatch: (source: any, key: string) => {

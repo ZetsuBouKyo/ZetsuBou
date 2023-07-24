@@ -3,7 +3,12 @@ import { reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
-import { OnGet, SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import {
+  OnGet,
+  SelectDropdownAssignedValue,
+  SelectDropdownMode,
+  SelectDropdownState,
+} from "@/elements/Dropdown/SelectDropdown.interface";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
@@ -51,10 +56,10 @@ const privateState = reactive<PrivateState>({
 });
 
 const category = initSelectDropdownState() as SelectDropdownState;
-category.addInputWatch(galleryState, "data.attributes.category");
+category.addInputWatch(galleryState, "data.attributes.category", SelectDropdownAssignedValue.Title);
 
 const rating = initSelectDropdownState() as SelectDropdownState;
-rating.addInputWatch(galleryState, "data.attributes.rating");
+rating.addInputWatch(galleryState, "data.attributes.rating", SelectDropdownAssignedValue.Title);
 rating.options = [
   { title: 0, value: 0 },
   { title: 1, value: 1 },

@@ -100,9 +100,11 @@ module.exports = {
       },
       minHeight: {
         14: "3.5rem",
+
         app: "calc(100vh - 5rem)",
       },
       maxHeight: {
+        120: "30rem",
         "1/2": "50%",
         "80v": "80vh",
       },

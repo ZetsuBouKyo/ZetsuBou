@@ -6,3 +6,17 @@ export function getQueryExample() {
     method: "get",
   });
 }
+
+export function getGalleryFieldNames() {
+  return request({
+    url: "/api/v1/elasticsearch/gallery/field-names",
+    method: "get",
+  });
+}
+
+export function getVideoFieldNames() {
+  return request({
+    url: "/api/v1/elasticsearch/video/field-names",
+    method: "get",
+  });
+}

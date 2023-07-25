@@ -1,5 +1,10 @@
 import { SelectDropdownState, OnGet } from "@/elements/Dropdown/SelectDropdown.interface";
 
+export interface Token {
+  id: number;
+  name: string;
+}
+
 export interface Tags {
   [key: string]: Array<string>;
 }

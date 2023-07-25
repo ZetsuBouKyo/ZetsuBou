@@ -50,6 +50,7 @@ export interface SearchState {
   category: SearchCategory;
   searchBase: SearchBase;
   defaultKeywords: string;
-  autocomplete: string;
   advancedSearchState: any;
+  width: number;
+  isOptions: boolean;
 }

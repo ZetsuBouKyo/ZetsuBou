@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from "vue";
+import { onBeforeMount, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
@@ -25,14 +25,10 @@ import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { userState } from "@/state/user";
 
 import { toTitle } from "@/utils/str";
+import { onMounted } from "vue";
 
 const route = useRoute();
 const router = useRouter();
-
-const advancedSearch = ref();
-function advanced() {
-  advancedSearch.value.open();
-}
 
 const state = reactive<SearchState>({
   query: {
@@ -48,8 +44,71 @@ const state = reactive<SearchState>({
   category: SearchCategory.Gallery,
   searchBase: SearchBase.Search,
   defaultKeywords: route.query.keywords as string,
-  autocomplete: "tag",
   advancedSearchState: { fields: [], category: SearchCategory.Gallery },
+  width: undefined,
+  isOptions: undefined,
+});
+
+onMounted(async () => {
+  await router.isReady();
+});
+
+const advancedSearch = ref();
+function advanced() {
+  advancedSearch.value.open();
+}
+
+const searchAutoComplete = ref();
+function openSearchAutoComplete() {
+  searchAutoComplete.value.open();
+}
+function closeSearchAutoComplete() {
+  searchAutoComplete.value.close();
+  focusInput();
+}
+watch(
+  () => searchAutoComplete.value?.isOpened(),
+  () => {
+    if (searchAutoComplete.value?.isOpened()) {
+      state.isOptions = true;
+    } else {
+      state.isOptions = false;
+    }
+  },
+);
+
+const searchInput = ref();
+function focusInput() {
+  searchInput.value.focus();
+}
+watch(
+  () => state.query?.keywords,
+  () => {
+    if (!state.query?.keywords) {
+      return;
+    }
+    openSearchAutoComplete();
+    focusInput();
+  },
+);
+watch(
+  () => searchInput.value?.getBoundingClientRect() + String(searchAutoComplete),
+  () => {
+    const rect = searchInput.value?.getBoundingClientRect();
+    if (rect === undefined || searchAutoComplete?.value === undefined) {
+      return;
+    }
+    state.width = rect.width;
+  },
+);
+onBeforeMount(() => {
+  document.addEventListener.call(window, "resize", () => {
+    const rect = searchInput.value?.getBoundingClientRect();
+    if (rect === undefined || searchAutoComplete?.value === undefined) {
+      return;
+    }
+    state.width = rect.width;
+  });
 });
 
 function updateByPath(path: string) {
@@ -290,27 +349,15 @@ function clearAll() {
   <advanced-search ref="advancedSearch" :key="state.category" :state="state.advancedSearchState"></advanced-search>
   <div class="sm:mr-5 mr-2 relative ml-4 flex w-full 3xl:text-base text-sm">
     <input
-      class="w-full border-2 border-gray-600 bg-gray-700 text-white placeholder-gray-400 h-10 pl-2 pr-16 rounded-lg focus:outline-none hidden sm:inline-block"
+      ref="searchInput"
+      class="w-full border-l-4 border-r-0 border-t-0 border-b-0 border-gray-700 bg-gray-700 text-white placeholder-gray-400 h-10 pl-2 pr-16 focus:border-gray-700 focus:ring-transparent hidden sm:inline-block"
+      :class="state.isOptions ? 'rounded-t-lg' : 'rounded-lg'"
       type="text"
       v-model="state.query.keywords"
       @keypress.enter="search"
-      v-if="state.defaultKeywords"
-      :list="state.autocomplete" />
-    <input
-      class="w-full border-2 border-gray-600 bg-gray-700 text-white placeholder-gray-400 h-10 pl-2 pr-16 rounded-lg focus:outline-none hidden sm:inline-block"
-      type="text"
-      placeholder="Search"
-      v-model="state.query.keywords"
-      @keypress.enter="search"
-      v-else
-      :list="state.autocomplete" />
-    <input
-      class="w-full border-2 border-gray-300 bg-white h-10 pl-2 pr-16 rounded-lg focus:outline-none inline-block sm:hidden"
-      type="search"
-      v-model="state.query.keywords"
-      @keypress.enter="search"
-      :list="state.autocomplete" />
-    <search-auto-complete :id="state.autocomplete" :search-state="state" />
+      @click="openSearchAutoComplete"
+      @focusout="closeSearchAutoComplete" />
+    <search-auto-complete ref="searchAutoComplete" :width="state.width" :search-state="state" />
     <div class="absolute right-0 h-full inline-flex text-left">
       <button type="button" class="flex flex-row items-center w-full mr-1 font-medium text-gray-700 focus:outline-none">
         <icon-ic-baseline-search class="hover:opacity-50" style="font-size: 1.5rem; color: white" @click="search" />

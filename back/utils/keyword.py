@@ -71,7 +71,10 @@ class KeywordParser:
                 self._included = False
 
             elif c == value_sep:
-                self._is_field_name = False
+                if not self._is_field_name:
+                    self._field_value += c
+                else:
+                    self._is_field_name = False
             else:
                 if self._is_field_name:
                     self._field_name += c

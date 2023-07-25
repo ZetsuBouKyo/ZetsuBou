@@ -9,6 +9,8 @@ def test():
         ('-"language"=english', "", [], [("language", "english")]),
         ('-"language"="english"', "", [], [("language", "english")]),
         ("language=中文", "", [("language", "中文")], []),
+        ("language==中文", "", [("language", "=中文")], []),
+        ("language==中=文=", "", [("language", "=中=文=")], []),
         (" language=中文", "", [("language", "中文")], []),
         (" language=中文 ", "", [("language", "中文")], []),
         (" language=中文  ", "", [("language", "中文")], []),

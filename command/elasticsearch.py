@@ -4,6 +4,7 @@ import typer
 from elasticsearch.helpers import async_reindex
 from rich import print_json
 
+from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.init.async_elasticsearch import create_gallery, create_video, init_indices
 from back.model.elasticsearch import AnalyzerEnum
 from back.session.async_elasticsearch import async_elasticsearch
@@ -143,3 +144,9 @@ async def match_phrase_prefix(
 
     _resp = await async_elasticsearch.search(index=index, query=query, size=size)
     print_json(data=_resp)
+
+
+@app.command()
+async def get_field_names(index: str = typer.Argument(..., help="Index name.")):
+    crud = CrudAsyncElasticsearchBase(index=index)
+    _resp = await crud.get_field_names()

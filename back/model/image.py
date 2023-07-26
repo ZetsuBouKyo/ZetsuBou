@@ -14,6 +14,19 @@ for extension in registered_extensions().keys():
 ImageFormatEnum = Enum("ImageFormatEnum", _image_formats)
 
 
+class BrowserImageFormatEnum(str, Enum):
+    GIF: str = ".gif"
+    JFIF: str = ".jfif"
+    JIF: str = ".jif"
+    JPE: str = ".jpe"
+    JPEG: str = ".jpeg"
+    JPG: str = ".jpg"
+    PNG: str = ".png"
+    SVG: str = ".svg"
+    VND_MICROSOFT_ICON: str = ".ico"
+    WEBP: str = ".webp"
+
+
 class Image(BaseModel):
     id: str
     gallery_id: str

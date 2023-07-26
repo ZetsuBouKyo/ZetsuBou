@@ -23,7 +23,7 @@ from back.utils.dt import (
     get_now,
     is_isoformat_with_timezone,
 )
-from back.utils.image import is_image
+from back.utils.image import is_browser_image
 
 ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000
 ELASTICSEARCH_INDEX_GALLERY = setting.elastic_index_gallery
@@ -474,7 +474,9 @@ class CrudAsyncGallery:
         async with self.storage_session:
             filenames = await self.storage_session.list_filenames(self.gallery)
 
-        images = [filename for filename in filenames if is_image(Path(filename))]
+        images = [
+            filename for filename in filenames if is_browser_image(Path(filename))
+        ]
         images.sort(key=alphanum_sorting)
         return images
 

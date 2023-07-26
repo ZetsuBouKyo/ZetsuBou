@@ -176,7 +176,11 @@ function updateOptions(cur: string, pre: string) {
             keywords.push(token.name);
           } else {
             const fieldName = keyword.split(valueSep)[0];
-            const lastKeyword = `${fieldName}${valueSep}${token.name}`;
+            let fieldValue = token.name;
+            if (token.name.includes(" ")) {
+              fieldValue = `"${fieldValue}"`;
+            }
+            const lastKeyword = `${fieldName}${valueSep}${fieldValue}`;
             keywords.push(lastKeyword);
           }
           searchState.query.keywords = keywords.join(" ");

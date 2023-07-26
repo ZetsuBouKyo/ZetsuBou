@@ -1,5 +1,6 @@
 import typer
 
+from back.model.image import ImageFormatEnum
 from back.utils.keyword import KeywordParser
 from command.test.gallery import app as gallery
 from command.test.service import app as service
@@ -32,3 +33,12 @@ def watch_files():
     filenames = get_watched_files()
     for filename in filenames:
         print(filename)
+
+
+@app.command()
+def list_image_formats():
+    """
+    List the image formats available in the system.
+    """
+    for f in ImageFormatEnum:
+        print(f"{f.name} : {f.value}")

@@ -57,6 +57,9 @@ def clone_tags(
 
 @app.command()
 async def get_gallery_tag(gallery_id: str = typer.Argument(..., help="Gallery ID.")):
+    """
+    Get the gallery tag.
+    """
     crud_elastic = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
     elastic_gallery = await crud_elastic.get_by_id(gallery_id)
     print("Gallery from Elasticsearch")
@@ -90,6 +93,9 @@ async def match(
         help="See Elasticsearch analyzer (https://www.elastic.co/guide/en/elasticsearch/reference/current/analyzer.html).",  # noqa
     ),
 ):
+    """
+    Search.
+    """
     crud = CrudAsyncElasticsearchGallery(
         size=size, index=index, analyzer=analyzer, is_from_setting_if_none=True
     )
@@ -122,6 +128,9 @@ async def random(
     ),
     seed: int = typer.Option(default=1048596, help="Random seed."),
 ):
+    """
+    Random search.
+    """
     crud = CrudAsyncElasticsearchGallery(
         size=size, index=index, analyzer=analyzer, is_from_setting_if_none=True
     )
@@ -135,6 +144,9 @@ async def random(
 async def get_image_filenames(
     gallery_id: str = typer.Argument(..., help="Gallery ID.")
 ):
+    """
+    List the images in the gallery.
+    """
     crud = await get_crud_async_gallery(gallery_id)
     resp = await crud.get_image_filenames()
     print_json(data=resp)
@@ -148,6 +160,9 @@ async def update_gallery_tag(
     labels: str = typer.Option(default=None, help="Gallery labels."),
     label_separator: str = typer.Option(default=",", help="Gallery label separator."),
 ):
+    """
+    Update the gallery tag.
+    """
     gallery = await get_gallery_by_gallery_id(gallery_id)
     print_json(data=gallery.dict())
     if name is not None:
@@ -167,6 +182,9 @@ async def update_gallery_tag(
 
 @app.command()
 async def delete(gallery_id: str = typer.Argument(..., help="Gallery ID.")):
+    """
+    Delete the gallery.
+    """
     crud_async_gallery = CrudAsyncGallery(gallery_id, is_from_setting_if_none=True)
     await crud_async_gallery.init()
     await crud_async_gallery.delete()

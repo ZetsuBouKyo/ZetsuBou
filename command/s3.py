@@ -53,6 +53,9 @@ async def _generate_presigned_url(
     ),
     expires_in: int = typer.Option(default=3600, help="Time in seconds."),
 ):
+    """
+    Get the url.
+    """
     async with AsyncS3Session(
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
@@ -87,6 +90,9 @@ async def _list(
         default="ap-northeast-1-tpe-1", help="Region name."
     ),
 ):
+    """
+    List all contents and prefixes with the delimiter `/`.
+    """
     async with AsyncS3Session(
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
@@ -119,6 +125,9 @@ async def _list_filenames(
         default="ap-northeast-1-tpe-1", help="Region name."
     ),
 ):
+    """
+    List all the contents in one layer.
+    """
     async with AsyncS3Session(
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
@@ -152,6 +161,9 @@ async def get_storage_stat(
         default="ap-northeast-1-tpe-1", help="Region name."
     ),
 ):
+    """
+    Get storage stat.
+    """
     async with AsyncS3Session(
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
@@ -184,6 +196,9 @@ async def _list_nested_sources(
         default="ap-northeast-1-tpe-1", help="Region name."
     ),
 ):
+    """
+    List all contents with nested paths.
+    """
     async with AsyncS3Session(
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
@@ -218,6 +233,9 @@ async def _exists(
         default="ap-northeast-1-tpe-1", help="Region name."
     ),
 ):
+    """
+    Check if content exists.
+    """
     async with AsyncS3Session(
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
@@ -249,6 +267,9 @@ async def _get_object(
         default="ap-northeast-1-tpe-1", help="Region name."
     ),
 ):
+    """
+    Get the bytes of the content.
+    """
     async with AsyncS3Session(
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
@@ -281,6 +302,9 @@ async def _put_json(
         default="ap-northeast-1-tpe-1", help="Region name."
     ),
 ):
+    """
+    Create a JSON file.
+    """
     async with AsyncS3Session(
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
@@ -315,6 +339,9 @@ async def _delete(
         default="ap-northeast-1-tpe-1", help="Region name."
     ),
 ):
+    """
+    Delete the content or prefix.
+    """
     async with AsyncS3Session(
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
@@ -347,6 +374,9 @@ async def _iter(
         default="ap-northeast-1-tpe-1", help="Region name."
     ),
 ):
+    """
+    List the contents with the specific depth.
+    """
     async with AsyncS3Session(
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,

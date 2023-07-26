@@ -15,6 +15,9 @@ async def download(
     url: str = typer.Argument(..., help="Static url."),
     statics_home: str = typer.Argument(..., help="Static home."),
 ):
+    """
+    Get static files via URL.
+    """
     await get_static_file(url, statics_home)
 
 
@@ -23,6 +26,9 @@ def favicon(
     source: str = typer.Argument(..., help="Source image."),
     out: str = typer.Argument(..., help="Output folder."),
 ):
+    """
+    Turn an image into a favicon.
+    """
     _source = Path(source)
     if not _source.exists() or not _source.is_file():
         return

@@ -41,6 +41,9 @@ def print_setting():
 
 @app.command()
 def generate_timezone_options(out: str = typer.Argument(..., help="Output path.")):
+    """
+    Create a timezone JSON file.
+    """
     out_path = Path(out)
     with out_path.open(mode="w") as fp:
         json.dump(pytz.all_timezones, fp)
@@ -48,6 +51,9 @@ def generate_timezone_options(out: str = typer.Argument(..., help="Output path."
 
 @app.command()
 def generate_interface(out: str = typer.Argument(..., help="Output path.")):
+    """
+    Generate Typescript interfaces from the Python `Setting` class.
+    """
     lines = []
     schema = Setting.schema()
     title = schema.get("title", None)

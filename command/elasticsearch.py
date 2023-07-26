@@ -18,11 +18,17 @@ app = ZetsuBouTyper(name="elasticsearch", help=_help)
 
 @app.command()
 async def create_gallery_index(index: str = typer.Argument(..., help="Index name.")):
+    """
+    Create gallery index.
+    """
     await create_gallery(async_elasticsearch, index)
 
 
 @app.command()
 async def create_video_index(index: str = typer.Argument(..., help="Index name.")):
+    """
+    Create video index.
+    """
     await create_video(async_elasticsearch, index)
 
 
@@ -77,6 +83,9 @@ async def reindex(
     source_index: str = typer.Argument(..., help="Index name."),
     target_index: str = typer.Argument(..., help="Index name."),
 ):
+    """
+    Reindex the indices.
+    """
     if not await async_elasticsearch.indices.exists(index=source_index):
         print(f"{source_index} not found")
         return
@@ -115,6 +124,9 @@ async def analyze(
 
 @app.command()
 async def match_all(index: str = typer.Argument(..., help="Index name.")):
+    """
+    Send `match_all` query.
+    """
     query = {"match_all": {}}
     _resp = await async_elasticsearch.search(
         index=index, query=query, track_total_hits=True
@@ -129,6 +141,9 @@ async def match_phrase_prefix(
     text: List[str] = typer.Option(default=..., help="Keywords."),
     size: int = typer.Option(default=10, help="Size."),
 ):
+    """
+    Send `match_phrase_prefix` query.
+    """
     if len(field) != len(text):
         print("The number of fields and text do not correspond to each other.")
         return
@@ -148,5 +163,8 @@ async def match_phrase_prefix(
 
 @app.command()
 async def get_field_names(index: str = typer.Argument(..., help="Index name.")):
+    """
+    Get the field names of the index.
+    """
     crud = CrudAsyncElasticsearchBase(index=index)
     _resp = await crud.get_field_names()

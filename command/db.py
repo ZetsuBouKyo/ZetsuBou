@@ -67,6 +67,9 @@ async def list_schemas():
 
 @app.command()
 async def drop_table(table_name: str = typer.Argument(..., help="Table name.")):
+    """
+    Drop the table.
+    """
     tables = list_tables()
     if table_name not in tables:
         return
@@ -156,6 +159,9 @@ async def list_seqs():
 
 @app.command(name="list")
 async def _list(table_name: str = typer.Argument(..., help="Table name.")):
+    """
+    List all rows in a specific table.
+    """
     table_instances = get_table_instances()
     table_class = table_instances[table_name]
     rows = await get_all_rows_order_by_id(table_class)

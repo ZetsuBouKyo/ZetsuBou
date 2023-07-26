@@ -206,6 +206,9 @@ async def load_table(
     table: str = typer.Argument(..., help="Table JSON path."),
     table_name: str = typer.Option(default=None, help="Table JSON path."),
 ):
+    """
+    Load data from JSON into an SQL table.
+    """
     table_path = Path(table)
     if table_name is None:
         table_name = table_path.stem

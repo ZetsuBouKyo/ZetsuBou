@@ -7,7 +7,7 @@ from lib.typer import ZetsuBouTyper
 from lib.uvicorn.files import get_watched_files
 
 _help = """
-Build the testing cases.
+Test the functions or services.
 """
 app = ZetsuBouTyper(name="test", help=_help)
 
@@ -17,12 +17,18 @@ app.add_typer(service)
 
 @app.command(name="parse-keywords")
 def _parse_keywords(keywords: str = typer.Argument(..., help="Keywords.")):
+    """
+    Parse the keywords.
+    """
     parser = KeywordParser()
     print(parser.parse(keywords=keywords))
 
 
 @app.command()
 def watch_files():
+    """
+    Get all watched files.
+    """
     filenames = get_watched_files()
     for filename in filenames:
         print(filename)

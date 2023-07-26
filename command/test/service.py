@@ -5,7 +5,10 @@ from back.init.check import ping as _ping
 from back.model.service import ServiceEnum
 from lib.typer import ZetsuBouTyper
 
-app = ZetsuBouTyper(name="service")
+_help = """
+Test the services.
+"""
+app = ZetsuBouTyper(name="service", help=_help)
 
 
 @app.command()

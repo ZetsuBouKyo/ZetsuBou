@@ -8,11 +8,19 @@ from back.model.video import Video
 from back.session.async_elasticsearch import async_elasticsearch
 from lib.typer import ZetsuBouTyper
 
-app = ZetsuBouTyper(name="migrate")
+_help = """
+Migrate the data to the new version.
+"""
+app = ZetsuBouTyper(name="migrate", help=_help)
 
 
 @app.command()
 async def video(index: str = typer.Argument(..., help="Video index name.")):
+    """
+    Change the format of the `path` in video tag.
+
+    From `minio://{bucket name}/{prefix}` to `minio-{number}://{bucket name}/{prefix}`.
+    """
     batch_size = 300
     crud = CrudAsyncElasticsearchVideo(
         size=300, index=index, is_from_setting_if_none=True

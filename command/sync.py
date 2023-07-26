@@ -33,6 +33,9 @@ async def _storage(
         default=True, help="Send progress information to Redis."
     ),
 ):
+    """
+    Synchronize the storage with protocol and storage ID.
+    """
     ti = time.time()
 
     crud = await get_crud_sync(protocol, storage_id, is_progress=progress)

@@ -68,6 +68,9 @@ watch(
   },
   () => {
     numerator.selectedValue = table.row.numerator_id;
+    if (!userID || !numerator.selectedValue) {
+      return;
+    }
     getUserElasticCountQuery(userID, numerator.selectedValue).then((response) => {
       const data = response.data;
       if (data) {
@@ -96,6 +99,9 @@ watch(
   },
   () => {
     denominator.selectedValue = table.row.denominator_id;
+    if (!userID || !denominator.selectedValue) {
+      return;
+    }
     getUserElasticCountQuery(userID, denominator.selectedValue).then((response) => {
       const data = response.data;
       if (data) {

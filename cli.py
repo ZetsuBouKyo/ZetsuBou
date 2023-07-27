@@ -1,8 +1,9 @@
+import asyncio
 import json
 import os
 import shutil
-import subprocess
 import tempfile
+import time
 from pathlib import Path
 from uuid import uuid4
 
@@ -10,6 +11,7 @@ import typer
 from pdf2image import convert_from_path
 
 from back.crud.setting import update_settings
+from back.init.check import ping
 from back.init.logger import init_zetsubou_logger
 from back.init.setting import init_example_settings
 from back.model.gallery import Gallery as GalleryModel
@@ -41,6 +43,7 @@ except ModuleNotFoundError:
 DIR_FNAME = setting.gallery_dir_fname
 TAG_FNAME = setting.gallery_tag_fname
 
+APP_SECURITY = setting.app_security
 APP_PORT = setting.app_port
 APP_HOST = setting.app_host
 LOG_LEVEL = setting.app_logging_level
@@ -82,6 +85,12 @@ def run(
         default=LOG_LEVEL, help="Logging level."
     ),
     reload: bool = typer.Option(default=True, help="Uvicorn reload."),
+    max_retries: int = typer.Option(
+        default=50, help="Maximum retries for pinging the services."
+    ),
+    interval: int = typer.Option(
+        default=5, help="Time interval to retry the service ping."
+    ),
 ):
     from lib import uvicorn
 
@@ -93,12 +102,22 @@ def run(
         log_level = log_level.value
     uvicorn_log_level = log_level.lower()
 
+    if APP_SECURITY:
+        r = 1
+        are_services = asyncio.run(ping())
+        while r < max_retries and not are_services:
+            time.sleep(interval)
+            print("retries...")
+            r += 1
+            are_services = asyncio.run(ping())
+
     uvicorn.run(
         "app:app",
         log_level=uvicorn_log_level,
         host=app_host,
         port=app_port,
         reload=reload,
+        lifespan="on",
     )
 
 

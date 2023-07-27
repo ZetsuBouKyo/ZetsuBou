@@ -162,11 +162,11 @@ function onCloseEditor() {
       :on-crud-delete="onCrudDelete"
       :on-close-editor="onCloseEditor">
       <template v-slot:editor>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Name:</span>
           <input class="w-1/2 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
         </div>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Numerator Id:</span>
           <select-dropdown
             class="h-10 w-64"
@@ -176,7 +176,7 @@ function onCloseEditor() {
             :on-get-to-options="onGetToOptions"></select-dropdown>
           <ripple-button class="ml-2 btn btn-primary" @click="openQueryPage"> Add </ripple-button>
         </div>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Denominator Id:</span>
           <select-dropdown
             class="h-10 w-64"

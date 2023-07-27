@@ -82,11 +82,11 @@ loadExample();
     :on-crud-update="onCrudUpdate"
     :on-crud-delete="onCrudDelete">
     <template v-slot:editor>
-      <div class="modal-row">
+      <div class="modal-row h-10">
         <span class="w-24 mr-4">Name:</span>
         <input class="flex-1 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
       </div>
-      <div class="modal-row">
+      <div class="modal-row h-10">
         <span class="w-24 mr-4">Template:</span>
         <select-dropdown
           class="h-10 w-64"

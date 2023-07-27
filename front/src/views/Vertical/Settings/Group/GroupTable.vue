@@ -93,7 +93,7 @@ function onCloseEditor() {
       :on-open-editor="onOpenEditor"
       :on-close-editor="onCloseEditor">
       <template v-slot:editor>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Name:</span>
           <input class="flex-1 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
         </div>

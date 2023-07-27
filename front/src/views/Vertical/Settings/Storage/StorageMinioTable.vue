@@ -335,11 +335,11 @@ function sync(row: Row) {
         </crud-table-button>
       </template>
       <template v-slot:editor>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Name:</span>
           <input class="flex-1 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
         </div>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Endpoint:</span>
           <input
             class="flex-1 modal-input"
@@ -348,7 +348,7 @@ function sync(row: Row) {
             v-model="table.row.endpoint"
             autocomplete="new-password" />
         </div>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Access key:</span>
           <input
             class="flex-1 modal-input"
@@ -357,7 +357,7 @@ function sync(row: Row) {
             v-model="table.row.access_key"
             autocomplete="new-password" />
         </div>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Secret key:</span>
           <input
             class="flex-1 modal-input"
@@ -366,7 +366,7 @@ function sync(row: Row) {
             v-model="table.row.secret_key"
             autocomplete="new-password" />
         </div>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Category:</span>
           <select-dropdown
             class="h-10 w-64"
@@ -374,7 +374,7 @@ function sync(row: Row) {
             :state="categoriesDropdown"
             :on-select="onSelectCategory"></select-dropdown>
         </div>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Bucket Name:</span>
           <select-dropdown
             class="h-10 w-64"
@@ -387,7 +387,7 @@ function sync(row: Row) {
           >
           <span class="ml-4 text-red-500" v-else>Failed</span>
         </div>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Prefix:</span>
           <input
             class="flex-1 modal-input"
@@ -401,7 +401,7 @@ function sync(row: Row) {
             <option v-for="(p, i) in prefix.options" :value="p" :key="i" />
           </datalist>
         </div>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Depth:</span>
           <input
             class="flex-1 modal-input"

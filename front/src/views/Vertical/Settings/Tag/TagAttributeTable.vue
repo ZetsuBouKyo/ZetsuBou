@@ -46,7 +46,7 @@ const onCrudDelete = deleteTagAttribute;
       :on-crud-delete="onCrudDelete"
       :delete-confirm-message="'Are you sure you want to permanently delete this row? This might destroy the database.'">
       <template v-slot:editor>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-32 mr-4">Name:</span>
           <input class="w-1/2 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
         </div>

@@ -270,7 +270,7 @@ function confirmRemove(row: any) {
     :on-close="onCloseEditor"
     :class="editorClass">
     <slot name="editor"></slot>
-    <div class="modal-row-reverse">
+    <div class="modal-row-reverse h-10">
       <button class="flex ml-2 btn btn-primary" @click="state.editor.handler">Save</button>
       <button class="flex ml-2 btn btn-primary" @click="editor.close">Cancel</button>
       <slot name="editor-buttons"></slot>

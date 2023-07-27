@@ -206,11 +206,11 @@ function onCrudDelete(id: number) {
       :on-crud-delete="onCrudDelete"
       :on-close-editor="onCloseEditor">
       <template v-slot:editor>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-20 mr-4">Name:</span>
           <input class="w-1/2 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
         </div>
-        <div class="modal-row">
+        <div class="modal-row h-10">
           <span class="w-20 mr-4">Category:</span>
           <select-dropdown
             class="h-10 w-64"
@@ -219,7 +219,7 @@ function onCrudDelete(id: number) {
             :on-get="onGetCategory"
             :on-get-to-options="onGetCategoryToOptions"></select-dropdown>
         </div>
-        <div class="modal-row" v-if="category.title">
+        <div class="modal-row h-10" v-if="category.title">
           <span class="w-20 mr-4">Quest Id:</span>
           <select-dropdown
             class="h-10 w-64"
@@ -230,7 +230,7 @@ function onCrudDelete(id: number) {
           <ripple-button class="ml-2 btn btn-primary" @click="openQuestPage"> Add </ripple-button>
         </div>
         <div class="modal-row h-10" v-else></div>
-        <div class="modal-row" v-if="category.title">
+        <div class="modal-row h-10" v-if="category.title">
           <span class="w-20 mr-4">Priority:</span>
           <input
             class="w-1/2 modal-input"

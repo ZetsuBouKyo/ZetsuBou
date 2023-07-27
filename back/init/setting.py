@@ -46,6 +46,11 @@ def init_example_settings(setting: Setting = None):
     excludes = [app_port]
     setting.app_port = app_port
 
+    # app statics
+    setting.app_docs_swagger_js_url = "/statics/swagger-ui-bundle.js"
+    setting.app_docs_swagger_css_url = "/statics/swagger-ui.css"
+    setting.app_docs_redoc_js_url = "/statics/redoc.standalone.js"
+
     # database
     database_port = int(get_setting_example("database_port"))
     database_port = get_port(database_port, excludes=excludes)

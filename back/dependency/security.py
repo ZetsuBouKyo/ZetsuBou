@@ -17,9 +17,8 @@ SECRET = setting.app_security_secret
 ALGORITHM = setting.app_security_algorithm
 
 _scopes = {
-    "admin": "admin",
-    "guest": "guest",
-    ScopeEnum.elasticsearch_query_examples_get.name: "get elasticsearch query example",
+    "admin": "An account that has full priority in the system.",
+    "guest": "User who can only view content.",
 }
 
 reusable_oauth2 = OAuth2PasswordBearer(

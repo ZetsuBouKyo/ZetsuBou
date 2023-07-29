@@ -5,7 +5,7 @@ class ScopeEnum(str, Enum):
     admin: str = "admin"
     guest: str = "guest"
 
-    elasticsearch: str = ""
+    elasticsearch: str = "elasticsearch"
     elasticsearch_query_examples_get: str = "elasticsearch.query-examples:get"
     elasticsearch_analyzers_get: str = "elasticsearch.analyzers:get"
 

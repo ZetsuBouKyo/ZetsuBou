@@ -19,7 +19,8 @@ from back.model.s3 import (
 )
 from back.model.storage import StorageStat
 from back.settings import setting
-from back.utils.image import is_image
+from back.utils.fs import alphanum_sorting
+from back.utils.image import is_browser_image, is_image
 from back.utils.video import is_video
 
 BUCKET_NAMES = [setting.storage_cache, setting.storage_backup]
@@ -443,6 +444,17 @@ class AsyncS3Session(AioSession):
 
     async def list_filenames(self, source: SourceBaseModel) -> List[str]:
         return await list_filenames(self.client, source.bucket_name, source.object_name)
+
+    async def list_images(self, source: SourceBaseModel) -> List[str]:
+        filenames = await list_filenames(
+            self.client, source.bucket_name, source.object_name
+        )
+        images = [
+            filename for filename in filenames if is_browser_image(Path(filename))
+        ]
+        images.sort(key=alphanum_sorting)
+
+        return images
 
     async def iter(self, source: SourceBaseModel, depth: int):
         async for obj in iter(

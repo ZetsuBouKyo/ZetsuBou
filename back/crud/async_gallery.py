@@ -1,4 +1,3 @@
-import re
 from pathlib import Path
 from typing import Any, Dict, List
 from uuid import uuid4
@@ -23,7 +22,6 @@ from back.utils.dt import (
     get_now,
     is_isoformat_with_timezone,
 )
-from back.utils.image import is_browser_image
 
 ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000
 ELASTICSEARCH_INDEX_GALLERY = setting.elastic_index_gallery
@@ -77,14 +75,6 @@ elasticsearch_gallery_analyzer = {
     ],
     AnalyzerEnum.URL.value: ["path.url", "attributes.src.url"],
 }
-
-
-def convert(text) -> int:
-    return int(text) if text.isdigit() else text
-
-
-def alphanum_sorting(text) -> List[int]:
-    return [convert(c) for c in re.split("([0-9]+)", text)]
 
 
 def get_sync_gallery_progress_id(protocol: SourceProtocolEnum, id: int):
@@ -472,12 +462,8 @@ class CrudAsyncGallery:
 
     async def get_image_filenames(self) -> List[str]:
         async with self.storage_session:
-            filenames = await self.storage_session.list_filenames(self.gallery)
+            images = await self.storage_session.list_images(self.gallery)
 
-        images = [
-            filename for filename in filenames if is_browser_image(Path(filename))
-        ]
-        images.sort(key=alphanum_sorting)
         return images
 
     async def get_cover(self) -> str:

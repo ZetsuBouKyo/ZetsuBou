@@ -79,6 +79,7 @@ function reset() {
 }
 
 function open() {
+  window.scrollTo(0, 0);
   editor.value.open();
   if (!privateState.json) {
     privateState.json = JSON.stringify(state.data, null, 4);

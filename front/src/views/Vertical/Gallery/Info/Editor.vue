@@ -101,6 +101,7 @@ function reset() {
 }
 
 function open() {
+  window.scrollTo(0, 0);
   editor.value.open();
 }
 

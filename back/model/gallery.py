@@ -32,6 +32,12 @@ class Attributes(BaseModel):
         description="Value between 1 and 5.",
         example=5,
     )
+    pages: int = Field(
+        default=None,
+        title="Gallery page",
+        description="Number of images in the gallery.",
+        example=1,
+    )
     src: str = Field(
         default=None,
         title="Gallery source",

@@ -19,8 +19,12 @@ export interface GeneralAnalyzerSetting {
   keyword: GeneralAnalyzerKeywordSetting;
 }
 
+export interface GeneralGallerySettingGoto {
+  sync_pages: boolean;
+}
 export interface GeneralGallerySetting {
   analyzer: GeneralAnalyzerSetting;
+  goto: GeneralGallerySettingGoto;
 }
 
 export interface GeneralVideoSetting {
@@ -35,8 +39,8 @@ export interface GeneralSetting {
 
 export const settingState = reactive<BaseState<GeneralSetting>>({
   data: undefined,
-  init: () => {
-    getSettingFrontGeneral().then((response) => {
+  init: async () => {
+    return getSettingFrontGeneral().then((response) => {
       const data: GeneralSetting = response.data;
       settingState.data = data;
     });

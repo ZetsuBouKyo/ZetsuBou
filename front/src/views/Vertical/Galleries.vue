@@ -19,6 +19,7 @@ function getItems(hits: any) {
   let items: Items = [];
   for (let i = 0; i < hits.length; i++) {
     let id = hits[i]._id;
+
     let item: Item = {
       category: hits[i]._source.attributes.category,
       rating: hits[i]._source.attributes.rating,
@@ -28,6 +29,10 @@ function getItems(hits: any) {
       srcUrl: hits[i]._source.attributes.src,
       timestamp: getDatetime(hits[i]._source.timestamp),
     };
+    const pages = hits[i]._source?.attributes?.pages;
+    if (pages !== undefined) {
+      item.pages = pages;
+    }
     items.push(item);
   }
   return items;

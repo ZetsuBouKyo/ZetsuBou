@@ -10,6 +10,7 @@ import Info from "./Info/index.vue";
 
 import { getImages } from "@/api/v1/gallery/image";
 
+import { settingState } from "@/state/Setting/front";
 import { galleryState } from "@/state/gallery";
 import { userState } from "@/state/user";
 
@@ -56,7 +57,14 @@ function load() {
     .then((response) => {
       const imgs = response.data;
       const total = imgs.length;
-
+      if (
+        total !== undefined &&
+        settingState.data.gallery.goto.sync_pages &&
+        galleryState.data.attributes.pages != total
+      ) {
+        galleryState.data.attributes.pages = total;
+        galleryState.save().finally(() => {});
+      }
       previews.pagination = getPagination(route.path, total, query);
       previews.items = getItems(id, imgs, query);
     })

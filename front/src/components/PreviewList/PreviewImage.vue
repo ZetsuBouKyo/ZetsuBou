@@ -63,7 +63,10 @@ watch(
           </a>
         </div>
       </div>
-      <star-rating class="mb-2" :filled="item.rating" />
+      <div class="flex flex-row">
+        <star-rating class="mb-2" :filled="item.rating" />
+        <span class="ml-auto text-gray-500" v-if="item.pages">{{ item.pages }} pages</span>
+      </div>
       <h2 class="text-white 3xl:text-lg text-base break-words" v-if="item.title">
         {{ item.title }}
       </h2>

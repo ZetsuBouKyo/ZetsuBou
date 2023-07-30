@@ -18,6 +18,7 @@ export const galleryState = reactive<SourceState<Gallery>>({
       uploader: null,
       category: null,
       rating: null,
+      pages: null,
       src: null,
     },
     tags: {},
@@ -60,7 +61,9 @@ export const galleryState = reactive<SourceState<Gallery>>({
       if (response.status === 200) {
         galleryState.reset();
       }
-      successEvent(response);
+      if (successEvent) {
+        successEvent(response);
+      }
       return response;
     });
   },

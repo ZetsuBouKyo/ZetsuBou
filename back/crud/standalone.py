@@ -24,7 +24,7 @@ from back.session.async_elasticsearch import async_elasticsearch as _async_elast
 from back.session.storage.async_s3 import get_source
 from back.settings import setting
 from back.utils.dt import get_now
-from back.utils.image import is_image
+from back.utils.image import is_browser_image, is_image
 from back.utils.video import is_video
 
 ELASTIC_INDEX_GALLERY = setting.elastic_index_gallery
@@ -201,6 +201,10 @@ class _SyncNewGalleries:
             if not gallery_path.is_dir():
                 continue
 
+            images = [
+                image for image in gallery_path.glob("*") if is_browser_image(image)
+            ]
+
             gallery_name = None
             new_gallery_name = gallery_name = gallery_path.name
             if not is_uuid4(gallery_path.name):
@@ -234,7 +238,7 @@ class _SyncNewGalleries:
                         "group": "",
                         "timestamp": now,
                         "mtime": now,
-                        "attributes": {"name": gallery_name},
+                        "attributes": {"name": gallery_name, "pages": len(images)},
                     }
                 )
             with new_tag_path.open(mode="w", encoding="utf-8") as fp:

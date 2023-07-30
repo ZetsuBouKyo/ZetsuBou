@@ -15,8 +15,12 @@ class FrontGeneralSettingBase(BaseModel):
     analyzer: FrontGeneralSettingAnalyzerBase = FrontGeneralSettingAnalyzerBase()
 
 
+class FrontGeneralSettingGalleryGoto(BaseModel):
+    sync_pages: bool = None
+
+
 class FrontGeneralSettingGallery(FrontGeneralSettingBase):
-    ...
+    goto: FrontGeneralSettingGalleryGoto
 
 
 class FrontGeneralSettingVideo(FrontGeneralSettingBase):

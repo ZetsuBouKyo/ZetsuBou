@@ -4,6 +4,7 @@ export interface Item {
   category?: string;
   rating?: number;
   title?: string;
+  pages?: number;
   imgUrl: string;
   linkUrl: string;
   srcUrl?: string;

@@ -6,6 +6,7 @@ export interface Attributes {
   uploader: string;
   category: string;
   rating: number;
+  pages: number;
   src: string;
 }
 

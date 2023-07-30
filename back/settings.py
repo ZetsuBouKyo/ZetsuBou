@@ -116,6 +116,15 @@ class Setting(BaseSettings):
     app_logging_level: LoggingLevelEnum = LoggingLevelEnum.WARNING.value
     app_logging_formatter_fmt: str = "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"  # noqa
 
+    app_gallery_sync_pages: bool = Field(
+        default=False,
+        description="If this value is true, the number of pictures in the folder will be counted during synchronisation. This value has a significant impact on performance.",
+    )
+    app_gallery_sync_pages_when_go_to_gallery: bool = Field(
+        default=True,
+        description="If this value is true, the number of gallery images will be updated when you go to the gallery page.",
+    )
+
     standalone_storage_protocol: SourceProtocolEnum = None
     standalone_storage_id: int = None
     standalone_storage_minio_volume: str = None

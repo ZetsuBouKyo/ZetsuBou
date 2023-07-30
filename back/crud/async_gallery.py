@@ -32,6 +32,8 @@ BATCH_SIZE = 300
 DIR_FNAME = setting.gallery_dir_fname
 TAG_FNAME = setting.gallery_tag_fname
 
+APP_GALLERY_SYNC_PAGES = setting.app_gallery_sync_pages
+
 elasticsearch_gallery_analyzer = {
     AnalyzerEnum.DEFAULT.value: [
         "path.url",
@@ -516,6 +518,7 @@ class CrudAsyncGallerySync:
         progress_id: str = None,
         progress_initial: float = 0,
         progress_final: float = 100.0,
+        sync_pages: bool = None,
         is_progress: bool = True,
         is_from_setting_if_none: bool = False,
     ):
@@ -543,6 +546,7 @@ class CrudAsyncGallerySync:
             self.progress_id = get_sync_gallery_progress_id(
                 self.storage_protocol, self.storage_id
             )
+        self.sync_pages = sync_pages
         self.is_progress = is_progress
 
         if is_from_setting_if_none:
@@ -558,6 +562,8 @@ class CrudAsyncGallerySync:
                 self.dir_fname = DIR_FNAME
             if self.tag_fname is None:
                 self.tag_fname = TAG_FNAME
+            if self.sync_pages is None:
+                self.sync_pages = APP_GALLERY_SYNC_PAGES
 
         self.cache = set()
         self._elasticsearch_to_storage_batches = []
@@ -627,6 +633,13 @@ class CrudAsyncGallerySync:
         if source.path != tag.path:
             need_to_update = True
             tag.path = source.path
+
+        if self.sync_pages:
+            images = await self.storage_session.list_images(source)
+            gallery_pages = len(images)
+            if gallery_pages != tag.attributes.pages:
+                tag.attributes.pages = gallery_pages
+                need_to_update = True
 
         if need_to_update:
             await _put_gallery_tag_in_storage(self.storage_session, tag, tag_source)

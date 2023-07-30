@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, reactive, ref } from "vue";
+import { reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import { Gallery } from "@/interface/gallery";
@@ -21,10 +21,6 @@ import { galleryState } from "@/state/gallery";
 
 const route = useRoute();
 const id = route.params.gallery as string;
-
-onBeforeMount(() => {
-  galleryState.init(id);
-});
 
 const confirmDelete = ref();
 const editor = ref();

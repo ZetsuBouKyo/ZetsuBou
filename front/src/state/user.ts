@@ -1,6 +1,7 @@
+import { reactive } from "vue";
+import axios from "axios";
 import Cookies from "js-cookie";
 import jwt_decode from "jwt-decode";
-import { reactive } from "vue";
 
 import { BaseState } from "@/interface/state";
 
@@ -43,6 +44,24 @@ interface Token {
   sub: string | number;
 }
 
+function updateUser(response: any) {
+  const user = response.data;
+  if (user) {
+    userState.data.name = user.name;
+    userState.data.email = user.email;
+  }
+}
+
+function updateFrontSetting(response: any) {
+  const setting = response.data;
+  if (setting) {
+    userState.data.frontSetting.gallery_preview_size = setting.gallery_preview_size;
+    userState.data.frontSetting.video_preview_size = setting.gallery_preview_size;
+    userState.data.frontSetting.img_preview_size = setting.img_preview_size;
+    userState.data.frontSetting.auto_play_time_interval = setting.auto_play_time_interval;
+  }
+}
+
 export const userState = reactive<UserState>({
   data: {
     id: undefined,
@@ -55,27 +74,17 @@ export const userState = reactive<UserState>({
       auto_play_time_interval: undefined,
     },
   },
-  init: () => {
+  init: async () => {
     const token = Cookies.get("token");
     const decoded: Token = jwt_decode(token);
     const id = decoded.sub.toString();
     userState.data.id = id;
-    getUser(id).then((response) => {
-      const user = response.data;
-      if (user) {
-        userState.data.name = user.name;
-        userState.data.email = user.email;
-      }
-    });
-    getUserFrontSetting(id).then((response) => {
-      const setting = response.data;
-      if (setting) {
-        userState.data.frontSetting.gallery_preview_size = setting.gallery_preview_size;
-        userState.data.frontSetting.video_preview_size = setting.gallery_preview_size;
-        userState.data.frontSetting.img_preview_size = setting.img_preview_size;
-        userState.data.frontSetting.auto_play_time_interval = setting.auto_play_time_interval;
-      }
-    });
+    return Promise.all<any>([getUser(id), getUserFrontSetting(id)]).then(
+      axios.spread((response1, response2) => {
+        updateUser(response1);
+        updateFrontSetting(response2);
+      }),
+    );
   },
   signIn: async (data: FormData) => {
     return getToken(data).then((response) => {

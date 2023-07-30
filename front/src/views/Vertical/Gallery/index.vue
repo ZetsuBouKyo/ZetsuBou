@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { onBeforeMount, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { Item, Items, Previews } from "@/components/PreviewList/interface";
@@ -10,9 +10,14 @@ import Info from "./Info/index.vue";
 
 import { getImages } from "@/api/v1/gallery/image";
 
+import { galleryState } from "@/state/gallery";
 import { userState } from "@/state/user";
 
 import { getPagination } from "@/elements/Pagination/pagination";
+
+onBeforeMount(() => {
+  galleryState.init(id);
+});
 
 function getItems(id: string, data: any, query: PaginationGetParam) {
   const items: Items = [];
@@ -60,15 +65,6 @@ function load() {
     });
 }
 load();
-
-watch(
-  () => {
-    return [userState.data.frontSetting.img_preview_size, JSON.stringify(route.path), JSON.stringify(route.query.page)];
-  },
-  () => {
-    load();
-  },
-);
 </script>
 
 <template>

@@ -91,6 +91,7 @@ async function synchronizeHandler(syncRequest: any, getProgressRequest: any, del
   return syncRequest()
     .then((response: AxiosResponse) => {
       if (response.status === 200) {
+        messageState.push("Synchronizing...");
       }
     })
     .catch(() => {

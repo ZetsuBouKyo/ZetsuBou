@@ -1,3 +1,4 @@
+import logging
 import socket
 from typing import List
 
@@ -7,6 +8,7 @@ from elasticsearch import AsyncElasticsearch
 from redis import ConnectionError
 from sqlalchemy.ext.asyncio import create_async_engine
 
+from back.logging import logger_zetsubou
 from back.model.service import ServiceEnum
 from back.service import services
 from back.session.async_airflow import AsyncAirflowSession, dags
@@ -62,16 +64,34 @@ async def ping_airflow(
                 services[ServiceEnum.AIRFLOW.value] = True
         except httpx.ConnectError:
             services[ServiceEnum.AIRFLOW.value] = False
+    if services[ServiceEnum.AIRFLOW.value] is False:
+        logger_zetsubou.warning("Can't connect to Airflow")
     return services[ServiceEnum.AIRFLOW.value]
 
 
 async def ping_elasticsearch(hosts: List[str] = ELASTICSEARCH_HOSTS) -> bool:
     if not hosts:
         services[ServiceEnum.ELASTICSEARCH.value] = False
-    else:
-        async_elasticsearch = AsyncElasticsearch(hosts=hosts)
+        return services[ServiceEnum.ELASTICSEARCH.value]
+
+    # https://github.com/elastic/elasticsearch-py/blob/eb9eb05a57227c0093d6fbdcc3391f4ad5e61bbe/elasticsearch/connection/base.py#L288
+    # This line outputs unwanted error messages
+    elasticsearch_logger = logging.getLogger("elasticsearch")
+    elasticsearch_logger.disabled = True
+
+    async_elasticsearch = AsyncElasticsearch(hosts=hosts)
+    try:
         services[ServiceEnum.ELASTICSEARCH.value] = await async_elasticsearch.ping()
-        await async_elasticsearch.close()
+    except ConnectionRefusedError:
+        services[ServiceEnum.ELASTICSEARCH.value] = False
+
+    elasticsearch_logger.disabled = False
+
+    await async_elasticsearch.close()
+
+    if services[ServiceEnum.AIRFLOW.value] is False:
+        logger_zetsubou.warning("Can't connect to Elasticsearch")
+
     return services[ServiceEnum.ELASTICSEARCH.value]
 
 
@@ -86,6 +106,10 @@ async def ping_postgres(database_url: str = DATABASE_URL, echo: bool = ECHO) -> 
             services[ServiceEnum.POSTGRES.value] = True
         except ConnectionRefusedError:
             services[ServiceEnum.POSTGRES.value] = False
+
+    if services[ServiceEnum.AIRFLOW.value] is False:
+        logger_zetsubou.warning("Can't connect to PostgreSQL")
+
     return services[ServiceEnum.POSTGRES.value]
 
 
@@ -102,6 +126,10 @@ async def ping_redis(redis_url: str = REDIS_URL) -> bool:
                 services[ServiceEnum.REDIS.value] = False
         except ConnectionError:
             services[ServiceEnum.REDIS.value] = False
+
+    if services[ServiceEnum.AIRFLOW.value] is False:
+        logger_zetsubou.warning("Can't connect to Redis")
+
     return services[ServiceEnum.REDIS.value]
 
 
@@ -125,6 +153,10 @@ async def ping_storage(
             storage_s3_aws_secret_access_key=storage_s3_aws_secret_access_key,
             storage_s3_endpoint_url=storage_s3_endpoint_url,
         )
+
+    if services[ServiceEnum.AIRFLOW.value] is False:
+        logger_zetsubou.warning("Can't connect to Storage")
+
     return services[ServiceEnum.STORAGE.value]
 
 

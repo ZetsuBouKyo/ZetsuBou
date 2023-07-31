@@ -105,10 +105,11 @@ def run(
 
     if APP_SECURITY:
         r = 1
+        logger_zetsubou.info("Ping the services.")
         are_services = asyncio.run(ping())
         while r < max_retries and not are_services:
             time.sleep(interval)
-            logger_zetsubou.info("Retries...")
+            logger_zetsubou.info("Ping the services.Retries...")
             r += 1
             are_services = asyncio.run(ping())
 

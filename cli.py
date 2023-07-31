@@ -12,8 +12,9 @@ from pdf2image import convert_from_path
 
 from back.crud.setting import update_settings
 from back.init.check import ping
-from back.init.logger import init_zetsubou_logger
+from back.init.logger import UVICORN_LOGGING_CONFIG, init_zetsubou_logger
 from back.init.setting import init_example_settings
+from back.logging import logger_zetsubou
 from back.model.gallery import Gallery as GalleryModel
 from back.settings import LoggingLevelEnum, setting
 from back.utils.dt import get_now
@@ -107,7 +108,7 @@ def run(
         are_services = asyncio.run(ping())
         while r < max_retries and not are_services:
             time.sleep(interval)
-            print("retries...")
+            logger_zetsubou.info("Retries...")
             r += 1
             are_services = asyncio.run(ping())
 
@@ -118,6 +119,7 @@ def run(
         port=app_port,
         reload=reload,
         lifespan="on",
+        log_config=UVICORN_LOGGING_CONFIG,
     )
 
 

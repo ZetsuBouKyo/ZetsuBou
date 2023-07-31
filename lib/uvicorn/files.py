@@ -4,7 +4,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from back.logging import logger_webapp
+from back.logging import logger_zetsubou
 
 
 class PathPattern(BaseModel):
@@ -78,5 +78,5 @@ def get_watched_files(
         p = home / include
         for next_p in p.glob("**/*"):
             watched.append(next_p)
-    logger_webapp.info(f"watched files: {len(watched)}")
+    logger_zetsubou.info(f"watched files: {len(watched)}")
     return watched

@@ -14,7 +14,7 @@ from back.crud.async_gallery import get_gallery_by_gallery_id
 from back.crud.async_progress import Progress
 from back.db.crud import CrudStorageMinio
 from back.db.model import StorageMinio
-from back.logging import logger_webapp
+from back.logging import logger_zetsubou
 from back.model.base import SourceProtocolEnum
 from back.model.gallery import Gallery
 from back.model.storage import StorageStat
@@ -276,7 +276,7 @@ async def sync_new_galleries():
 async def open_folder(gallery_id: str):
     gallery = await get_gallery_by_gallery_id(gallery_id)
     path_at_host = _get_path_at_host(gallery.path)
-    logger_webapp.info(path_at_host)
+    logger_zetsubou.info(path_at_host)
 
     preferred_app = "nautilus"
     if which(preferred_app) is not None:

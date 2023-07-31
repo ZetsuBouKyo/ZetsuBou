@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from redis.asyncio import Redis
 
-from back.logging import logger_webapp
+from back.logging import logger_zetsubou
 from back.model.task import ZetsuBouTaskProgressEnum
 from back.session.async_redis import async_redis as _async_redis
 
@@ -52,7 +52,7 @@ class Progress:
 
         self._step = self._interval / self.total
 
-        if logger_webapp.level == logging.DEBUG:
+        if logger_zetsubou.level == logging.DEBUG:
             self._last_progress = int(self._initial)
 
         self.async_redis = async_redis
@@ -69,12 +69,12 @@ class Progress:
     async def _update(self):
         self._initial += self._step
 
-        if logger_webapp.level == logging.DEBUG:
+        if logger_zetsubou.level == logging.DEBUG:
             self._current_progress = int(self._initial)
             if self._current_progress != self._last_progress:
                 self._last_progress = self._current_progress
                 if self._current_progress % 10 == 0:
-                    logger_webapp.debug(f"progress: {self._current_progress} %")
+                    logger_zetsubou.debug(f"progress: {self._current_progress} %")
 
         await self._set(self._initial)
 

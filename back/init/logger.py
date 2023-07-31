@@ -1,7 +1,11 @@
+import logging
 from logging import Formatter
 from logging.handlers import RotatingFileHandler
+from typing import Any, Dict
 
-from back.logging import logger_webapp
+from rich.logging import RichHandler
+
+from back.logging import logger_zetsubou
 from back.logging.utils import get_all_loggers
 from back.settings import LoggingLevelEnum, setting
 
@@ -10,29 +14,65 @@ APP_LOGGING_Path = "./logs/app.log"
 APP_LOGGING_FORMATTER_FMT = setting.app_logging_formatter_fmt
 IGNORE_LOGGERS = ["sqlalchemy", "botocore", "httpcore"]
 
-handler = RotatingFileHandler(APP_LOGGING_Path, maxBytes=2 * 1024 * 1024, backupCount=3)
-formatter = Formatter(fmt=APP_LOGGING_FORMATTER_FMT)
-handler.setFormatter(formatter)
+rotating_file_formatter = Formatter(fmt=APP_LOGGING_FORMATTER_FMT)
+rotating_file_handler = RotatingFileHandler(
+    APP_LOGGING_Path, maxBytes=2 * 1024 * 1024, backupCount=3
+)
+rotating_file_handler.setFormatter(rotating_file_formatter)
+
+STREAM_FMT = "%(name)s - %(message)s"
+
+stream_formatter = Formatter(fmt=STREAM_FMT)
+stream_handler = RichHandler()
+stream_handler.setFormatter(stream_formatter)
 
 
-def init_loggers(logging_level: LoggingLevelEnum = APP_LOGGING_LEVEL):
-    if type(logging_level) is not str:
-        logging_level = logging_level.value
-    loggers = get_all_loggers()
-    for logger in loggers:
-        skip = False
-        for ignore_logger in IGNORE_LOGGERS:
-            if logger.name.startswith(ignore_logger):
-                skip = True
-                continue
-        if skip:
-            continue
-        logger.setLevel(logging_level)
-        logger.addHandler(handler)
+UVICORN_LOGGING_CONFIG: Dict[str, Any] = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "()": "logging.Formatter",
+            "fmt": STREAM_FMT,
+        },
+        "access": {
+            "()": "logging.Formatter",
+            "fmt": STREAM_FMT,
+        },
+    },
+    "handlers": {
+        "default": {
+            "formatter": "default",
+            "class": "rich.logging.RichHandler",
+        },
+        "access": {
+            "formatter": "access",
+            "class": "rich.logging.RichHandler",
+        },
+    },
+    "loggers": {
+        "uvicorn": {"handlers": ["default"], "level": "INFO", "propagate": False},
+        "uvicorn.error": {"level": "INFO"},
+        "uvicorn.access": {"handlers": ["access"], "level": "INFO", "propagate": False},
+    },
+}
 
 
 def init_zetsubou_logger(logging_level: LoggingLevelEnum = APP_LOGGING_LEVEL):
     if type(logging_level) is not str:
         logging_level = logging_level.value
-    logger_webapp.setLevel(logging_level)
-    logger_webapp.addHandler(handler)
+    loggers = get_all_loggers()
+    for logger in loggers:
+        logger.setLevel(logging_level)
+        logger.handlers = []
+
+    logger_zetsubou.addHandler(rotating_file_handler)
+    logger_zetsubou.addHandler(stream_handler)
+
+    logger_uvicorn_error = logging.getLogger("uvicorn.error")
+    logger_uvicorn_error.addHandler(rotating_file_handler)
+    logger_uvicorn_error.addHandler(stream_handler)
+
+    logger_uvicorn_access = logging.getLogger("uvicorn.access")
+    logger_uvicorn_access.addHandler(rotating_file_handler)
+    logger_uvicorn_access.addHandler(stream_handler)

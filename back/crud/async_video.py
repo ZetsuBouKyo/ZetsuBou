@@ -10,7 +10,7 @@ from fastapi import HTTPException
 
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.crud.async_progress import Progress
-from back.logging import logger_webapp
+from back.logging import logger_zetsubou
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
 from back.model.task import ZetsuBouTaskProgressEnum
@@ -758,7 +758,7 @@ class CrudAsyncVideoSync:
 
         self._storage_to_elasticsearch_num = len(self._sources)
 
-        logger_webapp.debug(
+        logger_zetsubou.debug(
             f"storage to elasticsearch (number): {self._storage_to_elasticsearch_num}"
         )
 
@@ -768,7 +768,7 @@ class CrudAsyncVideoSync:
         resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
         self._elasticsearch_to_storage_num = resp["hits"]["total"]["value"]
 
-        logger_webapp.debug(
+        logger_zetsubou.debug(
             f"elasticsearch to storage (number): {self._elasticsearch_to_storage_num}"
         )
 
@@ -809,11 +809,11 @@ class CrudAsyncVideoSync:
             await self.send_bulk(self._storage_to_elasticsearch_batches)
 
     async def sync(self):
-        logger_webapp.debug(f"storage protocol: {self.storage_protocol}")
-        logger_webapp.debug(f"storage id: {self.storage_id}")
-        logger_webapp.debug(f"elasticsearch index: {self.index}")
-        logger_webapp.debug(f"is progress: {self.is_progress}")
-        logger_webapp.debug(f"progress id: {self.progress_id}")
+        logger_zetsubou.debug(f"storage protocol: {self.storage_protocol}")
+        logger_zetsubou.debug(f"storage id: {self.storage_id}")
+        logger_zetsubou.debug(f"elasticsearch index: {self.index}")
+        logger_zetsubou.debug(f"is progress: {self.is_progress}")
+        logger_zetsubou.debug(f"progress id: {self.progress_id}")
 
         async with self.app_storage_session, self.storage_session:
             if self.is_progress:

@@ -63,8 +63,10 @@ function openSearchAutoComplete() {
   searchAutoComplete.value.open();
 }
 function closeSearchAutoComplete() {
+  if (searchAutoComplete.value.isOpened()) {
+    focusInput();
+  }
   searchAutoComplete.value.close();
-  focusInput();
 }
 watch(
   () => searchAutoComplete.value?.isOpened(),

@@ -18,7 +18,20 @@ settings = {
         "analyzer": {
             AnalyzerEnum.DEFAULT.value: {
                 "tokenizer": "zetsubou_default_tokenizer",
-                "filter": ["lowercase", "unique", "zetsubou_default_length"],
+                "filter": [
+                    "lowercase",
+                    "unique",
+                    "zetsubou_default_length",
+                ],
+            },
+            AnalyzerEnum.SYNONYM.value: {
+                "tokenizer": "zetsubou_default_tokenizer",
+                "filter": [
+                    "lowercase",
+                    "unique",
+                    "zetsubou_default_length",
+                    "zetsubou_synonym",
+                ],
             },
             AnalyzerEnum.STANDARD.value: {"type": "standard"},
             AnalyzerEnum.NGRAM.value: {
@@ -46,7 +59,14 @@ settings = {
                 "pattern": "(://)|(/)",
             },
         },
-        "filter": {"zetsubou_default_length": {"type": "length", "min": 1}},
+        "filter": {
+            "zetsubou_default_length": {"type": "length", "min": 1},
+            "zetsubou_synonym": {
+                "type": "synonym_graph",
+                "synonyms_path": "analysis/synonym.txt",
+                "updateable": True,
+            },
+        },
     }
 }
 
@@ -79,6 +99,7 @@ gallery_mappings = {
                         "default": {
                             "type": "text",
                             "analyzer": AnalyzerEnum.DEFAULT.value,
+                            "search_analyzer": AnalyzerEnum.SYNONYM.value,
                         },
                         "standard": {
                             "type": "text",
@@ -97,6 +118,7 @@ gallery_mappings = {
                         "default": {
                             "type": "text",
                             "analyzer": AnalyzerEnum.DEFAULT.value,
+                            "search_analyzer": AnalyzerEnum.SYNONYM.value,
                         },
                         "standard": {
                             "type": "text",
@@ -140,6 +162,7 @@ video_mappings = {
                 "default": {
                     "type": "text",
                     "analyzer": AnalyzerEnum.DEFAULT.value,
+                    "search_analyzer": AnalyzerEnum.SYNONYM.value,
                 },
                 "standard": {
                     "type": "text",
@@ -155,6 +178,7 @@ video_mappings = {
                 "default": {
                     "type": "text",
                     "analyzer": AnalyzerEnum.DEFAULT.value,
+                    "search_analyzer": AnalyzerEnum.SYNONYM.value,
                 },
                 "standard": {
                     "type": "text",

@@ -18,7 +18,7 @@ services:
     depends_on:
       zetsubou-airflow:
         condition: service_healthy
-      # zetsubou-elastic:
+      # zetsubou-elasticsearch:
       #   condition: service_healthy
       # zetsubou-minio:
       #   condition: service_healthy
@@ -33,6 +33,7 @@ services:
     environment:
       ZETSUBOU_AIRFLOW_SIMPLE_VOLUME: ${ZETSUBOU_AIRFLOW_SIMPLE_VOLUME:-./dev/volumes/airflow-simple}
     volumes:
+      - ${ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME:-./etc/analysis}:/workspace/etc/analysis
       - ./dev:/workspace/dev
       - ./etc:/workspace/etc
       - ./logs:/workspace/logs
@@ -62,8 +63,8 @@ services:
       - ${ZETSUBOU_AIRFLOW_ZETSUBOU_VOLUME:-./}:/opt/airflow/zetsubou
       - ${ZETSUBOU_AIRFLOW_DOWNLOAD_VOLUME-./dev/volumes/airflow-download}:/opt/airflow/download
 
-  zetsubou-elastic:
-    image: elasticsearch:7.10.1
+  zetsubou-elasticsearch:
+    image: elasticsearch:7.17.10
     ports:
       - ${ZETSUBOU_ELASTICSEARCH_PORT:-9200}:${ZETSUBOU_ELASTICSEARCH_PORT:-9200}
     healthcheck:
@@ -82,8 +83,10 @@ services:
       bootstrap.memory_lock: "true"
       discovery.type: single-node
       http.port: ${ZETSUBOU_ELASTICSEARCH_PORT:-9200}
+      xpack.security.enabled: "false"
     volumes:
       - ${ZETSUBOU_ELASTICSEARCH_VOLUME:-./dev/volumes/elasticsearch}:/usr/share/elasticsearch/data
+      - ${ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME:-./etc/analysis}:/usr/share/elasticsearch/config/analysis
 
   zetsubou-minio:
     image: minio/minio:RELEASE.2022-02-26T02-54-46Z.fips

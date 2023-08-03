@@ -8,6 +8,7 @@ ZETSUBOU_APP_MINIO ?= ./dev/minio
 ZETSUBOU_APP_MINIO_GALLERIES ?= ./dev/minio/galleries
 ZETSUBOU_APP_MINIO_GALLERIES_SIMPLE ?= ./dev/minio/galleries/simple
 ZETSUBOU_ELASTICSEARCH_VOLUME ?= ./dev/volumes/elasticsearch
+ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME ?= ./etc/analysis
 ZETSUBOU_REDIS_VOLUME ?= ./dev/volumes/redis
 ZETSUBOU_POSTGRES_DB_VOLUME ?= ./dev/volumes/postgres
 
@@ -20,8 +21,8 @@ AIRFLOW_POSTGRES_DB_VOLUME ?= ./dev/volumes/airflow/postgres
 
 AIRFLOW_SIMPLE_VOLUME ?= ./dev/volumes/airflow-simple
 
-APP_SERVICES := zetsubou-app zetsubou-airflow zetsubou-elastic zetsubou-minio zetsubou-postgres zetsubou-redis
-APP_DEV_SERVICES := zetsubou-airflow zetsubou-elastic zetsubou-minio zetsubou-postgres zetsubou-redis
+APP_SERVICES := zetsubou-app zetsubou-airflow zetsubou-elasticsearch zetsubou-minio zetsubou-postgres zetsubou-redis
+APP_DEV_SERVICES := zetsubou-airflow zetsubou-elasticsearch zetsubou-minio zetsubou-postgres zetsubou-redis
 
 .PHONY: test line check
 
@@ -57,10 +58,12 @@ lint:
 	pre-commit run --all-files
 	npx commitlint --from "HEAD~1" --to "HEAD" --verbose
 
-.PHONY: init init-app-example init-app-postgres init-airflow init-app-elastic init-redis
-init-app-elastic:
+.PHONY: init init-app-example init-app-postgres init-airflow init-app-elasticsearch init-redis
+init-app-elasticsearch:
 	mkdir -p $(ZETSUBOU_ELASTICSEARCH_VOLUME)
+	mkdir -p $(ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME)
 	chown -R 1000:1000 $(ZETSUBOU_ELASTICSEARCH_VOLUME)
+	touch $(ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME)/synonym.txt
 init-app-postgres:
 	mkdir -p $(ZETSUBOU_POSTGRES_DB_VOLUME)
 init-app-example:
@@ -83,14 +86,14 @@ init-airflow:
 init-redis:
 	mkdir -p $(ZETSUBOU_REDIS_VOLUME)
 	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
-init-example: init-app-postgres init-app-elastic init-minio init-redis init-app-example
+init-example: init-app-postgres init-app-elasticsearch init-minio init-redis init-app-example
 
-.PHONY: clean clean-all clean-airflow clean-airflow-simple clean-app-elastic clean-app-postgres clean-docker
+.PHONY: clean clean-all clean-airflow clean-airflow-simple clean-app-elasticsearch clean-app-postgres clean-docker
 clean-airflow:
 	rm -rf $(AIRFLOW_VOLUME)
 clean-airflow-simple:
 	rm -rf $(AIRFLOW_SIMPLE_VOLUME)
-clean-app-elastic:
+clean-app-elasticsearch:
 	rm -rf $(ZETSUBOU_ELASTICSEARCH_VOLUME)
 clean-app-postgres:
 	rm -rf $(ZETSUBOU_POSTGRES_DB_VOLUME)
@@ -106,10 +109,10 @@ clean-all:
 	rm -rf ./statics
 	rm -rf ./venv
 
-.PHONY: reset-app reset-app-elastic reset-app-postgres reset-airflow-simple
-reset-app-elastic: clean-app-elastic init-app-elastic
+.PHONY: reset-app reset-app-elasticsearch reset-app-postgres reset-airflow-simple
+reset-app-elasticsearch: clean-app-elasticsearch init-app-elasticsearch
 reset-app-postgres: clean-app-postgres init-app-postgres
-reset-app: reset-app-elastic reset-app-postgres
+reset-app: reset-app-elasticsearch reset-app-postgres
 
 reset-airflow-simple: clean-airflow-simple
 

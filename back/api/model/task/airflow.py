@@ -3,32 +3,48 @@ from typing import Any, List
 from pydantic import BaseModel
 
 
-class Argument(BaseModel):
+class ArgumentBase(BaseModel):
     name: str = None
     type: str = None
-    value: Any = None
 
 
-class KeywordArgument(BaseModel):
+class KeywordArgumentBase(BaseModel):
     name: str
     type: str = None
-    default: Any = None
+
+
+class Argument(ArgumentBase):
     value: Any = None
 
 
-class Command(BaseModel):
+class KeywordArgument(KeywordArgumentBase):
+    key: str = None
+    value: Any = None
+
+
+class CommandRequest(BaseModel):
+    logical_date: str = None
     args: List[Argument] = []
     kwargs: List[KeywordArgument] = []
 
 
-class CommandRequest(Command):
-    logical_date: str = None
+class SchemaArgument(ArgumentBase):
+    param_decls: List[str] = []
+    choices: List[str] = []
 
 
-class CommandSchema(Command):
+class SchemaKeywordArgument(KeywordArgumentBase):
+    default: Any = None
+    param_decls: List[str] = []
+    choices: List[str] = []
+
+
+class CommandSchema(BaseModel):
     dag_id: str = None
     sub_command: str = None
     doc: str = None
+    args: List[SchemaArgument] = []
+    kwargs: List[SchemaKeywordArgument] = []
 
 
 class AirflowConf(BaseModel):

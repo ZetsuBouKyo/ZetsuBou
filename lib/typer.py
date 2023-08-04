@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 import sys
+from enum import Enum
 from functools import wraps
 from inspect import iscoroutinefunction
 from typing import Optional
@@ -9,22 +10,33 @@ from fastapi.dependencies.utils import get_typed_signature
 from typer import Typer
 from typer.models import ArgumentInfo, CommandFunctionType, OptionInfo
 
-from back.api.model.task.airflow import Argument, CommandSchema, KeywordArgument
+from back.api.model.task.airflow import (
+    CommandSchema,
+    SchemaArgument,
+    SchemaKeywordArgument,
+)
 from back.session.async_airflow import dags
 
 
 def get_parameter_type(parameter: inspect.Parameter):
-    parameter_type = parameter.annotation
-    if parameter_type is str:
+    parameter_annotation = parameter.annotation
+    if parameter_annotation is str:
         parameter_type = "string"
-    elif parameter_type is int or parameter_type is float:
+    elif parameter_annotation is int or parameter_annotation is float:
         parameter_type = "number"
-    elif parameter_type is bool:
+    elif parameter_annotation is bool:
         parameter_type = "boolean"
-    elif parameter_type is inspect._empty:
+    elif parameter_annotation is inspect._empty:
         parameter_type = "any"
+    elif issubclass(parameter_annotation, Enum):
+        if issubclass(parameter_annotation, int):
+            parameter_type = "number"
+        elif issubclass(parameter_annotation, str):
+            parameter_type = "string"
+        else:
+            parameter_type = "any"
     else:
-        parameter_type = str(parameter_type)
+        parameter_type = parameter_annotation.__name__
     return parameter_type
 
 
@@ -39,19 +51,31 @@ def airflow_dag_register(
     typed_signature = get_typed_signature(f)
     parameters = [(k, v) for k, v in typed_signature.parameters.items()]
     for name, parameter in parameters:
+        choices = []
+        if issubclass(parameter.annotation, Enum):
+            choices = [e.value for e in parameter.annotation]
         parameter_type = get_parameter_type(parameter)
 
+        param_decls = []
+        if parameter.default.param_decls:
+            param_decls = list(parameter.default.param_decls)
+
         if isinstance(parameter.default, ArgumentInfo):
-            schema.args.append(Argument(name=name, type=parameter_type))
+            arg = SchemaArgument(
+                name=name, type=parameter_type, choices=choices, param_decls=param_decls
+            )
+            schema.args.append(arg)
         elif isinstance(parameter.default, OptionInfo):
             name = name.replace("_", "-")
-            schema.kwargs.append(
-                KeywordArgument(
-                    name=name,
-                    type=parameter_type,
-                    default=parameter.default.default,
-                )
+            kwarg = SchemaKeywordArgument(
+                name=name,
+                type=parameter_type,
+                param_decls=list(parameter.default.param_decls),
+                choices=choices,
+                default=parameter.default.default,
             )
+
+            schema.kwargs.append(kwarg)
 
     dags[airflow_dag_id] = schema
 

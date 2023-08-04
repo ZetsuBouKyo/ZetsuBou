@@ -53,7 +53,7 @@ async def _storage(
 )
 async def _storages(
     progress: bool = typer.Option(
-        default=True, help="Send progress information to Redis."
+        True, "-p/", "--progress/", help="Send progress information to Redis."
     ),
 ):
     """

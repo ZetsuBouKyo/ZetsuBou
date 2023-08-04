@@ -204,6 +204,7 @@ class _SyncNewGalleries:
             images = [
                 image for image in gallery_path.glob("*") if is_browser_image(image)
             ]
+            pages = len(images)
 
             gallery_name = None
             new_gallery_name = gallery_name = gallery_path.name
@@ -228,6 +229,7 @@ class _SyncNewGalleries:
                     gallery_tag = json.load(fp)
                     gallery_tag = Gallery(**gallery_tag)
                 gallery_tag.path = new_gallery_minio_path
+                gallery_tag.attributes.pages = pages
             else:
                 os.makedirs(new_gallery_path / self.gallery_dir_fname, exist_ok=True)
                 now = get_now()
@@ -238,7 +240,7 @@ class _SyncNewGalleries:
                         "group": "",
                         "timestamp": now,
                         "mtime": now,
-                        "attributes": {"name": gallery_name, "pages": len(images)},
+                        "attributes": {"name": gallery_name, "pages": pages},
                     }
                 )
             with new_tag_path.open(mode="w", encoding="utf-8") as fp:

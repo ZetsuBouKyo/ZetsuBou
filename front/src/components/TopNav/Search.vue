@@ -230,6 +230,7 @@ function search() {
     url += queries.join("&");
   }
   router.push(url);
+  closeSearchAutoComplete();
   dropdown.value.close();
 }
 const customSearchState = initSelectDropdownState() as SelectDropdownState;

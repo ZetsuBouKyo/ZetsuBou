@@ -57,7 +57,7 @@ def airflow_dag_register(
         parameter_type = get_parameter_type(parameter)
 
         param_decls = []
-        if hasattr(parameter.default, param_decls) and parameter.default.param_decls:
+        if hasattr(parameter.default, "param_decls") and parameter.default.param_decls:
             param_decls = list(parameter.default.param_decls)
 
         if isinstance(parameter.default, ArgumentInfo):

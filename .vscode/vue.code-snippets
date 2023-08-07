@@ -28,5 +28,23 @@
         "prefix": ["PropType", "PropType "],
         "body": ["import { PropType } from \"vue\";"],
         "description": "ZetsuBou"
+    },
+    "ZetsuBou props interface and withDefaults": {
+        "scope": "vue,javascript,typescript",
+        "prefix": ["i", "in", "int", "interface"],
+        "body": ["interface Props {", "}", "const props = withDefaults(defineProps<Props>(), {", "});"],
+        "description": "ZetsuBou"
+    },
+    "ZetsuBou withDefaults": {
+        "scope": "vue,javascript,typescript",
+        "prefix": ["wi", "wit", "with"],
+        "body": ["withDefaults(defineProps<Props>(), {", "});"],
+        "description": "ZetsuBou"
+    },
+    "ZetsuBou props withDefaults": {
+        "scope": "vue,javascript,typescript",
+        "prefix": ["c", "co", "con", "const"],
+        "body": ["const props = withDefaults(defineProps<Props>(), {", "});"],
+        "description": "ZetsuBou"
     }
 }

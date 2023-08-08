@@ -15,6 +15,7 @@ dev
 etc
 front/*.*
 front/components.d.ts
+front/doc_site
 front/node_modules
 front/public
 front/src

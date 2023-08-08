@@ -69,6 +69,7 @@ class Setting(BaseSettings):
 
     app_title: str = Field(default="ZetsuBou")
     app_front: str = "./front/dist"
+    app_front_docs: str = "./front/doc_site"
     app_favicon: str = "/favicon.ico"
     app_statics: str = "./statics"
 

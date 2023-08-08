@@ -43,7 +43,7 @@ excludes = _get_both_side_patterns(
     ]
 )
 
-includes = ["front/dist", "front/public"]
+includes = ["front/dist", "front/doc_site", "front/public"]
 
 
 def get_watched_files(

@@ -1,0 +1,52 @@
+site_name: ZetsuBou
+site_description: A self-hosted web application for your own image galleries and videos.
+site_dir: front/doc_site
+repo_url: https://github.com/ZetsuBouKyo/ZetsuBou
+repo_name: ZetsuBouKyo/ZetsuBou
+theme:
+  name: material
+  favicon: assets/favicon.ico
+  font: false
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: ZetsuBouKyo
+      repo: ZetsuBou
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ''
+  - md_in_html
+extra_css:
+- /docs/statics/termynal.css
+- /docs/statics/custom.css
+
+extra_javascript:
+- /docs/statics/termynal.js
+- /docs/statics/custom.js
+
+nav:
+  - Welcome: index.md
+  - Getting Started:
+    - Example: getting-started/example.md
+  - Developer Notes:
+    - Architecture: developer-notes/architecture.md
+    - Environments: developer-notes/environments.md

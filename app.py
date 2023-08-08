@@ -24,6 +24,7 @@ TITLE = setting.app_title
 HOST = setting.app_host
 PORT = setting.app_port
 FRONT = setting.app_front
+FRONT_DOCS = setting.app_front_docs
 STATICS = setting.app_statics
 
 description = """
@@ -36,8 +37,10 @@ This is written in Python 3 and Vue 3.
 
 app = FastAPI(title=TITLE, description=description, docs_url=None, redoc_url=None)
 
-app.mount("/statics", StaticFiles(directory=f"{STATICS}"), name="statics")
+
+app.mount("/docs", StaticFiles(directory=FRONT_DOCS, html=True), name="documentation")
 app.mount("/assets", StaticFiles(directory=f"{FRONT}/assets"), name="assets")
+app.mount("/statics", StaticFiles(directory=f"{STATICS}"), name="statics")
 
 
 async def startup():

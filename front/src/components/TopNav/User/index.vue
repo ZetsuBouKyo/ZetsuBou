@@ -79,6 +79,12 @@ function close() {
           </router-link>
         </ripple-button>
         <ripple-button class="flex w-full">
+          <a class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white" href="/docs/" @click="close">
+            <icon-mdi-file-multiple class="self-center ml-2" style="font-size: 1.4rem" />
+            <span class="flex px-2 py-1 self-center">Documentation</span>
+          </a>
+        </ripple-button>
+        <ripple-button class="flex w-full">
           <router-link
             class="flex flex-row p-2 w-full hover:bg-gray-600 hover:text-white"
             to="/settings/account"

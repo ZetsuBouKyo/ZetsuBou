@@ -5,7 +5,6 @@ import SettingActionDropdown from "@/layouts/Setting/SettingActionDropdown.vue";
 
 const tagOptions = [
   { title: "Tag", path: "/settings/tag" },
-  { title: "Token", path: "/settings/tag-token" },
   { title: "Attribute", path: "/settings/tag-attribute" },
   { title: "Front UI", path: "/settings/tag-front-ui" },
 ];

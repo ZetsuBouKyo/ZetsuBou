@@ -1,13 +1,53 @@
 # Start an example
 
-```bash
-# To build the docker images
-make build
-# To initialize airflow and create `./etc/settings.env` and `./etc/settings.airflow.env`
-make init-example
-# To close the services started during initialization
-make down
+## Copy the files
 
+Clone the project from [github repository](https://github.com/ZetsuBouKyo/ZetsuBou).
+
+```bash
+git clone https://github.com/ZetsuBouKyo/ZetsuBou
+```
+
+Or, you can copy the following folder and files from the
+[github repository](https://github.com/ZetsuBouKyo/ZetsuBou).
+
+```bash
+docker
+docker-compose.simple.yml
+Makefile
+```
+
+## Build the docker images
+
+```bash
+make build
+```
+
+This command will build `zetsubou/app:0.0.1-python-3.8.16-slim-buster` and
+`zetsubou/airflow:2.6.1-python3.8` docker images.
+
+## Initialization
+
+Create the volumes under `./dev` relative the to current working directory, initialize
+the Airflow, and generate `./etc/settings.env` and `./etc/settings.airflow.env` settings
+files.
+
+```bash
+make init-example
+```
+
+Shutdown the ZetsuBouou and Airflow docker containers.
+
+```bash
+make down
+```
+
+## Start the services
+
+```bash
 # To start the services
 make up
 ```
+
+After `make up` command, you can find the username, password, and other information in
+`./etc/settings.env`. The default URL for the application is http://localhost:3000 .

@@ -1,11 +1,11 @@
 # ZetsuBou
 
 [![Python](https://img.shields.io/badge/Python-3.8-yellow.svg)](https://www.python.org/downloads/release/python-3811/)
-[![Vue](https://img.shields.io/badge/Vue-3.0.11-yellow.svg)](https://v3.vuejs.org/)
-[![chrome](https://img.shields.io/badge/Chrome-102.0.5005.63-yellow.svg)](https://www.google.com/intl/en_us/chrome/)
+[![Vue](https://img.shields.io/badge/Vue-3.3.4-yellow.svg)](https://v3.vuejs.org/)
+[![chrome](https://img.shields.io/badge/Chrome-115.0.5790.99-yellow.svg)](https://www.google.com/intl/en_us/chrome/)
 [![license](https://img.shields.io/badge/License-MIT-yellow.svg)](https://www.google.com/intl/en_us/chrome/)
 
-ZetsuBou is a web-based app for hosting your own image galleries and videos. The app is written in Python 3 and Vue 3.
+[ZetsuBou](https://zetsuboukyo.github.io/) is a web-based app for hosting your own image galleries and videos. The app is written in Python 3 and Vue 3.
 
 **There would be no backwards compatibility at all.**
 
@@ -49,91 +49,6 @@ make up
 ```
 
 You can find the ZetusBou webapp username (`ZETSUBOU_APP_ADMIN_EMAIL`), password (`ZETSUBOU_APP_ADMIN_PASSWORD`) and other information in `./etc/settings.env`.
-
-## Development
-
-### Architecture
-
-```mermaid
----
-title: ZetsuBou architecture
----
-classDiagram
-    class Network {
-        port: 3000 (ZetsuBou)
-        port: 9000 (MinIO)
-    }
-    class ZetsuBou{
-        port: 3000
-    }
-    class Airflow{
-        port: 8080
-    }
-    class Elasticsearch{
-        port: 9200
-    }
-    class MinIO{
-        port: 9000
-        port: 9001
-    }
-    class PostgreSQL{
-        port: 5430
-    }
-    class Redis{
-        port: 6380
-    }
-    ZetsuBou <|-- Airflow
-    ZetsuBou <|-- Elasticsearch
-    ZetsuBou <|-- MinIO
-    ZetsuBou <|-- PostgreSQL
-    ZetsuBou <|-- Redis
-    Airflow <|-- Elasticsearch
-    Airflow <|-- MinIO
-    Airflow <|-- PostgreSQL
-    Airflow <|-- Redis
-    Network <|-- ZetsuBou
-    Network <|-- MinIO
-```
-
-### Set environment
-
-```bash
-# To install commitlint
-npm install --save-dev @commitlint/{cli,config-conventional} conventional-changelog prettier prettier-eslint
-# To test commitlint
-npx commitlint --from "HEAD~1" --to "HEAD" --verbose
-# To install Rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-### Build
-
-```bash
-# To build docker images and so on
-make build
-# To install python packages
-poetry install
-# To inject pre-commit into git
-pre-commit install
-```
-
-### Run
-
-```bash
-# To initialize the folders and airflow
-make init
-# To run the services
-make up-dev
-# To run the app
-poetry run python cli.py run
-```
-
-### Run before push
-
-```bash
-# To format the files
-make lint
-```
 
 ## Contact
 

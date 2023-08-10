@@ -54,6 +54,10 @@ build-dev: build-docker-airflow-simple
 	source ./.venv/bin/activate; pre-commit install
 build: build-docker-app build-docker-airflow-simple
 
+.PHONY: docs
+docs:
+	mkdocs build
+
 lint:
 	pre-commit run --all-files
 	npx commitlint --from "HEAD~1" --to "HEAD" --verbose

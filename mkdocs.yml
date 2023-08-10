@@ -3,10 +3,19 @@ site_description: A self-hosted web application for your own image galleries and
 site_dir: front/doc_site
 repo_url: https://github.com/ZetsuBouKyo/ZetsuBou
 repo_name: ZetsuBouKyo/ZetsuBou
+edit_uri: edit/master/docs/
+copyright: Copyright (c) 2023-present ZetsuBouKyo and other contributors
+
 theme:
   name: material
   favicon: assets/favicon.ico
   font: false
+  features:
+    - content.action.edit
+    - content.action.view
+    - content.code.copy
+    - navigation.footer
+    - navigation.tabs
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -18,23 +27,35 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+
 markdown_extensions:
+  - admonition
   - toc:
       permalink: true
+  - pymdownx.caret
+  - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
+  - pymdownx.inlinehilite
   - pymdownx.magiclink:
       repo_url_shorthand: true
       user: ZetsuBouKyo
       repo: ZetsuBou
+  - pymdownx.mark
+  - pymdownx.snippets
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format ''
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tilde
+  - tables
   - md_in_html
+
 extra_css:
 - /docs/statics/termynal.css
 - /docs/statics/custom.css
@@ -42,6 +63,13 @@ extra_css:
 extra_javascript:
 - /docs/statics/termynal.js
 - /docs/statics/custom.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ZetsuBouKyo/ZetsuBou
+    - icon: fontawesome/brands/twitch
+      link: https://www.twitch.tv/zetsuboukyo
 
 nav:
   - Welcome: index.md

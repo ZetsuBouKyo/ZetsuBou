@@ -4,14 +4,14 @@
 
 Clone the project from [github repository](https://github.com/ZetsuBouKyo/ZetsuBou).
 
-```bash
+```sh
 git clone https://github.com/ZetsuBouKyo/ZetsuBou
 ```
 
-Or, you can copy the following folder and files from the
+Or you can copy the following folder and files from the
 [github repository](https://github.com/ZetsuBouKyo/ZetsuBou).
 
-```bash
+```sh
 docker
 docker-compose.simple.yml
 Makefile
@@ -19,7 +19,7 @@ Makefile
 
 ## Build the docker images
 
-```bash
+```sh
 make build
 ```
 
@@ -28,23 +28,23 @@ This command will build `zetsubou/app:0.0.1-python-3.8.16-slim-buster` and
 
 ## Initialization
 
-Create the volumes under `./dev` relative the to current working directory, initialize
+Create the volumes under `./dev` relative to the current working directory, initialize
 the Airflow, and generate `./etc/settings.env` and `./etc/settings.airflow.env` settings
 files.
 
-```bash
+```sh
 make init-example
 ```
 
 Shutdown the ZetsuBouou and Airflow docker containers.
 
-```bash
+```sh
 make down
 ```
 
 ## Start the services
 
-```bash
+```sh
 # To start the services
 make up
 ```

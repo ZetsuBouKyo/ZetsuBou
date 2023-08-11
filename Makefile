@@ -57,6 +57,7 @@ build: build-docker-app build-docker-airflow-simple
 .PHONY: docs
 docs:
 	mkdocs build
+	npx prettier --write front/doc_site/
 
 lint:
 	pre-commit run --all-files

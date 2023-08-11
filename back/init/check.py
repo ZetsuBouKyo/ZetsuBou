@@ -89,7 +89,7 @@ async def ping_elasticsearch(hosts: List[str] = ELASTICSEARCH_HOSTS) -> bool:
 
     await async_elasticsearch.close()
 
-    if services[ServiceEnum.AIRFLOW.value] is False:
+    if services[ServiceEnum.ELASTICSEARCH.value] is False:
         logger_zetsubou.warning("Can't connect to Elasticsearch")
 
     return services[ServiceEnum.ELASTICSEARCH.value]
@@ -107,7 +107,7 @@ async def ping_postgres(database_url: str = DATABASE_URL, echo: bool = ECHO) -> 
         except ConnectionRefusedError:
             services[ServiceEnum.POSTGRES.value] = False
 
-    if services[ServiceEnum.AIRFLOW.value] is False:
+    if services[ServiceEnum.POSTGRES.value] is False:
         logger_zetsubou.warning("Can't connect to PostgreSQL")
 
     return services[ServiceEnum.POSTGRES.value]
@@ -127,7 +127,7 @@ async def ping_redis(redis_url: str = REDIS_URL) -> bool:
         except ConnectionError:
             services[ServiceEnum.REDIS.value] = False
 
-    if services[ServiceEnum.AIRFLOW.value] is False:
+    if services[ServiceEnum.REDIS.value] is False:
         logger_zetsubou.warning("Can't connect to Redis")
 
     return services[ServiceEnum.REDIS.value]
@@ -154,7 +154,7 @@ async def ping_storage(
             storage_s3_endpoint_url=storage_s3_endpoint_url,
         )
 
-    if services[ServiceEnum.AIRFLOW.value] is False:
+    if services[ServiceEnum.STORAGE.value] is False:
         logger_zetsubou.warning("Can't connect to Storage")
 
     return services[ServiceEnum.STORAGE.value]

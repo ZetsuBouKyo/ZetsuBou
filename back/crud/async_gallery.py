@@ -8,6 +8,7 @@ from fastapi import HTTPException
 
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.crud.async_progress import Progress
+from back.init.check import ping_elasticsearch, ping_storage
 from back.logging import logger_zetsubou
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
@@ -763,6 +764,11 @@ class CrudAsyncGallerySync:
         logger_zetsubou.debug(f"elasticsearch index: {self.index}")
         logger_zetsubou.debug(f"is progress: {self.is_progress}")
         logger_zetsubou.debug(f"progress id: {self.progress_id}")
+
+        is_elasticsearch = await ping_elasticsearch()
+        is_storage = await ping_storage()
+        if not is_elasticsearch or not is_storage:
+            return
 
         async with self.storage_session:
             if self.is_progress:

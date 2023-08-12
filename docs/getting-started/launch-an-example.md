@@ -1,4 +1,4 @@
-# Start an example
+# Launch an example
 
 ## Copy the files
 

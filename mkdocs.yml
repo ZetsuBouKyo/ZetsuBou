@@ -78,7 +78,7 @@ extra:
 nav:
   - Welcome: index.md
   - Getting Started:
-    - Example: getting-started/example.md
+    - Launch an example: getting-started/launch-an-example.md
   - Developer Notes:
     - Architecture: developer-notes/architecture.md
     - Environments: developer-notes/environments.md

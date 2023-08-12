@@ -28,6 +28,7 @@ import Video from "./views/Vertical/Video/index.vue";
 import Videos from "./views/Vertical/Videos.vue";
 /** @type {import('vue-router').RouterOptions['routes']} */
 
+import { galleryState } from "@/state/gallery";
 import { settingState } from "@/state/Setting/front";
 import { userState } from "@/state/user";
 
@@ -46,7 +47,11 @@ export const routes = [
           { path: "video", component: BookmarkVideo, meta: { title: "Video Bookmark" } },
         ],
       },
-      { path: "/gallery", component: Galleries, meta: { title: "Gallery" } },
+      {
+        path: "/gallery",
+        component: Galleries,
+        meta: { title: "Gallery" },
+      },
       { path: "/gallery/random", component: Galleries, meta: { title: "Gallery Random" } },
       { path: "/gallery/search", component: Galleries, meta: { title: "Gallery Search" } },
       { path: "/gallery/advanced-search", component: Galleries, meta: { title: "Gallery Advanced Search" } },
@@ -85,7 +90,14 @@ export const routes = [
       },
       { path: "/NotFound", component: NotFound },
       { path: "/construction", component: Construction },
-      { path: "/g/:gallery", component: Gallery },
+      {
+        path: "/g/:gallery",
+        component: Gallery,
+        beforeEnter: (to: any, from: any, next: any) => {
+          const id = to.params.gallery as string;
+          galleryState.init(id).then(() => next());
+        },
+      },
       { path: "/g/:gallery/i/:img", component: ImgSvgPreview },
       { path: "/v/:video", component: Video },
     ],

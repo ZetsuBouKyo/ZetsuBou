@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import "./tailwind.css";
 
 import App from "./App.vue";
-import { routes } from "./routes.js";
+import { routes } from "./routes.ts";
 
 const app = createApp(App);
 

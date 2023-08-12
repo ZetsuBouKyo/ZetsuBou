@@ -57,6 +57,11 @@ export const galleryState = reactive<SourceState<Gallery>>({
     for (const field of emptyTagFields) {
       delete galleryState.data.tags[field];
     }
+
+    if (galleryState.data.id === undefined) {
+      return;
+    }
+
     return postGalleryTag(galleryState.data.id, galleryState.data).then((response) => {
       if (response.status === 200) {
         galleryState.reset();

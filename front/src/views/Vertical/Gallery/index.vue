@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, reactive } from "vue";
+import { reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { Item, Items, Previews } from "@/components/PreviewList/interface";
@@ -15,10 +15,6 @@ import { galleryState } from "@/state/gallery";
 import { userState } from "@/state/user";
 
 import { getPagination } from "@/elements/Pagination/pagination";
-
-onBeforeMount(() => {
-  galleryState.init(id);
-});
 
 function getItems(id: string, data: any, query: PaginationGetParam) {
   const items: Items = [];
@@ -63,6 +59,9 @@ function load() {
         galleryState.data.attributes.pages != total
       ) {
         galleryState.data.attributes.pages = total;
+        if (galleryState.data.id === undefined) {
+          return;
+        }
         galleryState.save().finally(() => {});
       }
       previews.pagination = getPagination(route.path, total, query);

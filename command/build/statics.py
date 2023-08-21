@@ -1,7 +1,9 @@
-import typer
-from back.init.statics import get_static_file
-from PIL import Image
 from pathlib import Path
+
+import typer
+from PIL import Image
+
+from back.init.statics import get_static_file
 from lib.typer import ZetsuBouTyper
 
 _help = """

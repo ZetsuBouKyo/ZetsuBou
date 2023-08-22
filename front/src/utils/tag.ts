@@ -151,3 +151,31 @@ export function watchTagFieldsChipsLength(
     },
   ];
 }
+
+function getTags(privateState?: TagFieldsPrivateState) {
+  const tags = {};
+  for (const field in privateState.tagFields) {
+    const state = privateState.tagFields[field];
+    tags[field] = [];
+    for (const chip of state.chips) {
+      tags[field].push(chip.title);
+    }
+  }
+  return tags;
+}
+
+export function watchTagFieldValues(
+  privateState?: TagFieldsPrivateState,
+  sourceState?: SourceDataState<Source>,
+): [any, any] {
+  return [
+    () => JSON.stringify(getTags(privateState)),
+    (currentTags: string, _: string) => {
+      const tags = JSON.parse(currentTags);
+      if (sourceState?.data?.tags === undefined) {
+        return;
+      }
+      sourceState.data.tags = tags;
+    },
+  ];
+}

@@ -26,7 +26,7 @@ import { messageState } from "@/state/message";
 
 import { initRippleButtonState } from "@/elements/Button/RippleButton";
 import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
-import { watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
+import { watchTagFieldValues, watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
 
 interface TagFields {
   [key: string]: SelectDropdownState;
@@ -76,6 +76,7 @@ watch(...watchLabelsChipsLength(labels, galleryState));
 const tagFields = initSelectDropdownState() as SelectDropdownState;
 watch(...watchTags(privateState, tagFields, galleryState));
 watch(...watchTagFieldsChipsLength(privateState, tagFields, galleryState));
+watch(...watchTagFieldValues(privateState, galleryState));
 
 const saveState = initRippleButtonState();
 function saved() {
@@ -176,7 +177,10 @@ defineExpose({ open, close, reset });
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>
-    <div class="modal-row" v-for="(_, field) in privateState.tagFields" :key="field">
+    <div
+      class="modal-row"
+      v-for="(_, field) in privateState.tagFields"
+      :key="JSON.stringify(galleryState.data.tags[field])">
       <span class="w-24 ml-8 mr-4">{{ field }}:</span>
       <select-dropdown
         class="flex-1"

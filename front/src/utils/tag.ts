@@ -62,32 +62,78 @@ export function onMouseoverOption(_: any, opt: SelectDropdownOption) {
   });
 }
 
+function updateTags(
+  privateState?: TagFieldsPrivateState,
+  tagFieldsState?: SelectDropdownState,
+  sourceState?: SourceDataState<Source>,
+) {
+  if (sourceState?.data?.tags === undefined) {
+    return;
+  }
+  tagFieldsState.chips = [];
+  privateState.tagFields = {};
+  for (const field in sourceState.data.tags) {
+    tagFieldsState.chips.push({ title: field, value: undefined });
+    privateState.tagFields[field] = initSelectDropdownState() as SelectDropdownState;
+    privateState.onGets[field] = (params: GetTagTokenStartWithParam) => {
+      params.category = field;
+      return getTagTokenStartWith(params);
+    };
+
+    for (const tagValue of sourceState.data.tags[field]) {
+      privateState.tagFields[field].chips.push({ title: tagValue, value: undefined });
+    }
+  }
+}
+
+// Update the UI with the sourceState, which is the gallery data.
 export function watchTags(
   privateState?: TagFieldsPrivateState,
   tagFieldsState?: SelectDropdownState,
   sourceState?: SourceDataState<Source>,
 ): [any, any] {
+  updateTags(privateState, tagFieldsState, sourceState);
   return [
     () => JSON.stringify(sourceState.data.tags),
     (currentLength: number, _: number) => {
-      if (currentLength !== tagFieldsState.chips.length) {
-        tagFieldsState.chips = [];
-        privateState.tagFields = {};
-        for (const field in sourceState.data.tags) {
-          tagFieldsState.chips.push({ title: field, value: undefined });
-          privateState.tagFields[field] = initSelectDropdownState() as SelectDropdownState;
-          privateState.onGets[field] = (params: GetTagTokenStartWithParam) => {
-            params.category = field;
-            return getTagTokenStartWith(params);
-          };
-
-          for (const tagValue of sourceState.data.tags[field]) {
-            privateState.tagFields[field].chips.push({ title: tagValue, value: undefined });
-          }
-        }
-      }
+      updateTags(privateState, tagFieldsState, sourceState);
     },
   ];
+}
+
+function updateTagFieldsChipsLength(
+  privateState?: TagFieldsPrivateState,
+  tagFieldsState?: SelectDropdownState,
+  sourceState?: SourceDataState<Source>,
+) {
+  if (sourceState?.data?.tags === undefined) {
+    return;
+  }
+  const chipTitles = [];
+  for (const chip of tagFieldsState.chips) {
+    if (privateState.tagFields[chip.title] === undefined) {
+      privateState.tagFields[chip.title] = initSelectDropdownState() as SelectDropdownState;
+      privateState.onGets[chip.title] = (params) => {
+        params.category = chip.title;
+        return getTagTokenStartWith(params);
+      };
+    }
+    if (sourceState.data.tags[chip.title] === undefined) {
+      sourceState.data.tags[chip.title] = [];
+    }
+    chipTitles.push(chip.title);
+  }
+  for (const field in privateState.tagFields) {
+    if (!chipTitles.includes(field)) {
+      delete privateState.tagFields[field];
+      delete privateState.onGets[field];
+    }
+  }
+  for (const field in sourceState.data.tags) {
+    if (!chipTitles.includes(field)) {
+      delete sourceState.data.tags[field];
+    }
+  }
 }
 
 export function watchTagFieldsChipsLength(
@@ -95,35 +141,12 @@ export function watchTagFieldsChipsLength(
   tagFieldsState?: SelectDropdownState,
   sourceState?: SourceDataState<Source>,
 ): [any, any] {
+  updateTagFieldsChipsLength(privateState, tagFieldsState, sourceState);
   return [
     () => tagFieldsState.chips.length,
     (currentLength: number, _: number) => {
       if (currentLength !== Object.keys(sourceState.data.tags).length) {
-        const chipTitles = [];
-        for (const chip of tagFieldsState.chips) {
-          if (privateState.tagFields[chip.title] === undefined) {
-            privateState.tagFields[chip.title] = initSelectDropdownState() as SelectDropdownState;
-            privateState.onGets[chip.title] = (params) => {
-              params.category = chip.title;
-              return getTagTokenStartWith(params);
-            };
-          }
-          if (sourceState.data.tags[chip.title] === undefined) {
-            sourceState.data.tags[chip.title] = [];
-          }
-          chipTitles.push(chip.title);
-        }
-        for (const field in privateState.tagFields) {
-          if (!chipTitles.includes(field)) {
-            delete privateState.tagFields[field];
-            delete privateState.onGets[field];
-          }
-        }
-        for (const field in sourceState.data.tags) {
-          if (!chipTitles.includes(field)) {
-            delete sourceState.data.tags[field];
-          }
-        }
+        updateTagFieldsChipsLength(privateState, tagFieldsState, sourceState);
       }
     },
   ];

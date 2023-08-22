@@ -4,30 +4,43 @@ import { SelectDropdownState, SelectDropdownOption, SelectDropdownAssignedValue 
 
 import { getValue, setValue } from "@/utils/obj";
 
+function updateInputWatch(
+  state: SelectDropdownState,
+  source: any,
+  key: string,
+  assigned: SelectDropdownAssignedValue = SelectDropdownAssignedValue.Title,
+) {
+  if (source === undefined) {
+    return;
+  }
+  let assignedValue: any;
+  let assignedKey: "title" | "selectedValue";
+  switch (assigned) {
+    case SelectDropdownAssignedValue.Title:
+      assignedValue = state.title;
+      assignedKey = "title";
+      break;
+    case SelectDropdownAssignedValue.SelectedValue:
+      assignedValue = state.selectedValue;
+      assignedKey = "selectedValue";
+      break;
+  }
+  if (assignedValue !== getValue(source, key)) {
+    setValue(state, assignedKey, getValue(source, key));
+  }
+}
+
 export function addInputWatch(
   state: SelectDropdownState,
   source: any,
   key: string,
   assigned: SelectDropdownAssignedValue = SelectDropdownAssignedValue.Title,
 ) {
+  updateInputWatch(state, source, key, assigned);
   watch(
     () => getValue(source, key),
     () => {
-      let assignedValue: any;
-      let assignedKey: "title" | "selectedValue";
-      switch (assigned) {
-        case SelectDropdownAssignedValue.Title:
-          assignedValue = state.title;
-          assignedKey = "title";
-          break;
-        case SelectDropdownAssignedValue.SelectedValue:
-          assignedValue = state.selectedValue;
-          assignedKey = "selectedValue";
-          break;
-      }
-      if (assignedValue !== getValue(source, key)) {
-        setValue(state, assignedKey, getValue(source, key));
-      }
+      updateInputWatch(state, source, key, assigned);
     },
   );
   watch(
@@ -49,29 +62,39 @@ export function addInputWatch(
   );
 }
 
+function updateInputChipsWatchByValue(state: SelectDropdownState, source: any, key: string) {
+  state.chips = [];
+  const sourceChips: Array<string> = getValue(source, key);
+  if (sourceChips !== undefined) {
+    for (const sourceChip of sourceChips) {
+      state.chips.push({ title: sourceChip, value: undefined });
+    }
+  }
+}
+
+function updateInputChipsWatchByLength(state: SelectDropdownState, source: any, key: string) {
+  if (state.chips !== undefined) {
+    const value = [];
+    for (const chip of state.chips) {
+      value.push(chip.title as string);
+    }
+    setValue(source, key, value);
+  }
+}
+
 export function addInputChipsWatch(state: SelectDropdownState, source: any, key: string) {
+  updateInputChipsWatchByValue(state, source, key);
   watch(
     () => JSON.stringify(getValue(source, key)),
     () => {
-      state.chips = [];
-      const sourceChips: Array<string> = getValue(source, key);
-      if (sourceChips !== undefined) {
-        for (const sourceChip of sourceChips) {
-          state.chips.push({ title: sourceChip, value: undefined });
-        }
-      }
+      updateInputChipsWatchByValue(state, source, key);
     },
   );
+  updateInputChipsWatchByLength(state, source, key);
   watch(
     () => state.chips.length,
     () => {
-      if (state.chips !== undefined) {
-        const value = [];
-        for (const chip of state.chips) {
-          value.push(chip.title as string);
-        }
-        setValue(source, key, value);
-      }
+      updateInputChipsWatchByLength(state, source, key);
     },
   );
 }

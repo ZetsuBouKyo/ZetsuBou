@@ -3,7 +3,12 @@ import { reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
-import { OnGet, SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import {
+  OnGet,
+  SelectDropdownAssignedValue,
+  SelectDropdownMode,
+  SelectDropdownState,
+} from "@/elements/Dropdown/SelectDropdown.interface";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
@@ -20,7 +25,7 @@ import { messageState } from "@/state/message";
 import { videoState } from "@/state/video";
 
 import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
-import { watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
+import { watchTagFieldValues, watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
 
 interface TagFields {
   [key: string]: SelectDropdownState;
@@ -50,40 +55,10 @@ const privateState = reactive<PrivateState>({
 });
 
 const category = initSelectDropdownState() as SelectDropdownState;
-watch(
-  () => videoState.data.attributes.category,
-  () => {
-    if (category.title !== videoState.data.attributes.category) {
-      category.title = videoState.data.attributes.category;
-    }
-  },
-);
-watch(
-  () => category.title,
-  () => {
-    if (category.title && category.title !== videoState.data.attributes.category) {
-      videoState.data.attributes.category = category.title as string;
-    }
-  },
-);
+category.addInputWatch(videoState, "data.attributes.category", SelectDropdownAssignedValue.Title);
 
 const rating = initSelectDropdownState() as SelectDropdownState;
-watch(
-  () => videoState.data.attributes.rating,
-  () => {
-    if (videoState.data.attributes.rating && videoState.data.attributes.rating !== rating.title) {
-      rating.title = videoState.data.attributes.rating;
-    }
-  },
-);
-watch(
-  () => rating.title,
-  () => {
-    if (rating.title && videoState.data.attributes.rating !== rating.title) {
-      videoState.data.attributes.rating = rating.title as number;
-    }
-  },
-);
+rating.addInputWatch(videoState, "data.attributes.rating", SelectDropdownAssignedValue.Title);
 rating.options = [
   { title: 0, value: 0 },
   { title: 1, value: 1 },
@@ -100,6 +75,7 @@ watch(...watchLabelsChipsLength(labels, videoState));
 const tagFields = initSelectDropdownState() as SelectDropdownState;
 watch(...watchTags(privateState, tagFields, videoState));
 watch(...watchTagFieldsChipsLength(privateState, tagFields, videoState));
+watch(...watchTagFieldValues(privateState, videoState));
 
 function saved() {
   editor.value.close();
@@ -188,7 +164,10 @@ defineExpose({ open, close, reset });
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>
-    <div class="modal-row" v-for="(_, field) in privateState.tagFields" :key="field">
+    <div
+      class="modal-row"
+      v-for="(_, field) in privateState.tagFields"
+      :key="JSON.stringify(videoState.data.tags[field])">
       <span class="w-24 ml-8 mr-4">{{ field }}:</span>
       <select-dropdown
         class="flex-1"

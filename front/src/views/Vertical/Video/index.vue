@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, reactive, ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { SearchBase, SearchQuery } from "@/interface/search";
@@ -32,11 +32,6 @@ interface State {
 }
 
 const route = useRoute();
-const id = route.params.video as string;
-
-onBeforeMount(() => {
-  videoState.init(id);
-});
 
 const state = reactive<State>({
   items: [],

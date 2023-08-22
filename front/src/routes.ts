@@ -31,6 +31,7 @@ import Videos from "./views/Vertical/Videos.vue";
 import { galleryState } from "@/state/gallery";
 import { settingState } from "@/state/Setting/front";
 import { userState } from "@/state/user";
+import { videoState } from "@/state/video";
 
 export const routes = [
   {
@@ -99,7 +100,14 @@ export const routes = [
         },
       },
       { path: "/g/:gallery/i/:img", component: ImgSvgPreview },
-      { path: "/v/:video", component: Video },
+      {
+        path: "/v/:video",
+        component: Video,
+        beforeEnter: (to: any, from: any, next: any) => {
+          const id = to.params.video as string;
+          videoState.init(id).then(() => next());
+        },
+      },
     ],
     beforeEnter: (to, from, next) => {
       Promise.all([userState.init(), settingState.init()]).then(() => next());

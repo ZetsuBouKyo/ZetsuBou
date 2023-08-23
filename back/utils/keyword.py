@@ -37,6 +37,7 @@ class KeywordParser:
         self._init()
         self._parsed_keywords.keywords = keywords
         if keywords.count('"') % 2 == 1:
+            self._parsed_keywords.remaining_keywords = keywords
             return self._parsed_keywords
 
         for i, c in enumerate(keywords):

@@ -340,11 +340,17 @@ const bool = ref();
 const custom = ref();
 
 function onClick() {
-  analyzer.value.close();
-  fuzziness.value.close();
-  query.value.close();
-  bool.value.close();
-  custom.value.close();
+  try {
+    analyzer.value.close();
+    fuzziness.value.close();
+    query.value.close();
+    bool.value.close();
+    custom.value.close();
+  } catch (e: any) {
+    if (e.name !== "TypeError") {
+      throw e;
+    }
+  }
 }
 
 function clearAll() {

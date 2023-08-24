@@ -32,13 +32,13 @@ const router = useRouter();
 
 const state = reactive<SearchState>({
   query: {
-    analyzer: undefined,
     query_id: undefined,
-    keywords: route.query.keywords as string,
     page: 1,
-    fuzziness: undefined,
     size: undefined,
+    analyzer: undefined,
     boolean: SearchBoolean.Should,
+    fuzziness: undefined,
+    keywords: route.query.keywords as string,
     seed: undefined,
   },
   category: route.meta.search as SearchCategory,

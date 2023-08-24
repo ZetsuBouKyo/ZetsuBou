@@ -35,13 +35,13 @@ export interface SearchQuery {
 }
 
 export interface SearchStateQuery {
-  analyzer?: SearchAnalyzer;
   query_id?: number;
-  keywords?: string;
   page?: number;
-  fuzziness?: number;
   size?: number;
+  analyzer?: SearchAnalyzer;
   boolean?: SearchBoolean;
+  fuzziness?: number;
+  keywords?: string;
   seed?: number;
 }
 

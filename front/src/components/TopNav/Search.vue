@@ -117,6 +117,79 @@ onBeforeMount(() => {
   });
 });
 
+function updateGalleryAdvancedSearchState() {
+  state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
+    {
+      name: "keywords",
+      keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
+      type: AdvancedSearchFieldType.String,
+    },
+    {
+      name: "name",
+      key: "attributes.name",
+      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+      type: AdvancedSearchFieldType.String,
+    },
+    {
+      name: "raw_name",
+      key: "attributes.raw_name",
+      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+      type: AdvancedSearchFieldType.String,
+    },
+    {
+      name: "src",
+      key: "attributes.src",
+      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+      type: AdvancedSearchFieldType.String,
+    },
+    {
+      name: "path",
+      key: "path",
+      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+      type: AdvancedSearchFieldType.String,
+    },
+    { name: "rating", type: AdvancedSearchFieldType.Range },
+  ];
+}
+
+function updateVideoAdvancedSearchState() {
+  state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
+    {
+      name: "keywords",
+      keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
+      type: AdvancedSearchFieldType.String,
+    },
+    {
+      name: "name",
+      key: "name",
+      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+      type: AdvancedSearchFieldType.String,
+    },
+    {
+      name: "other_names",
+      key: "other_names",
+      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+      type: AdvancedSearchFieldType.String,
+    },
+    {
+      name: "src",
+      key: "attributes.src",
+      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+      type: AdvancedSearchFieldType.String,
+    },
+    {
+      name: "path",
+      key: "path",
+      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+      type: AdvancedSearchFieldType.String,
+    },
+    { name: "rating", type: AdvancedSearchFieldType.Range },
+    { name: "height", type: AdvancedSearchFieldType.Range },
+    { name: "width", type: AdvancedSearchFieldType.Range },
+    { name: "duration", type: AdvancedSearchFieldType.Duration },
+  ];
+}
+
 function updateByPath(path: string) {
   if (path === undefined) {
     return;
@@ -132,76 +205,11 @@ function updateByPath(path: string) {
 
   switch (state.category) {
     case SearchCategory.Gallery:
-      state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
-        {
-          name: "keywords",
-          keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
-          type: AdvancedSearchFieldType.String,
-        },
-        {
-          name: "name",
-          key: "attributes.name",
-          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-          type: AdvancedSearchFieldType.String,
-        },
-        {
-          name: "raw_name",
-          key: "attributes.raw_name",
-          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-          type: AdvancedSearchFieldType.String,
-        },
-        {
-          name: "src",
-          key: "attributes.src",
-          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-          type: AdvancedSearchFieldType.String,
-        },
-        {
-          name: "path",
-          key: "path",
-          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-          type: AdvancedSearchFieldType.String,
-        },
-        { name: "rating", type: AdvancedSearchFieldType.Range },
-      ];
+      updateGalleryAdvancedSearchState();
       break;
     case SearchCategory.Video:
-      state.advancedSearchState.category = state.category;
-      state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
-        {
-          name: "keywords",
-          keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
-          type: AdvancedSearchFieldType.String,
-        },
-        {
-          name: "name",
-          key: "name",
-          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-          type: AdvancedSearchFieldType.String,
-        },
-        {
-          name: "other_names",
-          key: "other_names",
-          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-          type: AdvancedSearchFieldType.String,
-        },
-        {
-          name: "src",
-          key: "attributes.src",
-          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-          type: AdvancedSearchFieldType.String,
-        },
-        {
-          name: "path",
-          key: "path",
-          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-          type: AdvancedSearchFieldType.String,
-        },
-        { name: "rating", type: AdvancedSearchFieldType.Range },
-        { name: "height", type: AdvancedSearchFieldType.Range },
-        { name: "width", type: AdvancedSearchFieldType.Range },
-        { name: "duration", type: AdvancedSearchFieldType.Duration },
-      ];
+      updateVideoAdvancedSearchState();
+      break;
   }
 }
 

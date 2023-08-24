@@ -349,8 +349,6 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             _resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
             sources = SearchResult[SourceT](**_resp)
 
-        await self.async_elasticsearch.close()
-
         return sources
 
     async def custom(self, body: dict) -> dict:
@@ -405,7 +403,9 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             keywords, fuzziness=fuzziness, boolean=boolean
         )
 
-        return await self.query(page, dsl)
+        source = await self.query(page, dsl)
+        await self.async_elasticsearch.close()
+        return source
 
     async def match_all(self, page: int) -> SearchResult[SourceT]:
         dsl = self.get_basic_dsl()

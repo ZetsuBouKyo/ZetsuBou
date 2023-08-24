@@ -1,4 +1,4 @@
-import { SearchCategory } from "@/interface/search";
+import { SearchCategory, SearchBase } from "@/interface/search";
 
 import Bookmark from "./views/Vertical/Bookmark/index.vue";
 import BookmarkGallery from "./views/Vertical/Bookmark/Gallery.vue";
@@ -56,8 +56,8 @@ export const routes = [
         component: Galleries,
         meta: { title: "Gallery", search: SearchCategory.Gallery },
         children: [
-          { path: "random", component: Galleries, meta: { title: "Gallery Random" } },
-          { path: "search", component: Galleries, meta: { title: "Gallery Search" } },
+          { path: "random", component: Galleries, meta: { title: "Gallery Random", base: SearchBase.Random } },
+          { path: "search", component: Galleries, meta: { title: "Gallery Search", base: SearchBase.Search } },
           {
             path: "advanced-search",
             component: Galleries,
@@ -84,8 +84,8 @@ export const routes = [
         component: Videos,
         meta: { title: "Video", search: SearchCategory.Video },
         children: [
-          { path: "random", component: Videos, meta: { title: "Video Random" } },
-          { path: "search", component: Videos, meta: { title: "Video Search" } },
+          { path: "random", component: Videos, meta: { title: "Video Random", base: SearchBase.Random } },
+          { path: "search", component: Videos, meta: { title: "Video Search", base: SearchBase.Search } },
           { path: "advanced-search", component: Videos, meta: { title: "Video Advanced Search" } },
         ],
       },

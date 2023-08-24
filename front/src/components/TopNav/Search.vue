@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, reactive, ref, watch } from "vue";
+import { onBeforeMount, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
@@ -25,7 +25,6 @@ import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { userState } from "@/state/user";
 
 import { toTitle } from "@/utils/str";
-import { onMounted } from "vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -42,7 +41,7 @@ const state = reactive<SearchState>({
     seed: undefined,
   },
   category: route.meta.search as SearchCategory,
-  searchBase: SearchBase.Search,
+  searchBase: route.meta.base as SearchBase,
   defaultKeywords: route.query.keywords as string,
   advancedSearchState: { fields: [], category: SearchCategory.Gallery },
   width: undefined,
@@ -116,6 +115,119 @@ onBeforeMount(() => {
     state.width = rect.width;
   });
 });
+
+const queryTypeState = initSelectDropdownState() as SelectDropdownState;
+queryTypeState.options = [
+  { title: toTitle(SearchBase.Search), value: SearchBase.Search },
+  { title: toTitle(SearchBase.Random), value: SearchBase.Random },
+];
+watch(
+  () => queryTypeState.selectedValue,
+  () => {
+    state.searchBase = queryTypeState.selectedValue as SearchBase;
+    if (queryTypeState.selectedValue !== undefined) {
+      customSearchState.clear();
+    } else {
+      state.searchBase = SearchBase.Search;
+    }
+  },
+);
+
+const analyzerState = initSelectDropdownState() as SelectDropdownState;
+const elasticAnalyzers = Object.values(SearchAnalyzer);
+for (let analyzer of elasticAnalyzers) {
+  analyzerState.options.push({ title: toTitle(analyzer), value: analyzer });
+}
+watch(
+  () => analyzerState.selectedValue,
+  () => {
+    state.query.analyzer = analyzerState.selectedValue as SearchAnalyzer;
+    if (analyzerState.selectedValue !== undefined) {
+      customSearchState.clear();
+    }
+  },
+);
+
+const fuzzinessState = initSelectDropdownState() as SelectDropdownState;
+fuzzinessState.options = [
+  { title: 0, value: 0 },
+  { title: 1, value: 1 },
+  { title: 2, value: 2 },
+  { title: 3, value: 3 },
+];
+watch(
+  () => fuzzinessState.selectedValue,
+  () => {
+    state.query.fuzziness = fuzzinessState.selectedValue as number;
+    if (fuzzinessState.selectedValue !== undefined) {
+      customSearchState.clear();
+    }
+  },
+);
+
+const booleanTypeState = initSelectDropdownState() as SelectDropdownState;
+booleanTypeState.options = [
+  { title: toTitle(SearchBoolean.Should), value: SearchBoolean.Should },
+  { title: toTitle(SearchBoolean.Must), value: SearchBoolean.Must },
+];
+watch(
+  () => booleanTypeState.selectedValue,
+  () => {
+    state.query.boolean = booleanTypeState.selectedValue as SearchBoolean;
+    if (booleanTypeState.selectedValue !== undefined) {
+      customSearchState.clear();
+    }
+  },
+);
+
+function resetGeneralSearchQuery() {
+  state.query.analyzer = undefined;
+  state.query.boolean = undefined;
+  state.query.fuzziness = undefined;
+  state.query.keywords = undefined;
+  state.query.seed = undefined;
+}
+
+function updateSearchQuery() {
+  if (route.query.page) {
+    state.query.page = Number(route.query.page);
+  }
+  if (route.query.size) {
+    state.query.size = Number(route.query.size);
+  }
+
+  if (route.query.query_id) {
+    return;
+  }
+
+  resetGeneralSearchQuery();
+
+  if (route.query.analyzer) {
+    state.query.analyzer = route.query.analyzer as any;
+    analyzerState.title = toTitle(state.query.analyzer);
+    analyzerState.selectedValue = state.query.analyzer;
+  }
+
+  if (route.query.boolean) {
+    state.query.boolean = route.query.boolean as any;
+    booleanTypeState.title = toTitle(state.query.boolean);
+    booleanTypeState.selectedValue = state.query.boolean;
+  }
+
+  if (route.query.fuzziness) {
+    state.query.fuzziness = Number(route.query.fuzziness);
+    fuzzinessState.title = state.query.fuzziness;
+    fuzzinessState.selectedValue = state.query.fuzziness;
+  }
+
+  if (route.query.keywords) {
+    state.query.keywords = route.query.keywords as string;
+  }
+
+  if (route.query.seed) {
+    state.query.seed = Number(route.query.seed);
+  }
+}
 
 function updateGalleryAdvancedSearchState() {
   state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
@@ -200,6 +312,15 @@ function updateByPath(path: string) {
     return;
   }
 
+  state.searchBase = route.meta.base as SearchBase;
+  const searchBase = Object.values(SearchBase);
+  if (searchBase.includes(state.searchBase)) {
+    queryTypeState.title = toTitle(state.searchBase);
+    queryTypeState.selectedValue = state.searchBase;
+  }
+
+  updateSearchQuery();
+
   state.category = route.meta.search as SearchCategory;
   state.advancedSearchState = { fields: [], category: state.category } as AdvancedSearchState;
 
@@ -223,11 +344,7 @@ watch(
 
 function search() {
   if (state.query.query_id !== undefined) {
-    state.query.analyzer = undefined;
-    state.query.keywords = undefined;
-    state.query.fuzziness = undefined;
-    state.query.boolean = undefined;
-    state.query.seed = undefined;
+    resetGeneralSearchQuery();
   }
   let url = `/${state.category}/${state.searchBase}`;
   let queries = [];
@@ -250,71 +367,6 @@ function search() {
   dropdown.value.close();
 }
 const customSearchState = initSelectDropdownState() as SelectDropdownState;
-
-const analyzerState = initSelectDropdownState() as SelectDropdownState;
-const elasticAnalyzers = Object.values(SearchAnalyzer);
-for (let analyzer of elasticAnalyzers) {
-  analyzerState.options.push({ title: toTitle(analyzer), value: analyzer });
-}
-
-watch(
-  () => analyzerState.selectedValue,
-  () => {
-    state.query.analyzer = analyzerState.selectedValue as SearchAnalyzer;
-    if (analyzerState.selectedValue !== undefined) {
-      customSearchState.clear();
-    }
-  },
-);
-
-const fuzzinessState = initSelectDropdownState() as SelectDropdownState;
-fuzzinessState.options = [
-  { title: 0, value: 0 },
-  { title: 1, value: 1 },
-  { title: 2, value: 2 },
-  { title: 3, value: 3 },
-];
-watch(
-  () => fuzzinessState.selectedValue,
-  () => {
-    state.query.fuzziness = fuzzinessState.selectedValue as number;
-    if (fuzzinessState.selectedValue !== undefined) {
-      customSearchState.clear();
-    }
-  },
-);
-
-const queryTypeState = initSelectDropdownState() as SelectDropdownState;
-queryTypeState.options = [
-  { title: "Search", value: SearchBase.Search },
-  { title: "Random", value: SearchBase.Random },
-];
-watch(
-  () => queryTypeState.selectedValue,
-  () => {
-    state.searchBase = queryTypeState.selectedValue as SearchBase;
-    if (queryTypeState.selectedValue !== undefined) {
-      customSearchState.clear();
-    } else {
-      state.searchBase = SearchBase.Search;
-    }
-  },
-);
-
-const booleanTypeState = initSelectDropdownState() as SelectDropdownState;
-booleanTypeState.options = [
-  { title: "Should", value: "should" },
-  { title: "Must", value: "must" },
-];
-watch(
-  () => booleanTypeState.selectedValue,
-  () => {
-    state.query.boolean = booleanTypeState.selectedValue as SearchBoolean;
-    if (booleanTypeState.selectedValue !== undefined) {
-      customSearchState.clear();
-    }
-  },
-);
 
 const userID = userState.data.id;
 function onGet(params: PaginationGetParam) {

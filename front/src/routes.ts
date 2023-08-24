@@ -1,3 +1,5 @@
+import { SearchCategory } from "@/interface/search";
+
 import Bookmark from "./views/Vertical/Bookmark/index.vue";
 import BookmarkGallery from "./views/Vertical/Bookmark/Gallery.vue";
 import BookmarkVideo from "./views/Vertical/Bookmark/Video.vue";
@@ -37,8 +39,9 @@ export const routes = [
   {
     path: "/",
     component: Vertical,
+    meta: { search: SearchCategory.Gallery },
     children: [
-      { path: "/", component: Galleries, meta: { title: "Home" } },
+      { path: "/", component: Galleries, meta: { title: "Home", disable: false } },
       {
         path: "/bookmark",
         component: Bookmark,
@@ -51,15 +54,50 @@ export const routes = [
       {
         path: "/gallery",
         component: Galleries,
-        meta: { title: "Gallery" },
+        meta: { title: "Gallery", search: SearchCategory.Gallery },
+        children: [
+          { path: "random", component: Galleries, meta: { title: "Gallery Random" } },
+          { path: "search", component: Galleries, meta: { title: "Gallery Search" } },
+          {
+            path: "advanced-search",
+            component: Galleries,
+            meta: { title: "Gallery Advanced Search" },
+          },
+        ],
       },
-      { path: "/gallery/random", component: Galleries, meta: { title: "Gallery Random" } },
-      { path: "/gallery/search", component: Galleries, meta: { title: "Gallery Search" } },
-      { path: "/gallery/advanced-search", component: Galleries, meta: { title: "Gallery Advanced Search" } },
-      { path: "/video", component: Videos, meta: { title: "Video" } },
-      { path: "/video/random", component: Videos, meta: { title: "Video Random" } },
-      { path: "/video/search", component: Videos, meta: { title: "Video Search" } },
-      { path: "/video/advanced-search", component: Videos, meta: { title: "Video Advanced Search" } },
+      {
+        path: "/g/:gallery",
+        component: Gallery,
+        meta: { title: "Gallery", search: SearchCategory.Gallery },
+        beforeEnter: (to: any, from: any, next: any) => {
+          const id = to.params.gallery as string;
+          galleryState.init(id).then(() => next());
+        },
+      },
+      {
+        path: "/g/:gallery/i/:img",
+        component: ImgSvgPreview,
+        meta: { title: "Gallery", search: SearchCategory.Gallery },
+      },
+      {
+        path: "/video",
+        component: Videos,
+        meta: { title: "Video", search: SearchCategory.Video },
+        children: [
+          { path: "random", component: Videos, meta: { title: "Video Random" } },
+          { path: "search", component: Videos, meta: { title: "Video Search" } },
+          { path: "advanced-search", component: Videos, meta: { title: "Video Advanced Search" } },
+        ],
+      },
+      {
+        path: "/v/:video",
+        component: Video,
+        meta: { title: "Video", search: SearchCategory.Video },
+        beforeEnter: (to: any, from: any, next: any) => {
+          const id = to.params.video as string;
+          videoState.init(id).then(() => next());
+        },
+      },
       {
         path: "/settings",
         component: Settings,
@@ -91,25 +129,8 @@ export const routes = [
       },
       { path: "/NotFound", component: NotFound },
       { path: "/construction", component: Construction },
-      {
-        path: "/g/:gallery",
-        component: Gallery,
-        beforeEnter: (to: any, from: any, next: any) => {
-          const id = to.params.gallery as string;
-          galleryState.init(id).then(() => next());
-        },
-      },
-      { path: "/g/:gallery/i/:img", component: ImgSvgPreview },
-      {
-        path: "/v/:video",
-        component: Video,
-        beforeEnter: (to: any, from: any, next: any) => {
-          const id = to.params.video as string;
-          videoState.init(id).then(() => next());
-        },
-      },
     ],
-    beforeEnter: (to, from, next) => {
+    beforeEnter: (to: any, from: any, next: any) => {
       Promise.all([userState.init(), settingState.init()]).then(() => next());
     },
   },

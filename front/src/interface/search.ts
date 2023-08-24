@@ -53,4 +53,5 @@ export interface SearchState {
   advancedSearchState: any;
   width: number;
   isOptions: boolean;
+  show: boolean;
 }

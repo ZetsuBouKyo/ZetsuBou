@@ -41,12 +41,13 @@ const state = reactive<SearchState>({
     boolean: SearchBoolean.Should,
     seed: undefined,
   },
-  category: SearchCategory.Gallery,
+  category: route.meta.search as SearchCategory,
   searchBase: SearchBase.Search,
   defaultKeywords: route.query.keywords as string,
   advancedSearchState: { fields: [], category: SearchCategory.Gallery },
   width: undefined,
   isOptions: undefined,
+  show: undefined,
 });
 
 onMounted(async () => {
@@ -63,6 +64,9 @@ function openSearchAutoComplete() {
   searchAutoComplete.value.open();
 }
 function closeSearchAutoComplete() {
+  if (searchAutoComplete.value === null) {
+    return;
+  }
   if (searchAutoComplete.value.isOpened()) {
     focusInput();
   }
@@ -118,83 +122,87 @@ function updateByPath(path: string) {
     return;
   }
 
-  state.category = SearchCategory.Gallery;
-  state.advancedSearchState = { fields: [], category: state.category } as AdvancedSearchState;
-
-  const p = path.split("/");
-  if (p.length > 1 && (p[1] === SearchCategory.Video || p[1] === "v")) {
-    state.category = SearchCategory.Video;
-    state.advancedSearchState.category = state.category;
-    state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
-      {
-        name: "keywords",
-        keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
-        type: AdvancedSearchFieldType.String,
-      },
-      {
-        name: "name",
-        key: "name",
-        keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-        type: AdvancedSearchFieldType.String,
-      },
-      {
-        name: "other_names",
-        key: "other_names",
-        keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-        type: AdvancedSearchFieldType.String,
-      },
-      {
-        name: "src",
-        key: "attributes.src",
-        keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-        type: AdvancedSearchFieldType.String,
-      },
-      {
-        name: "path",
-        key: "path",
-        keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-        type: AdvancedSearchFieldType.String,
-      },
-      { name: "rating", type: AdvancedSearchFieldType.Range },
-      { name: "height", type: AdvancedSearchFieldType.Range },
-      { name: "width", type: AdvancedSearchFieldType.Range },
-      { name: "duration", type: AdvancedSearchFieldType.Duration },
-    ];
+  state.show = route.meta.search === SearchCategory.Gallery || route.meta.search === SearchCategory.Video;
+  if (!state.show) {
     return;
   }
 
-  state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
-    {
-      name: "keywords",
-      keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
-      type: AdvancedSearchFieldType.String,
-    },
-    {
-      name: "name",
-      key: "attributes.name",
-      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-      type: AdvancedSearchFieldType.String,
-    },
-    {
-      name: "raw_name",
-      key: "attributes.raw_name",
-      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-      type: AdvancedSearchFieldType.String,
-    },
-    {
-      name: "src",
-      key: "attributes.src",
-      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-      type: AdvancedSearchFieldType.String,
-    },
-    {
-      name: "path",
-      key: "path",
-      keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
-      type: AdvancedSearchFieldType.String,
-    },
-    { name: "rating", type: AdvancedSearchFieldType.Range },
-  ];
+  state.category = route.meta.search as SearchCategory;
+  state.advancedSearchState = { fields: [], category: state.category } as AdvancedSearchState;
+
+  switch (state.category) {
+    case SearchCategory.Gallery:
+      state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
+        {
+          name: "keywords",
+          keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
+          type: AdvancedSearchFieldType.String,
+        },
+        {
+          name: "name",
+          key: "attributes.name",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
+        {
+          name: "raw_name",
+          key: "attributes.raw_name",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
+        {
+          name: "src",
+          key: "attributes.src",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
+        {
+          name: "path",
+          key: "path",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
+        { name: "rating", type: AdvancedSearchFieldType.Range },
+      ];
+      break;
+    case SearchCategory.Video:
+      state.advancedSearchState.category = state.category;
+      state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
+        {
+          name: "keywords",
+          keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
+          type: AdvancedSearchFieldType.String,
+        },
+        {
+          name: "name",
+          key: "name",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
+        {
+          name: "other_names",
+          key: "other_names",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
+        {
+          name: "src",
+          key: "attributes.src",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
+        {
+          name: "path",
+          key: "path",
+          keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
+          type: AdvancedSearchFieldType.String,
+        },
+        { name: "rating", type: AdvancedSearchFieldType.Range },
+        { name: "height", type: AdvancedSearchFieldType.Range },
+        { name: "width", type: AdvancedSearchFieldType.Range },
+        { name: "duration", type: AdvancedSearchFieldType.Duration },
+      ];
+  }
 }
 
 updateByPath(route.path);
@@ -356,12 +364,13 @@ function clearAll() {
       class="w-full border-l-4 border-r-0 border-t-0 border-b-0 border-gray-700 bg-gray-700 text-white placeholder-gray-400 h-10 pl-2 pr-16 focus:border-gray-700 focus:ring-transparent hidden sm:inline-block"
       :class="state.isOptions ? 'rounded-t-lg' : 'rounded-lg'"
       type="text"
+      v-if="state.show"
       v-model="state.query.keywords"
       @keypress.enter="search"
       @click="openSearchAutoComplete"
       @focusout="closeSearchAutoComplete" />
     <search-auto-complete ref="searchAutoComplete" :width="state.width" :search-state="state" />
-    <div class="absolute right-0 h-full inline-flex text-left">
+    <div class="absolute right-0 h-full inline-flex text-left" v-if="state.show">
       <button type="button" class="flex flex-row items-center w-full mr-1 font-medium text-gray-700 focus:outline-none">
         <icon-ic-baseline-search class="hover:opacity-50" style="font-size: 1.5rem; color: white" @click="search" />
       </button>

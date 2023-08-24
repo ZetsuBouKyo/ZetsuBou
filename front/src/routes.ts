@@ -39,9 +39,12 @@ export const routes = [
   {
     path: "/",
     component: Vertical,
-    meta: { search: SearchCategory.Gallery },
     children: [
-      { path: "/", component: Galleries, meta: { title: "Home", disable: false } },
+      {
+        path: "/",
+        component: Galleries,
+        meta: { title: "Home", search: SearchCategory.Gallery, base: SearchBase.Search },
+      },
       {
         path: "/bookmark",
         component: Bookmark,
@@ -54,7 +57,7 @@ export const routes = [
       {
         path: "/gallery",
         component: Galleries,
-        meta: { title: "Gallery", search: SearchCategory.Gallery },
+        meta: { title: "Gallery", search: SearchCategory.Gallery, base: SearchBase.Search },
         children: [
           { path: "random", component: Galleries, meta: { title: "Gallery Random", base: SearchBase.Random } },
           { path: "search", component: Galleries, meta: { title: "Gallery Search", base: SearchBase.Search } },
@@ -68,7 +71,7 @@ export const routes = [
       {
         path: "/g/:gallery",
         component: Gallery,
-        meta: { title: "Gallery", search: SearchCategory.Gallery },
+        meta: { title: "Gallery", search: SearchCategory.Gallery, base: SearchBase.Search },
         beforeEnter: (to: any, from: any, next: any) => {
           const id = to.params.gallery as string;
           galleryState.init(id).then(() => next());
@@ -77,12 +80,12 @@ export const routes = [
       {
         path: "/g/:gallery/i/:img",
         component: ImgSvgPreview,
-        meta: { title: "Gallery", search: SearchCategory.Gallery },
+        meta: { title: "Gallery", search: SearchCategory.Gallery, base: SearchBase.Search },
       },
       {
         path: "/video",
         component: Videos,
-        meta: { title: "Video", search: SearchCategory.Video },
+        meta: { title: "Video", search: SearchCategory.Video, base: SearchBase.Search },
         children: [
           { path: "random", component: Videos, meta: { title: "Video Random", base: SearchBase.Random } },
           { path: "search", component: Videos, meta: { title: "Video Search", base: SearchBase.Search } },
@@ -92,7 +95,7 @@ export const routes = [
       {
         path: "/v/:video",
         component: Video,
-        meta: { title: "Video", search: SearchCategory.Video },
+        meta: { title: "Video", search: SearchCategory.Video, base: SearchBase.Search },
         beforeEnter: (to: any, from: any, next: any) => {
           const id = to.params.video as string;
           videoState.init(id).then(() => next());

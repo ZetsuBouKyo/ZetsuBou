@@ -1,5 +1,6 @@
 from lib.typer import ZetsuBouTyper
 
+from .docs import app as docs
 from .setting import app as setting
 from .statics import app as statics
 
@@ -9,5 +10,6 @@ Build document or intermediate components during developing, publishing, and so 
 
 app = ZetsuBouTyper(name="build", help=_help)
 
+app.add_typer(docs)
 app.add_typer(setting)
 app.add_typer(statics)

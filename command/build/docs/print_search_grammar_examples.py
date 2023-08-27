@@ -77,13 +77,10 @@ async def get_search_grammar_example():
 
 
 @app.command()
-async def print_search_grammar_examples(
-    out: str = typer.Option(default="", help="Documentation path.")
-):
+async def print_search_grammar_examples():
     """
     Print examples of search grammar.
     """
-    _out = Path(out)
 
     docs = ""
 

@@ -13,9 +13,9 @@ ElasticsearchField = NewType("ElasticsearchField", str)
 class AnalyzerEnum(str, Enum):
     DEFAULT: str = "default"
     KEYWORD: str = "keyword"
-    SYNONYM: str = "synonym"
-    STANDARD: str = "standard"
     NGRAM: str = "ngram"
+    STANDARD: str = "standard"
+    SYNONYM: str = "synonym"
     URL: str = "url"
 
 

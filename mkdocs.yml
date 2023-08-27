@@ -34,8 +34,7 @@ plugins:
 
 markdown_extensions:
   - admonition
-  - toc:
-      permalink: true
+  - footnotes
   - pymdownx.caret
   - pymdownx.details
   - pymdownx.highlight:
@@ -58,7 +57,10 @@ markdown_extensions:
       alternate_style: true
   - pymdownx.tilde
   - tables
+  - toc:
+      permalink: true
   - md_in_html
+
 
 extra_css:
 - /docs/statics/termynal.css

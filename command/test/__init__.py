@@ -4,6 +4,7 @@ from back.model.image import ImageFormatEnum
 from back.utils.keyword import KeywordParser
 from command.test.gallery import app as gallery
 from command.test.service import app as service
+from command.test.video import app as video
 from lib.typer import ZetsuBouTyper
 from lib.uvicorn.files import get_watched_files
 
@@ -13,6 +14,7 @@ Test the functions or services.
 app = ZetsuBouTyper(name="test", help=_help)
 
 app.add_typer(gallery)
+app.add_typer(video)
 app.add_typer(service)
 
 

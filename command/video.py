@@ -133,14 +133,13 @@ def to_h264(
 )
 async def generate_cover(
     video_id: str = typer.Argument(..., help="Video ID."),
-    time: float = typer.Option(default=None, help="Current time in seconds."),
     frame: int = typer.Option(default=None, help="Current frame count."),
 ):
     """
     Generate cover for video.
     """
 
-    if time is None and frame is None:
+    if frame is None:
         return
 
     crud = await get_crud_async_video(video_id)

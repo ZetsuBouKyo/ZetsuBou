@@ -75,7 +75,7 @@ app = ZetsuBouTyper(name="gallery")
 
 
 @app.command()
-def generate(
+def generate_galleries(
     root: str = typer.Argument(..., help="Parent of the generated gallery."),
     num_gallery: int = typer.Option(
         default=0, help="Number of galleries. Gallery names come from uuid4."
@@ -95,7 +95,7 @@ def generate(
     format: ImageFormatEnum = typer.Option(default=".png", help="Image format."),
 ):
     """
-    Generate the gallery.
+    Generate the galleries.
 
     Gallery names: `--gallery-names` has higher priority than `--num-gallery`.
     Image names: `--img-names` has higher priority than `--num-img`.

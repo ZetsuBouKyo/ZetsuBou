@@ -372,6 +372,7 @@ async def _generate_cover(
     cache_home: str,
     cover_home: str,
     frame: int = 0,
+    force: bool = False,
 ):
     if video.id is None:
         return
@@ -381,6 +382,10 @@ async def _generate_cover(
     cover_source = _get_cover_source(
         app_storage_protocol, cache_home, cover_home, video.id
     )
+
+    is_cover = await storage_session.exists(cover_source)
+    if is_cover and not force:
+        return
 
     url = await storage_session.get_url(video)
     v = cv2.VideoCapture(url)
@@ -483,6 +488,7 @@ class CrudAsyncVideo:
                 self.cache_home,
                 self.cover_home,
                 frame=frame,
+                force=True,
             )
 
     async def update(self, new_video: Video) -> Video:
@@ -696,24 +702,22 @@ class CrudAsyncVideoSync:
             return
 
         video = self._video_paths_in_elasitcsearch.get(source.path, None)
-        if video is not None:
-            if not self.force:
-                return
-            else:
-                new_video = await _get_video_attrs(self.storage_session, video)
-                if new_video is None:
-                    return
-                video.attributes.height = new_video.attributes.height
-                video.attributes.width = new_video.attributes.width
-                video.attributes.fps = new_video.attributes.fps
-                video.attributes.duration = new_video.attributes.duration
-                video.attributes.frames = new_video.attributes.frames
-        else:
+        if video is None:
             video = await _get_video_attrs(self.storage_session, source)
             if video is None:
                 return
+        elif self.force:
+            new_video = await _get_video_attrs(self.storage_session, video)
+            if new_video is None:
+                return
+            video.attributes.height = new_video.attributes.height
+            video.attributes.width = new_video.attributes.width
+            video.attributes.fps = new_video.attributes.fps
+            video.attributes.duration = new_video.attributes.duration
+            video.attributes.frames = new_video.attributes.frames
 
-        video.name = Path(source.path).name
+        if video.name is None:
+            video.name = Path(source.path).name
         video.path = source.path
         if video.id is None:
             video.id = str(uuid4())
@@ -729,6 +733,7 @@ class CrudAsyncVideoSync:
             video,
             self.cache_home,
             self.cover_home,
+            self.force,
         )
 
         if self.callback is not None:

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict, List
 from uuid import uuid4
 
 from elasticsearch import AsyncElasticsearch
@@ -520,6 +520,7 @@ class CrudAsyncGallerySync:
         progress_initial: float = 0,
         progress_final: float = 100.0,
         sync_pages: bool = None,
+        callback: Callable[[Gallery], Gallery] = None,
         is_progress: bool = True,
         is_from_setting_if_none: bool = False,
     ):
@@ -548,6 +549,7 @@ class CrudAsyncGallerySync:
                 self.storage_protocol, self.storage_id
             )
         self.sync_pages = sync_pages
+        self.callback = callback
         self.is_progress = is_progress
 
         if is_from_setting_if_none:
@@ -599,6 +601,12 @@ class CrudAsyncGallerySync:
     async def _sync_gallery_storage_to_elasticsearch(
         self, source: SourceBaseModel
     ) -> Gallery:
+        """Update the Elasticsearch document based on the stored JSON file without
+        checking for differences between the two documents.
+
+        In some cases, we need to update the JSON file in storage as well.
+        """
+
         tag_source = _get_tag_source(
             self.storage_session, source, self.dir_fname, self.tag_fname
         )
@@ -610,9 +618,11 @@ class CrudAsyncGallerySync:
         else:
             tag = await _get_gallery_tag_from_storage(self.storage_session, tag_source)
 
+        # check if we need to update the JSON file in the storage
+        need_to_update = False
+
         now = get_now()
 
-        need_to_update = False
         if not tag.timestamp:
             need_to_update = True
             tag.timestamp = now
@@ -642,9 +652,16 @@ class CrudAsyncGallerySync:
                 tag.attributes.pages = gallery_pages
                 need_to_update = True
 
+        if self.callback is not None:
+            tag = self.callback(tag)
+            assert isinstance(tag, Gallery)
+            need_to_update = True
+
         if need_to_update:
+            # update the JSON file in storage
             await _put_gallery_tag_in_storage(self.storage_session, tag, tag_source)
 
+        # add the document to batches to update the document in Elasticsearch
         action = {"_index": self.index, "_id": tag.id, "_source": tag.dict()}
         self._storage_to_elasticsearch_batches.append(action)
 

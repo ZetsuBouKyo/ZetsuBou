@@ -1,6 +1,6 @@
 import io
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict, List
 from uuid import uuid4
 
 import cv2
@@ -582,6 +582,7 @@ class CrudAsyncVideoSync:
         progress_initial: float = 0,
         progress_final: float = 100.0,
         is_progress: bool = True,
+        callback: Callable[[Video], Video] = None,
         is_from_setting_if_none: bool = False,
     ):
         self.storage_session = storage_session
@@ -612,6 +613,7 @@ class CrudAsyncVideoSync:
             self.progress_id = get_sync_video_progress_id(
                 self.storage_protocol, self.storage_id
             )
+        self.callback = callback
         self.is_progress = is_progress
 
         if is_from_setting_if_none:
@@ -728,6 +730,10 @@ class CrudAsyncVideoSync:
             self.cache_home,
             self.cover_home,
         )
+
+        if self.callback is not None:
+            video = self.callback(video)
+            assert isinstance(video, Video)
 
         action = {"_index": self.index, "_id": video.id, "_source": video.dict()}
         self._storage_to_elasticsearch_batches.append(action)

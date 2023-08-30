@@ -1,10 +1,12 @@
+from typing import Callable
+
 from fastapi import HTTPException
 
 from back.crud.async_gallery import CrudAsyncGallerySync
 from back.crud.async_video import CrudAsyncVideoSync
 from back.db.crud import CrudStorageMinio
 from back.db.model import StorageMinio
-from back.model.base import SourceBaseModel, SourceProtocolEnum
+from back.model.base import Source, SourceBaseModel, SourceProtocolEnum
 from back.model.storage import StorageCategoryEnum
 from back.session.storage import get_app_storage_session
 from back.session.storage.async_s3 import AsyncS3Session
@@ -31,6 +33,7 @@ async def get_crud_sync(
     progress_initial: float = 0.0,
     progress_final: float = 100.0,
     is_progress: bool = False,
+    callback: Callable[[Source], Source] = None,
     target_index: str = None,
 ) -> CrudAsyncGallerySync:
     if protocol == SourceProtocolEnum.MINIO.value:
@@ -60,6 +63,7 @@ async def get_crud_sync(
                 progress_initial=progress_initial,
                 progress_final=progress_final,
                 is_progress=is_progress,
+                callback=callback,
                 is_from_setting_if_none=True,
                 target_index=target_index,
             )
@@ -87,6 +91,7 @@ async def get_crud_sync(
                 progress_initial=progress_initial,
                 progress_final=progress_final,
                 is_progress=is_progress,
+                callback=callback,
                 is_from_setting_if_none=True,
                 target_index=target_index,
             )

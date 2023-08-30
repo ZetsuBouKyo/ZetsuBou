@@ -34,6 +34,7 @@ async def get_crud_sync(
     progress_final: float = 100.0,
     is_progress: bool = False,
     callback: Callable[[Source], Source] = None,
+    new_model: Source = None,
     target_index: str = None,
 ) -> CrudAsyncGallerySync:
     if protocol == SourceProtocolEnum.MINIO.value:
@@ -64,6 +65,7 @@ async def get_crud_sync(
                 progress_final=progress_final,
                 is_progress=is_progress,
                 callback=callback,
+                new_gallery_model=new_model,
                 is_from_setting_if_none=True,
                 target_index=target_index,
             )
@@ -92,6 +94,7 @@ async def get_crud_sync(
                 progress_final=progress_final,
                 is_progress=is_progress,
                 callback=callback,
+                new_video_model=new_model,
                 is_from_setting_if_none=True,
                 target_index=target_index,
             )

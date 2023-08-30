@@ -88,4 +88,5 @@ async def get_crud_sync(
                 progress_final=progress_final,
                 is_progress=is_progress,
                 is_from_setting_if_none=True,
+                target_index=target_index,
             )

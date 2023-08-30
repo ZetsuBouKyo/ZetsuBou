@@ -577,6 +577,7 @@ class CrudAsyncVideoSync:
         depth: int,
         hosts: List[str] = None,
         index: str = None,
+        target_index: str = None,
         size: int = None,
         batch_size: int = None,
         force: bool = False,
@@ -588,7 +589,8 @@ class CrudAsyncVideoSync:
         progress_initial: float = 0,
         progress_final: float = 100.0,
         is_progress: bool = True,
-        callback: Callable[[Video], Video] = None,
+        callback: Callable[[Video], SourceBaseModel] = None,
+        new_video_model: SourceBaseModel = None,
         is_from_setting_if_none: bool = False,
     ):
         self.storage_session = storage_session
@@ -600,6 +602,7 @@ class CrudAsyncVideoSync:
 
         self.hosts = hosts
         self.index = index
+        self.target_index = target_index  # the target index for synchronization
         self.size = size
         self.batch_size = batch_size
         self.force = force
@@ -620,6 +623,7 @@ class CrudAsyncVideoSync:
                 self.storage_protocol, self.storage_id
             )
         self.callback = callback
+        self.new_video_model = new_video_model
         self.is_progress = is_progress
 
         if is_from_setting_if_none:
@@ -738,9 +742,14 @@ class CrudAsyncVideoSync:
 
         if self.callback is not None:
             video = self.callback(video)
-            assert isinstance(video, Video)
+            if self.new_video_model is None:
+                assert isinstance(video, Video)
 
-        action = {"_index": self.index, "_id": video.id, "_source": video.dict()}
+        index = self.index
+        if self.target_index is not None:
+            index = self.target_index
+
+        action = {"_index": index, "_id": video.id, "_source": video.dict()}
         self._storage_to_elasticsearch_batches.append(action)
 
         if len(self._storage_to_elasticsearch_batches) > self.batch_size:

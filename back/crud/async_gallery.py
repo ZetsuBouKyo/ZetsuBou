@@ -521,7 +521,8 @@ class CrudAsyncGallerySync:
         progress_initial: float = 0,
         progress_final: float = 100.0,
         sync_pages: bool = None,
-        callback: Callable[[Gallery], Gallery] = None,
+        callback: Callable[[Gallery], SourceBaseModel] = None,
+        new_gallery_model: SourceBaseModel = None,
         is_progress: bool = True,
         is_from_setting_if_none: bool = False,
     ):
@@ -552,6 +553,7 @@ class CrudAsyncGallerySync:
             )
         self.sync_pages = sync_pages
         self.callback = callback
+        self.new_gallery_model = new_gallery_model
         self.is_progress = is_progress
 
         if is_from_setting_if_none:
@@ -656,7 +658,8 @@ class CrudAsyncGallerySync:
 
         if self.callback is not None:
             tag = self.callback(tag)
-            assert isinstance(tag, Gallery)
+            if self.new_gallery_model is None:
+                assert isinstance(tag, Gallery)
             need_to_update = True
 
         if need_to_update:

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, reactive } from "vue";
+import { reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
@@ -34,14 +34,6 @@ function submit() {
       state.password = "";
     });
 }
-
-onBeforeMount(() => {
-  document.addEventListener.call(window, "keyup", (event) => {
-    if (event.keyCode === 13 || event.keyCode === 108) {
-      submit();
-    }
-  });
-});
 </script>
 
 <template>
@@ -77,7 +69,8 @@ onBeforeMount(() => {
               autocomplete="current-password"
               required="true"
               placeholder="Password"
-              v-model="state.password" />
+              v-model="state.password"
+              @keyup.enter="submit" />
           </div>
         </div>
         <div class="flex items-center justify-between my-4">

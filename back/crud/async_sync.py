@@ -31,6 +31,7 @@ async def get_crud_sync(
     progress_initial: float = 0.0,
     progress_final: float = 100.0,
     is_progress: bool = False,
+    target_index: str = None,
 ) -> CrudAsyncGallerySync:
     if protocol == SourceProtocolEnum.MINIO.value:
         storage_minio = await CrudStorageMinio.get_row_by_id(storage_id)
@@ -60,6 +61,7 @@ async def get_crud_sync(
                 progress_final=progress_final,
                 is_progress=is_progress,
                 is_from_setting_if_none=True,
+                target_index=target_index,
             )
 
         elif storage_minio.category == StorageCategoryEnum.video.value:

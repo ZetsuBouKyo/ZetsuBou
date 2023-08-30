@@ -512,6 +512,7 @@ class CrudAsyncGallerySync:
         depth: int,
         hosts: List[str] = None,
         index: str = None,
+        target_index: str = None,
         size: int = None,
         batch_size: int = None,
         dir_fname: str = None,
@@ -533,6 +534,7 @@ class CrudAsyncGallerySync:
 
         self.hosts = hosts
         self.index = index
+        self.target_index = target_index  # the target index for synchronization
         self.size = size
         self.batch_size = batch_size
         self.dir_fname = dir_fname
@@ -662,7 +664,10 @@ class CrudAsyncGallerySync:
             await _put_gallery_tag_in_storage(self.storage_session, tag, tag_source)
 
         # add the document to batches to update the document in Elasticsearch
-        action = {"_index": self.index, "_id": tag.id, "_source": tag.dict()}
+        index = self.index
+        if self.target_index is not None:
+            index = self.target_index
+        action = {"_index": index, "_id": tag.id, "_source": tag.dict()}
         self._storage_to_elasticsearch_batches.append(action)
 
         self.cache.add(tag.id)
@@ -729,7 +734,7 @@ class CrudAsyncGallerySync:
             f"storage to elasticsearch (number): {self._storage_to_elasticsearch_num}"
         )
 
-    async def _count_elasticsearch(self):
+    async def _count_docs(self):
         dsl = self.dsl
 
         resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
@@ -738,6 +743,16 @@ class CrudAsyncGallerySync:
         logger_zetsubou.debug(
             f"elasticsearch to storage (number): {self._elasticsearch_to_storage_num}"
         )
+
+    async def _count_to_docs(self):
+        """Count the number of documents in the `self.target_index` index."""
+        if self.target_index is None:
+            return
+        dsl = self.dsl
+        resp = await self.async_elasticsearch.search(index=self.target_index, body=dsl)
+        total = resp["hits"]["total"]["value"]
+        if total > 0:
+            raise ValueError(f"Index: {self.target_index} should be empty.")
 
     async def _sync_storage_to_elasticsearch(self):
         self._storage_to_elasticsearch_final = self.progress_initial + (
@@ -788,8 +803,9 @@ class CrudAsyncGallerySync:
             return
 
         async with self.storage_session:
+            await self._count_to_docs()
             if self.is_progress:
-                await self._count_elasticsearch()
+                await self._count_docs()
                 await self._count_storage()
 
                 await self._sync_storage_to_elasticsearch()

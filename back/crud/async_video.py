@@ -744,6 +744,8 @@ class CrudAsyncVideoSync:
             video = self.callback(video)
             if self.new_video_model is None:
                 assert isinstance(video, Video)
+            else:
+                assert isinstance(video, self.new_video_model)
 
         index = self.index
         if self.target_index is not None:

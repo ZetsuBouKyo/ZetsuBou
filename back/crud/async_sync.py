@@ -6,7 +6,8 @@ from back.crud.async_gallery import CrudAsyncGallerySync
 from back.crud.async_video import CrudAsyncVideoSync
 from back.db.crud import CrudStorageMinio
 from back.db.model import StorageMinio
-from back.model.base import Source, SourceBaseModel, SourceProtocolEnum
+from back.model.base import SourceBaseModel, SourceProtocolEnum
+from back.model.source import Source
 from back.model.storage import StorageCategoryEnum
 from back.session.storage import get_app_storage_session
 from back.session.storage.async_s3 import AsyncS3Session

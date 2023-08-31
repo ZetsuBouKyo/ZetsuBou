@@ -660,6 +660,8 @@ class CrudAsyncGallerySync:
             tag = self.callback(tag)
             if self.new_gallery_model is None:
                 assert isinstance(tag, Gallery)
+            else:
+                assert isinstance(tag, self.new_gallery_model)
             need_to_update = True
 
         if need_to_update:

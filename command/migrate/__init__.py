@@ -55,7 +55,7 @@ def video_callback(source: OldVideo) -> NewVideo:
     new_video.path = source.path
     new_video.name = source.name
     new_video.other_names = source.other_names
-    new_video.src = source.attributes.src
+    new_video.src = [source.attributes.src]
 
     new_video.last_updated = source.timestamp
 

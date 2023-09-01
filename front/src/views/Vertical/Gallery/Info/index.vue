@@ -62,14 +62,32 @@ function copy(event: any) {
 const cover = `/api/v1/gallery/${id}/cover`;
 
 function onOverwrite(state: SourceState<Gallery>, data: Gallery) {
-  if (data.attributes !== undefined) {
-    state.data.attributes = data.attributes;
+  if (data.name !== undefined) {
+    state.data.name = data.name;
+  }
+  if (data.raw_name !== undefined) {
+    state.data.raw_name = data.raw_name;
+  }
+  if (data.other_names !== undefined && data.other_names.length > 0) {
+    state.data.other_names = data.other_names;
+  }
+  if (data.src !== undefined && data.src.length > 0) {
+    state.data.src = data.src;
+  }
+
+  if (data.publication_date !== undefined) {
+    state.data.publication_date = data.publication_date;
+  }
+
+  if (data.labels !== undefined) {
+    state.data.labels = data.labels;
   }
   if (data.tags !== undefined) {
     state.data.tags = data.tags;
   }
-  if (data.labels !== undefined) {
-    state.data.labels = data.labels;
+
+  if (data.attributes !== undefined) {
+    state.data.attributes = data.attributes;
   }
 }
 </script>

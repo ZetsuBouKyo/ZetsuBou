@@ -1,9 +1,11 @@
 import os
 from enum import Enum
 from pathlib import Path
+from typing import Optional
 
-from pydantic import BaseSettings, Field
+from pydantic import Field
 from pydantic.networks import EmailStr
+from pydantic_settings import BaseSettings
 
 from back.model.base import SourceProtocolEnum
 from back.model.envs import ZetsuBouEnvEnum
@@ -126,11 +128,11 @@ class Setting(BaseSettings):
         description="If this value is true, the number of gallery images will be updated when you go to the gallery page.",
     )
 
-    standalone_storage_protocol: SourceProtocolEnum = None
-    standalone_storage_id: int = None
-    standalone_storage_minio_volume: str = None
-    standalone_sync_galleries_from_path: str = None
-    standalone_sync_galleries_to_path: str = None
+    standalone_storage_protocol: Optional[SourceProtocolEnum] = None
+    standalone_storage_id: Optional[int] = None
+    standalone_storage_minio_volume: Optional[str] = None
+    standalone_sync_galleries_from_path: Optional[str] = None
+    standalone_sync_galleries_to_path: Optional[str] = None
 
     gallery_dir_fname: str = ".tag"
     gallery_backup_count: int = 3
@@ -138,23 +140,23 @@ class Setting(BaseSettings):
     gallery_imgs_fname: str = "imgs.json"
 
     database_type: DatabaseTypeEnum = DatabaseTypeEnum.POSTGRESQL
-    database_url: str = Field(
+    database_url: Optional[str] = Field(
         default=None,
         example="postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou",
     )
     database_echo: bool = False
-    database_port: int = Field(
+    database_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
         example="5430",
     )
 
-    elastic_urls: str = Field(default=None, example="http://localhost:9200")
+    elastic_urls: Optional[str] = Field(default=None, example="http://localhost:9200")
     elastic_size: int = 40
     elastic_index_gallery: str = f"{ELASTIC_INDEX_PREFIX}-gallery"
     elastic_index_video: str = f"{ELASTIC_INDEX_PREFIX}-video"
     elastic_index_tag: str = f"{ELASTIC_INDEX_PREFIX}-tag"
-    elasticsearch_port: int = Field(
+    elasticsearch_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
         example="9200",
@@ -171,41 +173,45 @@ class Setting(BaseSettings):
     storage_cache: str = "zetsubou"
     storage_backup: str = "backup"
 
-    storage_s3_aws_access_key_id: str = Field(default=None, example="admin")
-    storage_s3_aws_secret_access_key: str = Field(default=None, example="wJalrXUtnFEMI")
-    storage_s3_endpoint_url: str = Field(default=None, example="http://localhost:9000")
-    storage_s3_volume: str = Field(
+    storage_s3_aws_access_key_id: Optional[str] = Field(default=None, example="admin")
+    storage_s3_aws_secret_access_key: Optional[str] = Field(
+        default=None, example="wJalrXUtnFEMI"
+    )
+    storage_s3_endpoint_url: Optional[str] = Field(
+        default=None, example="http://localhost:9000"
+    )
+    storage_s3_volume: Optional[str] = Field(
         default=None,
         description="Environment variable for docker-compose.",
         example="./dev/volumes/minio",
     )
-    storage_s3_port: int = Field(
+    storage_s3_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
         example="9000",
     )
-    storage_s3_console_port: int = Field(
+    storage_s3_console_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
         example="9001",
     )
 
-    airflow_host: str = Field(default=None, example="http://localhost:8080")
-    airflow_username: str = Field(default=None, example="airflow")
-    airflow_password: str = Field(default=None, example="airflow")
-    airflow_web_server_port: int = Field(
+    airflow_host: Optional[str] = Field(default=None, example="http://localhost:8080")
+    airflow_username: Optional[str] = Field(default=None, example="airflow")
+    airflow_password: Optional[str] = Field(default=None, example="airflow")
+    airflow_web_server_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
         example="8080",
     )
-    airflow_simple_volume: str = Field(
+    airflow_simple_volume: Optional[str] = Field(
         default=None,
         description="Environment variable for docker-compose.",
         example="./dev/volumes/airflow-simple",
     )
 
-    redis_url: str = Field(default=None, example="redis://localhost:6380/0")
-    redis_port: int = Field(
+    redis_url: Optional[str] = Field(default=None, example="redis://localhost:6380/0")
+    redis_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
         example="6380",

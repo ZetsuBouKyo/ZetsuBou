@@ -8,7 +8,7 @@ export interface Item {
   imgUrl: string;
   linkUrl: string;
   srcUrl?: string;
-  timestamp?: string;
+  lastUpdated?: string;
 }
 
 export interface Items extends Array<Item> {}

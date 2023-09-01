@@ -238,19 +238,19 @@ function updateGalleryAdvancedSearchState() {
     },
     {
       name: "name",
-      key: "attributes.name",
+      key: "name",
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },
     {
       name: "raw_name",
-      key: "attributes.raw_name",
+      key: "raw_name",
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },
     {
       name: "src",
-      key: "attributes.src",
+      key: "src",
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },
@@ -285,7 +285,7 @@ function updateVideoAdvancedSearchState() {
     },
     {
       name: "src",
-      key: "attributes.src",
+      key: "src",
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },

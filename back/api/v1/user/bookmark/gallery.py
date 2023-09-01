@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 
@@ -14,7 +14,7 @@ from back.dependency.base import get_pagination
 from back.dependency.security import api_security
 from back.model.base import Pagination
 from back.model.bookmark import GalleryBookmark
-from back.model.gallery import Gallery
+from back.model.gallery import Galleries
 from back.model.scope import ScopeEnum
 
 router = APIRouter()
@@ -48,10 +48,9 @@ async def get_detailed_gallery_bookmarks(
     elasticsearch_crud = CrudAsyncElasticsearchGallery(
         size=pagination.size, is_from_setting_if_none=True
     )
-    galleries = await elasticsearch_crud.get_sources_by_ids(gallery_ids)
-    galleries_table = {
-        hit.source["id"]: Gallery(**hit.source) for hit in galleries.hits.hits
-    }
+    _galleries = await elasticsearch_crud.get_sources_by_ids(gallery_ids)
+    galleries = Galleries(**_galleries)
+    galleries_table = {hit.source.id: hit.source for hit in galleries.hits.hits}
     detailed_bookmarks = [
         GalleryBookmark(bookmark=bookmark, gallery=galleries_table[bookmark.gallery_id])
         for bookmark in bookmarks
@@ -74,7 +73,7 @@ async def get_gallery_bookmarks(
 
 @router.get(
     "/{user_id}/bookmark/gallery/g/{gallery_id}",
-    response_model=Union[UserBookmarkGallery, None],
+    response_model=Optional[UserBookmarkGallery],
     dependencies=[api_security([ScopeEnum.user_bookmark_gallery_get.name])],
 )
 async def get_gallery_bookmark(user_id: int, gallery_id: str) -> UserBookmarkGallery:

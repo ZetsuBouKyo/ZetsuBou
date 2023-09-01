@@ -1,3 +1,4 @@
+import copy
 from collections import deque
 from typing import Dict, List
 
@@ -70,165 +71,63 @@ settings = {
     }
 }
 
-gallery_mappings = {
+name_fields = {
+    "keyword": {"type": "keyword", "ignore_above": 256},
+    "default": {
+        "type": "text",
+        "analyzer": AnalyzerEnum.DEFAULT.value,
+        "search_analyzer": AnalyzerEnum.SYNONYM.value,
+    },
+    "standard": {
+        "type": "text",
+        "analyzer": AnalyzerEnum.STANDARD.value,
+    },
+    "ngram": {
+        "type": "text",
+        "analyzer": AnalyzerEnum.NGRAM.value,
+    },
+}
+
+url_fields = {
+    "keyword": {"type": "keyword", "ignore_above": 256},
+    "standard": {
+        "type": "text",
+        "analyzer": AnalyzerEnum.STANDARD.value,
+    },
+    "ngram": {
+        "type": "text",
+        "analyzer": AnalyzerEnum.NGRAM.value,
+    },
+    "url": {
+        "type": "text",
+        "analyzer": AnalyzerEnum.URL.value,
+    },
+}
+
+mappings = {
     "properties": {
         "path": {
             "type": "text",
-            "fields": {
-                "keyword": {"type": "keyword", "ignore_above": 256},
-                "standard": {
-                    "type": "text",
-                    "analyzer": AnalyzerEnum.STANDARD.value,
-                },
-                "ngram": {
-                    "type": "text",
-                    "analyzer": AnalyzerEnum.NGRAM.value,
-                },
-                "url": {
-                    "type": "text",
-                    "analyzer": AnalyzerEnum.URL.value,
-                },
-            },
+            "fields": url_fields,
         },
-        "attributes": {
-            "properties": {
-                "name": {
-                    "type": "text",
-                    "fields": {
-                        "keyword": {"type": "keyword", "ignore_above": 256},
-                        "default": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.DEFAULT.value,
-                            "search_analyzer": AnalyzerEnum.SYNONYM.value,
-                        },
-                        "standard": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.STANDARD.value,
-                        },
-                        "ngram": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.NGRAM.value,
-                        },
-                    },
-                },
-                "raw_name": {
-                    "type": "text",
-                    "fields": {
-                        "keyword": {"type": "keyword", "ignore_above": 256},
-                        "default": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.DEFAULT.value,
-                            "search_analyzer": AnalyzerEnum.SYNONYM.value,
-                        },
-                        "standard": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.STANDARD.value,
-                        },
-                        "ngram": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.NGRAM.value,
-                        },
-                    },
-                },
-                "src": {
-                    "type": "text",
-                    "fields": {
-                        "keyword": {"type": "keyword", "ignore_above": 256},
-                        "standard": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.STANDARD.value,
-                        },
-                        "ngram": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.NGRAM.value,
-                        },
-                        "url": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.URL.value,
-                        },
-                    },
-                },
-            }
+        "name": {
+            "type": "text",
+            "fields": name_fields,
         },
+        "raw_name": {
+            "type": "text",
+            "fields": name_fields,
+        },
+        "src": {
+            "type": "text",
+            "fields": url_fields,
+        },
+        "attributes": {"properties": {}},
     }
 }
 
-video_mappings = {
-    "properties": {
-        "name": {
-            "type": "text",
-            "fields": {
-                "keyword": {"type": "keyword", "ignore_above": 256},
-                "default": {
-                    "type": "text",
-                    "analyzer": AnalyzerEnum.DEFAULT.value,
-                    "search_analyzer": AnalyzerEnum.SYNONYM.value,
-                },
-                "standard": {
-                    "type": "text",
-                    "analyzer": AnalyzerEnum.STANDARD.value,
-                },
-                "ngram": {"type": "text", "analyzer": AnalyzerEnum.NGRAM.value},
-            },
-        },
-        "other_names": {
-            "type": "text",
-            "fields": {
-                "keyword": {"type": "keyword", "ignore_above": 256},
-                "default": {
-                    "type": "text",
-                    "analyzer": AnalyzerEnum.DEFAULT.value,
-                    "search_analyzer": AnalyzerEnum.SYNONYM.value,
-                },
-                "standard": {
-                    "type": "text",
-                    "analyzer": AnalyzerEnum.STANDARD.value,
-                },
-                "ngram": {"type": "text", "analyzer": AnalyzerEnum.NGRAM.value},
-            },
-        },
-        "path": {
-            "type": "text",
-            "fields": {
-                "keyword": {"type": "keyword", "ignore_above": 256},
-                "standard": {
-                    "type": "text",
-                    "analyzer": AnalyzerEnum.STANDARD.value,
-                },
-                "ngram": {
-                    "type": "text",
-                    "analyzer": AnalyzerEnum.NGRAM.value,
-                },
-                "url": {
-                    "type": "text",
-                    "analyzer": AnalyzerEnum.URL.value,
-                },
-            },
-        },
-        "attributes": {
-            "properties": {
-                "src": {
-                    "type": "text",
-                    "fields": {
-                        "keyword": {"type": "keyword", "ignore_above": 256},
-                        "standard": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.STANDARD.value,
-                        },
-                        "ngram": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.NGRAM.value,
-                        },
-                        "url": {
-                            "type": "text",
-                            "analyzer": AnalyzerEnum.URL.value,
-                        },
-                    },
-                },
-            }
-        },
-    }
-}
+gallery_mappings = copy.deepcopy(mappings)
+video_mappings = copy.deepcopy(mappings)
 
 
 def get_field_analyzer_from_mapping(

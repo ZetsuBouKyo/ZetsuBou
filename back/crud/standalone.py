@@ -237,10 +237,10 @@ class _SyncNewGalleries:
                     **{
                         "id": str(uuid4()),
                         "path": new_gallery_minio_path,
-                        "group": "",
-                        "timestamp": now,
-                        "mtime": now,
-                        "attributes": {"name": gallery_name, "pages": pages},
+                        "name": gallery_name,
+                        "last_updated": now,
+                        "upload_date": now,
+                        "attributes": {"pages": pages},
                     }
                 )
             with new_tag_path.open(mode="w", encoding="utf-8") as fp:

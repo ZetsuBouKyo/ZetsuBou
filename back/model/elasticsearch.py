@@ -1,8 +1,7 @@
 from enum import Enum
-from typing import Generic, List, NewType, Optional, TypeVar
+from typing import Any, Generic, List, NewType, Optional, TypeVar
 
 from pydantic import BaseModel, Field
-from pydantic.generics import GenericModel
 from rich import print_json
 
 SourceT = TypeVar("SourceT")
@@ -28,21 +27,21 @@ class Total(BaseModel):
     value: int = 0
 
 
-class Hit(GenericModel, Generic[SourceT]):
+class Hit(BaseModel, Generic[SourceT]):
     id: str = Field(alias="_id")
-    source: SourceT = Field(default={}, alias="_source")
+    source: Optional[SourceT] = Field(default={}, alias="_source")
     score: Optional[float] = Field(default=None, alias="_score")
-    sort: list = []
+    sort: List[Any] = Field(default=[])
 
 
-class Hits(GenericModel, Generic[SourceT]):
+class Hits(BaseModel, Generic[SourceT]):
     total: Total = Total()
     hits: List[Hit[SourceT]] = []
 
 
-class SearchResult(GenericModel, Generic[SourceT]):
+class SearchResult(BaseModel, Generic[SourceT]):
     scroll_id: Optional[str] = Field(default=None, alias="_scroll_id")
-    hits: Hits[SourceT] = Hits[SourceT]()
+    hits: Hits[SourceT] = Field(default=Hits[SourceT]())
 
     def print(self):
         print_json(data=self.dict())

@@ -5,30 +5,32 @@ import { SourceState } from "@/interface/source";
 
 import { getTag, postTag } from "@/api/v1/video/tag";
 import { getDatetime } from "@/utils/datetime";
+import { cleanData } from "@/utils/source";
 
 import { messageState } from "./message";
+import { viewDepthKey } from "vue-router";
 
 export const videoState = reactive<SourceState<Video>>({
   data: {
     id: undefined,
+    path: undefined,
     name: undefined,
     other_names: [],
-    path: undefined,
+    src: undefined,
+    last_updated: undefined,
+    labels: [],
+    tags: {},
     attributes: {
       category: undefined,
       rating: undefined,
+      uploader: undefined,
       height: undefined,
       width: undefined,
-      uploader: undefined,
       duration: undefined,
       fps: undefined,
       frames: undefined,
       md5: undefined,
-      src: undefined,
     },
-    tags: {},
-    labels: [],
-    timestamp: undefined,
   },
   init: async (id: string) => {
     return getTag(id).then((response: any) => {
@@ -41,28 +43,16 @@ export const videoState = reactive<SourceState<Video>>({
   reset: async () => {
     return videoState.init(videoState.data.id);
   },
-  getTimestamp: () => {
-    return getDatetime(videoState.data.timestamp);
+  getLastUpdated: () => {
+    return getDatetime(videoState.data.last_updated);
   },
   save: async (successEvent) => {
-    for (const attr in videoState.data.attributes) {
-      if (typeof videoState.data.attributes[attr] === "string") {
-        if (videoState.data.attributes[attr].length === 0) {
-          videoState.data.attributes[attr] = null;
-        } else {
-          videoState.data.attributes[attr] = videoState.data.attributes[attr].trim();
-        }
-      }
+    if (videoState.data.id === undefined) {
+      return;
     }
-    const emptyTagFields = [];
-    for (const field in videoState.data.tags) {
-      if (videoState.data.tags[field] === undefined || videoState.data.tags[field].length === 0) {
-        emptyTagFields.push(field);
-      }
-    }
-    for (const field of emptyTagFields) {
-      delete videoState.data.tags[field];
-    }
+
+    cleanData(videoState);
+
     return postTag(videoState.data.id, videoState.data).then((response) => {
       if (response.status === 200) {
         videoState.reset();

@@ -154,12 +154,12 @@ function toBookmark(row: Row) {
             }}</span>
             <div class="flex flex-row">
               <router-link class="text-white text-base cursor-pointer" :to="toGallery(row)">
-                {{ row.gallery.attributes.name }}
+                {{ row.gallery.name }}
               </router-link>
               <span class="ml-auto text-gray-400 text-xs text-right w-24">page: {{ row.bookmark.page + 1 }}</span>
             </div>
-            <span class="text-gray-500 text-sm my-1 truncate" v-if="row.gallery.attributes.raw_name">{{
-              row.gallery.attributes.raw_name
+            <span class="text-gray-500 text-sm my-1 truncate" v-if="row.gallery.raw_name">{{
+              row.gallery.raw_name
             }}</span>
             <star-rating class="my-2" :filled="row.gallery.attributes.rating" />
             <span class="mt-auto ml-auto">last viewed: {{ getDatetime(row.bookmark.modified) }}</span>

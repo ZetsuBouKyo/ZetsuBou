@@ -120,25 +120,25 @@ defineExpose({ open, close, reset });
       <input
         class="flex-1 modal-input"
         type="text"
-        :placeholder="galleryState.data.attributes.name"
-        v-model="galleryState.data.attributes.name" />
+        :placeholder="galleryState.data.name"
+        v-model="galleryState.data.name" />
     </div>
     <div class="modal-row-10">
       <span class="w-32 mr-4">Raw Name:</span>
       <input
         class="flex-1 modal-input"
         type="text"
-        :placeholder="galleryState.data.attributes.raw_name"
-        v-model="galleryState.data.attributes.raw_name" />
+        :placeholder="galleryState.data.raw_name"
+        v-model="galleryState.data.raw_name" />
     </div>
-    <div class="modal-row-10">
+    <!-- <div class="modal-row-10">
       <span class="w-32 mr-4">Source:</span>
       <input
         class="flex-1 modal-input"
         type="text"
         :placeholder="galleryState.data.attributes.src"
         v-model="galleryState.data.attributes.src" />
-    </div>
+    </div> -->
     <div class="modal-row-10">
       <span class="w-32 mr-4">Category:</span>
       <select-dropdown

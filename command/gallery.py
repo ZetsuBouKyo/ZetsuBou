@@ -166,9 +166,9 @@ async def update_gallery_tag(
     gallery = await get_gallery_by_gallery_id(gallery_id)
     print_json(data=gallery.dict())
     if name is not None:
-        gallery.attributes.name = name
+        gallery.name = name
     if raw_name is not None:
-        gallery.attributes.raw_name = raw_name
+        gallery.raw_name = raw_name
     if labels is not None:
         _labels = labels.split(label_separator)
         gallery.labels = _labels

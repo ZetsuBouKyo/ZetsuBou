@@ -70,8 +70,8 @@ watch(
       <h2 class="text-white 3xl:text-lg text-base break-words" v-if="item.title">
         {{ item.title }}
       </h2>
-      <div class="flex mt-2" v-if="item.timestamp">
-        <h2 class="text-white ml-auto 3xl:text-xs">Last updated on {{ item.timestamp }}</h2>
+      <div class="flex mt-2" v-if="item.lastUpdated">
+        <h2 class="text-white ml-auto 3xl:text-xs">Last updated on {{ item.lastUpdated }}</h2>
       </div>
     </div>
   </div>

@@ -25,7 +25,7 @@ function getItems(hits: any, queries: string) {
       imgUrl: `/api/v1/video/v/${id}/cover`,
       linkUrl: `/v/${id}?${queries}`,
       srcUrl: hits[i]._source.attributes.src,
-      timestamp: getDatetime(hits[i]._source.timestamp),
+      lastUpdated: getDatetime(hits[i]._source.last_updated),
     };
     items.push(item);
   }

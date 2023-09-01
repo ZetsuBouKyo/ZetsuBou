@@ -96,26 +96,28 @@ function onOverwrite(state: SourceState<Gallery>, data: Gallery) {
           </h3>
           <h1
             class="hover:opacity-50 text-white 3xl:text-2xl text-xl font-medium mb-1 cursor-pointer"
-            v-if="galleryState.data.attributes.name"
+            v-if="galleryState.data.name"
             @click="copy">
-            {{ galleryState.data.attributes.name }}
+            {{ galleryState.data.name }}
           </h1>
           <h2
             class="hover:opacity-50 3xl:text-xl text-sm text-gray-500 tracking-widest cursor-pointer"
-            v-if="galleryState.data.attributes.raw_name"
+            v-if="galleryState.data.raw_name"
             @click="copy">
-            {{ galleryState.data.attributes.raw_name }}
+            {{ galleryState.data.raw_name }}
           </h2>
           <div class="flex flex-row mt-4 mb-2 justify-center items-center">
             <star-rating :filled="galleryState.data.attributes.rating" />
             <div class="flex ml-auto 3xl:text-xl">
-              <a v-if="galleryState.data.attributes.src" :href="galleryState.data.attributes.src">{{
+              <!-- <a v-if="galleryState.data.attributes.src" :href="galleryState.data.attributes.src">{{
                 galleryState.data.attributes.src
-              }}</a>
+              }}</a> -->
             </div>
           </div>
-          <h3 class="text-gray-500 3xl:text-xl text-xs tracking-widest ml-auto mb-4" v-if="galleryState.data.timestamp">
-            Last updated on {{ galleryState.getTimestamp() }}
+          <h3
+            class="text-gray-500 3xl:text-xl text-xs tracking-widest ml-auto mb-4"
+            v-if="galleryState.data.last_updated">
+            Last updated on {{ galleryState.getLastUpdated() }}
           </h3>
           <labels
             v-if="galleryState.data.labels && galleryState.data.labels.length > 0"

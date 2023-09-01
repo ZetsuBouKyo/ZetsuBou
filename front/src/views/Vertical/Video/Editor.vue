@@ -118,14 +118,14 @@ defineExpose({ open, close, reset });
         :placeholder="videoState.data.name"
         v-model="videoState.data.name" />
     </div>
-    <div class="modal-row-10">
+    <!-- <div class="modal-row-10">
       <span class="w-32 mr-4">Source:</span>
       <input
         class="flex-1 modal-input"
         type="text"
         :placeholder="videoState.data.attributes.src"
         v-model="videoState.data.attributes.src" />
-    </div>
+    </div> -->
     <div class="modal-row-10">
       <span class="w-32 mr-4">Category:</span>
       <select-dropdown

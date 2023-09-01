@@ -150,9 +150,9 @@ def batch_pdf2img(
         gallery = GalleryModel(
             **{
                 "id": str(uuid4()),
-                "timestamp": get_now(),
-                "mtime": get_now(),
-                "attributes": {"name": fpath.stem},
+                "name": fpath.stem,
+                "last_updated": get_now(),
+                "upload_date": get_now(),
             }
         )
         with tag_path.open(mode="w", encoding="utf-8") as fp:

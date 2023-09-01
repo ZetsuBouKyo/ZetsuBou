@@ -1,7 +1,8 @@
 from enum import Enum
+from typing import Optional
 from urllib.parse import urlparse
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SourceProtocolEnum(str, Enum):
@@ -19,7 +20,12 @@ class Pagination(BaseModel):
 
 
 class SourceBaseModel(BaseModel):
-    path: str
+    path: Optional[str] = Field(
+        default=None,
+        title="Path",
+        description="File path with custom protocol.",
+        example="minio-1://bucket/prefix_1/prefix_1_1",
+    )
 
     @property
     def _url(cls):

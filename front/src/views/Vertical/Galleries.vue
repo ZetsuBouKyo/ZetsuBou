@@ -20,14 +20,16 @@ function getItems(hits: any) {
   for (let i = 0; i < hits.length; i++) {
     let id = hits[i]._id;
 
+    const src = hits[i]._source.src ? hits[i]._source.src[0] : undefined;
+
     let item: Item = {
       category: hits[i]._source.attributes.category,
       rating: hits[i]._source.attributes.rating,
-      title: hits[i]._source.attributes.name,
+      title: hits[i]._source.name,
       imgUrl: `/api/v1/gallery/${id}/cover`,
       linkUrl: `/g/${id}`,
-      srcUrl: hits[i]._source.attributes.src,
-      timestamp: getDatetime(hits[i]._source.timestamp),
+      srcUrl: src,
+      lastUpdated: getDatetime(hits[i]._source.last_updated),
     };
     const pages = hits[i]._source?.attributes?.pages;
     if (pages !== undefined) {

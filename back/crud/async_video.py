@@ -42,17 +42,17 @@ elasticsearch_video_analyzer = {
         "other_names.default",
         "attributes.uploader",
         "attributes.category",
-        "attributes.src.url",
+        "src.url",
         "labels",
         "tags.*",
     ],
     AnalyzerEnum.KEYWORD.value: [
         "path.keyword",
-        "attributes.name.keyword",
-        "attributes.raw_name.keyword",
+        "name.keyword",
+        "raw_name.keyword",
         "attributes.uploader",
         "attributes.category",
-        "attributes.src.keyword",
+        "src.keyword",
         "labels",
         "tags.*",
     ],
@@ -62,7 +62,7 @@ elasticsearch_video_analyzer = {
         "other_names.ngram",
         "attributes.uploader",
         "attributes.category",
-        "attributes.src.ngram",
+        "src.ngram",
         "labels",
         "tags.*",
     ],
@@ -72,11 +72,11 @@ elasticsearch_video_analyzer = {
         "other_names.standard",
         "attributes.uploader",
         "attributes.category",
-        "attributes.src.standard",
+        "src.standard",
         "labels",
         "tags.*",
     ],
-    AnalyzerEnum.URL.value: ["path.url", "attributes.src.url"],
+    AnalyzerEnum.URL.value: ["path.url", "src.url"],
 }
 
 
@@ -93,8 +93,8 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
         analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         sorting: List[Any] = [
             "_score",
-            {"timestamp": {"order": "desc", "unmapped_type": "long"}},
-            {"mtime": {"order": "desc", "unmapped_type": "long"}},
+            {"last_updated": {"order": "desc", "unmapped_type": "long"}},
+            {"upload_date": {"order": "desc", "unmapped_type": "long"}},
             {"name.keyword": {"order": "desc"}},
         ],
         is_from_setting_if_none: bool = False,
@@ -161,7 +161,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
 
         sorting = ["_score"]
         if order_by is None:
-            sorting.append({"timestamp": {"order": "desc", "unmapped_type": "long"}})
+            sorting.append({"last_updated": {"order": "desc", "unmapped_type": "long"}})
             sorting.append({"name.keyword": {"order": "desc"}})
         elif is_desc:
             sorting.append({order_by: {"order": "desc"}})
@@ -206,7 +206,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
             self.add_advanced_query(
                 dsl,
                 src,
-                "attributes.src",
+                "src",
                 src_analyzer,
                 src_fuzziness,
                 src_bool,
@@ -321,16 +321,8 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
         query = {
             "bool": {
                 "should": [
-                    {
-                        "match_phrase_prefix": {
-                            "attributes.name.ngram": {"query": keywords}
-                        }
-                    },
-                    {
-                        "match_phrase_prefix": {
-                            "attributes.raw_name.ngram": {"query": keywords}
-                        }
-                    },
+                    {"match_phrase_prefix": {"name.ngram": {"query": keywords}}},
+                    {"match_phrase_prefix": {"raw_name.ngram": {"query": keywords}}},
                 ]
             }
         }
@@ -510,7 +502,7 @@ class CrudAsyncVideo:
                 status_code=404, detail=f"Video id: {self.video.id} not found"
             )
 
-        new_video.timestamp = get_now()
+        new_video.last_updated = get_now()
         new_video.labels.sort()
         for key in new_video.tags.keys():
             new_video.tags[key].sort()
@@ -725,10 +717,10 @@ class CrudAsyncVideoSync:
         video.path = source.path
         if video.id is None:
             video.id = str(uuid4())
-        if video.timestamp is None:
-            video.timestamp = get_now()
-        if not is_isoformat_with_timezone(video.timestamp):
-            video.timestamp = get_isoformat_with_timezone(video.timestamp)
+        if video.last_updated is None:
+            video.last_updated = get_now()
+        if not is_isoformat_with_timezone(video.last_updated):
+            video.last_updated = get_isoformat_with_timezone(video.last_updated)
 
         await _generate_cover(
             self.app_storage_protocol,

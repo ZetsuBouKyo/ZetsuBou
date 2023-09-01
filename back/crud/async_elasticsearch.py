@@ -30,7 +30,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         sorting: List[Any] = [
             "_score",
-            {"timestamp": {"order": "desc", "unmapped_type": "long"}},
+            {"last_updated": {"order": "desc", "unmapped_type": "long"}},
         ],
         is_from_setting_if_none: bool = False,
     ):
@@ -63,12 +63,10 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
     async def advanced_search(self, *args, **kwargs):
         raise NotImplementedError()
 
-    async def match_phrase_prefix(
-        self, keywords: str, size: int = 5
-    ) -> SearchResult[SourceT]:
+    async def match_phrase_prefix(self, keywords: str, size: int = 5):
         raise NotImplementedError()
 
-    async def iter(self) -> SearchResult[SourceT]:
+    async def iter(self) -> dict:
         dsl = {
             "size": self.size,
             "query": {"match_all": {}},
@@ -80,8 +78,8 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         async for doc in async_scan(
             client=self.async_elasticsearch, query=dsl, index=self.index
         ):
-            resp = SearchResult[SourceT](**doc)
-            yield resp
+            # resp = SearchResult[SourceT](**doc)
+            yield doc
 
     async def get_field_names(self) -> Set[str]:
         resp = await self.async_elasticsearch.indices.get_mapping(self.index)
@@ -302,7 +300,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
                 }
             )
 
-    async def query(self, page: int, dsl: dict) -> SearchResult[SourceT]:
+    async def query(self, page: int, dsl: dict) -> dict:
         target_idx = page * self.size
         max_page = ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW // self.size
 
@@ -315,7 +313,8 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             total = _resp["hits"]["total"]["value"]
 
             if page > (total // self.size + 1):
-                sources = SearchResult[SourceT](**{"hits": {}})
+                _resp = {"hits": {}}
+                # sources = SearchResult[SourceT](**{"hits": {}})
             else:
                 page -= max_page
 
@@ -342,14 +341,14 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
                 _resp = await self.async_elasticsearch.search(
                     index=self.index, body=dsl
                 )
-                sources = SearchResult[SourceT](**_resp)
+                # sources = SearchResult[SourceT](**_resp)
 
         else:
             dsl["from"] = self.get_from(page)
             _resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
-            sources = SearchResult[SourceT](**_resp)
+            # sources = SearchResult[SourceT](**_resp)
 
-        return sources
+        return _resp
 
     async def custom(self, body: dict) -> dict:
         return await self.advanced_search.search(index=self.index, body=body)
@@ -365,7 +364,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         fuzziness: int = 0,
         boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
         seed: int = 1048596,
-    ) -> SearchResult[SourceT]:
+    ) -> dict:
         dsl = self.get_basic_dsl()
         dsl["query"] = {
             "function_score": {
@@ -383,7 +382,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
         return await self.query(page, dsl)
 
-    async def match_by_query(self, dsl: dict, page: int) -> SearchResult[SourceT]:
+    async def match_by_query(self, dsl: dict, page: int) -> dict:
         dsl = self.get_basic_dsl(dsl=dsl)
         return await self.query(page, dsl)
 
@@ -393,7 +392,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         keywords: str,
         fuzziness: int = 0,
         boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
-    ) -> SearchResult[SourceT]:
+    ) -> dict:
         if keywords is None or keywords == "":
             return await self.match_all(page)
 
@@ -407,7 +406,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         await self.async_elasticsearch.close()
         return source
 
-    async def match_all(self, page: int) -> SearchResult[SourceT]:
+    async def match_all(self, page: int) -> dict:
         dsl = self.get_basic_dsl()
         dsl["query"] = {"match_all": {}}
         return await self.query(page, dsl)
@@ -426,11 +425,11 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             raise HTTPException(status_code=404, detail=f"{id} not found")
         return source
 
-    async def get_sources_by_ids(self, ids: List[str]) -> SearchResult[SourceT]:
+    async def get_sources_by_ids(self, ids: List[str]) -> dict:
         dsl = {"size": self.size, "query": {"ids": {"values": ids}}}
         try:
             _resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
         except NotFoundError:
             raise HTTPException(status_code=404, detail=f"{id} not found")
-        sources = SearchResult[SourceT](**_resp)
-        return sources
+        # sources = SearchResult[SourceT](**_resp)
+        return _resp

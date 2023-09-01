@@ -38,45 +38,45 @@ APP_GALLERY_SYNC_PAGES = setting.app_gallery_sync_pages
 elasticsearch_gallery_analyzer = {
     AnalyzerEnum.DEFAULT.value: [
         "path.url",
-        "attributes.name.default",
-        "attributes.raw_name.default",
-        "attributes.uploader",
+        "name.default",
+        "raw_name.default",
+        "src.url",
         "attributes.category",
-        "attributes.src.url",
+        "attributes.uploader",
         "labels",
         "tags.*",
     ],
     AnalyzerEnum.KEYWORD.value: [
         "path.keyword",
-        "attributes.name.keyword",
-        "attributes.raw_name.keyword",
-        "attributes.uploader",
+        "name.keyword",
+        "raw_name.keyword",
+        "src.keyword",
         "attributes.category",
-        "attributes.src.keyword",
+        "attributes.uploader",
         "labels",
         "tags.*",
     ],
     AnalyzerEnum.NGRAM.value: [
         "path.ngram",
-        "attributes.name.ngram",
-        "attributes.raw_name.ngram",
-        "attributes.uploader",
+        "name.ngram",
+        "raw_name.ngram",
+        "src.ngram",
         "attributes.category",
-        "attributes.src.ngram",
+        "attributes.uploader",
         "labels",
         "tags.*",
     ],
     AnalyzerEnum.STANDARD.value: [
         "path.standard",
-        "attributes.name.standard",
-        "attributes.raw_name.standard",
-        "attributes.uploader",
+        "name.standard",
+        "raw_name.standard",
+        "src.standard",
         "attributes.category",
-        "attributes.src.standard",
+        "attributes.uploader",
         "labels",
         "tags.*",
     ],
-    AnalyzerEnum.URL.value: ["path.url", "attributes.src.url"],
+    AnalyzerEnum.URL.value: ["path.url", "src.url"],
 }
 
 
@@ -93,9 +93,9 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
         analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         sorting: List[Any] = [
             "_score",
-            {"timestamp": {"order": "desc", "unmapped_type": "long"}},
-            {"mtime": {"order": "desc", "unmapped_type": "long"}},
-            {"attributes.name.keyword": {"order": "desc"}},
+            {"last_updated": {"order": "desc", "unmapped_type": "long"}},
+            {"upload_date": {"order": "desc", "unmapped_type": "long"}},
+            {"name.keyword": {"order": "desc"}},
         ],
         is_from_setting_if_none: bool = False,
     ):
@@ -155,8 +155,8 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
 
         sorting = ["_score"]
         if order_by is None:
-            sorting.append({"timestamp": {"order": "desc", "unmapped_type": "long"}})
-            sorting.append({"attributes.name.keyword": {"order": "desc"}})
+            sorting.append({"last_updated": {"order": "desc", "unmapped_type": "long"}})
+            sorting.append({"name.keyword": {"order": "desc"}})
         elif is_desc:
             sorting.append({order_by: {"order": "desc"}})
         else:
@@ -183,14 +183,14 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                 )
         if name is not None:
             self.add_advanced_query(
-                dsl, name, "attributes.name", name_analyzer, name_fuzziness, name_bool
+                dsl, name, "name", name_analyzer, name_fuzziness, name_bool
             )
 
         if raw_name is not None:
             self.add_advanced_query(
                 dsl,
                 raw_name,
-                "attributes.raw_name",
+                "raw_name",
                 raw_name_analyzer,
                 raw_name_fuzziness,
                 raw_name_bool,
@@ -200,7 +200,7 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
             self.add_advanced_query(
                 dsl,
                 src,
-                "attributes.src",
+                "src",
                 src_analyzer,
                 src_fuzziness,
                 src_bool,
@@ -288,16 +288,8 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
         query = {
             "bool": {
                 "should": [
-                    {
-                        "match_phrase_prefix": {
-                            "attributes.name.ngram": {"query": keywords}
-                        }
-                    },
-                    {
-                        "match_phrase_prefix": {
-                            "attributes.raw_name.ngram": {"query": keywords}
-                        }
-                    },
+                    {"match_phrase_prefix": {"name.ngram": {"query": keywords}}},
+                    {"match_phrase_prefix": {"raw_name.ngram": {"query": keywords}}},
                 ]
             }
         }
@@ -333,10 +325,9 @@ async def _create_gallery_tag_in_storage(
         **{
             "id": str(uuid4()),
             "path": source.path,
-            "group": "",
-            "timestamp": now,
-            "mtime": now,
-            "attributes": {"name": Path(source.path).name},
+            "name": Path(source.path).name,
+            "last_updated": now,
+            "upload_date": now,
         }
     )
 
@@ -438,10 +429,12 @@ class CrudAsyncGallery:
                     detail="Conflict between minio gallery and elastic gallery path",
                 )
 
-            if not is_isoformat_with_timezone(new_gallery.mtime):
-                new_gallery.mtime = get_isoformat_with_timezone(new_gallery.mtime)
+            if not is_isoformat_with_timezone(new_gallery.upload_date):
+                new_gallery.upload_date = get_isoformat_with_timezone(
+                    new_gallery.upload_date
+                )
 
-            new_gallery.timestamp = get_now()
+            new_gallery.last_updated = get_now()
             new_gallery.labels.sort()
             for key in new_gallery.tags.keys():
                 new_gallery.tags[key].sort()
@@ -627,19 +620,19 @@ class CrudAsyncGallerySync:
 
         now = get_now()
 
-        if not tag.timestamp:
+        if not tag.last_updated:
             need_to_update = True
-            tag.timestamp = now
-        if not tag.mtime:
+            tag.last_updated = now
+        if not tag.upload_date:
             need_to_update = True
-            tag.mtime = now
+            tag.upload_date = now
 
-        if not is_isoformat_with_timezone(tag.timestamp):
+        if not is_isoformat_with_timezone(tag.last_updated):
             need_to_update = True
-            tag.timestamp = get_isoformat_with_timezone(tag.timestamp)
-        if not is_isoformat_with_timezone(tag.mtime):
+            tag.last_updated = get_isoformat_with_timezone(tag.last_updated)
+        if not is_isoformat_with_timezone(tag.upload_date):
             need_to_update = True
-            tag.mtime = get_isoformat_with_timezone(tag.mtime)
+            tag.upload_date = get_isoformat_with_timezone(tag.upload_date)
 
         if not tag.id:
             need_to_update = True

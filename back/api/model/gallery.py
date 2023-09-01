@@ -47,7 +47,7 @@ query_examples = {
             "body": {
                 "query": {
                     "range": {
-                        "timestamp": {"gte": "<datetime:2022-01-06T13:30:05.976321>"}
+                        "last_updated": {"gte": "<datetime:2022-01-06T13:30:05.976321>"}
                     }
                 }
             }

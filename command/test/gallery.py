@@ -74,8 +74,8 @@ def generate_galleries_by_random_names(
 app = ZetsuBouTyper(name="gallery")
 
 
-@app.command()
-def generate_galleries(
+@app.command(name="generate-galleries")
+def _generate_galleries(
     root: str = typer.Argument(..., help="Parent of the generated gallery."),
     num_gallery: int = typer.Option(
         default=0, help="Number of galleries. Gallery names come from uuid4."

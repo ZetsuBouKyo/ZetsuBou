@@ -5,13 +5,11 @@ import typer
 from elasticsearch import AsyncElasticsearch
 
 from back.crud.async_sync import get_crud_sync
+from back.init.async_elasticsearch import create_gallery
 from back.model.base import SourceProtocolEnum
+from back.model.gallery import Gallery
+from back.model.video import Video
 from back.settings import setting
-from command.migrate.init.async_elasticsearch import create_gallery
-from command.migrate.model.gallery import Gallery as NewGallery
-from command.migrate.model.old_gallery import Gallery as OldGallery
-from command.migrate.model.old_video import Video as OldVideo
-from command.migrate.model.video import Video as NewVideo
 from lib.typer import ZetsuBouTyper
 
 _help = """
@@ -27,50 +25,16 @@ class StorageCategoryEnum(str, Enum):
     video: str = "video"
 
 
-def gallery_callback(source: OldGallery) -> NewGallery:
-    new_gallery = NewGallery()
-    new_gallery.id = source.id
-    new_gallery.path = source.path
-    new_gallery.name = source.attributes.name
-    new_gallery.raw_name = source.attributes.raw_name
-    new_gallery.src = [source.attributes.src]
-
-    new_gallery.last_updated = source.timestamp
-    new_gallery.upload_date = source.mtime
-
-    new_gallery.labels = source.labels
-    new_gallery.tags = source.tags
-
-    new_gallery.attributes.category = source.attributes.category
-    new_gallery.attributes.rating = source.attributes.rating
-    new_gallery.attributes.uploader = source.attributes.uploader
-    new_gallery.attributes.pages = source.attributes.pages
-
-    return new_gallery
+def gallery_callback(source: Gallery) -> Gallery:
+    src = [s for s in source.src if type(s) is str]
+    source.src = src
+    return source
 
 
-def video_callback(source: OldVideo) -> NewVideo:
-    new_video = NewVideo()
-    new_video.id = source.id
-    new_video.path = source.path
-    new_video.name = source.name
-    new_video.other_names = source.other_names
-    new_video.src = [source.attributes.src]
-
-    new_video.last_updated = source.timestamp
-
-    new_video.attributes.category = source.attributes.category
-    new_video.attributes.rating = source.attributes.rating
-    new_video.attributes.uploader = source.attributes.uploader
-
-    new_video.attributes.width = source.attributes.width
-    new_video.attributes.height = source.attributes.height
-    new_video.attributes.duration = source.attributes.duration
-    new_video.attributes.fps = source.attributes.fps
-    new_video.attributes.frames = source.attributes.frames
-    new_video.attributes.md5 = source.attributes.md5
-
-    return new_video
+def video_callback(source: Video) -> Video:
+    src = [s for s in source.src if type(s) is str]
+    source.src = src
+    return source
 
 
 @app.command(
@@ -109,7 +73,6 @@ async def _storage(
             storage_id,
             is_progress=progress,
             callback=gallery_callback,
-            new_model=NewGallery,
             target_index=target_index,
         )
     elif category == StorageCategoryEnum.video.value:
@@ -118,7 +81,6 @@ async def _storage(
             storage_id,
             is_progress=progress,
             callback=video_callback,
-            new_model=NewVideo,
             target_index=target_index,
         )
     await crud.sync()

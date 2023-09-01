@@ -209,6 +209,11 @@ class Setting(BaseSettings):
         description="Environment variable for docker-compose.",
         example="./dev/volumes/airflow-simple",
     )
+    airflow_download_volume: Optional[str] = Field(
+        default=None,
+        description="Environment variable for docker-compose.",
+        example="./dev/volumes/minio/download",
+    )
 
     redis_url: Optional[str] = Field(default=None, example="redis://localhost:6380/0")
     redis_port: Optional[int] = Field(

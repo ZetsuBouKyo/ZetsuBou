@@ -168,3 +168,16 @@ async def get_field_names(index: str = typer.Argument(..., help="Index name.")):
     """
     crud = CrudAsyncElasticsearchBase(index=index)
     _resp = await crud.get_field_names()
+
+
+@app.command()
+async def total(index: str = typer.Argument(..., help="Index name.")):
+    """
+    Send `match_all` query.
+    """
+    query = {"match_all": {}}
+    _resp = await async_elasticsearch.search(
+        index=index, query=query, track_total_hits=True
+    )
+    total = _resp.get("hits", {}).get("total", {}).get("value", None)
+    print(f"total: {total}")

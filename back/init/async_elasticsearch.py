@@ -118,6 +118,10 @@ mappings = {
             "type": "text",
             "fields": name_fields,
         },
+        "other_names": {
+            "type": "text",
+            "fields": name_fields,
+        },
         "src": {
             "type": "text",
             "fields": url_fields,

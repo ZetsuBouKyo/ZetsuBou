@@ -7,14 +7,16 @@
             "request": "launch",
             "module": "pytest",
             "args": ["-s", "${file}"],
-            "showReturnValue": true
+            "showReturnValue": true,
+            "justMyCode": false
         },
         {
             "name": "Python: App",
             "type": "python",
             "request": "launch",
             "program": "app.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "justMyCode": false
         },
         {
             "name": "Python: CLI run",
@@ -22,7 +24,8 @@
             "request": "launch",
             "program": "cli.py",
             "args": ["run"],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }

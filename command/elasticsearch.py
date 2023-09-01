@@ -173,7 +173,7 @@ async def get_field_names(index: str = typer.Argument(..., help="Index name.")):
 @app.command()
 async def total(index: str = typer.Argument(..., help="Index name.")):
     """
-    Send `match_all` query.
+    Get the total number of documents in specific index.
     """
     query = {"match_all": {}}
     _resp = await async_elasticsearch.search(

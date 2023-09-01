@@ -1,6 +1,8 @@
-from pydantic import BaseSettings
+from typing import Optional
+
+from pydantic_settings import BaseSettings
 
 
 class Env(BaseSettings):
-    minio_volume: str = None
-    minio_root_password: str = None
+    minio_volume: Optional[str] = None
+    minio_root_password: Optional[str] = None

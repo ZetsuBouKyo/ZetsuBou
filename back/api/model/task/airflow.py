@@ -1,29 +1,29 @@
-from typing import Any, List
+from typing import Any, List, Optional
 
 from pydantic import BaseModel
 
 
 class ArgumentBase(BaseModel):
-    name: str = None
-    type: str = None
+    name: Optional[str] = None
+    type: Optional[str] = None
 
 
 class KeywordArgumentBase(BaseModel):
     name: str
-    type: str = None
+    type: Optional[str] = None
 
 
 class Argument(ArgumentBase):
-    value: Any = None
+    value: Optional[Any] = None
 
 
 class KeywordArgument(KeywordArgumentBase):
-    key: str = None
-    value: Any = None
+    key: Optional[str] = None
+    value: Optional[Any] = None
 
 
 class CommandRequest(BaseModel):
-    logical_date: str = None
+    logical_date: Optional[str] = None
     args: List[Argument] = []
     kwargs: List[KeywordArgument] = []
 
@@ -34,15 +34,15 @@ class SchemaArgument(ArgumentBase):
 
 
 class SchemaKeywordArgument(KeywordArgumentBase):
-    default: Any = None
+    default: Optional[Any] = None
     param_decls: List[str] = []
     choices: List[str] = []
 
 
 class CommandSchema(BaseModel):
-    dag_id: str = None
-    sub_command: str = None
-    doc: str = None
+    dag_id: Optional[str] = None
+    sub_command: Optional[str] = None
+    doc: Optional[str] = None
     args: List[SchemaArgument] = []
     kwargs: List[SchemaKeywordArgument] = []
 

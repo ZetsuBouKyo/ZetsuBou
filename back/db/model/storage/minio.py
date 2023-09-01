@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from back.model.storage import StorageCategoryEnum
@@ -5,7 +7,7 @@ from back.model.storage import StorageCategoryEnum
 
 class StorageMinioCreate(BaseModel):
     category: StorageCategoryEnum
-    name: str = None
+    name: Optional[str] = None
     endpoint: str
     bucket_name: str
     prefix: str
@@ -20,7 +22,7 @@ class StorageMinioCreate(BaseModel):
 class StorageMinioCreated(BaseModel):
     id: int
     category: StorageCategoryEnum
-    name: str = None
+    name: Optional[str] = None
     endpoint: str
     bucket_name: str
     prefix: str

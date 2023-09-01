@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -12,5 +13,5 @@ class ZetsuBouTaskProgressEnum(str, Enum):
 
 
 class ZetsuBouTask(BaseModel):
-    progress_id: str = None
-    progress: float = None
+    progress_id: Optional[str] = None
+    progress: Optional[float] = None

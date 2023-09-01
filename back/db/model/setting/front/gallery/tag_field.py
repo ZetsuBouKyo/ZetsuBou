@@ -1,7 +1,9 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
 class SettingFrontGalleryTagField(BaseModel):
-    id: int = None
+    id: Optional[int] = None
     token_id: int
     enable: bool

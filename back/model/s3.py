@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -60,16 +60,16 @@ S3DeleteObjectResponse = S3Response
 
 class S3DeleteObjectsResponseDeleted(BaseModel):
     Key: str
-    VersionId: str = None
-    DeleteMarker: bool = None
-    DeleteMarkerVersionId: str = None
+    VersionId: Optional[str] = None
+    DeleteMarker: Optional[bool] = None
+    DeleteMarkerVersionId: Optional[str] = None
 
 
 class S3DeleteObjectsResponseError(BaseModel):
     Key: str
-    VersionId: str = None
-    Code: str = None
-    Message: str = None
+    VersionId: Optional[str] = None
+    Code: Optional[str] = None
+    Message: Optional[str] = None
 
 
 class S3DeleteObjectsResponse(BaseModel):

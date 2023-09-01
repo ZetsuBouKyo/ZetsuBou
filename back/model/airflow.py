@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -13,30 +13,30 @@ class AirflowDagRunStateEnum(str, Enum):
 
 class AirflowDagRunResponse(BaseModel):
     conf: dict = {}
-    dag_id: str = None
-    dag_run_id: str = None
-    end_date: str = None
-    execution_date: str = None
-    external_trigger: bool = None
-    logical_date: str = None
-    start_date: str = None
-    state: AirflowDagRunStateEnum = None
+    dag_id: Optional[str] = None
+    dag_run_id: Optional[str] = None
+    end_date: Optional[str] = None
+    execution_date: Optional[str] = None
+    external_trigger: Optional[bool] = None
+    logical_date: Optional[str] = None
+    start_date: Optional[str] = None
+    state: Optional[AirflowDagRunStateEnum] = None
 
 
 class AirflowDagRunsResponse(BaseModel):
-    status: int = None
-    title: str = None
-    type: str = None
+    status: Optional[int] = None
+    title: Optional[str] = None
+    type: Optional[str] = None
     dag_runs: List[AirflowDagRunResponse] = []
-    total_entries: int = None
+    total_entries: Optional[int] = None
 
 
 class AirflowHealthMetadatabase(BaseModel):
-    status: str = None
+    status: Optional[str] = None
 
 
 class AirflowHealthScheduler(AirflowHealthMetadatabase):
-    latest_scheduler_heartbeat: str = None
+    latest_scheduler_heartbeat: Optional[str] = None
 
 
 class AirflowHealthResponse(BaseModel):

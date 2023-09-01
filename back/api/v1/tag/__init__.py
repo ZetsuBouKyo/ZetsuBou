@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 
@@ -44,12 +44,13 @@ async def search(
 
 @router.get(
     "/tag/{tag_id}/interpretation",
-    response_model=Union[Tag, None],
+    response_model=Optional[Tag],
     dependencies=[api_security([ScopeEnum.tag_interpretation_get.name])],
 )
 async def get_interpretation_of_tag(tag_id: int) -> Tag:
     crud = CrudTag()
-    return await crud.get_interpretation_by_id(tag_id)
+    tag = await crud.get_interpretation_by_id(tag_id)
+    return tag
 
 
 @router.get(

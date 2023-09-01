@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -8,7 +10,7 @@ class SynonumLanguage(BaseModel):
 
 class SynonymGroup(BaseModel):
     id: int
-    definition: str = None
+    definition: Optional[str] = None
 
 
 class SynonymToken(BaseModel):
@@ -16,4 +18,4 @@ class SynonymToken(BaseModel):
     group_id: int
     word: str
     lang: int
-    definition: str = None
+    definition: Optional[str] = None

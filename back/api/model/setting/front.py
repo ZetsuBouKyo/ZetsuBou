@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -16,7 +16,7 @@ class FrontGeneralSettingBase(BaseModel):
 
 
 class FrontGeneralSettingGalleryGoto(BaseModel):
-    sync_pages: bool = None
+    sync_pages: Optional[bool] = None
 
 
 class FrontGeneralSettingGallery(FrontGeneralSettingBase):
@@ -28,7 +28,7 @@ class FrontGeneralSettingVideo(FrontGeneralSettingBase):
 
 
 class FrontGeneralSetting(BaseModel):
-    app_mode: AppModeEnum = None
+    app_mode: Optional[AppModeEnum] = None
     gallery: FrontGeneralSettingGallery
     video: FrontGeneralSettingVideo
 

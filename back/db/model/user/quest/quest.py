@@ -1,10 +1,12 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from back.utils.model import DatetimeStr
 
 
 class UserQuestCreate(BaseModel):
-    user_id: int = None
+    user_id: Optional[int] = None
     name: str
     category_id: int
     quest_id: int
@@ -22,7 +24,7 @@ class UserQuestCreated(BaseModel):
 
 class UserQuestUpdate(BaseModel):
     id: int
-    user_id: int = None
+    user_id: Optional[int] = None
     name: str
     category_id: int
     quest_id: int

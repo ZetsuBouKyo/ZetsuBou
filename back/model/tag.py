@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -6,11 +6,11 @@ from back.utils.model import Str
 
 
 class TagInsert(BaseModel):
-    id: int = None
-    name: str = None
+    id: Optional[int] = None
+    name: Optional[str] = None
     category_ids: List[int] = []
     synonym_ids: List[int] = []
-    representative_id: int = None
+    representative_id: Optional[int] = None
     attributes: Dict[int, str] = {}
 
 
@@ -18,7 +18,7 @@ class TagCreate(BaseModel):
     name: Str
     category_ids: List[int] = []
     synonym_ids: List[int] = []
-    representative_id: int = None
+    representative_id: Optional[int] = None
     attributes: Dict[int, str] = {}
 
 
@@ -27,7 +27,7 @@ class TagUpdate(BaseModel):
     name: str
     category_ids: List[int] = []
     synonym_ids: List[int] = []
-    representative_id: int = None
+    representative_id: Optional[int] = None
     attributes: Dict[int, str] = {}
 
 
@@ -35,7 +35,7 @@ class TagElastic(BaseModel):
     id: int
     category_ids: List[int] = []
     synonym_ids: List[int] = []
-    representative_id: int = Field(None)
+    representative_id: Optional[int] = None
     attributes: Dict[int, str] = {}
 
 
@@ -55,7 +55,7 @@ class Tag(BaseModel):
     name: str
     categories: List[TagToken] = []
     synonyms: List[TagToken] = []
-    representative: TagToken = None
+    representative: Optional[TagToken] = None
     attributes: List[TagAttribute] = []
 
 

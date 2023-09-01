@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from back.utils.model import DatetimeStr
@@ -5,7 +7,7 @@ from back.utils.model import DatetimeStr
 
 class UserElasticCountQuestCreate(BaseModel):
     name: str
-    user_id: int = None
+    user_id: Optional[int] = None
     numerator_id: int
     denominator_id: int
 
@@ -21,7 +23,7 @@ class UserElasticCountQuestCreated(BaseModel):
 class UserElasticCountQuestUpdate(BaseModel):
     id: int
     name: str
-    user_id: int = None
+    user_id: Optional[int] = None
     numerator_id: int
     denominator_id: int
 

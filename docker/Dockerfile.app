@@ -18,12 +18,6 @@ RUN python3 -m pip install --no-cache-dir --upgrade pip
 
 COPY . .
 
-RUN wget https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js -P /workspace/statics
-RUN wget https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js.map -P /workspace/statics
-
-RUN wget https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js -P /workspace/statics
-RUN wget https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js.map -P /workspace/statics
-RUN wget https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css -P /workspace/statics
-RUN wget https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css.map -P /workspace/statics
-
 RUN python3 -m pip install --no-cache-dir -r requirements.txt
+
+RUN python3 cli.py build statics download

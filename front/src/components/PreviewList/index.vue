@@ -19,7 +19,7 @@ defineProps({
     <pagination
       class="sticky top-20 z-40 bg-gray-800"
       :pagination="previews.pagination"
-      :key="JSON.stringify(previews.pagination)" />
+      :key="JSON.stringify(previews)" />
     <div class="px-5 py-5 mx-auto">
       <div class="flex flex-wrap -m-4">
         <div class="3xl:w-1/10 xl:w-1/6 lg:w-1/4 md:w-1/2 p-4 w-full" v-for="(item, i) in previews.items" :key="i">

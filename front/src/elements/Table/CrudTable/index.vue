@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import axios from "axios";
-import { ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import { ButtonColorEnum } from "@/elements/Button/button.interface";
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
@@ -86,10 +86,11 @@ const headers = props.headers;
 const editor = ref();
 
 const route = useRoute();
-const params: CrudGetParam = {
-  page: route.query.page ? parseInt(route.query.page as string) : 1,
-  size: route.query.size ? parseInt(route.query.size as string) : 20,
-};
+const router = useRouter();
+
+onMounted(async () => {
+  await router.isReady();
+});
 
 const searchFieldState = initSelectDropdownState() as SelectDropdownState;
 if (!isEmpty(props.search)) {
@@ -136,12 +137,17 @@ watch(
 );
 
 function load() {
+  const params: CrudGetParam = {
+    page: route.query.page ? parseInt(route.query.page as string) : 1,
+    size: route.query.size ? parseInt(route.query.size as string) : 20,
+  };
+
   if (props.onCrudGet !== undefined && props.onCrudGetTotal !== undefined) {
     axios.all<any>([props.onCrudGetTotal(), props.onCrudGet(params)]).then(
       axios.spread((response1, response2) => {
         const totalItems = response1.data;
         const rows = response2.data;
-        state.pagination = getPagination(route.path, totalItems, params);
+        state.pagination = getPagination(route.path, totalItems, params, undefined, load);
         state.sheet = { headers: headers, rows: rows };
       }),
     );
@@ -150,20 +156,6 @@ function load() {
   }
 }
 load();
-
-watch(
-  () => {
-    return [route.path, JSON.stringify(route.query)];
-  },
-  () => {
-    if (route.query.page === undefined || route.query.size === undefined) {
-      return;
-    }
-    params.page = parseInt(route.query.page as string);
-    params.size = parseInt(route.query.size as string);
-    load();
-  },
-);
 
 function onOpenEditor() {
   if (state.row) {

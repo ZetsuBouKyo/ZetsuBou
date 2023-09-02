@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive } from "vue";
 import { useRoute } from "vue-router";
 
 import { Item, Items, Previews } from "@/components/PreviewList/interface";
@@ -38,6 +38,10 @@ const previews = reactive<Previews>({
   items: undefined,
 });
 
+function watchSources() {
+  return userState.data.frontSetting.video_preview_size;
+}
+
 function load() {
   const searchQuery = JSON.parse(JSON.stringify(route.query)) as SearchQuery;
   if (searchQuery.size === undefined) {
@@ -64,20 +68,11 @@ function load() {
     const hits = response.data.hits.hits ? response.data.hits.hits : [];
     const totalItems = response.data.hits.total.value as number;
 
-    previews.pagination = getPagination(route.path, totalItems, searchQuery);
+    previews.pagination = getPagination(route.path, totalItems, searchQuery, watchSources, load);
     previews.items = getItems(hits, queries);
   });
 }
 load();
-
-watch(
-  () => {
-    return [userState.data.frontSetting.video_preview_size, route.path, JSON.stringify(route.query)];
-  },
-  () => {
-    load();
-  },
-);
 </script>
 
 <template>

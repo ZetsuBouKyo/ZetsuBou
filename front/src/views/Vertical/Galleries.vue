@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive } from "vue";
 import { useRoute } from "vue-router";
 
 import { Item, Items, Previews } from "@/components/PreviewList/interface";
@@ -13,7 +13,6 @@ import { userState } from "@/state/user";
 
 import { getPagination } from "@/elements/Pagination/pagination";
 import { getDatetime } from "@/utils/datetime";
-import { detectRouteChange } from "@/utils/route";
 
 function getItems(hits: any) {
   let items: Items = [];
@@ -70,20 +69,15 @@ function load() {
     const hits = response.data.hits.hits ? response.data.hits.hits : [];
     const totalItems = response.data.hits.total.value as number;
 
-    previews.pagination = getPagination(route.path, totalItems, searchQuery);
+    previews.pagination = getPagination(route.path, totalItems, searchQuery, watchSources, load);
     previews.items = getItems(hits);
   });
 }
 load();
 
-watch(
-  () => {
-    return [userState.data.frontSetting.gallery_preview_size, detectRouteChange(route)];
-  },
-  () => {
-    load();
-  },
-);
+function watchSources() {
+  return userState.data.frontSetting.gallery_preview_size;
+}
 </script>
 
 <template>

@@ -64,7 +64,7 @@ function load() {
         }
         galleryState.save().finally(() => {});
       }
-      previews.pagination = getPagination(route.path, total, query);
+      previews.pagination = getPagination(route.path, total, query, undefined, load);
       previews.items = getItems(id, imgs, query);
     })
     .catch(() => {

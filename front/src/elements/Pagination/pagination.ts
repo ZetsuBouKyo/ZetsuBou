@@ -17,7 +17,13 @@ function getPageUrl(page: number, path: string, query: PaginationGetParam) {
   return path;
 }
 
-export function getPagination(path: string, totalItems: number, query: PaginationGetParam) {
+export function getPagination(
+  path: string,
+  totalItems: number,
+  query: PaginationGetParam,
+  watchSources: () => any,
+  load: () => void,
+) {
   if (query.page === undefined || query.size === undefined) {
     return undefined;
   }
@@ -43,6 +49,8 @@ export function getPagination(path: string, totalItems: number, query: Paginatio
     toFirstPage: getPageUrl(1, path, query),
     toNextPage: getPageUrl(current + 1, path, query),
     toPreviousPage: getPageUrl(current - 1, path, query),
+    watchSources: watchSources,
+    load: load,
   };
 
   if (pagination.totalPage <= pagination.perRound) {

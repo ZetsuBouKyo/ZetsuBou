@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from "axios";
-import { reactive, watch } from "vue";
+import { reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { Pagination } from "@/elements/Pagination/pagination.interface";
@@ -24,7 +24,6 @@ import { userState } from "@/state/user";
 import { ButtonColorEnum } from "@/elements/Button/button.interface";
 import { getPagination } from "@/elements/Pagination/pagination";
 import { getDatetime } from "@/utils/datetime";
-import { detectRouteChange } from "@/utils/route";
 import { getUUID } from "@/utils/str";
 
 interface Bookmark {
@@ -75,20 +74,13 @@ function load() {
     axios.spread((response1, response2) => {
       const totalItems = response1.data;
       const rows = response2.data;
-      state.pagination = getPagination(route.path, totalItems, params);
+      state.pagination = getPagination(route.path, totalItems, params, undefined, load);
       state.rows = rows;
       state.uuid = getUUID();
     }),
   );
 }
 load();
-
-watch(
-  () => detectRouteChange(route),
-  () => {
-    load();
-  },
-);
 
 function getCover(row: Row) {
   const galleryID = row.bookmark.gallery_id;

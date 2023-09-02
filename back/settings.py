@@ -116,6 +116,10 @@ class Setting(BaseSettings):
         description="Used to encrypt token. Must be changed.",
     )
 
+    app_logging_to_file: bool = Field(
+        default=False,
+        description="If this value is true, the application will write the log.",
+    )
     app_logging_level: LoggingLevelEnum = LoggingLevelEnum.WARNING.value
     app_logging_formatter_fmt: str = "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"  # noqa
 

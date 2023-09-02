@@ -9,16 +9,14 @@ from back.logging import logger_zetsubou
 from back.logging.utils import get_all_loggers
 from back.settings import LoggingLevelEnum, setting
 
+APP_LOGGING_TO_FILE = setting.app_logging_to_file
 APP_LOGGING_LEVEL = setting.app_logging_level.value
-APP_LOGGING_Path = "./logs/app.log"
 APP_LOGGING_FORMATTER_FMT = setting.app_logging_formatter_fmt
+
+APP_LOGGING_Path = "./logs/app.log"
+
 IGNORE_LOGGERS = ["sqlalchemy", "botocore", "httpcore"]
 
-rotating_file_formatter = Formatter(fmt=APP_LOGGING_FORMATTER_FMT)
-rotating_file_handler = RotatingFileHandler(
-    APP_LOGGING_Path, maxBytes=2 * 1024 * 1024, backupCount=3
-)
-rotating_file_handler.setFormatter(rotating_file_formatter)
 
 STREAM_FMT = "%(name)s - %(message)s"
 
@@ -66,13 +64,20 @@ def init_zetsubou_logger(logging_level: LoggingLevelEnum = APP_LOGGING_LEVEL):
         logger.setLevel(logging_level)
         logger.handlers = []
 
-    logger_zetsubou.addHandler(rotating_file_handler)
-    logger_zetsubou.addHandler(stream_handler)
-
     logger_uvicorn_error = logging.getLogger("uvicorn.error")
-    logger_uvicorn_error.addHandler(rotating_file_handler)
-    logger_uvicorn_error.addHandler(stream_handler)
-
     logger_uvicorn_access = logging.getLogger("uvicorn.access")
-    logger_uvicorn_access.addHandler(rotating_file_handler)
+
+    if APP_LOGGING_TO_FILE:
+        rotating_file_formatter = Formatter(fmt=APP_LOGGING_FORMATTER_FMT)
+        rotating_file_handler = RotatingFileHandler(
+            APP_LOGGING_Path, maxBytes=2 * 1024 * 1024, backupCount=3
+        )
+        rotating_file_handler.setFormatter(rotating_file_formatter)
+
+        logger_zetsubou.addHandler(rotating_file_handler)
+        logger_uvicorn_error.addHandler(rotating_file_handler)
+        logger_uvicorn_access.addHandler(rotating_file_handler)
+
+    logger_zetsubou.addHandler(stream_handler)
+    logger_uvicorn_error.addHandler(stream_handler)
     logger_uvicorn_access.addHandler(stream_handler)

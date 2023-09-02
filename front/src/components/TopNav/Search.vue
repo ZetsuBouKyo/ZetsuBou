@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, reactive, ref, watch } from "vue";
+import { onBeforeMount, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
@@ -47,10 +47,6 @@ const state = reactive<SearchState>({
   width: undefined,
   isOptions: undefined,
   show: undefined,
-});
-
-onMounted(async () => {
-  await router.isReady();
 });
 
 const advancedSearch = ref();

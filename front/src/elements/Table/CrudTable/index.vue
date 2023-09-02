@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import axios from "axios";
-import { onMounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
 
 import { ButtonColorEnum } from "@/elements/Button/button.interface";
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
@@ -86,11 +86,6 @@ const headers = props.headers;
 const editor = ref();
 
 const route = useRoute();
-const router = useRouter();
-
-onMounted(async () => {
-  await router.isReady();
-});
 
 const searchFieldState = initSelectDropdownState() as SelectDropdownState;
 if (!isEmpty(props.search)) {

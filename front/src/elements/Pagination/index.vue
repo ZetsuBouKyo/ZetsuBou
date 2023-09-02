@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import { onMounted, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { watch } from "vue";
+import { useRoute } from "vue-router";
 
 import { Pagination } from "./pagination.interface";
 
 import { detectRouteChange } from "@/utils/route";
 
 const route = useRoute();
-const router = useRouter();
-
-onMounted(async () => {
-  await router.isReady();
-});
 
 interface Props {
   pagination: Pagination;

@@ -1,7 +1,8 @@
 import { reactive } from "vue";
 
 import { TagFieldsPrivateState } from "@/interface/tag";
-import { Source, SourceDataState } from "@/interface/source";
+import { Source } from "@/interface/source";
+import { DataState } from "@/interface/state";
 import { GetTagTokenStartWithParam } from "@/api/v1/tag/token.interface";
 import { SelectDropdownOption, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
 
@@ -65,7 +66,7 @@ export function onMouseoverOption(_: any, opt: SelectDropdownOption) {
 function updateTags(
   privateState?: TagFieldsPrivateState,
   tagFieldsState?: SelectDropdownState,
-  sourceState?: SourceDataState<Source>,
+  sourceState?: DataState<Source>,
 ) {
   if (sourceState?.data?.tags === undefined) {
     return;
@@ -90,7 +91,7 @@ function updateTags(
 export function watchTags(
   privateState?: TagFieldsPrivateState,
   tagFieldsState?: SelectDropdownState,
-  sourceState?: SourceDataState<Source>,
+  sourceState?: DataState<Source>,
 ): [any, any] {
   updateTags(privateState, tagFieldsState, sourceState);
   return [
@@ -104,7 +105,7 @@ export function watchTags(
 function updateTagFieldsChipsLength(
   privateState?: TagFieldsPrivateState,
   tagFieldsState?: SelectDropdownState,
-  sourceState?: SourceDataState<Source>,
+  sourceState?: DataState<Source>,
 ) {
   if (sourceState?.data?.tags === undefined) {
     return;
@@ -139,7 +140,7 @@ function updateTagFieldsChipsLength(
 export function watchTagFieldsChipsLength(
   privateState?: TagFieldsPrivateState,
   tagFieldsState?: SelectDropdownState,
-  sourceState?: SourceDataState<Source>,
+  sourceState?: DataState<Source>,
 ): [any, any] {
   updateTagFieldsChipsLength(privateState, tagFieldsState, sourceState);
   return [
@@ -164,10 +165,7 @@ function getTags(privateState?: TagFieldsPrivateState) {
   return tags;
 }
 
-export function watchTagFieldValues(
-  privateState?: TagFieldsPrivateState,
-  sourceState?: SourceDataState<Source>,
-): [any, any] {
+export function watchTagFieldValues(privateState?: TagFieldsPrivateState, sourceState?: DataState<Source>): [any, any] {
   return [
     () => JSON.stringify(getTags(privateState)),
     (currentTags: string, _: string) => {

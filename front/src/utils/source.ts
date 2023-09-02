@@ -1,4 +1,5 @@
-import { SourceState, Source } from "@/interface/source";
+import { Source } from "@/interface/source";
+import { SourceState } from "@/interface/state";
 
 export function cleanData(state: SourceState<Source>) {
   if (state.data.id) {

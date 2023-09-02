@@ -3,7 +3,7 @@ import { reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import { Gallery } from "@/interface/gallery";
-import { SourceState } from "@/interface/source";
+import { SourceState } from "@/interface/state";
 import { ControlPanelState } from "./ControlPanel.interface";
 
 import Labels from "@/components/Labels/index.vue";

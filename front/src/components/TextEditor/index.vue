@@ -2,7 +2,7 @@
 import { reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 
-import { SourceState } from "@/interface/source";
+import { SourceState } from "@/interface/state";
 import { OnOverwrite } from "./interface";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";

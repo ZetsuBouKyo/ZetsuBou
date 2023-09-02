@@ -1,7 +1,7 @@
 import { reactive } from "vue";
 
 import { Video } from "@/interface/video";
-import { SourceState } from "@/interface/source";
+import { SourceState } from "@/interface/state";
 
 import { getTag, postTag } from "@/api/v1/video/tag";
 import { getDatetime } from "@/utils/datetime";

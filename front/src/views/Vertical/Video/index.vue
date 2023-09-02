@@ -3,7 +3,7 @@ import { reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { SearchBase, SearchQuery } from "@/interface/search";
-import { SourceState } from "@/interface/source";
+import { SourceState } from "@/interface/state";
 import { Video } from "@/interface/video";
 
 import Labels from "@/components/Labels/index.vue";

@@ -1,7 +1,7 @@
 import { reactive } from "vue";
 
 import { Gallery } from "@/interface/gallery";
-import { SourceState } from "@/interface/source";
+import { SourceState } from "@/interface/state";
 
 import { getGalleryTag, postGalleryTag } from "@/api/v1/gallery/tag";
 

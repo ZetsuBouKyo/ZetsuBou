@@ -5,7 +5,8 @@ import { useRouter } from "vue-router";
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
 import { OnGet, SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
 import { SearchCategory } from "@/interface/search";
-import { Source, SourceDataState } from "@/interface/source";
+import { Source } from "@/interface/source";
+import { DataState } from "@/interface/state";
 import { TagFieldsPrivateState } from "@/interface/tag";
 import { AdvancedSearchFieldKeyEnum, AdvancedSearchFieldType, AdvancedSearchState } from "./interface";
 
@@ -45,7 +46,7 @@ const privateState = reactive<TagFieldsPrivateState>({
   tagFields: {},
   onGets: {},
 });
-const sourceState = reactive<SourceDataState<Source>>({
+const sourceState = reactive<DataState<Source>>({
   data: { labels: [], tags: {} },
 });
 

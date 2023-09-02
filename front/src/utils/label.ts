@@ -1,8 +1,9 @@
 import { SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
 
-import { Source, SourceDataState } from "@/interface/source";
+import { Source } from "@/interface/source";
+import { DataState } from "@/interface/state";
 
-function updateLabel(labelsState?: SelectDropdownState, sourceState?: SourceDataState<Source>) {
+function updateLabel(labelsState?: SelectDropdownState, sourceState?: DataState<Source>) {
   if (!sourceState?.data) {
     return;
   }
@@ -14,7 +15,7 @@ function updateLabel(labelsState?: SelectDropdownState, sourceState?: SourceData
   }
 }
 
-export function watchLabels(labelsState?: SelectDropdownState, sourceState?: SourceDataState<Source>): [any, any] {
+export function watchLabels(labelsState?: SelectDropdownState, sourceState?: DataState<Source>): [any, any] {
   updateLabel(labelsState, sourceState);
   return [
     () => JSON.stringify(sourceState.data.labels),
@@ -24,7 +25,7 @@ export function watchLabels(labelsState?: SelectDropdownState, sourceState?: Sou
   ];
 }
 
-function updateLabelsChipsLength(labelsState?: SelectDropdownState, sourceState?: SourceDataState<Source>) {
+function updateLabelsChipsLength(labelsState?: SelectDropdownState, sourceState?: DataState<Source>) {
   if (!sourceState?.data) {
     return;
   }
@@ -36,10 +37,7 @@ function updateLabelsChipsLength(labelsState?: SelectDropdownState, sourceState?
   }
 }
 
-export function watchLabelsChipsLength(
-  labelsState?: SelectDropdownState,
-  sourceState?: SourceDataState<Source>,
-): [any, any] {
+export function watchLabelsChipsLength(labelsState?: SelectDropdownState, sourceState?: DataState<Source>): [any, any] {
   updateLabelsChipsLength(labelsState, sourceState);
   return [
     () => labelsState.chips.length,

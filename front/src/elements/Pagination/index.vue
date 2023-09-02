@@ -1,36 +1,18 @@
 <script setup lang="ts">
-import { watch } from "vue";
-import { useRoute } from "vue-router";
+import { PropType } from "vue";
 
 import { Pagination } from "./pagination.interface";
 
-import { detectRouteChange } from "@/utils/route";
-
-const route = useRoute();
-
-interface Props {
-  pagination: Pagination;
-}
-const props = withDefaults(defineProps<Props>(), { pagination: undefined, watchSources: undefined, load: undefined });
+defineProps({
+  pagination: {
+    type: Object as PropType<Pagination>,
+    required: true,
+  },
+});
 
 function toTop() {
   window.scrollTo(0, 0);
 }
-
-watch(
-  () => {
-    if (props.pagination.watchSources) {
-      return [props.pagination.watchSources(), detectRouteChange(route)];
-    }
-    return [detectRouteChange(route)];
-  },
-  () => {
-    if (props.pagination.load === undefined) {
-      return;
-    }
-    props.pagination.load();
-  },
-);
 </script>
 
 <template>

@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import { reactive } from "vue";
 import { useRoute } from "vue-router";
 
-import { Item, Items, PreviewsData, PreviewsState } from "@/components/PreviewList/interface";
+import { Item, Items, Previews } from "@/components/PreviewList/interface";
 import { SearchQuery } from "@/interface/search";
 
 import PreviewList from "@/components/PreviewList/index.vue";
 
 import { getAdvancedSearch, getRandom, getSearch } from "@/api/v1/gallery/query";
 
-import { previewsState } from "@/components/PreviewList/previews.state";
+import { routeState } from "@/state/route";
 import { userState } from "@/state/user";
 
 import { getPagination } from "@/elements/Pagination/pagination";
@@ -40,16 +41,12 @@ function getItems(hits: any) {
 }
 
 const route = useRoute();
-previewsState.setRoute(route);
-previewsState.setLoadFunction(load);
-previewsState.setWatchSources(watchSources);
+const previews = reactive<Previews>({
+  pagination: undefined,
+  items: undefined,
+});
 
-function load(state: PreviewsState<PreviewsData>) {
-  const route = state?.data?.route;
-  if (route === undefined) {
-    return;
-  }
-
+function load() {
   const searchQuery = JSON.parse(JSON.stringify(route.query)) as SearchQuery;
   if (searchQuery.size === undefined) {
     searchQuery.size = userState.data.frontSetting.gallery_preview_size;
@@ -73,19 +70,23 @@ function load(state: PreviewsState<PreviewsData>) {
     const hits = response.data.hits.hits ? response.data.hits.hits : [];
     const totalItems = response.data.hits.total.value as number;
 
-    state.pagination = getPagination(route.path, totalItems, searchQuery, watchSources, load);
-    state.items = getItems(hits);
+    previews.pagination = getPagination(route.path, totalItems, searchQuery);
+    previews.items = getItems(hits);
   });
 }
-load(previewsState);
+load();
 
 function watchSources() {
   return userState.data.frontSetting.gallery_preview_size;
 }
+
+routeState.setRoute(route);
+routeState.setWatchSources(watchSources);
+routeState.setLoadFunction(load);
 </script>
 
 <template>
   <div>
-    <preview-list />
+    <preview-list :previews="previews" />
   </div>
 </template>

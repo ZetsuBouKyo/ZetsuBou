@@ -19,6 +19,7 @@ import {
 } from "@/api/v1/user/bookmark/gallery";
 
 import { messageState } from "@/state/message";
+import { routeState } from "@/state/route";
 import { userState } from "@/state/user";
 
 import { ButtonColorEnum } from "@/elements/Button/button.interface";
@@ -74,13 +75,16 @@ function load() {
     axios.spread((response1, response2) => {
       const totalItems = response1.data;
       const rows = response2.data;
-      state.pagination = getPagination(route.path, totalItems, params, undefined, load);
+      state.pagination = getPagination(route.path, totalItems, params);
       state.rows = rows;
       state.uuid = getUUID();
     }),
   );
 }
 load();
+
+routeState.setRoute(route);
+routeState.setLoadFunction(load);
 
 function getCover(row: Row) {
   const galleryID = row.bookmark.gallery_id;

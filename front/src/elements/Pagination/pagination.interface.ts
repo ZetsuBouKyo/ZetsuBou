@@ -19,6 +19,4 @@ export interface Pagination {
   toFirstPage?: string;
   toNextPage?: string;
   toPreviousPage?: string;
-  watchSources?: () => any;
-  load?: (state: any) => void;
 }

@@ -1,47 +1,45 @@
 import { reactive, watch } from "vue";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 
-import { PreviewsState, PreviewsData } from "./interface";
+import { RouteState } from "@/interface/route";
 
 import { detectRouteChange } from "@/utils/route";
 
-export const previewsState = reactive<PreviewsState<PreviewsData>>({
+export const routeState = reactive<RouteState>({
   data: {
     route: undefined,
     watchSources: undefined,
     load: undefined,
   },
-  pagination: undefined,
-  items: undefined,
   setRoute: (r: RouteLocationNormalizedLoaded) => {
-    previewsState.data.route = r;
+    routeState.data.route = r;
   },
   setWatchSources: (f: () => any) => {
-    previewsState.data.watchSources = f;
+    routeState.data.watchSources = f;
   },
-  setLoadFunction: (f: (state: PreviewsState<PreviewsData>) => void) => {
-    previewsState.data.load = f;
+  setLoadFunction: (f: () => void) => {
+    routeState.data.load = f;
   },
 });
 
 watch(
   () => {
     const w = [];
-    const route = previewsState.data.route;
+    const route = routeState.data.route;
     if (route !== undefined) {
       w.push(detectRouteChange(route));
     }
-    const watchSources = previewsState.data.watchSources;
+    const watchSources = routeState.data.watchSources;
     if (watchSources !== undefined) {
       w.push(watchSources());
     }
     return w;
   },
   () => {
-    const load = previewsState.data.load;
+    const load = routeState.data.load;
     if (load === undefined) {
       return;
     }
-    load(previewsState);
+    load();
   },
 );

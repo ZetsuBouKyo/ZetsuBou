@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { Item, Items, PreviewsData, PreviewsState } from "@/components/PreviewList/interface";
+import { Item, Items, Previews } from "@/components/PreviewList/interface";
 import { PaginationGetParam } from "@/elements/Pagination/pagination.interface";
 
 import PreviewList from "@/components/PreviewList/index.vue";
@@ -9,9 +10,9 @@ import Info from "./Info/index.vue";
 
 import { getImages } from "@/api/v1/gallery/image";
 
-import { previewsState } from "@/components/PreviewList/previews.state";
 import { settingState } from "@/state/Setting/front";
 import { galleryState } from "@/state/gallery";
+import { routeState } from "@/state/route";
 import { userState } from "@/state/user";
 
 import { getPagination } from "@/elements/Pagination/pagination";
@@ -33,15 +34,13 @@ function getItems(id: string, data: any, query: PaginationGetParam) {
 const route = useRoute();
 const router = useRouter();
 const id = route.params.gallery as string;
-previewsState.setRoute(route);
-previewsState.setLoadFunction(load);
 
-function load(state: PreviewsState<PreviewsData>) {
-  const route = state?.data?.route;
-  if (route === undefined) {
-    return;
-  }
+const previews = reactive<Previews>({
+  pagination: undefined,
+  items: undefined,
+});
 
+function load() {
   if (userState.data.frontSetting.img_preview_size === undefined) {
     return;
   }
@@ -66,19 +65,22 @@ function load(state: PreviewsState<PreviewsData>) {
         }
         galleryState.save().finally(() => {});
       }
-      state.pagination = getPagination(route.path, total, query, undefined, load);
-      state.items = getItems(id, imgs, query);
+      previews.pagination = getPagination(route.path, total, query);
+      previews.items = getItems(id, imgs, query);
     })
     .catch(() => {
       router.push("/NotFound");
     });
 }
-load(previewsState);
+load();
+
+routeState.setRoute(route);
+routeState.setLoadFunction(load);
 </script>
 
 <template>
   <div class="divide-y divide-gray-500">
     <info />
-    <preview-list />
+    <preview-list :previews="previews" />
   </div>
 </template>

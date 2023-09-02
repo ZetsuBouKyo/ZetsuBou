@@ -33,6 +33,7 @@ import PaginationBase from "@/elements/Pagination/index.vue";
 import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
+import { routeState } from "@/state/route";
 
 import { getPagination } from "@/elements/Pagination/pagination";
 import { isEmpty } from "@/utils/obj";
@@ -142,7 +143,7 @@ function load() {
       axios.spread((response1, response2) => {
         const totalItems = response1.data;
         const rows = response2.data;
-        state.pagination = getPagination(route.path, totalItems, params, undefined, load);
+        state.pagination = getPagination(route.path, totalItems, params);
         state.sheet = { headers: headers, rows: rows };
       }),
     );
@@ -224,6 +225,9 @@ function confirmRemove(row: any) {
   state.row = row;
   confirm.value.open();
 }
+
+routeState.setRoute(route);
+routeState.setLoadFunction(load);
 </script>
 
 <template>

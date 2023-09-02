@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { reactive } from "vue";
 import { useRoute } from "vue-router";
 
-import { Item, Items, Previews } from "@/components/PreviewList/interface";
+import { Item, Items, PreviewsData, PreviewsState } from "@/components/PreviewList/interface";
 import { SearchQuery } from "@/interface/search";
 
 import PreviewList from "@/components/PreviewList/index.vue";
 
 import { getAdvancedSearch, getRandom, getSearch } from "@/api/v1/video/query";
 
+import { previewsState } from "@/components/PreviewList/previews.state";
 import { userState } from "@/state/user";
-import { getDatetime } from "@/utils/datetime";
 
 import { getPagination } from "@/elements/Pagination/pagination";
+import { getDatetime } from "@/utils/datetime";
 
 function getItems(hits: any, queries: string) {
   let items: Items = [];
@@ -33,16 +33,20 @@ function getItems(hits: any, queries: string) {
 }
 
 const route = useRoute();
-const previews = reactive<Previews>({
-  pagination: undefined,
-  items: undefined,
-});
+previewsState.setRoute(route);
+previewsState.setLoadFunction(load);
+previewsState.setWatchSources(watchSources);
 
 function watchSources() {
   return userState.data.frontSetting.video_preview_size;
 }
 
-function load() {
+function load(state: PreviewsState<PreviewsData>) {
+  const route = state?.data?.route;
+  if (route === undefined) {
+    return;
+  }
+
   const searchQuery = JSON.parse(JSON.stringify(route.query)) as SearchQuery;
   if (searchQuery.size === undefined) {
     searchQuery.size = userState.data.frontSetting.video_preview_size;
@@ -68,15 +72,15 @@ function load() {
     const hits = response.data.hits.hits ? response.data.hits.hits : [];
     const totalItems = response.data.hits.total.value as number;
 
-    previews.pagination = getPagination(route.path, totalItems, searchQuery, watchSources, load);
-    previews.items = getItems(hits, queries);
+    state.pagination = getPagination(route.path, totalItems, searchQuery, watchSources, load);
+    state.items = getItems(hits, queries);
   });
 }
-load();
+load(previewsState);
 </script>
 
 <template>
   <div>
-    <preview-list :previews="previews" />
+    <preview-list />
   </div>
 </template>

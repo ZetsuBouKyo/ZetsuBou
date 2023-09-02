@@ -22,7 +22,7 @@ export function getPagination(
   totalItems: number,
   query: PaginationGetParam,
   watchSources: () => any,
-  load: () => void,
+  load: (state: any) => void,
 ) {
   if (query.page === undefined || query.size === undefined) {
     return undefined;

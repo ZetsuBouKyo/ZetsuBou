@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType, reactive, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
 import { OnGet, SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
@@ -8,7 +8,12 @@ import { SearchCategory } from "@/interface/search";
 import { Source } from "@/interface/source";
 import { DataState } from "@/interface/state";
 import { TagFieldsPrivateState } from "@/interface/tag";
-import { AdvancedSearchFieldKeyEnum, AdvancedSearchFieldType, AdvancedSearchState } from "./interface";
+import {
+  AdvancedSearchField,
+  AdvancedSearchFieldKeyEnum,
+  AdvancedSearchFieldType,
+  AdvancedSearchState,
+} from "./interface";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
@@ -26,11 +31,14 @@ import { getTagTokenStartWith } from "@/api/v1/tag/token";
 
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { settingState } from "@/state/Setting/front";
+import { routeState } from "@/state/route";
 
-import { durationToSecond } from "@/utils/datetime";
+import { durationToSecond, secondToDuration } from "@/utils/datetime";
 import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
+import { detectRouteChange } from "@/utils/route";
 import { toTitle } from "@/utils/str";
 import { onGetTip, onMouseoverOption, watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
+import { RouteQueryKey } from "./field";
 
 const props = defineProps({
   state: {
@@ -39,23 +47,171 @@ const props = defineProps({
   },
 });
 
+const advancedSearch = ref();
+const route = useRoute();
 const router = useRouter();
 const state = props.state;
 
+// Should not be changed directly.
 const privateState = reactive<TagFieldsPrivateState>({
   tagFields: {},
   onGets: {},
 });
+
+// If we want to change the UI of tags or labels, we should update this.
 const sourceState = reactive<DataState<Source>>({
   data: { labels: [], tags: {} },
 });
 
-function load() {
-  if (settingState.data === undefined) {
+const labels = initSelectDropdownState() as SelectDropdownState;
+watch(...watchLabels(labels, sourceState));
+watch(...watchLabelsChipsLength(labels, sourceState));
+
+const tagFields = initSelectDropdownState() as SelectDropdownState;
+watch(...watchTags(privateState, tagFields, sourceState));
+watch(...watchTagFieldsChipsLength(privateState, tagFields, sourceState));
+
+function resetSourceState() {
+  sourceState.data.labels = [];
+  sourceState.data.tags = {};
+}
+
+function resetFieldValues() {
+  for (const field of state.fields) {
+    field.value = undefined;
+    switch (field.type) {
+      case AdvancedSearchFieldType.String:
+        field.fuzziness.title = undefined;
+        field.fuzziness.selectedValue = undefined;
+
+        field.analyzer.title = undefined;
+        field.analyzer.selectedValue = undefined;
+
+        field.boolean.title = undefined;
+        field.boolean.selectedValue = undefined;
+
+        break;
+      case AdvancedSearchFieldType.Duration:
+      case AdvancedSearchFieldType.Range:
+        field.gte = undefined;
+        field.lte = undefined;
+        break;
+    }
+  }
+}
+
+// Update the default labels by `route'.
+function loadLabels() {
+  const keys = Object.keys(route.query);
+  for (const key of keys) {
+    if (key.startsWith("label_")) {
+      sourceState.data.labels.push(route.query[key].toString());
+    }
+  }
+}
+
+// Update the default tags by `route`.
+function loadTags() {
+  const pattern = /tag_field_(\d+)/;
+  const keys = Object.keys(route.query);
+  for (const key of keys) {
+    const match = key.match(pattern);
+    if (match === null) {
+      continue;
+    }
+
+    const tagField = route.query[key].toString();
+    if (!sourceState.data.tags.hasOwnProperty(tagField)) {
+      sourceState.data.tags[tagField] = [];
+    }
+
+    const index = match[1];
+    const tagValueKey = `tag_value_${index}`;
+    const tagValue = route.query[tagValueKey] as string;
+    if (tagValue === undefined) {
+      continue;
+    }
+    sourceState.data.tags[tagField].push(tagValue);
+  }
+}
+
+function loadFieldValue(field: AdvancedSearchField) {
+  const name = field.name;
+  if (!name) {
     return;
   }
+  if (route.query[name]) {
+    field.value = route.query[name] as string;
+  }
+}
 
-  for (const field of props.state.fields) {
+// Update the default value of the fields by `route`.
+function loadFieldValues() {
+  for (const field of state.fields) {
+    loadFieldValue(field);
+
+    const routeKey = new RouteQueryKey(field.name);
+    let gte: any;
+    let lte: any;
+    switch (field.type) {
+      case AdvancedSearchFieldType.String:
+        const fuzziness = Number(route.query[routeKey.fuzziness]);
+        field.fuzziness.title = undefined;
+        field.fuzziness.selectedValue = undefined;
+        if (!Number.isNaN(fuzziness)) {
+          field.fuzziness.title = fuzziness;
+          field.fuzziness.selectedValue = fuzziness;
+        }
+
+        const analyzer = route.query[routeKey.analyzer] as string;
+        field.analyzer.title = undefined;
+        field.analyzer.selectedValue = undefined;
+        if (analyzer) {
+          field.analyzer.title = toTitle(analyzer);
+          field.analyzer.selectedValue = analyzer;
+        }
+
+        const bool = route.query[routeKey.bool] as string;
+        field.boolean.title = undefined;
+        field.boolean.selectedValue = undefined;
+        if (bool) {
+          field.boolean.title = toTitle(bool);
+          field.boolean.selectedValue = bool;
+        }
+        break;
+      case AdvancedSearchFieldType.Duration:
+        gte = Number(route.query[routeKey.gte]);
+        field.gte = undefined;
+        if (!Number.isNaN(gte)) {
+          field.gte = secondToDuration(gte);
+        }
+
+        lte = Number(route.query[routeKey.lte]);
+        field.lte = undefined;
+        if (!Number.isNaN(lte)) {
+          field.lte = secondToDuration(lte);
+        }
+        break;
+      case AdvancedSearchFieldType.Range:
+        gte = Number(route.query[routeKey.gte]);
+        field.gte = undefined;
+        if (!Number.isNaN(gte)) {
+          field.gte = gte;
+        }
+
+        lte = Number(route.query[routeKey.lte]);
+        field.lte = undefined;
+        if (!Number.isNaN(lte)) {
+          field.lte = lte;
+        }
+        break;
+    }
+  }
+}
+
+// Update the fields by the `props.state` and `settingState`.
+function initSubFields() {
+  for (const field of state.fields) {
     switch (field.type) {
       case AdvancedSearchFieldType.String:
         field.fuzziness = initSelectDropdownState() as SelectDropdownState;
@@ -72,13 +228,13 @@ function load() {
 
         switch (field.keyType) {
           case AdvancedSearchFieldKeyEnum.BuiltIn:
-            analyzers = settingState.data[props.state.category].analyzer.keyword as object;
+            analyzers = settingState.data[state.category].analyzer.keyword as object;
             for (let analyzer in analyzers) {
               field.analyzer.options.push({ title: toTitle(analyzer), value: analyzer });
             }
             break;
           case AdvancedSearchFieldKeyEnum.ElasticsearchField:
-            analyzers = settingState.data[props.state.category].analyzer.field[field.key] as Array<string>;
+            analyzers = settingState.data[state.category].analyzer.field[field.key] as Array<string>;
             for (let analyzer of analyzers) {
               field.analyzer.options.push({ title: toTitle(analyzer), value: analyzer });
             }
@@ -94,14 +250,26 @@ function load() {
     }
   }
 }
+
+function load() {
+  if (settingState.data === undefined) {
+    return;
+  }
+  initSubFields();
+
+  loadFieldValues();
+  loadLabels();
+  loadTags();
+}
 load();
 
-watch(
-  () => JSON.stringify(settingState.data) + JSON.stringify(state.category),
-  () => {
-    load();
-  },
-);
+function watchSources() {
+  return JSON.stringify(settingState.data) + JSON.stringify(state);
+}
+
+routeState.setRoute(route);
+routeState.setLoadFunction(load);
+routeState.setWatchSources(watchSources);
 
 let onGetCategories: OnGet;
 let getStartWithTagFields: OnGet;
@@ -116,22 +284,11 @@ switch (state.category) {
 }
 
 const categories = initSelectDropdownState() as SelectDropdownState;
-
 const onGetCategoriesToOptions = tokenToOption;
 
 const uploader = initSelectDropdownState() as SelectDropdownState;
 const onGetUploader = getTagTokenStartWith;
 const onGetUploaderToOptions = tokenToOption;
-
-const advancedSearch = ref();
-
-const labels = initSelectDropdownState() as SelectDropdownState;
-watch(...watchLabels(labels, sourceState));
-watch(...watchLabelsChipsLength(labels, sourceState));
-
-const tagFields = initSelectDropdownState() as SelectDropdownState;
-watch(...watchTags(privateState, tagFields, sourceState));
-watch(...watchTagFieldsChipsLength(privateState, tagFields, sourceState));
 
 function search() {
   const queries = {};
@@ -144,52 +301,55 @@ function search() {
     queries["uploader"] = uploader.title;
   }
 
-  for (const field of props.state.fields) {
+  for (const field of state.fields) {
     if (field.name === undefined) {
       continue;
     }
+
+    const routeKey = new RouteQueryKey(field.name);
     switch (field.type) {
       case AdvancedSearchFieldType.String:
         if (field.value === undefined) {
           break;
         }
         queries[field.name] = field.value;
+
         if (field.fuzziness.selectedValue !== undefined && Number.isInteger(field.fuzziness.selectedValue)) {
-          queries[`${field.name}_fuzziness`] = field.fuzziness.selectedValue;
+          queries[routeKey.fuzziness] = field.fuzziness.selectedValue;
         }
         if (field.analyzer.selectedValue != undefined) {
-          queries[`${field.name}_analyzer`] = field.analyzer.selectedValue;
+          queries[routeKey.analyzer] = field.analyzer.selectedValue;
         }
         if (field.boolean.selectedValue != undefined) {
-          queries[`${field.name}_bool`] = field.boolean.selectedValue;
+          queries[routeKey.bool] = field.boolean.selectedValue;
         }
         break;
       case AdvancedSearchFieldType.Range:
         if (field.gte !== undefined && !Number.isNaN(Number(field.gte as string))) {
-          queries[`${field.name}_gte`] = field.gte;
+          queries[routeKey.gte] = field.gte;
         }
         if (field.lte !== undefined && !Number.isNaN(Number(field.lte as string))) {
-          queries[`${field.name}_lte`] = field.lte;
+          queries[routeKey.lte] = field.lte;
         }
         break;
       case AdvancedSearchFieldType.Duration:
         if (field.gte !== undefined) {
           if (!Number.isNaN(Number(field.gte as string))) {
-            queries[`${field.name}_gte`] = field.gte;
+            queries[routeKey.gte] = field.gte;
           } else {
             const gte = durationToSecond(field.gte as string);
             if (!Number.isNaN(gte)) {
-              queries[`${field.name}_gte`] = gte;
+              queries[routeKey.gte] = gte;
             }
           }
         }
         if (field.lte !== undefined) {
           if (!Number.isNaN(Number(field.lte as string))) {
-            queries[`${field.name}_lte`] = field.lte;
+            queries[routeKey.lte] = field.lte;
           } else {
             const lte = durationToSecond(field.lte as string);
             if (!Number.isNaN(lte)) {
-              queries[`${field.name}_lte`] = lte;
+              queries[routeKey.lte] = lte;
             }
           }
         }
@@ -222,13 +382,16 @@ function search() {
   }
 
   const queriesStr = queriesArray.join("&");
-  const url = `/${props.state.category}/advanced-search?${queriesStr}`;
+  const url = `/${state.category}/advanced-search?${queriesStr}`;
 
   router.push(url);
   advancedSearch.value.close();
 }
 
-function reset() {}
+function reset() {
+  resetFieldValues();
+  resetSourceState();
+}
 
 function open() {
   advancedSearch.value.open();
@@ -240,6 +403,7 @@ function tokenToOption(token: { id: number; name: string }) {
 
 defineExpose({
   open,
+  reset,
 });
 </script>
 
@@ -249,6 +413,7 @@ defineExpose({
     :title="'Advanced Search'"
     class="w-1/2 top-12 left-1/4"
     :is-scrollable="true"
+    :key="detectRouteChange(route)"
     @keyup.enter="search">
     <div class="flex flex-col" v-for="(field, i) in state.fields" :key="i">
       <div class="flex flex-col" v-if="field.type === AdvancedSearchFieldType.String">

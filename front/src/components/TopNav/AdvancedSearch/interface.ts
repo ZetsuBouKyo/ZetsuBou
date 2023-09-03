@@ -15,9 +15,9 @@ export enum AdvancedSearchFieldKeyEnum {
 export interface AdvancedSearchField {
   name: string;
   type: AdvancedSearchFieldType;
+  value: string;
   key?: string;
   keyType?: AdvancedSearchFieldKeyEnum;
-  value?: string;
   fuzziness?: SelectDropdownState;
   analyzer?: SelectDropdownState;
   boolean?: SelectDropdownState;

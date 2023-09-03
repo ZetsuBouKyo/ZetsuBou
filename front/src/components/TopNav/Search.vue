@@ -229,34 +229,39 @@ function updateGalleryAdvancedSearchState() {
   state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
     {
       name: "keywords",
+      value: undefined,
       keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
       type: AdvancedSearchFieldType.String,
     },
     {
       name: "name",
       key: "name",
+      value: undefined,
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },
     {
       name: "raw_name",
       key: "raw_name",
+      value: undefined,
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },
     {
       name: "src",
       key: "src",
+      value: undefined,
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },
     {
       name: "path",
       key: "path",
+      value: undefined,
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },
-    { name: "rating", type: AdvancedSearchFieldType.Range },
+    { name: "rating", value: undefined, type: AdvancedSearchFieldType.Range, gte: undefined, lte: undefined },
   ];
 }
 
@@ -264,37 +269,42 @@ function updateVideoAdvancedSearchState() {
   state.advancedSearchState.fields = <Array<AdvancedSearchField>>[
     {
       name: "keywords",
+      value: undefined,
       keyType: AdvancedSearchFieldKeyEnum.BuiltIn,
       type: AdvancedSearchFieldType.String,
     },
     {
       name: "name",
       key: "name",
+      value: undefined,
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },
     {
       name: "other_names",
       key: "other_names",
+      value: undefined,
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },
     {
       name: "src",
       key: "src",
+      value: undefined,
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },
     {
       name: "path",
       key: "path",
+      value: undefined,
       keyType: AdvancedSearchFieldKeyEnum.ElasticsearchField,
       type: AdvancedSearchFieldType.String,
     },
-    { name: "rating", type: AdvancedSearchFieldType.Range },
-    { name: "height", type: AdvancedSearchFieldType.Range },
-    { name: "width", type: AdvancedSearchFieldType.Range },
-    { name: "duration", type: AdvancedSearchFieldType.Duration },
+    { name: "rating", value: undefined, type: AdvancedSearchFieldType.Range, gte: undefined, lte: undefined },
+    { name: "height", value: undefined, type: AdvancedSearchFieldType.Range, gte: undefined, lte: undefined },
+    { name: "width", value: undefined, type: AdvancedSearchFieldType.Range, gte: undefined, lte: undefined },
+    { name: "duration", value: undefined, type: AdvancedSearchFieldType.Duration, gte: undefined, lte: undefined },
   ];
 }
 

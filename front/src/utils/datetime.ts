@@ -1,3 +1,5 @@
+import { pad } from "@/utils/number";
+
 export function getDatetime(date: string): string {
   const d = new Date(date);
   const offset = d.getTimezoneOffset();
@@ -22,7 +24,7 @@ export function toIsoStringWithTimeZone(date: Date): string {
 }
 
 export function durationToSecond(duration: string): number {
-  const pattern = /^(([0-1]?[0-9]|[2][0-3]):)?([0-5][0-9])(:([0-5][0-9]))$/;
+  const pattern = /^(([0-1]?[0-9]|[2][0-3]):)?([0-5]?[0-9])(:([0-5][0-9]))$/;
   const match = duration.match(pattern);
   if (match === null) {
     return NaN;
@@ -36,4 +38,30 @@ export function durationToSecond(duration: string): number {
   const mins = parseInt(match[3]);
   const seconds = parseInt(match[5]);
   return hours * 3600 + mins * 60 + seconds;
+}
+
+// Currently have maximum value: 23 x 60 x 60 + 59 x 60 + 59 seconds.
+export function secondToDuration(s: number): string {
+  const m = 86399; // 23 * 60 * 60 + 59 * 60 + 59
+  if (s > 86399 || s < 0) {
+    throw new RangeError("s must be 0 <= s < 86400");
+  }
+  const seconds = s % 60;
+  let minutes = Math.floor(s / 60);
+  if (minutes === 0) {
+    return seconds.toString();
+  }
+  const hours = Math.floor(minutes / 60);
+  minutes = minutes % 60;
+
+  const secondsS = pad(seconds, 2);
+  const minutesS = pad(minutes, 2);
+
+  if (hours === 0) {
+    return `${minutesS}:${secondsS}`;
+  }
+
+  const hoursS = hours.toString();
+
+  return `${hoursS}:${minutesS}:${secondsS}`;
 }

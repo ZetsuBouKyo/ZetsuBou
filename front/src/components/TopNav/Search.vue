@@ -24,6 +24,7 @@ import { getUserElasticSearchQueries } from "@/api/v1/user/elasticQuery/search";
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { userState } from "@/state/user";
 
+import { detectRouteChange } from "@/utils/route";
 import { toTitle } from "@/utils/str";
 
 const route = useRoute();
@@ -342,9 +343,13 @@ function updateByPath(path: string) {
 
 updateByPath(route.path);
 watch(
-  () => route.path,
+  () => detectRouteChange(route),
   (path, _) => {
-    updateByPath(path);
+    if (route.path.endsWith("advanced-search")) {
+      reset();
+    } else {
+      updateByPath(path);
+    }
   },
 );
 
@@ -425,6 +430,11 @@ function clearAll() {
   queryTypeState.clear();
   booleanTypeState.clear();
   customSearchState.clear();
+}
+
+function reset() {
+  state.query.keywords = undefined;
+  clearAll();
 }
 </script>
 

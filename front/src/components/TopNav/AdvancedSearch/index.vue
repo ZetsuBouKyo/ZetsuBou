@@ -31,7 +31,6 @@ import { getTagTokenStartWith } from "@/api/v1/tag/token";
 
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { settingState } from "@/state/Setting/front";
-import { routeState } from "@/state/route";
 
 import { durationToSecond, secondToDuration } from "@/utils/datetime";
 import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
@@ -70,6 +69,18 @@ watch(...watchLabelsChipsLength(labels, sourceState));
 const tagFields = initSelectDropdownState() as SelectDropdownState;
 watch(...watchTags(privateState, tagFields, sourceState));
 watch(...watchTagFieldsChipsLength(privateState, tagFields, sourceState));
+
+const categories = initSelectDropdownState() as SelectDropdownState;
+const onGetCategoriesToOptions = tokenToOption;
+
+const uploader = initSelectDropdownState() as SelectDropdownState;
+const onGetUploader = getTagTokenStartWith;
+const onGetUploaderToOptions = tokenToOption;
+
+function resetCategoryAndUploader() {
+  categories.title = undefined;
+  uploader.title = undefined;
+}
 
 function resetSourceState() {
   sourceState.data.labels = [];
@@ -209,6 +220,17 @@ function loadFieldValues() {
   }
 }
 
+function loadCategoryAndUploader() {
+  const c = route.query.category as string;
+  if (c) {
+    categories.title = c;
+  }
+  const u = route.query.uploader as string;
+  if (u) {
+    uploader.title = u;
+  }
+}
+
 // Update the fields by the `props.state` and `settingState`.
 function initSubFields() {
   for (const field of state.fields) {
@@ -257,19 +279,23 @@ function load() {
   }
   initSubFields();
 
+  loadCategoryAndUploader();
   loadFieldValues();
   loadLabels();
   loadTags();
 }
 load();
 
-function watchSources() {
-  return JSON.stringify(settingState.data) + JSON.stringify(state);
-}
-
-routeState.setRoute(route);
-routeState.setLoadFunction(load);
-routeState.setWatchSources(watchSources);
+watch(
+  () => detectRouteChange(route),
+  () => {
+    if (route.path.endsWith("advanced-search")) {
+      load();
+    } else {
+      reset();
+    }
+  },
+);
 
 let onGetCategories: OnGet;
 let getStartWithTagFields: OnGet;
@@ -282,13 +308,6 @@ switch (state.category) {
     onGetCategories = getSettingFrontVideoStartWithCategories;
     getStartWithTagFields = getSettingFrontVideoStartWithTagFields;
 }
-
-const categories = initSelectDropdownState() as SelectDropdownState;
-const onGetCategoriesToOptions = tokenToOption;
-
-const uploader = initSelectDropdownState() as SelectDropdownState;
-const onGetUploader = getTagTokenStartWith;
-const onGetUploaderToOptions = tokenToOption;
 
 function search() {
   const queries = {};
@@ -389,6 +408,7 @@ function search() {
 }
 
 function reset() {
+  resetCategoryAndUploader();
   resetFieldValues();
   resetSourceState();
 }

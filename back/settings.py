@@ -18,6 +18,10 @@ DEFAULT_SETTING_HOME = "./etc"
 DEFAULT_SETTING_NAME = "settings.env"
 DEFAULT_AIRFLOW_SETTING_NAME = "settings.airflow.env"
 
+DEFAULT_ADMIN_EMAIL = "zetsubou@example.com"
+DEFAULT_ADMIN_NAME = "zetsubou"
+DEFAULT_ADMIN_PASSWORD = "zetsubou"
+
 if _DEFAULT_SETTING_PATH is None:
     DEFAULT_SETTING_PATH = Path(DEFAULT_SETTING_HOME) / DEFAULT_SETTING_NAME
 else:
@@ -103,11 +107,11 @@ class Setting(BaseSettings):
             if key.startswith(prefix)
         }
 
-    app_admin_name: str = "zetsubou"
+    app_admin_name: str = DEFAULT_ADMIN_NAME
     app_admin_email: EmailStr = (
-        "zetsubou@example.com"  # TODO: be careful. This is not safe.
+        DEFAULT_ADMIN_EMAIL  # TODO: be careful. This is not safe.
     )
-    app_admin_password: str = "zetsubou"
+    app_admin_password: str = DEFAULT_ADMIN_PASSWORD
 
     app_security_algorithm: str = "HS256"
     app_security_expired: int = 200  # minutes

@@ -35,23 +35,23 @@ export interface SelectDropdownState {
   addInputChipsWatch: (source: any, key: string) => void;
 }
 
-export interface OnGet {
-  (params: SelectDropdownGetParam): Promise<AxiosResponse<Array<any>>>;
+export interface SelectDropdownOnGet<DataT> {
+  (params: SelectDropdownGetParam): Promise<AxiosResponse<Array<DataT>>>;
 }
 
-export interface OnGetToOptions {
+export interface SelectDropdownOnGetToOptions {
   (data: any): SelectDropdownOption;
 }
 
-export interface OnSelect {
+export interface SelectDropdownOnSelect {
   (opt: SelectDropdownOption): void;
 }
 
-export interface OnGetTip {
+export interface SelectDropdownOnGetTip {
   (opt: SelectDropdownOption): string;
 }
 
-export interface OnMouseoverOption {
+export interface SelectDropdownOnMouseoverOption {
   (event: any, opt: SelectDropdownOption): void;
 }
 

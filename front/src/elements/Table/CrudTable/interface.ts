@@ -1,6 +1,10 @@
 import { AxiosResponse } from "axios";
 
-import { OnGetTip, OnGetToOptions, OnMouseoverOption } from "@/elements/Dropdown/SelectDropdown.interface";
+import {
+  SelectDropdownOnGetTip,
+  SelectDropdownOnGetToOptions,
+  SelectDropdownOnMouseoverOption,
+} from "@/elements/Dropdown/SelectDropdown.interface";
 import { Pagination, PaginationGetParam } from "@/elements/Pagination/pagination.interface";
 
 export interface Header {
@@ -46,9 +50,9 @@ export interface OnSearch {
 export interface SearchOption {
   title: string;
   onSearch: OnSearch;
-  onSearchToOptions: OnGetToOptions;
-  onSearchGetTip?: OnGetTip;
-  onSearchMouseoverOption?: OnMouseoverOption;
+  onSearchToOptions: SelectDropdownOnGetToOptions;
+  onSearchGetTip?: SelectDropdownOnGetTip;
+  onSearchMouseoverOption?: SelectDropdownOnMouseoverOption;
 }
 
 export interface Search {

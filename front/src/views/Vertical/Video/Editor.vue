@@ -4,9 +4,9 @@ import { useRoute } from "vue-router";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
 import {
-  OnGet,
   SelectDropdownAssignedValue,
   SelectDropdownMode,
+  SelectDropdownOnGet,
   SelectDropdownState,
 } from "@/elements/Dropdown/SelectDropdown.interface";
 
@@ -32,7 +32,7 @@ interface TagFields {
 }
 
 interface OnGets {
-  [key: string]: OnGet;
+  [key: string]: SelectDropdownOnGet<any>;
 }
 
 interface PrivateState {

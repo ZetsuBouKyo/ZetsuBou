@@ -1,4 +1,4 @@
-import { SelectDropdownState, OnGet } from "@/elements/Dropdown/SelectDropdown.interface";
+import { SelectDropdownState, SelectDropdownOnGet } from "@/elements/Dropdown/SelectDropdown.interface";
 
 export interface Token {
   id: number;
@@ -14,7 +14,7 @@ interface TagFields {
 }
 
 interface OnGets {
-  [key: string]: OnGet;
+  [key: string]: SelectDropdownOnGet<any>;
 }
 
 export interface TagFieldsPrivateState {

@@ -3,11 +3,15 @@ import { PropType, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
-import { OnGet, SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import {
+  SelectDropdownMode,
+  SelectDropdownOnGet,
+  SelectDropdownState,
+} from "@/elements/Dropdown/SelectDropdown.interface";
 import { SearchCategory } from "@/interface/search";
 import { Source } from "@/interface/source";
 import { DataState } from "@/interface/state";
-import { TagFieldsPrivateState } from "@/interface/tag";
+import { TagFieldsPrivateState, Token } from "@/interface/tag";
 import {
   AdvancedSearchField,
   AdvancedSearchFieldKeyEnum,
@@ -297,8 +301,8 @@ watch(
   },
 );
 
-let onGetCategories: OnGet;
-let getStartWithTagFields: OnGet;
+let onGetCategories: SelectDropdownOnGet<Token>;
+let getStartWithTagFields: SelectDropdownOnGet<Token>;
 switch (state.category) {
   case SearchCategory.Gallery:
     onGetCategories = getSettingFrontGalleryStartWithCategories;

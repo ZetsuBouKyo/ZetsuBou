@@ -3,13 +3,13 @@ import { reactive, ref, watch } from "vue";
 
 import { Origin } from "./Dropdown.interface";
 import {
-  OnGet,
-  OnGetTip,
-  OnGetToOptions,
-  OnMouseoverOption,
-  OnSelect,
   SelectDropdownGetParam,
   SelectDropdownMode,
+  SelectDropdownOnGet,
+  SelectDropdownOnGetTip,
+  SelectDropdownOnGetToOptions,
+  SelectDropdownOnMouseoverOption,
+  SelectDropdownOnSelect,
   SelectDropdownOption,
   SelectDropdownState,
 } from "./SelectDropdown.interface";
@@ -31,11 +31,11 @@ interface Props {
   isInputChipsTitleUnique: boolean;
   optionsWidthClass: string;
   enableInputChipsEnterEvent: boolean;
-  onGet: OnGet;
-  onGetToOptions: OnGetToOptions;
-  onSelect: OnSelect;
-  onGetTip: OnGetTip;
-  onMouseoverOption: OnMouseoverOption;
+  onGet: SelectDropdownOnGet<any>;
+  onGetToOptions: SelectDropdownOnGetToOptions;
+  onSelect: SelectDropdownOnSelect;
+  onGetTip: SelectDropdownOnGetTip;
+  onMouseoverOption: SelectDropdownOnMouseoverOption;
 }
 
 const props = withDefaults(defineProps<Props>(), {

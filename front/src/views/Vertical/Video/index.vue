@@ -6,13 +6,17 @@ import { SearchBase, SearchQuery } from "@/interface/search";
 import { SourceState } from "@/interface/state";
 import { Video } from "@/interface/video";
 
+import Editor from "@/components/Editor/index.vue";
 import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";
 import TextEditor from "@/components/TextEditor/index.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import StarRating from "@/elements/Rating/StarRating.vue";
-import Editor from "./Editor.vue";
 
+import {
+  getSettingFrontVideoStartWithCategories,
+  getSettingFrontVideoStartWithTagFields,
+} from "@/api/v1/setting/front/video";
 import { postVideoCreateCover } from "@/api/v1/task/airflow";
 import { getAdvancedSearch, getRandom, getSearch } from "@/api/v1/video/query";
 
@@ -137,7 +141,13 @@ function onOverwrite(state: SourceState<Video>, data: Video) {
     :on-overwrite="onOverwrite"
     :save-message="'Video tag saved'"
     :reset-message="'Video tag is reset'" />
-  <editor ref="editor" />
+  <editor
+    ref="editor"
+    :state="videoState"
+    :title="'Video Editor'"
+    :saved-message="'Video tag saved'"
+    :on-get-category-starts-with="getSettingFrontVideoStartWithCategories"
+    :on-get-tag-field-starts-with="getSettingFrontVideoStartWithTagFields" />
   <section class="body-font overflow-hidden lg:mx-8 mx-2">
     <div class="px-2 py-6 mx-auto" v-if="videoState.data">
       <div class="flex flex-row">

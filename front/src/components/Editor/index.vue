@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from "vue";
+import { PropType, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
@@ -9,38 +9,43 @@ import {
   SelectDropdownOnGet,
   SelectDropdownState,
 } from "@/elements/Dropdown/SelectDropdown.interface";
+import { Source } from "@/interface/source";
+import { SourceState } from "@/interface/state";
+import { Token } from "@/interface/tag";
+import { PrivateState } from "./interface";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 
-import {
-  getSettingFrontGalleryStartWithCategories,
-  getSettingFrontGalleryStartWithTagFields,
-} from "@/api/v1/setting/front/gallery";
 import { getTagTokenStartWith } from "@/api/v1/tag/token";
 
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
-import { galleryState } from "@/state/gallery";
 import { messageState } from "@/state/message";
 
 import { initRippleButtonState } from "@/elements/Button/RippleButton";
 import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
 import { watchTagFieldValues, watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
 
-interface TagFields {
-  [key: string]: SelectDropdownState;
-}
-
-interface OnGets {
-  [key: string]: SelectDropdownOnGet<any>;
-}
-
-interface PrivateState {
-  json: string;
-  tagFields: TagFields;
-  onGets: OnGets;
-}
+const props = defineProps({
+  state: {
+    type: Object as PropType<SourceState<Source>>,
+    required: true,
+  },
+  title: {
+    type: Object as PropType<string>,
+  },
+  savedMessage: {
+    type: Object as PropType<string>,
+  },
+  onGetCategoryStartsWith: {
+    type: Object as PropType<SelectDropdownOnGet<Token>>,
+  },
+  onGetTagFieldStartsWith: {
+    type: Object as PropType<SelectDropdownOnGet<Token>>,
+  },
+});
+const state = props.state;
 
 const route = useRoute();
 
@@ -49,17 +54,17 @@ function tokenToOption(token: { id: number; name: string }) {
 }
 
 const editor = ref();
-const privateState = reactive<PrivateState>({
+const privateState = reactive<PrivateState<Token>>({
   json: undefined,
   tagFields: {},
   onGets: {},
 });
 
 const category = initSelectDropdownState() as SelectDropdownState;
-category.addInputWatch(galleryState, "data.attributes.category", SelectDropdownAssignedValue.Title);
+category.addInputWatch(state, "data.attributes.category", SelectDropdownAssignedValue.Title);
 
 const rating = initSelectDropdownState() as SelectDropdownState;
-rating.addInputWatch(galleryState, "data.attributes.rating", SelectDropdownAssignedValue.Title);
+rating.addInputWatch(state, "data.attributes.rating", SelectDropdownAssignedValue.Title);
 rating.options = [
   { title: 0, value: 0 },
   { title: 1, value: 1 },
@@ -70,34 +75,34 @@ rating.options = [
 ];
 
 const labels = initSelectDropdownState() as SelectDropdownState;
-watch(...watchLabels(labels, galleryState));
-watch(...watchLabelsChipsLength(labels, galleryState));
+watch(...watchLabels(labels, state));
+watch(...watchLabelsChipsLength(labels, state));
 
 const tagFields = initSelectDropdownState() as SelectDropdownState;
-watch(...watchTags(privateState, tagFields, galleryState));
-watch(...watchTagFieldsChipsLength(privateState, tagFields, galleryState));
-watch(...watchTagFieldValues(privateState, galleryState));
+watch(...watchTags(privateState, tagFields, state));
+watch(...watchTagFieldsChipsLength(privateState, tagFields, state));
+watch(...watchTagFieldValues(privateState, state));
 
 const saveState = initRippleButtonState();
 function saved() {
   editor.value.close();
-  messageState.pushWithLink("Gallery tag saved", route.path);
+  messageState.pushWithLink(props.savedMessage, route.path);
 }
 function save() {
   for (const field in privateState.tagFields) {
-    galleryState.data.tags[field] = [];
+    state.data.tags[field] = [];
     for (const chip of privateState.tagFields[field].chips) {
-      galleryState.data.tags[field].push(chip.title as string);
+      state.data.tags[field].push(chip.title as string);
     }
   }
   saveState.lock();
-  galleryState.save(saved).finally(() => {
+  state.save(saved).finally(() => {
     saveState.unlock();
   });
 }
 
 function reset() {
-  galleryState.reset();
+  state.reset();
   messageState.push("Reset");
 }
 
@@ -114,30 +119,22 @@ defineExpose({ open, close, reset });
 </script>
 
 <template>
-  <modal ref="editor" :title="'Gallery Editor'" class="w-1/2 top-12 left-1/4">
+  <modal ref="editor" :title="title" class="w-1/2 top-12 left-1/4 text-gray-300">
     <div class="modal-row-10">
       <span class="w-32 mr-4">Name:</span>
-      <input
-        class="flex-1 modal-input"
-        type="text"
-        :placeholder="galleryState.data.name"
-        v-model="galleryState.data.name" />
+      <input class="flex-1 modal-input" type="text" :placeholder="state.data.name" v-model="state.data.name" />
     </div>
     <div class="modal-row-10">
       <span class="w-32 mr-4">Raw Name:</span>
-      <input
-        class="flex-1 modal-input"
-        type="text"
-        :placeholder="galleryState.data.raw_name"
-        v-model="galleryState.data.raw_name" />
+      <input class="flex-1 modal-input" type="text" :placeholder="state.data.raw_name" v-model="state.data.raw_name" />
     </div>
     <!-- <div class="modal-row-10">
       <span class="w-32 mr-4">Source:</span>
       <input
         class="flex-1 modal-input"
         type="text"
-        :placeholder="galleryState.data.attributes.src"
-        v-model="galleryState.data.attributes.src" />
+        :placeholder="state.data.attributes.src"
+        v-model="state.data.attributes.src" />
     </div> -->
     <div class="modal-row-10">
       <span class="w-32 mr-4">Category:</span>
@@ -145,7 +142,7 @@ defineExpose({ open, close, reset });
         class="w-64"
         :options-width-class="'w-64'"
         :state="category"
-        :on-get="getSettingFrontGalleryStartWithCategories"
+        :on-get="onGetCategoryStartsWith"
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.Input" />
       <span class="w-16 mx-4">Rating:</span>
@@ -173,14 +170,11 @@ defineExpose({ open, close, reset });
         :origin="Origin.BottomLeft"
         :state="tagFields"
         :enable-input-chips-enter-event="false"
-        :on-get="getSettingFrontGalleryStartWithTagFields"
+        :on-get="onGetTagFieldStartsWith"
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>
-    <div
-      class="modal-row"
-      v-for="(_, field) in privateState.tagFields"
-      :key="JSON.stringify(galleryState.data.tags[field])">
+    <div class="modal-row" v-for="(_, field) in privateState.tagFields" :key="JSON.stringify(state.data.tags[field])">
       <span class="w-24 ml-8 mr-4">{{ field }}:</span>
       <select-dropdown
         class="flex-1"

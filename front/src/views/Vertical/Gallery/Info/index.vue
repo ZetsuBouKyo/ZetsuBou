@@ -6,15 +6,19 @@ import { Gallery } from "@/interface/gallery";
 import { SourceState } from "@/interface/state";
 import { ControlPanelState } from "./ControlPanel.interface";
 
+import Editor from "@/components/Editor/index.vue";
 import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";
 import TextEditor from "@/components/TextEditor/index.vue";
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 import StarRating from "@/elements/Rating/StarRating.vue";
 import ControlPanel from "./ControlPanel.vue";
-import Editor from "./Editor.vue";
 
 import { deleteGalleryByID } from "@/api/v1/gallery/operation";
+import {
+  getSettingFrontGalleryStartWithCategories,
+  getSettingFrontGalleryStartWithTagFields,
+} from "@/api/v1/setting/front/gallery";
 import { getTaskStandaloneGalleryOpen } from "@/api/v1/task/standalone";
 
 import { galleryState } from "@/state/gallery";
@@ -100,7 +104,13 @@ function onOverwrite(state: SourceState<Gallery>, data: Gallery) {
     :on-overwrite="onOverwrite"
     :save-message="'Gallery tag saved'"
     :reset-message="'Gallery tag is reset'" />
-  <editor ref="editor" />
+  <editor
+    ref="editor"
+    :state="galleryState"
+    :title="'Gallery Editor'"
+    :saved-message="'Gallery tag saved'"
+    :on-get-category-starts-with="getSettingFrontGalleryStartWithCategories"
+    :on-get-tag-field-starts-with="getSettingFrontGalleryStartWithTagFields" />
   <section class="body-font overflow-hidden lg:mx-8 mx-2">
     <div class="px-2 py-6 mx-auto">
       <div class="md:w-full mx-auto flex flex-wrap w-full" v-if="galleryState.data">

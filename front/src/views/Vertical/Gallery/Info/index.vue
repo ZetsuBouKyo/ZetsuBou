@@ -125,12 +125,15 @@ function onOverwrite(state: SourceState<Gallery>, data: Gallery) {
             {{ galleryState.data.raw_name }}
           </h2>
           <div class="flex flex-row mt-4 mb-2 justify-center items-center">
-            <star-rating :filled="galleryState.data.attributes.rating" />
-            <div class="flex ml-auto 3xl:text-xl">
-              <!-- <a v-if="galleryState.data.attributes.src" :href="galleryState.data.attributes.src">{{
-                galleryState.data.attributes.src
-              }}</a> -->
-            </div>
+            <star-rating class="mr-auto" :filled="galleryState.data.attributes.rating" />
+          </div>
+          <div class="flex flex-col mt-4 mb-2 justify-center items-center max-h-12">
+            <a
+              class="flex ml-auto 3xl:text-xl"
+              v-if="galleryState.data.src.length > 0"
+              :href="galleryState.data.src[0]">
+              {{ galleryState.data.src[0] }}
+            </a>
           </div>
           <h3
             class="text-gray-500 3xl:text-xl text-xs tracking-widest ml-auto mb-4"

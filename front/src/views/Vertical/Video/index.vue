@@ -159,11 +159,11 @@ function onOverwrite(state: SourceState<Video>, data: Video) {
               {{ videoState.data.attributes.width }} x {{ videoState.data.attributes.height }}
             </h1>
           </div>
-          <!-- <div class="ml-auto 3xl:text-xl">
-            <a class="text-gray-300" v-if="videoState.data.attributes.src" :href="videoState.data.attributes.src">{{
-              videoState.data.attributes.src
-            }}</a>
-          </div> -->
+          <div class="ml-auto 3xl:text-xl">
+            <a class="text-gray-300" v-if="videoState.data.src.length > 0" :href="videoState.data.src[0]">
+              {{ videoState.data.src[0] }}
+            </a>
+          </div>
           <div class="flex flex-col divide-y divide-gray-500">
             <div class="flex flex-col">
               <div class="flex flex-row my-4 mr-auto">

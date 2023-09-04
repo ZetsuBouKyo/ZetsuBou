@@ -170,20 +170,20 @@ function onOverwrite(state: SourceState<Video>, data: Video) {
                 <star-rating :filled="videoState.data.attributes.rating" />
               </div>
               <div class="flex flex-row-reverse">
-                <ripple-button class="flex btn hover:opacity-50 hover:bg-gray-500">
-                  <div class="inline-flex items-center" @click="openEditor">
+                <ripple-button class="flex btn hover:opacity-50 hover:bg-gray-500" @click="openEditor">
+                  <div class="inline-flex items-center">
                     <icon-ic-outline-edit class="m-1" style="font-size: 1.2rem; color: white" />
                     <span class="mr-2 text-white">Edit</span>
                   </div>
                 </ripple-button>
-                <ripple-button class="flex btn hover:opacity-50 hover:bg-gray-500">
-                  <div class="inline-flex items-center" @click="openTextEditor">
+                <ripple-button class="flex btn hover:opacity-50 hover:bg-gray-500" @click="openTextEditor">
+                  <div class="inline-flex items-center">
                     <icon-mdi-code-json class="my-1 ml-1 mr-2" style="font-size: 1.2rem; color: white" />
                     <span class="mr-2 text-white">JSON</span>
                   </div>
                 </ripple-button>
-                <ripple-button class="flex btn hover:opacity-50 hover:bg-gray-500">
-                  <div class="inline-flex items-center" @click="makeCover">
+                <ripple-button class="flex btn hover:opacity-50 hover:bg-gray-500" @click="makeCover">
+                  <div class="inline-flex items-center">
                     <icon-ic-baseline-photo-camera class="my-1 ml-1 mr-2" style="font-size: 1.2rem; color: white" />
                     <span class="mr-2 text-white">Make Cover</span>
                   </div>

@@ -17,6 +17,7 @@ export const galleryState = reactive<SourceState<Gallery>>({
     other_names: undefined,
     last_updated: undefined,
     upload_date: undefined,
+    src: [],
     labels: [],
     tags: {},
     attributes: {

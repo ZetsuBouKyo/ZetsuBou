@@ -109,10 +109,10 @@ function onOverwrite(state: SourceState<Video>, data: Video) {
   if (data.raw_name !== undefined) {
     state.data.raw_name = data.raw_name;
   }
-  if (data.other_names !== undefined && data.other_names.length > 0) {
+  if (data.other_names !== undefined && data.other_names instanceof Array) {
     state.data.other_names = data.other_names;
   }
-  if (data.src !== undefined && data.src.length > 0) {
+  if (data.src !== undefined && data.src instanceof Array) {
     state.data.src = data.src;
   }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, onBeforeMount, onMounted, watch } from "vue";
+import { PropType, onBeforeMount, onBeforeUnmount, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { getImages } from "@/api/v1/gallery/image";
@@ -126,14 +126,20 @@ function stopPlay() {
   svgState.panel.isPlay = false;
 }
 
+function onPage(event: any) {
+  if (event.keyCode === 39) {
+    nextPage();
+  } else if (event.keyCode === 37) {
+    previousPage();
+  }
+}
+
 onBeforeMount(() => {
-  document.addEventListener.call(window, "keyup", (event: any) => {
-    if (event.keyCode === 39) {
-      nextPage();
-    } else if (event.keyCode === 37) {
-      previousPage();
-    }
-  });
+  window.addEventListener("keyup", onPage);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keyup", onPage);
 });
 
 function load() {

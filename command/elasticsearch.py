@@ -186,7 +186,7 @@ async def total(index: str = typer.Argument(..., help="Index name.")):
 @app.command()
 async def mapping(index: str = typer.Argument(..., help="Index name.")):
     """
-    Get the total number of documents in specific index.
+    Get the mapping of the index.
     """
 
     _resp = await async_elasticsearch.indices.get_mapping(index=index)

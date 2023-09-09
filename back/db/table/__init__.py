@@ -16,7 +16,13 @@ from .user.bookmark.gallery import UserBookmarkGalleryBase
 from .user.bookmark.video import UserBookmarkVideoBase
 from .user.elastic.count_query import UserElasticCountQueryBase
 from .user.elastic.search_query import UserElasticSearchQueryBase
-from .user.front_setting import UserFrontSettingBase
+from .user.front_settings.gallery import (
+    UserFrontSettingsGalleryImageAutoPlayTimeInterval,
+    UserFrontSettingsGalleryImagePreviewSize,
+    UserFrontSettingsGalleryPreviewSize,
+    UserFrontSettingsMixin,
+)
+from .user.front_settings.video import UserFrontSettingsVideoPreviewSize
 from .user.group import UserGroupBase
 from .user.quest.category import UserQuestCategoryBase
 from .user.quest.elastic_count_quest import UserElasticCountQuestBase
@@ -44,7 +50,11 @@ __all__ = [
     "UserElasticCountQueryBase",
     "UserElasticCountQuestBase",
     "UserElasticSearchQueryBase",
-    "UserFrontSettingBase",
+    "UserFrontSettingsGalleryImageAutoPlayTimeInterval",
+    "UserFrontSettingsGalleryImagePreviewSize",
+    "UserFrontSettingsGalleryPreviewSize",
+    "UserFrontSettingsMixin",
+    "UserFrontSettingsVideoPreviewSize",
     "UserGroupBase",
     "UserQuestBase",
     "UserQuestCategoryBase",

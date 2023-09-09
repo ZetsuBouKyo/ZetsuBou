@@ -6,7 +6,7 @@ import jwt_decode from "jwt-decode";
 import { BaseState } from "@/interface/state";
 
 import { getToken } from "@/api/v1/token";
-import { getUser, putUser, getUserFrontSetting } from "@/api/v1/user/user";
+import { getUser, putUser, getUserFrontSettings } from "@/api/v1/user/user";
 
 import { messageState } from "@/state/message";
 
@@ -16,11 +16,12 @@ interface UserUpdate {
   password: string;
   new_password?: string;
 }
-export interface FrontSetting {
+
+export interface FrontSettings {
+  gallery_image_auto_play_time_interval: number;
+  gallery_image_preview_size: number;
   gallery_preview_size: number;
   video_preview_size: number;
-  img_preview_size: number;
-  auto_play_time_interval: number;
 }
 
 export interface User {
@@ -32,7 +33,7 @@ export interface User {
   oldPassword?: string;
   newPassword?: string;
   passwordConfirmation?: string;
-  frontSetting: FrontSetting;
+  frontSettings: FrontSettings;
 }
 export interface UserState extends BaseState<User> {
   signIn: (data: FormData) => any;
@@ -52,13 +53,13 @@ function updateUser(response: any) {
   }
 }
 
-function updateFrontSetting(response: any) {
+function updateFrontSettings(response: any) {
   const setting = response.data;
   if (setting) {
-    userState.data.frontSetting.gallery_preview_size = setting.gallery_preview_size;
-    userState.data.frontSetting.video_preview_size = setting.gallery_preview_size;
-    userState.data.frontSetting.img_preview_size = setting.img_preview_size;
-    userState.data.frontSetting.auto_play_time_interval = setting.auto_play_time_interval;
+    userState.data.frontSettings.gallery_image_auto_play_time_interval = setting.gallery_image_auto_play_time_interval;
+    userState.data.frontSettings.gallery_image_preview_size = setting.gallery_image_preview_size;
+    userState.data.frontSettings.gallery_preview_size = setting.gallery_preview_size;
+    userState.data.frontSettings.video_preview_size = setting.video_preview_size;
   }
 }
 
@@ -67,11 +68,11 @@ export const userState = reactive<UserState>({
     id: undefined,
     name: undefined,
     email: undefined,
-    frontSetting: {
+    frontSettings: {
+      gallery_image_auto_play_time_interval: undefined,
+      gallery_image_preview_size: undefined,
       gallery_preview_size: undefined,
       video_preview_size: undefined,
-      img_preview_size: undefined,
-      auto_play_time_interval: undefined,
     },
   },
   init: async () => {
@@ -79,10 +80,10 @@ export const userState = reactive<UserState>({
     const decoded: Token = jwt_decode(token);
     const id = decoded.sub.toString();
     userState.data.id = id;
-    return Promise.all<any>([getUser(id), getUserFrontSetting(id)]).then(
+    return Promise.all<any>([getUser(id), getUserFrontSettings(id)]).then(
       axios.spread((response1, response2) => {
         updateUser(response1);
-        updateFrontSetting(response2);
+        updateFrontSettings(response2);
       }),
     );
   },

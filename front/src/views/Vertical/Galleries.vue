@@ -49,7 +49,7 @@ const previews = reactive<Previews>({
 function load() {
   const searchQuery = JSON.parse(JSON.stringify(route.query)) as SearchQuery;
   if (searchQuery.size === undefined) {
-    searchQuery.size = userState.data.frontSetting.gallery_preview_size;
+    searchQuery.size = userState.data.frontSettings.gallery_preview_size;
   }
   if (searchQuery.page === undefined) {
     searchQuery.page = 1;
@@ -77,7 +77,7 @@ function load() {
 load();
 
 function watchSources() {
-  return userState.data.frontSetting.gallery_preview_size;
+  return userState.data.frontSettings.gallery_preview_size;
 }
 
 routeState.setRoute(route);

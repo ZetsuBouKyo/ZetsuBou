@@ -8,10 +8,10 @@ from sqlalchemy.sql import functions as func
 
 from back.security import get_hashed_password, verify_password
 from back.session.async_db import async_session
-from back.settings import setting
 
+from ...crud import CrudUserFrontSettings
 from ...model import Group, User, UserCreate, UserCreated, UserUpdate
-from ...table import GroupBase, UserBase, UserFrontSettingBase, UserGroupBase
+from ...table import GroupBase, UserBase, UserGroupBase
 from ..base import (
     batch_create,
     count_total,
@@ -23,8 +23,6 @@ from ..base import (
     get_rows_order_by_id,
 )
 
-TEMPLATE_FRONT_SETTING = setting.app_user_front_setting
-
 
 def get_user_hashed_password(user: BaseModel) -> dict:
     user = user.dict()
@@ -35,7 +33,9 @@ def get_user_hashed_password(user: BaseModel) -> dict:
 
 class CrudUser(UserBase):
     @classmethod
-    async def create(cls, user: UserCreate) -> UserCreated:
+    async def create(
+        cls, user: UserCreate, is_front_settings: bool = True
+    ) -> UserCreated:
         user = get_user_hashed_password(user)
         async with async_session() as session:
             instance = cls(**user)
@@ -44,10 +44,13 @@ class CrudUser(UserBase):
 
                 await session.flush()
                 created_user = UserCreated(**instance.__dict__)
+        if created_user is None or not created_user.id:
+            raise HTTPException(
+                status_code=500, detail="Internal Server Error: sqlalchemy create user"
+            )
+        if is_front_settings:
+            await CrudUserFrontSettings.init(created_user.id)
 
-                template_front_setting = TEMPLATE_FRONT_SETTING
-                template_front_setting["user_id"] = created_user.id
-                session.add(UserFrontSettingBase(**template_front_setting))
         return created_user
 
     @classmethod

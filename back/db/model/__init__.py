@@ -63,11 +63,11 @@ from .user.elastic.search_query import (
     UserElasticSearchQueryCreated,
     UserElasticSearchQueryUpdate,
 )
-from .user.front_setting import (
-    UserFrontSetting,
-    UserFrontSettingCreate,
-    UserFrontSettingCreated,
-    UserFrontSettingUpdateByUserId,
+from .user.front_settings import (
+    UserFrontSettings,
+    UserFrontSettingsCreate,
+    UserFrontSettingsCreated,
+    UserFrontSettingsUpdateByUserId,
 )
 from .user.group import UserGroup, UserGroupCreate
 from .user.quest.category import (
@@ -161,10 +161,10 @@ __all__ = [
     "UserElasticSearchQueryCreate",
     "UserElasticSearchQueryCreated",
     "UserElasticSearchQueryUpdate",
-    "UserFrontSetting",
-    "UserFrontSettingCreate",
-    "UserFrontSettingCreated",
-    "UserFrontSettingUpdateByUserId",
+    "UserFrontSettings",
+    "UserFrontSettingsCreate",
+    "UserFrontSettingsCreated",
+    "UserFrontSettingsUpdateByUserId",
     "UserGroup",
     "UserGroupCreate",
     "UserQuest",

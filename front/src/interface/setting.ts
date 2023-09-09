@@ -37,10 +37,10 @@ export interface Setting {
   app_docs_swagger_js_url?: string;
   app_docs_swagger_css_url?: string;
   app_docs_redoc_js_url?: string;
-  app_user_gallery_preview_size?: number;
-  app_user_video_preview_size?: number;
-  app_user_img_preview_size?: number;
-  app_user_auto_play_time_interval?: number;
+  app_user_front_settings_gallery_image_auto_play_time_interval?: number;
+  app_user_front_settings_gallery_image_preview_size?: number;
+  app_user_front_settings_gallery_preview_size?: number;
+  app_user_front_settings_video_preview_size?: number;
   app_admin_name?: string;
   app_admin_email?: string;
   app_admin_password?: string;

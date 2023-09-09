@@ -3,13 +3,13 @@ from typing import List
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from back.db.crud import CrudUser, CrudUserFrontSetting, CrudUserGroup
+from back.db.crud import CrudUser, CrudUserFrontSettings, CrudUserGroup
 from back.db.model import (
     Group,
     UserCreate,
     UserCreated,
-    UserFrontSetting,
-    UserFrontSettingUpdateByUserId,
+    UserFrontSettings,
+    UserFrontSettingsUpdateByUserId,
     UserGroupCreate,
     UserUpdate,
 )
@@ -66,28 +66,28 @@ async def post_user_groups_by_id(user_id: int, group_ids: List[int]):
     return await CrudUserGroup.batch_create(user_groups)
 
 
-@router.get(
-    "/{user_id}/front-setting",
-    response_model=UserFrontSetting,
-    dependencies=[api_security([ScopeEnum.user_front_setting_get.name])],
-)
-async def get_user_front_setting(user_id: int):
-    return await CrudUserFrontSetting.get_row_by_user_id(user_id)
-
-
 @router.put(
-    "/{user_id}/front-setting",
+    "/{user_id}/front-settings",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.user_front_setting_put.name])],
+    dependencies=[api_security([ScopeEnum.user_front_settings_put.name])],
 )
-async def put_user_front_setting(
-    user_id: int, user_front_setting: UserFrontSettingUpdateByUserId
+async def put_user_front_settings(
+    user_id: int, settings: UserFrontSettingsUpdateByUserId
 ) -> bool:
-    if user_id != user_front_setting.user_id:
+    if user_id != settings.user_id:
         return JSONResponse(
             status_code=409, content={"detail": "Conflict between user_id and user.id"}
         )
-    return await CrudUserFrontSetting.update_by_user_id(user_front_setting)
+    return await CrudUserFrontSettings.update_by_user_id(settings)
+
+
+@router.get(
+    "/{user_id}/front-settings",
+    response_model=UserFrontSettings,
+    dependencies=[api_security([ScopeEnum.user_front_settings_get.name])],
+)
+async def get_user_front_settings(user_id: int):
+    return await CrudUserFrontSettings.get_row_by_user_id(user_id)
 
 
 router.include_router(elastic_query, tags=["User Elastic Query"])

@@ -10,7 +10,7 @@ from .tag.token import CrudTagToken
 from .user.bookmark.gallery import CrudUserBookmarkGallery
 from .user.elastic.count_query import CrudUserElasticCountQuery
 from .user.elastic.search_query import CrudUserElasticSearchQuery
-from .user.front_setting import CrudUserFrontSetting
+from .user.front_settings import CrudUserFrontSettings
 from .user.group import CrudUserGroup
 from .user.quest.category import CrudUserQuestCategory
 from .user.quest.elastic_count_quest import CrudUserElasticCountQuest
@@ -33,7 +33,7 @@ __all__ = [
     "CrudUserElasticCountQuery",
     "CrudUserElasticCountQuest",
     "CrudUserElasticSearchQuery",
-    "CrudUserFrontSetting",
+    "CrudUserFrontSettings",
     "CrudUserGroup",
     "CrudUserQuest",
     "CrudUserQuestCategory",

@@ -15,9 +15,9 @@ export function putUser(id: string | number, user: any) {
   });
 }
 
-export function getUserFrontSetting(id: string | number) {
+export function getUserFrontSettings(id: string | number) {
   return request({
-    url: `/api/v1/user/${id}/front-setting`,
+    url: `/api/v1/user/${id}/front-settings`,
     method: "get",
   });
 }

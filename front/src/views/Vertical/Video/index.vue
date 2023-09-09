@@ -42,11 +42,11 @@ const state = reactive<State>({
 });
 
 watch(
-  () => userState.data.frontSetting.video_preview_size,
+  () => userState.data.frontSettings.video_preview_size,
   () => {
     const searchQuery = JSON.parse(JSON.stringify(route.query)) as SearchQuery;
     if (searchQuery.size === undefined) {
-      searchQuery.size = userState.data.frontSetting.video_preview_size;
+      searchQuery.size = userState.data.frontSettings.video_preview_size;
     }
 
     let getQuery = getSearch;

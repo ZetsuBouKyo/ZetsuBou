@@ -92,19 +92,18 @@ class Setting(BaseSettings):
         example="/statics/redoc.standalone.js",
     )
 
-    app_user_gallery_preview_size: int = 40
-    app_user_video_preview_size: int = 40
-    app_user_img_preview_size: int = 40
-    app_user_auto_play_time_interval: int = 5
+    app_user_front_settings_gallery_image_auto_play_time_interval: int = 5
+    app_user_front_settings_gallery_image_preview_size: int = 40
+    app_user_front_settings_gallery_preview_size: int = 40
+    app_user_front_settings_video_preview_size: int = 40
 
-    @property
-    def app_user_front_setting(cls):
-        prefix = "app_user_"
-        # TODO: python 3.9 removeprefix
+    def get_app_user_front_settings(self, user_id: int) -> dict:
         return {
-            key.replace(prefix, "", 1): cls.dict()[key]
-            for key in cls.dict().keys()
-            if key.startswith(prefix)
+            "user_id": user_id,
+            "gallery_image_auto_play_time_interval": self.app_user_front_settings_gallery_image_auto_play_time_interval,
+            "gallery_image_preview_size": self.app_user_front_settings_gallery_image_preview_size,
+            "gallery_preview_size": self.app_user_front_settings_gallery_preview_size,
+            "video_preview_size": self.app_user_front_settings_video_preview_size,
         }
 
     app_admin_name: str = DEFAULT_ADMIN_NAME

@@ -134,10 +134,10 @@ function onOverwrite(state: SourceState<Gallery>, data: Gallery) {
             @click="copy">
             {{ galleryState.data.raw_name }}
           </h2>
-          <div class="flex flex-row mt-4 mb-2 justify-center items-center">
+          <div class="flex flex-row mt-2 justify-center items-center">
             <star-rating class="mr-auto" :filled="galleryState.data.attributes.rating" />
           </div>
-          <div class="flex flex-col mt-4 mb-2 justify-center items-center max-h-12">
+          <div class="flex flex-col my-2 justify-center items-center max-h-12">
             <a
               class="flex ml-auto 3xl:text-xl"
               v-if="galleryState.data.src.length > 0"

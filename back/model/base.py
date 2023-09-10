@@ -53,15 +53,6 @@ class SourceBaseModel(BaseModel):
             return cls._url.path
         return None
 
-    # TODO: deprecated
-    @property
-    def minio_storage_id(cls) -> int:
-        if cls.protocol == SourceProtocolEnum.MINIO.value:
-            if cls._scheme[5] == "-":
-                id = cls._scheme[len(SourceProtocolEnum.MINIO.value) + 1 :]
-            return int(id)
-        return None
-
     @property
     def storage_id(cls) -> int:
         if cls.protocol == SourceProtocolEnum.MINIO.value:

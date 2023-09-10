@@ -138,7 +138,7 @@ class CrudSettingFrontVideo:
                 if row.token_id not in ids and row.enable:
                     row.enable = False
                     await session.execute(
-                        update(base).where(base.id == row.id).values(**row.dict())
+                        update(base).where(base.id == row.id).values(**row.model_dump())
                     )
 
     @classmethod
@@ -162,7 +162,9 @@ class CrudSettingFrontVideo:
                 if not row.enable:
                     row.enable = True
                     await session.execute(
-                        update(base).where(base.token_id == id).values(**row.dict())
+                        update(base)
+                        .where(base.token_id == id)
+                        .values(**row.model_dump())
                     )
 
     @classmethod

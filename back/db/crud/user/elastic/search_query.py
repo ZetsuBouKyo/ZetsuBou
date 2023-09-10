@@ -61,7 +61,7 @@ class CrudUserElasticSearchQuery(UserElasticSearchQueryBase):
     @classmethod
     async def update_by_id(cls, query: UserElasticSearchQueryUpdate):
         json.loads(query.query)
-        query = query.dict()
+        query = query.model_dump()
         query["modified"] = func.now()
         return await update_by_id(cls, query)
 

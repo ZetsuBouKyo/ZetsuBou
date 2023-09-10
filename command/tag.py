@@ -53,7 +53,7 @@ async def dump(
         rows = await CrudTagAttribute.get_rows_order_by_id(skip=skip, limit=limit)
         while rows:
             for row in tqdm(rows):
-                attrs.append(row.dict())
+                attrs.append(row.model_dump())
             skip += limit
             rows = await CrudTagAttribute.get_rows_order_by_id(skip=skip, limit=limit)
         return attrs
@@ -72,7 +72,7 @@ async def dump(
         while rows:
             for row in tqdm(rows):
                 tag = await crud.get_interpretation_by_id(row.id)
-                tags.append(tag.dict())
+                tags.append(tag.model_dump())
             skip += limit
             rows = await CrudTagToken.get_rows_order_by_id(skip=skip, limit=limit)
         return tags

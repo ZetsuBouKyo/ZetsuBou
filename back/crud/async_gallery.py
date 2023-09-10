@@ -331,7 +331,7 @@ async def _create_gallery_tag_in_storage(
         }
     )
 
-    await storage_session.put_json(tag_source, gallery.dict())
+    await storage_session.put_json(tag_source, gallery.model_dump())
 
     return gallery
 
@@ -350,7 +350,7 @@ async def _put_gallery_tag_in_storage(
     gallery: Gallery,
     tag_source: SourceBaseModel,
 ) -> Gallery:
-    await storage_session.put_json(tag_source, gallery.dict())
+    await storage_session.put_json(tag_source, gallery.model_dump())
     return gallery
 
 
@@ -445,7 +445,7 @@ class CrudAsyncGallery:
             )
 
             await self.async_elasticsearch.index(
-                index=self.index, id=new_gallery.id, body=new_gallery.dict()
+                index=self.index, id=new_gallery.id, body=new_gallery.model_dump()
             )
 
             return new_gallery
@@ -665,7 +665,7 @@ class CrudAsyncGallerySync:
         index = self.index
         if self.target_index is not None:
             index = self.target_index
-        action = {"_index": index, "_id": tag.id, "_source": tag.dict()}
+        action = {"_index": index, "_id": tag.id, "_source": tag.model_dump()}
         self._storage_to_elasticsearch_batches.append(action)
 
         self.cache.add(tag.id)

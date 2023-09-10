@@ -244,13 +244,13 @@ class _SyncNewGalleries:
                     }
                 )
             with new_tag_path.open(mode="w", encoding="utf-8") as fp:
-                json.dump(gallery_tag.dict(), fp, indent=4, ensure_ascii=False)
+                json.dump(gallery_tag.model_dump(), fp, indent=4, ensure_ascii=False)
 
             # To elasticsearch
             await self.async_elasticsearch.index(
                 index=self.elastic_index_gallery,
                 id=gallery_tag.id,
-                body=gallery_tag.dict(),
+                body=gallery_tag.model_dump(),
             )
 
     async def _sync_new_storage(self):

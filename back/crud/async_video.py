@@ -510,7 +510,7 @@ class CrudAsyncVideo:
         new_video.labels.sort()
 
         await self.async_elasticsearch.index(
-            index=self.index, id=new_video.id, body=new_video.dict()
+            index=self.index, id=new_video.id, body=new_video.model_dump()
         )
 
         return new_video
@@ -743,7 +743,7 @@ class CrudAsyncVideoSync:
         if self.target_index is not None:
             index = self.target_index
 
-        action = {"_index": index, "_id": video.id, "_source": video.dict()}
+        action = {"_index": index, "_id": video.id, "_source": video.model_dump()}
         self._storage_to_elasticsearch_batches.append(action)
 
         if len(self._storage_to_elasticsearch_batches) > self.batch_size:

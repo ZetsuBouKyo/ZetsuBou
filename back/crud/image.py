@@ -68,7 +68,7 @@
 #             )
 #         if changed:
 #             with imgs_path.open(mode="w", encoding="utf-8") as fp:
-#                 json.dump(imgs.dict(), fp, indent=4, ensure_ascii=False)
+#                 json.dump(imgs.model_dump(), fp, indent=4, ensure_ascii=False)
 
 #     def sync_zetsubou_group(self, group_name: str, group_path: str):
 #         group_path = Path(group_path)

@@ -9,8 +9,8 @@ from back.session.async_elasticsearch import async_elasticsearch
 from back.settings import setting
 
 indices = [
-    setting.dict()[key]
-    for key in setting.dict().keys()
+    setting.model_dump()[key]
+    for key in setting.model_dump().keys()
     if key.startswith("elastic_index")
 ]
 

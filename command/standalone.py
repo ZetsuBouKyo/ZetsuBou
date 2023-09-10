@@ -35,7 +35,7 @@ async def _get_storage_stat(
     """
     t0 = time.time()
     stat = await get_storage_stat(protocol, storage_id)
-    print_json(data=stat.dict())
+    print_json(data=stat.model_dump())
     t1 = time.time()
     diff = t1 - t0
     print(f"time: {diff} (s)")

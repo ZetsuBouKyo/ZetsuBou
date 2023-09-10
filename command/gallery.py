@@ -63,12 +63,12 @@ async def get_gallery_tag(gallery_id: str = typer.Argument(..., help="Gallery ID
     crud_elastic = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
     elastic_gallery = await crud_elastic.get_by_id(gallery_id)
     print("Gallery from Elasticsearch")
-    print_json(data=elastic_gallery.dict())
+    print_json(data=elastic_gallery.model_dump())
 
     crud = await get_crud_async_gallery(gallery_id)
     storage_gallery = await crud.get_gallery_tag_from_storage()
     print("Gallery from Storage")
-    print_json(data=storage_gallery.dict())
+    print_json(data=storage_gallery.model_dump())
 
 
 @app.command()
@@ -164,7 +164,7 @@ async def update_gallery_tag(
     Update the gallery tag.
     """
     gallery = await get_gallery_by_gallery_id(gallery_id)
-    print_json(data=gallery.dict())
+    print_json(data=gallery.model_dump())
     if name is not None:
         gallery.name = name
     if raw_name is not None:
@@ -177,7 +177,7 @@ async def update_gallery_tag(
     crud_async_gallery = CrudAsyncGallery(gallery_id, is_from_setting_if_none=True)
     await crud_async_gallery.init()
     await crud_async_gallery.update(gallery)
-    print_json(data=gallery.dict())
+    print_json(data=gallery.model_dump())
 
 
 @app.command()

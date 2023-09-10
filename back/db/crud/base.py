@@ -17,7 +17,7 @@ from back.session.async_db import async_engine, async_session
 
 async def create(instance: DeclarativeMeta, data: Union[BaseModel, dict]) -> dict:
     if isinstance(data, BaseModel):
-        data = data.dict()
+        data = data.model_dump()
     async with async_session() as session:
         data = instance(**data)
         async with session.begin():
@@ -34,7 +34,7 @@ async def batch_create(
         async with session.begin():
             for d in data:
                 if isinstance(d, BaseModel):
-                    d = d.dict()
+                    d = d.model_dump()
                 inst = instance(**d)
                 session.add(inst)
                 await session.flush()
@@ -241,7 +241,7 @@ async def update_by_instance(
     instance: DeclarativeMeta, condition, data: Union[BaseModel, dict]
 ) -> bool:
     if isinstance(data, BaseModel):
-        data = data.dict()
+        data = data.model_dump()
 
     async with async_session() as session:
         rows = await session.execute(update(instance).where(condition).values(**data))
@@ -253,7 +253,7 @@ async def update_by_instance(
 
 async def update_by_id(instance: DeclarativeMeta, data: Union[BaseModel, dict]) -> bool:
     if isinstance(data, BaseModel):
-        data = data.dict()
+        data = data.model_dump()
     return await update_by_instance(instance, instance.id == data["id"], data)
 
 

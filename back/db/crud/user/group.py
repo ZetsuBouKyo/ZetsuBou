@@ -41,7 +41,7 @@ class CrudUserGroup(UserGroupBase):
                     session.rollback()
                     return []
 
-                inst = cls(**group.dict())
+                inst = cls(**group.model_dump())
                 session.add(inst)
                 await session.flush()
                 out.append(inst.__dict__)

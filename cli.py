@@ -156,7 +156,7 @@ def batch_pdf2img(
             }
         )
         with tag_path.open(mode="w", encoding="utf-8") as fp:
-            json.dump(gallery.dict(), fp, indent=4, ensure_ascii=False)
+            json.dump(gallery.model_dump(), fp, indent=4, ensure_ascii=False)
         shutil.copy(fpath, new_fpath)
         with tempfile.TemporaryDirectory():
             convert_from_path(

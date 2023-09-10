@@ -25,7 +25,7 @@ from ..base import (
 
 
 def get_user_hashed_password(user: BaseModel) -> dict:
-    user = user.dict()
+    user = user.model_dump()
     user["hashed_password"] = get_hashed_password(user["password"])
     del user["password"]
     return user

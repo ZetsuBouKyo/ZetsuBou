@@ -59,7 +59,7 @@ class CrudUserElasticCountQuery(UserElasticCountQueryBase):
     @classmethod
     async def update_by_id(cls, query: UserElasticCountQueryUpdate):
         json.loads(query.query)
-        query = query.dict()
+        query = query.model_dump()
         query["modified"] = func.now()
         return await update_by_id(cls, query)
 

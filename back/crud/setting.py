@@ -23,7 +23,7 @@ else:
 
 
 def get_envs(setting: Setting) -> str:
-    _setting = setting.dict()
+    _setting = setting.model_dump()
 
     envs = []
     for key, value in _setting.items():
@@ -49,7 +49,7 @@ def get_airflow_simple_password(
 
 
 def get_setting_example(field_name: str):
-    schema = Setting.schema()
+    schema = Setting.model_json_schema()
     properties = schema.get("properties", None)
     example = properties.get(field_name, {}).get("example", None)
 

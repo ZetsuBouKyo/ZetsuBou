@@ -60,7 +60,7 @@ class CrudUserElasticCountQuest(UserElasticCountQuestBase):
 
     @classmethod
     async def update_by_id(cls, quest: UserElasticCountQuestUpdate):
-        quest = quest.dict()
+        quest = quest.model_dump()
         quest["modified"] = func.now()
         return await update_by_id(cls, quest)
 

@@ -20,7 +20,7 @@ def print_docker_envs():
     """
     setting = Setting()
     env_prefix = setting.Config.env_prefix
-    setting = setting.dict()
+    setting = setting.model_dump()
     keys = list(setting.keys())
     keys.sort()
     for key in keys:
@@ -52,12 +52,17 @@ def generate_timezone_options(out: str = typer.Argument(..., help="Output path."
 
 
 @app.command()
-def generate_interface(out: str = typer.Argument(..., help="Output path.")):
+def generate_interface(
+    out: str = typer.Option(
+        default="./front/src/interface/setting.ts", help="Output path."
+    )
+):
     """
     Generate Typescript interfaces from the Python `Setting` class.
     """
     lines = []
-    schema = Setting.schema()
+    schema = Setting.model_json_schema()
+
     title = schema.get("title", None)
     if title is None:
         return
@@ -66,13 +71,16 @@ def generate_interface(out: str = typer.Argument(..., help="Output path.")):
     if properties is None:
         return
 
-    definitions = schema.get("definitions", None)
+    definitions = schema.get("$defs", None)
     for enum_name, enum_property in definitions.items():
         if not enum_name.endswith("Enum"):
             continue
         enums = enum_property.get("enum", None)
         if enums is None:
-            continue
+            e = enum_property.get("const", None)
+            if e is None:
+                continue
+            enums = [e]
 
         lines.append(f"export enum {enum_name} {{")
         for e in enums:
@@ -85,21 +93,35 @@ def generate_interface(out: str = typer.Argument(..., help="Output path.")):
     for property_name, property in properties.items():
         property_type = property.get("type", None)
         if property_type is None:
-            all_of = property.get("allOf", None)
-            if all_of is None:
-                continue
-            ref = all_of[0].get("$ref", None)
-            if ref is None:
-                print(property_name)
-                continue
-            ref_key = Path(ref).name
-            if not ref_key.endswith("Enum"):
-                continue
+            axx_of = property.get("allOf", None)
+            if axx_of is None:
+                axx_of = property.get("anyOf", None)
 
-            property_enum = definitions.get(ref_key, None)
-            if property_enum is None:
-                continue
-            property_type = ref_key
+            ref = None
+            t = None
+            for a in axx_of:
+                r = a.get("$ref", None)
+                if r is not None:
+                    ref = r
+                    break
+
+                t = a.get("type", None)
+                if t is not None and t != "null":
+                    property_type = t
+                    break
+
+            if ref is not None:
+                if ref is None:
+                    print(property_name)
+                    continue
+                ref_key = Path(ref).name
+                if not ref_key.endswith("Enum"):
+                    continue
+
+                property_enum = definitions.get(ref_key, None)
+                if property_enum is None:
+                    continue
+                property_type = ref_key
 
         if property_type == "integer":
             property_type = "number"

@@ -22,10 +22,10 @@ def get_port(port: int, max_tries: int = 10, excludes: List[int] = []) -> int:
 
 def init_settings_with_examples(setting: Setting) -> Setting:
     new_setting = {}
-    schema = Setting.schema()
+    schema = Setting.model_json_schema()
     properties = schema.get("properties", None)
 
-    for field_name, field_value in setting.dict().items():
+    for field_name, field_value in setting.model_dump().items():
         if field_value is None:
             example = properties.get(field_name, {}).get("example", None)
             if example is None:

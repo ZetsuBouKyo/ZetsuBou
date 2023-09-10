@@ -44,7 +44,7 @@ class SearchResult(BaseModel, Generic[SourceT]):
     hits: Hits[SourceT] = Field(default=Hits[SourceT]())
 
     def print(self):
-        print_json(data=self.dict())
+        print_json(data=self.model_dump())
 
 
 class Count(BaseModel):

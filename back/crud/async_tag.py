@@ -162,7 +162,7 @@ class CrudTag:
                 rows = await session.execute(
                     update(TagRepresentativeBase)
                     .where(TagRepresentativeBase.token_id == token_id)
-                    .values(**representative.dict())
+                    .values(**representative.model_dump())
                 )
         else:
             await session.execute(
@@ -241,12 +241,14 @@ class CrudTag:
                 await session.commit()
 
         await self.async_elasticsearch.index(
-            index=self.index, id=tag.id, body=TagElastic(**tag.dict()).dict()
+            index=self.index,
+            id=tag.id,
+            body=TagElastic(**tag.model_dump()).model_dump(),
         )
         return tag
 
     async def create(self, tag: TagCreate) -> TagInsert:
-        return await self.insert(TagInsert(**tag.dict()))
+        return await self.insert(TagInsert(**tag.model_dump()))
 
     async def get_row_by_id_by_elastic(self, tag_id: int) -> TagElastic:
         try:
@@ -265,7 +267,7 @@ class CrudTag:
         elastic_tag = await self.get_row_by_id_by_elastic(tag_id)
         if elastic_tag is None:
             return None
-        elastic_tag = elastic_tag.dict()
+        elastic_tag = elastic_tag.model_dump()
         elastic_tag["name"] = token.name
         return TagUpdate(**elastic_tag)
 
@@ -311,7 +313,7 @@ class CrudTag:
         )
 
     async def update(self, tag: TagUpdate) -> TagInsert:
-        return await self.insert(TagInsert(**tag.dict()))
+        return await self.insert(TagInsert(**tag.model_dump()))
 
     async def _delete_elastic(self, tag_id: int):
         query = {
@@ -341,7 +343,11 @@ class CrudTag:
                     pass
                 if tag.representative_id == tag_id:
                     tag.representative_id = None
-                action = {"_index": self.index, "_id": tag.id, "_source": tag.dict()}
+                action = {
+                    "_index": self.index,
+                    "_id": tag.id,
+                    "_source": tag.model_dump(),
+                }
                 batches.append(action)
                 if len(batches) > self.batch_size:
                     await async_bulk(self.async_elasticsearch, batches)

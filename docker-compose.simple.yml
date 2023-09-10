@@ -16,8 +16,8 @@ services:
       - ./etc:/workspace/etc
       - ./logs:/workspace/logs
     depends_on:
-      zetsubou-airflow:
-        condition: service_healthy
+      # zetsubou-airflow:
+      #   condition: service_healthy
       # zetsubou-elasticsearch:
       #   condition: service_healthy
       # zetsubou-minio:
@@ -44,13 +44,8 @@ services:
   zetsubou-airflow:
     image: zetsubou/airflow-simple:2.6.2-python3.8
     container_name: zetsubou-airflow-simple
-    command: airflow standalone
+    command: /bin/bash -c /opt/airflow/zetsubou/scripts/run-airflow-simple
     network_mode: host
-    healthcheck:
-      test: ["CMD", "bash", "-c", "[ -f /etc/airflow/standalone_admin_password.txt ]"]
-      interval: 5s
-      retries: 50
-      timeout: 30s
     environment:
       AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session"
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"

@@ -206,6 +206,10 @@ class Setting(BaseSettings):
     airflow_host: Optional[str] = Field(default=None, example="http://localhost:8080")
     airflow_username: Optional[str] = Field(default=None, example="airflow")
     airflow_password: Optional[str] = Field(default=None, example="airflow")
+    airflow_create_admin: Optional[bool] = Field(
+        default=True,
+        description="If this value is true, an admin user will be created by `docker-compose.simple.yml` at startup.",
+    )
     airflow_web_server_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",

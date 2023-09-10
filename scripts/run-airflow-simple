@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cd /opt/airflow/zetsubou
+/opt/airflow/zetsubou-venv/.venv/bin/python3 cli.py init-airflow-simple
+
+airflow standalone

@@ -4,6 +4,15 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
+class AirflowUser(BaseModel):
+    id: str
+    username: str
+    email: str
+    first_name: str
+    last_name: str
+    roles: List[str]
+
+
 class AirflowDagRunStateEnum(str, Enum):
     QUEUED: str = "queued"
     RUNNING: str = "running"

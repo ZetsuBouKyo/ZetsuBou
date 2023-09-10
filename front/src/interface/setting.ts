@@ -3,10 +3,6 @@ export enum AppModeEnum {
   Cluster = "cluster",
 }
 
-export enum SourceProtocolEnum {
-  Minio = "minio",
-}
-
 export enum DatabaseTypeEnum {
   Sqlite = "sqlite",
   Postgresql = "postgresql",
@@ -17,9 +13,14 @@ export enum LoggingLevelEnum {
   Fatal = "FATAL",
   Error = "ERROR",
   Warning = "WARNING",
+  Warn = "WARN",
   Info = "INFO",
   Debug = "DEBUG",
   Notset = "NOTSET",
+}
+
+export enum SourceProtocolEnum {
+  Minio = "minio",
 }
 
 export interface Setting {
@@ -32,6 +33,7 @@ export interface Setting {
   app_redoc?: boolean;
   app_title?: string;
   app_front?: string;
+  app_front_docs?: string;
   app_favicon?: string;
   app_statics?: string;
   app_docs_swagger_js_url?: string;
@@ -47,8 +49,11 @@ export interface Setting {
   app_security_algorithm?: string;
   app_security_expired?: number;
   app_security_secret?: string;
-  app_logging_level?: string;
+  app_logging_to_file?: boolean;
+  app_logging_level?: LoggingLevelEnum;
   app_logging_formatter_fmt?: string;
+  app_gallery_sync_pages?: boolean;
+  app_gallery_sync_pages_when_go_to_gallery?: boolean;
   standalone_storage_protocol?: SourceProtocolEnum;
   standalone_storage_id?: number;
   standalone_storage_minio_volume?: string;
@@ -81,8 +86,10 @@ export interface Setting {
   airflow_host?: string;
   airflow_username?: string;
   airflow_password?: string;
+  airflow_create_admin?: boolean;
   airflow_web_server_port?: number;
   airflow_simple_volume?: string;
+  airflow_download_volume?: string;
   redis_url?: string;
   redis_port?: number;
 }

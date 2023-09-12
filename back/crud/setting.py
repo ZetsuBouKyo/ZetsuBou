@@ -40,7 +40,7 @@ def get_envs(setting: Setting) -> str:
 def get_airflow_simple_password(
     password_path: Path = AIRFLOW_SIMPLE_PASSWORD_PATH,
 ) -> str:
-    if not password_path.exists():
+    if password_path is None or not password_path.exists():
         raise FileNotFoundError(f"[Errno 2] No such file: '{password_path}'")
 
     with password_path.open(mode="r") as fp:

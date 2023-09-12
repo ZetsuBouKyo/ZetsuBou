@@ -91,7 +91,10 @@ def init_example_settings(setting: Setting = None):
     if setting.airflow_username is None:
         setting.airflow_username = "admin"
     if setting.airflow_password is None:
-        setting.airflow_password = get_airflow_simple_password()
+        try:
+            setting.airflow_password = get_airflow_simple_password()
+        except FileNotFoundError:
+            setting.airflow_password = get_setting_example("airflow_password")
 
     # redis
     redis_port = int(get_setting_example("redis_port"))

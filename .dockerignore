@@ -1,7 +1,6 @@
 __pycache__
 .DS_Store
 .env
-.git
 .pytest_cache
 .python-version
 .venv

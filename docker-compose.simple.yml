@@ -16,8 +16,8 @@ services:
       - ./etc:/workspace/etc
       - ./logs:/workspace/logs
     depends_on:
-      # zetsubou-airflow:
-      #   condition: service_healthy
+      zetsubou-airflow:
+        condition: service_healthy
       # zetsubou-elasticsearch:
       #   condition: service_healthy
       # zetsubou-minio:
@@ -25,27 +25,16 @@ services:
       zetsubou-postgres:
         condition: service_healthy
 
-  zetsubou-app-example:
-    image: zetsubou/app:0.0.1-python-3.8.16-slim-buster
-    container_name: zetsubou-app-example
-    command: python cli.py init
-    network_mode: host
-    environment:
-      ZETSUBOU_AIRFLOW_SIMPLE_VOLUME: ${ZETSUBOU_AIRFLOW_SIMPLE_VOLUME:-./dev/volumes/airflow-simple}
-    volumes:
-      - ${ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME:-./etc/analysis}:/workspace/etc/analysis
-      - ./dev:/workspace/dev
-      - ./etc:/workspace/etc
-      - ./logs:/workspace/logs
-    depends_on:
-      zetsubou-airflow:
-        condition: service_healthy
-
   zetsubou-airflow:
     image: zetsubou/airflow-simple:2.6.2-python3.8
     container_name: zetsubou-airflow-simple
     command: /bin/bash -c /opt/airflow/zetsubou/scripts/run-airflow-simple
     network_mode: host
+    healthcheck:
+      test: ["CMD", "bash", "-c", "[ -f /opt/airflow/zetsubou/etc/settings.env ]"]
+      interval: 5s
+      retries: 50
+      timeout: 30s
     environment:
       AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session"
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"

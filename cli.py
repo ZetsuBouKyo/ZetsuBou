@@ -11,6 +11,7 @@ import typer
 from pdf2image import convert_from_path
 
 from back.crud.setting import update_settings
+from back.init.airflow import init_airflow_simple
 from back.init.check import ping
 from back.init.logger import UVICORN_LOGGING_CONFIG, init_zetsubou_logger
 from back.init.setting import init_example_settings
@@ -74,8 +75,16 @@ if plugin is not None:
 
 
 @app.command()
-def init():
+def init_example():
+    """
+    Initialize the Airflow and settings files.
+    """
+
+    # create settings files if they don't exist
     init_example_settings()
+
+    # create admin user from settings if admin user in settings does not exist
+    init_airflow_simple()
 
 
 @app.command()

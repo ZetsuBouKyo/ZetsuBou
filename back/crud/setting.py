@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from back.settings import (
@@ -59,7 +60,7 @@ def get_setting_example(field_name: str):
 def write_settings(file_path: Path, data: str, force: bool = False):
     if file_path.exists() and not force:
         return
-
+    os.makedirs(file_path.parent, exist_ok=True)
     with file_path.open(mode="w") as fp:
         fp.write(data)
 

@@ -4,9 +4,6 @@ export
 SHELL := /bin/bash
 ZETSUBOU_TIMESTAMP ?= $(shell date +'%Y-%m-%d-%H%M')
 ZETSUBOU_APP_VERSION ?= 0.0.1
-ZETSUBOU_APP_MINIO ?= ./dev/minio
-ZETSUBOU_APP_MINIO_GALLERIES ?= ./dev/minio/galleries
-ZETSUBOU_APP_MINIO_GALLERIES_SIMPLE ?= ./dev/minio/galleries/simple
 ZETSUBOU_ELASTICSEARCH_VOLUME ?= ./dev/volumes/elasticsearch
 ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME ?= ./etc/analysis
 ZETSUBOU_REDIS_VOLUME ?= ./dev/volumes/redis
@@ -71,10 +68,6 @@ init-app-elasticsearch:
 	touch $(ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME)/synonym.txt
 init-app-postgres:
 	mkdir -p $(ZETSUBOU_POSTGRES_DB_VOLUME)
-init-minio:
-	mkdir -p $(ZETSUBOU_APP_MINIO)
-	mkdir -p $(ZETSUBOU_APP_MINIO_GALLERIES)
-	mkdir -p $(ZETSUBOU_APP_MINIO_GALLERIES_SIMPLE)
 init-airflow:
 	mkdir -p $(AIRFLOW_DAGS_VOLUME) \
 		$(AIRFLOW_LOGS_VOLUME) \
@@ -89,7 +82,7 @@ init-airflow:
 init-redis:
 	mkdir -p $(ZETSUBOU_REDIS_VOLUME)
 	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
-init: init-app-postgres init-app-elasticsearch init-minio init-redis
+init: init-app-postgres init-app-elasticsearch init-redis
 
 .PHONY: clean clean-all clean-airflow clean-airflow-simple clean-app-elasticsearch clean-app-postgres clean-docker
 clean-airflow:

@@ -89,7 +89,7 @@ def init_example_settings(setting: Setting = None):
     setting.airflow_web_server_port = airflow_web_server_port
     setting.airflow_host = f"http://localhost:{airflow_web_server_port}"
     if setting.airflow_username is None:
-        setting.airflow_username = "admin"
+        setting.airflow_username = get_setting_example("airflow_username")
     if setting.airflow_password is None:
         try:
             setting.airflow_password = get_airflow_simple_password()

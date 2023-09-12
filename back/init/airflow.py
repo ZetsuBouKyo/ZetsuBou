@@ -1,6 +1,8 @@
 import json
 import subprocess
 
+from packaging import version
+
 from back.model.airflow import AirflowUser
 from back.settings import DEFAULT_ADMIN_EMAIL, DEFAULT_SETTING_PATH, Setting, setting
 
@@ -16,6 +18,13 @@ def create_admin(
     first_name: str = "Admin",
     last_name: str = "User",
 ):
+    output = subprocess.run(["airflow", "version"], capture_output=True)
+    stdout = output.stdout
+    v = stdout.decode("utf-8")
+
+    if version.parse("2.4.0") <= version.parse(v) < version.parse("2.7.0"):
+        subprocess.run(["airflow", "db", "init"])
+
     subprocess.run(
         [
             "airflow",

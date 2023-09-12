@@ -37,7 +37,7 @@ def create_admin(
     )
 
 
-def init_airflow_simple():
+def init_airflow_simple(s: Setting):
     if AIRFLOW_CREATE_ADMIN:
         output = subprocess.run(
             ["airflow", "users", "list", "-o", "json"], capture_output=True
@@ -47,10 +47,12 @@ def init_airflow_simple():
         us = json.loads(stdout_str)
         users = [AirflowUser(**u) for u in us]
 
-        s = Setting(_env_file=str(DEFAULT_SETTING_PATH))
-
         for user in users:
             if user.username == AIRFLOW_USERNAME and "Admin" in user.roles:
                 break
         else:
-            create_admin(s.airflow_username, s.airflow_password, DEFAULT_ADMIN_EMAIL)
+            create_admin(
+                username=s.airflow_username,
+                password=s.airflow_password,
+                email=DEFAULT_ADMIN_EMAIL,
+            )

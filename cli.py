@@ -81,10 +81,10 @@ def init_example():
     """
 
     # create settings files if they don't exist
-    init_example_settings()
+    s = init_example_settings()
 
     # create admin user from settings if admin user in settings does not exist
-    init_airflow_simple()
+    init_airflow_simple(s)
 
 
 @app.command()

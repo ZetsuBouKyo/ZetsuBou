@@ -37,7 +37,7 @@ def init_settings_with_examples(setting: Setting) -> Setting:
     return Setting(**new_setting)
 
 
-def init_example_settings(setting: Setting = None):
+def init_example_settings(setting: Setting = None) -> Setting:
     # app
     if setting is None:
         setting = Setting()
@@ -107,3 +107,5 @@ def init_example_settings(setting: Setting = None):
     setting = init_settings_with_examples(setting)
     update_settings(setting)
     update_airflow_settings(setting)
+
+    return setting

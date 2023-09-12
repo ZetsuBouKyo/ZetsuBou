@@ -102,15 +102,13 @@ clean-app-postgres:
 	rm -rf $(ZETSUBOU_POSTGRES_DB_VOLUME)
 clean-docker:
 	docker rmi $(shell docker images -f "dangling=true" -q)
-clean: clean-airflow-simple clean-docker
-
-clean-all:
-	rm -f ./.env
+clean-folders:
 	rm -rf ./dev
 	rm -rf ./etc
 	rm -rf ./logs
 	rm -rf ./statics
 	rm -rf ./venv
+clean: clean-folders clean-docker
 
 .PHONY: reset-app reset-app-elasticsearch reset-app-postgres reset-airflow-simple
 reset-app-elasticsearch: clean-app-elasticsearch init-app-elasticsearch

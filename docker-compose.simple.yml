@@ -73,6 +73,9 @@ services:
     volumes:
       - ${ZETSUBOU_ELASTICSEARCH_VOLUME:-./dev/volumes/elasticsearch}:/usr/share/elasticsearch/data
       - ${ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME:-./etc/analysis}:/usr/share/elasticsearch/config/analysis
+    depends_on:
+      zetsubou-airflow:
+        condition: service_healthy
 
   zetsubou-minio:
     image: minio/minio:RELEASE.2022-02-26T02-54-46Z.fips
@@ -94,6 +97,9 @@ services:
     volumes:
       # - postgres_data:/var/lib/postgresql/data
       - ${ZETSUBOU_STORAGE_S3_VOLUME:-./dev/volumes/minio}:/data
+    depends_on:
+      zetsubou-airflow:
+        condition: service_healthy
 
   zetsubou-postgres:
     image: postgres:13
@@ -114,6 +120,9 @@ services:
       retries: 50
       timeout: 30s
     restart: always
+    depends_on:
+      zetsubou-airflow:
+        condition: service_healthy
 
   zetsubou-redis:
     image: redis:latest
@@ -126,6 +135,9 @@ services:
       retries: 50
       timeout: 30s
     restart: always
+    depends_on:
+      zetsubou-airflow:
+        condition: service_healthy
 
 networks:
   zetsubou:

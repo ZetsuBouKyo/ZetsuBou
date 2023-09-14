@@ -1,5 +1,7 @@
 import request from "@/utils/request";
 
+import { UserFrontSettings } from "@/interface/user";
+
 export function getUser(id: string | number) {
   return request({
     url: `/api/v1/user/${id}`,
@@ -19,5 +21,13 @@ export function getUserFrontSettings(id: string | number) {
   return request({
     url: `/api/v1/user/${id}/front-settings`,
     method: "get",
+  });
+}
+
+export function putUserFrontSettings(id: string | number, settings: UserFrontSettings) {
+  return request({
+    url: `/api/v1/user/${id}/front-settings`,
+    method: "put",
+    data: settings,
   });
 }

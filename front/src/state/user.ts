@@ -3,47 +3,12 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import jwt_decode from "jwt-decode";
 
-import { BaseState } from "@/interface/state";
+import { UserState, Token, UserUpdate } from "@/interface/user";
 
 import { getToken } from "@/api/v1/token";
 import { getUser, putUser, getUserFrontSettings } from "@/api/v1/user/user";
 
 import { messageState } from "@/state/message";
-
-interface UserUpdate {
-  name?: string;
-  email: string;
-  password: string;
-  new_password?: string;
-}
-
-export interface FrontSettings {
-  gallery_image_auto_play_time_interval: number;
-  gallery_image_preview_size: number;
-  gallery_preview_size: number;
-  video_preview_size: number;
-}
-
-export interface User {
-  id: string | number;
-  name: string;
-  newName?: string;
-  email: string;
-  password?: string;
-  oldPassword?: string;
-  newPassword?: string;
-  passwordConfirmation?: string;
-  frontSettings: FrontSettings;
-}
-export interface UserState extends BaseState<User> {
-  signIn: (data: FormData) => any;
-  signOut: () => void;
-  update: () => any;
-}
-
-interface Token {
-  sub: string | number;
-}
 
 function updateUser(response: any) {
   const user = response.data;

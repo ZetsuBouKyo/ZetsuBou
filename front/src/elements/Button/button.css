@@ -1,6 +1,7 @@
 @layer utilities {
   .btn {
     @apply text-base 3xl:text-xl border-0 py-1 px-4 focus:outline-none rounded;
+    @apply cursor-pointer;
   }
 
   .btn-icon {

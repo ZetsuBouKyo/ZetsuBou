@@ -22,6 +22,7 @@ import {
 import { getTaskStandaloneGalleryOpen } from "@/api/v1/task/standalone";
 
 import { galleryState } from "@/state/gallery";
+import { messageState } from "@/state/message";
 
 const route = useRoute();
 const id = route.params.gallery as string;
@@ -61,6 +62,7 @@ const controlPanelState = reactive<ControlPanelState>({
 
 function copy(event: any) {
   navigator.clipboard.writeText(event.target.textContent);
+  messageState.push("Copied");
 }
 
 const cover = `/api/v1/gallery/${id}/cover`;

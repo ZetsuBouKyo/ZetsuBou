@@ -110,11 +110,9 @@ reset-app: reset-app-elasticsearch reset-app-postgres
 
 reset-airflow-simple: clean-airflow-simple
 
-.PHONY: up-app-simple up-airflow up-airflow-simple up-dev up
+.PHONY: up-app-simple up-airflow-simple up-dev up
 up-app-simple:
 	docker-compose -f docker-compose.simple.yml up -d $(APP_SERVICES)
-up-airflow:
-	docker-compose -f docker/docker-compose.host.airflow.yml up -d
 up-airflow-simple:
 	docker-compose -f docker-compose.simple.yml up -d zetsubou-airflow
 up-dev:
@@ -122,11 +120,18 @@ up-dev:
 up: up-app-simple
 
 .PHONY: down
-down-simple:
+down:
 	docker-compose -f docker-compose.simple.yml down
-down-airflow:
-	docker-compose -f docker/docker-compose.host.airflow.yml down
-down: down-simple
+
+.PHONY: start-airflow
+start-airflow:
+	docker-compose -f docker-compose.simple.yml start zetsubou-airflow
+
+.PHONY: stop-airflow
+stop-airflow:
+	docker-compose -f docker-compose.simple.yml stop zetsubou-airflow
+
+.PHONY: down
 
 .PHONY: logs
 logs:

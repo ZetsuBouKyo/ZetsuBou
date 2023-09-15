@@ -67,12 +67,11 @@ make docs
 
 ## Run
 
-Create the volumes under `./dev` relative to the current working directory, initialize
-the Airflow, and generate `./etc/settings.env` and `./etc/settings.airflow.env` settings
-files.
+Create the volumes under `./dev` relative to the current working directory, and
+`./etc/analysis/synonym.txt`.
 
 ```sh
-make init-example
+make init
 ```
 
 Start the services with Docker containers except the ZetsuBou web application.

@@ -9,15 +9,6 @@ ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME ?= ./etc/analysis
 ZETSUBOU_REDIS_VOLUME ?= ./dev/volumes/redis
 ZETSUBOU_POSTGRES_DB_VOLUME ?= ./dev/volumes/postgres
 
-AIRFLOW_UID ?= $(shell id -u)
-AIRFLOW_VOLUME ?= ./dev/volumes/airflow
-AIRFLOW_DAGS_VOLUME ?= ./dags
-AIRFLOW_LOGS_VOLUME ?= ./dev/volumes/airflow/logs
-AIRFLOW_PLUGINS_VOLUME ?= ./dev/volumes/airflow/plugins
-AIRFLOW_POSTGRES_DB_VOLUME ?= ./dev/volumes/airflow/postgres
-
-AIRFLOW_SIMPLE_VOLUME ?= ./dev/volumes/airflow-simple
-
 APP_SERVICES := zetsubou-app zetsubou-airflow zetsubou-elasticsearch zetsubou-minio zetsubou-postgres zetsubou-redis
 APP_DEV_SERVICES := zetsubou-airflow zetsubou-elasticsearch zetsubou-minio zetsubou-postgres zetsubou-redis
 
@@ -60,7 +51,7 @@ lint:
 	pre-commit run --all-files
 	npx commitlint --from "HEAD~1" --to "HEAD" --verbose
 
-.PHONY: init init-app-postgres init-airflow init-app-elasticsearch init-redis
+.PHONY: init init-app-postgres init-app-elasticsearch init-redis
 init-app-elasticsearch:
 	mkdir -p $(ZETSUBOU_ELASTICSEARCH_VOLUME)
 	mkdir -p $(ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME)
@@ -68,27 +59,14 @@ init-app-elasticsearch:
 	touch $(ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME)/synonym.txt
 init-app-postgres:
 	mkdir -p $(ZETSUBOU_POSTGRES_DB_VOLUME)
-init-airflow:
-	mkdir -p $(AIRFLOW_DAGS_VOLUME) \
-		$(AIRFLOW_LOGS_VOLUME) \
-		$(AIRFLOW_PLUGINS_VOLUME) \
-		$(AIRFLOW_POSTGRES_DB_VOLUME)
-
-	chown -R $(AIRFLOW_UID):$(AIRFLOW_UID) $(AIRFLOW_DAGS_VOLUME)
-	chown -R $(AIRFLOW_UID):$(AIRFLOW_UID) $(AIRFLOW_LOGS_VOLUME)
-	chown -R $(AIRFLOW_UID):$(AIRFLOW_UID) $(AIRFLOW_PLUGINS_VOLUME)
-
-	docker-compose -f docker/docker-compose.host.airflow.yml up airflow-init
 init-redis:
 	mkdir -p $(ZETSUBOU_REDIS_VOLUME)
 	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
 init: init-app-postgres init-app-elasticsearch init-redis
 
 .PHONY: clean clean-all clean-airflow clean-airflow-simple clean-app-elasticsearch clean-app-postgres clean-docker
-clean-airflow:
-	rm -rf $(AIRFLOW_VOLUME)
 clean-airflow-simple:
-	rm -rf $(AIRFLOW_SIMPLE_VOLUME)
+	rm -rf $(ZETSUBOU_AIRFLOW_SIMPLE_VOLUME)
 clean-app-elasticsearch:
 	rm -rf $(ZETSUBOU_ELASTICSEARCH_VOLUME)
 clean-app-postgres:

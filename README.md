@@ -7,6 +7,8 @@
 
 [ZetsuBou](https://zetsuboukyo.github.io/) is a web-based app for hosting your own image galleries and videos. The app is written in Python 3 and Vue 3.
 
+![demo image](docs/assets/example/preview-galleries.png)
+
 **There would be no backwards compatibility at all.**
 
 ## ⚠️ Warning
@@ -37,15 +39,16 @@ ZetsuBou would generate a `.tag` folder inside your galleries. Here is an exampl
 ### Run example
 
 ```bash
+# To clone the repo
+git clone https://github.com/ZetsuBouKyo/ZetsuBou
 # To build the docker images
 make build
-# To initialize airflow and create `./etc/settings.env` and `./etc/settings.airflow.env`
-make init-example
-# To close the services started during initialization
-make down
-
+# To create the folders and `./etc/analysis/synonym.txt`
+make init
 # To start the services
 make up
+# To stop the services
+make down
 ```
 
 You can find the ZetusBou webapp username (`ZETSUBOU_APP_ADMIN_EMAIL`), password (`ZETSUBOU_APP_ADMIN_PASSWORD`) and other information in `./etc/settings.env`.

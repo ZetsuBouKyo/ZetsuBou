@@ -59,6 +59,18 @@ const prefix = reactive({
 
 const bucketsDropdown = initSelectDropdownState() as SelectDropdownState;
 const categoriesDropdown = initSelectDropdownState() as SelectDropdownState;
+watch(
+  () => table?.row?.category,
+  () => {
+    if (table?.row?.category === undefined) {
+      return;
+    }
+    const categoryID = table.row.category;
+    if (categoryID === 1) {
+      table.row.depth = -1;
+    }
+  },
+);
 
 function updateOptions(params) {
   if (table.connected === ConnectionStatus.Connecting) {
@@ -408,6 +420,7 @@ function sync(row: Row) {
             type="number"
             list="admin-minio-storage-depth"
             :placeholder="table.row.depth as any"
+            :disabled="table?.row?.category === 1"
             v-model="table.row.depth" />
           <datalist id="admin-minio-storage-depth">
             <option v-for="(p, i) in [1, 2, 3, 4, 5, 6, 7]" :value="p" :key="i" />

@@ -255,25 +255,27 @@ const categories = reactive({});
 function getCategoryName(id: number) {
   return categories[id];
 }
-getStorageMinioCategories().then((response) => {
-  const data = response.data;
-  if (data) {
-    for (let key in data) {
-      categories[data[key]] = key;
-    }
-  }
-});
 
 function load() {
-  getStorageMinioCategories().then((response) => {
-    const data = response.data;
-    if (data) {
-      for (let key in data) {
-        categoriesDropdown.options.push({ title: key, value: data[key] });
+  const isNotCategories = Object.keys(categories).length === 0;
+  const isNotCategoriesDropdownOptions = categoriesDropdown.options.length === 0;
+  if (Object.keys(categories).length === 0 || categoriesDropdown.options.length === 0) {
+    getStorageMinioCategories().then((response) => {
+      const data = response.data;
+      if (data) {
+        for (let key in data) {
+          if (isNotCategories) {
+            categories[data[key]] = key;
+          }
+          if (isNotCategoriesDropdownOptions) {
+            categoriesDropdown.options.push({ title: key, value: data[key] });
+          }
+        }
       }
-    }
-  });
+    });
+  }
 }
+load();
 
 const headers: Array<Header> = [
   { title: "Id", key: "id" },

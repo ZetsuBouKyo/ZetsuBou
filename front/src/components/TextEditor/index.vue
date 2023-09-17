@@ -45,6 +45,7 @@ function save() {
   saveState.lock();
   overwrite().then((status) => {
     if (!status) {
+      saveState.unlock();
       return;
     }
     state.save(saved).finally(() => {

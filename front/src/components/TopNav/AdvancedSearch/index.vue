@@ -407,6 +407,7 @@ function search() {
   const queriesStr = queriesArray.join("&");
   const url = `/${state.category}/advanced-search?${queriesStr}`;
 
+  window.scrollTo(0, 0);
   router.push(url);
   advancedSearch.value.close();
 }

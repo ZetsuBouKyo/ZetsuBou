@@ -373,6 +373,7 @@ function search() {
     url += "?";
     url += queries.join("&");
   }
+  window.scrollTo(0, 0);
   router.push(url);
   closeSearchAutoComplete();
   dropdown.value.close();

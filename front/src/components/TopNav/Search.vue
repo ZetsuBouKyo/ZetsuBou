@@ -358,7 +358,7 @@ function search() {
     resetGeneralSearchQuery();
   }
   let url = `/${state.category}/${state.searchBase}`;
-  let queries = [];
+  let queries = ["page=1"];
 
   if (state.searchBase === SearchBase.Random) {
     queries.push("seed=" + Math.floor(Math.random() * 100000000).toString());

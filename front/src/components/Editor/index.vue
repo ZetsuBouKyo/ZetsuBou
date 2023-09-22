@@ -119,7 +119,7 @@ defineExpose({ open, close, reset });
 </script>
 
 <template>
-  <modal ref="editor" :title="title" class="w-1/2 top-12 left-1/4 text-gray-300">
+  <modal ref="editor" :title="title" class="w-full lg:w-1/2 lg:top-12 lg:left-1/4 text-gray-300">
     <div class="modal-row-10">
       <span class="w-32 mr-4">Name:</span>
       <input class="flex-1 modal-input" type="text" :placeholder="state.data.name" v-model="state.data.name" />
@@ -139,14 +139,18 @@ defineExpose({ open, close, reset });
     <div class="modal-row-10">
       <span class="w-32 mr-4">Category:</span>
       <select-dropdown
-        class="w-64"
-        :options-width-class="'w-64'"
+        :width-class="'w-48 xl:w-64'"
+        :options-width-class="'w-48 xl:w-64'"
         :state="category"
         :on-get="onGetCategoryStartsWith"
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.Input" />
       <span class="w-16 mx-4">Rating:</span>
-      <select-dropdown class="w-24 ml-2 3xl:w-48" :options-width-class="'w-24'" :state="rating"></select-dropdown>
+      <select-dropdown
+        class="ml-2"
+        :width-class="'w-16 xl:w-24  3xl:w-48'"
+        :options-width-class="'w-16 xl:w-24  3xl:w-48'"
+        :state="rating"></select-dropdown>
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Labels:</span>

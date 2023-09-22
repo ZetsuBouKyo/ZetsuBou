@@ -436,7 +436,7 @@ defineExpose({
   <modal
     ref="advancedSearch"
     :title="'Advanced Search'"
-    class="w-1/2 top-12 left-1/4"
+    class="top-12 w-full lg:w-3/4 lg:left-1/8 2xl:w-1/2 2xl:left-1/4"
     :is-scrollable="true"
     :key="detectRouteChange(route)"
     @keyup.enter="search">
@@ -447,7 +447,7 @@ defineExpose({
           <input class="modal-input flex-1" type="text" :placeholder="field.value" v-model="field.value" />
         </div>
         <div class="modal-row h-10">
-          <span class="w-24 ml-auto mr-4">Fuzziness:</span>
+          <span class="w-18 ml-auto mr-4">Fuzziness:</span>
           <select-dropdown
             class="w-20 mr-4"
             :group="'search'"
@@ -473,17 +473,33 @@ defineExpose({
       <div class="flex flex-col" v-else-if="field.type === AdvancedSearchFieldType.Range">
         <div class="modal-row h-10">
           <span class="w-28 mr-4 text-white">{{ toTitle(field.name) }}:</span>
-          <input class="modal-input flex-1" type="text" :placeholder="field.gte as string" v-model="field.gte" />
+          <input
+            class="modal-input flex-1 w-24 sm:w-full"
+            type="text"
+            :placeholder="field.gte as string"
+            v-model="field.gte" />
           <span class="mx-4">to</span>
-          <input class="modal-input flex-1" type="text" :placeholder="field.lte as string" v-model="field.lte" />
+          <input
+            class="modal-input flex-1 w-24 sm:w-full"
+            type="text"
+            :placeholder="field.lte as string"
+            v-model="field.lte" />
         </div>
       </div>
       <div class="flex flex-col" v-else-if="field.type === AdvancedSearchFieldType.Duration">
         <div class="modal-row h-10">
           <span class="w-28 mr-4 text-white">{{ toTitle(field.name) }}:</span>
-          <input class="modal-input flex-1" type="text" :placeholder="field.gte as string" v-model="field.gte" />
+          <input
+            class="modal-input flex-1 w-24 sm:w-full"
+            type="text"
+            :placeholder="field.gte as string"
+            v-model="field.gte" />
           <span class="mx-4">to</span>
-          <input class="modal-input flex-1" type="text" :placeholder="field.lte as string" v-model="field.lte" />
+          <input
+            class="modal-input flex-1 w-24 sm:w-full"
+            type="text"
+            :placeholder="field.lte as string"
+            v-model="field.lte" />
         </div>
       </div>
     </div>

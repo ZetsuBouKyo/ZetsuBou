@@ -444,7 +444,7 @@ function reset() {
   <div class="sm:mr-5 mr-2 relative ml-4 flex w-full 3xl:text-base text-sm">
     <input
       ref="searchInput"
-      class="w-full border-l-4 border-r-0 border-t-0 border-b-0 border-gray-700 bg-gray-700 text-white placeholder-gray-400 h-10 pl-2 pr-16 focus:border-gray-700 focus:ring-transparent hidden sm:inline-block"
+      class="w-full border-l-4 border-r-0 border-t-0 border-b-0 border-gray-700 bg-gray-700 text-white placeholder-gray-400 h-10 pl-2 pr-16 focus:border-gray-700 focus:ring-transparent inline-block"
       :class="state.isOptions ? 'rounded-t-lg' : 'rounded-lg'"
       type="text"
       v-if="state.show"

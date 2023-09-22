@@ -124,6 +124,9 @@ module.exports = {
       screens: {
         "3xl": "2690px",
       },
+      inset: {
+        "1/8": "12.5%",
+      },
     },
   },
   plugins: [

@@ -22,12 +22,12 @@ function toTop() {
           Gallery
         </router-link>
         <router-link
-          class="lg:inline hidden ml-4 3xl:text-xl text-lg text-gray-300 hover:text-gray-500"
+          class="lg:inline hidden ml-4 3xl:text-xl text-lg text-gray-300 hover:text-gray-500 mr-4"
           to="/video"
           @click="toTop">
           Video
         </router-link>
-        <nav class="ml-4 flex flex-row items-center text-base justify-center w-full 3xl:text-lg">
+        <nav class="flex flex-row items-center text-base justify-center w-full 3xl:text-lg">
           <search class="h-10" />
           <sync class="h-10 md:inline-flex hidden" />
           <notification class="h-10 mx-2" />

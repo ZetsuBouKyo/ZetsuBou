@@ -29,6 +29,7 @@ interface Props {
   isAutoCompleteOptionCaseSensitive: boolean;
   isAutoComplete: boolean;
   isInputChipsTitleUnique: boolean;
+  widthClass: string;
   optionsWidthClass: string;
   enableInputChipsEnterEvent: boolean;
   onGet: SelectDropdownOnGet<any>;
@@ -47,6 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
   isAutoCompleteOptionCaseSensitive: false,
   isAutoComplete: false,
   isInputChipsTitleUnique: false,
+  widthClass: "",
   optionsWidthClass: "w-60",
   enableInputChipsEnterEvent: true,
   onGet: undefined,
@@ -289,7 +291,7 @@ defineExpose({ close });
 </script>
 
 <template>
-  <div class="relative h-full">
+  <div class="relative h-full" :class="widthClass">
     <dropdown
       ref="dropdown"
       :group="group"

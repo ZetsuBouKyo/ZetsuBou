@@ -19,7 +19,7 @@ class Attributes(SourceAttributes):
         default=None,
         title="Gallery page",
         description="Number of images in the gallery.",
-        example=1,
+        examples=[1],
     )
 
 
@@ -27,12 +27,14 @@ class Gallery(Source):
     attributes: Attributes = Field(
         default=Attributes(),
         title="Gallery attributes",
-        example={
-            "category": "category",
-            "rating": 5,
-            "uploader": "ZetsuBouKyo",
-            "pages": 1,
-        },
+        examples=[
+            {
+                "category": "category",
+                "rating": 5,
+                "uploader": "ZetsuBouKyo",
+                "pages": 1,
+            }
+        ],
     )
 
 

@@ -32,7 +32,7 @@ async def get_ping_services() -> bool:
 async def post_ping_airflow(
     airflow_host: str = Query(
         default=None,
-        example="http://localhost:8080",
+        examples=["http://localhost:8080"],
     ),
     airflow_username: str = Query(default=None),
     airflow_password: str = Query(default=None),
@@ -78,7 +78,7 @@ async def post_ping_elasticsearch(
 async def post_ping_postgres(
     database_url: str = Query(
         default=None,
-        example="postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou",
+        examples=["postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou"],
     )
 ) -> bool:
     if database_url is None:
@@ -94,7 +94,7 @@ async def post_ping_postgres(
 async def post_ping_redis(
     redis_url: str = Query(
         default=None,
-        example="redis://localhost:6380/0",
+        examples=["redis://localhost:6380/0"],
     )
 ) -> bool:
     if redis_url is None:
@@ -117,7 +117,7 @@ async def post_ping_storage(
     ),
     storage_s3_endpoint_url: str = Query(
         default=None,
-        example="http://localhost:9000",
+        examples=["http://localhost:9000"],
     ),
 ) -> bool:
     if (

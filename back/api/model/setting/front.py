@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from back.model.elasticsearch import AnalyzerEnum, ElasticsearchField
 from back.settings import AppModeEnum
@@ -28,9 +28,8 @@ class FrontGeneralSettingVideo(FrontGeneralSettingBase):
 
 
 class FrontGeneralSetting(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)
+
     app_mode: Optional[AppModeEnum] = None
     gallery: FrontGeneralSettingGallery
     video: FrontGeneralSettingVideo
-
-    class Config:
-        use_enum_values = True

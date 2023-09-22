@@ -1,11 +1,13 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from back.model.storage import StorageCategoryEnum
 
 
 class StorageMinioCreate(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)
+
     category: StorageCategoryEnum
     name: Optional[str] = None
     endpoint: str
@@ -14,9 +16,6 @@ class StorageMinioCreate(BaseModel):
     depth: int
     access_key: str
     secret_key: str
-
-    class Config:
-        use_enum_values = True
 
 
 class StorageMinioCreated(BaseModel):
@@ -32,6 +31,8 @@ class StorageMinioCreated(BaseModel):
 
 
 class StorageMinioUpdate(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)
+
     id: int
     category: StorageCategoryEnum
     name: str
@@ -41,9 +42,6 @@ class StorageMinioUpdate(BaseModel):
     depth: int
     access_key: str
     secret_key: str
-
-    class Config:
-        use_enum_values = True
 
 
 class StorageMinio(BaseModel):

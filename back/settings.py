@@ -5,7 +5,7 @@ from typing import Optional
 
 from pydantic import Field
 from pydantic.networks import EmailStr
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from back.model.base import SourceProtocolEnum
 from back.model.envs import ZetsuBouEnvEnum
@@ -57,18 +57,20 @@ class LoggingLevelEnum(str, Enum):
 
 
 class Setting(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix=ENV_PREFIX)
+
     app_host: str = Field(
-        default="0.0.0.0", title=f"{TITLE_PREFIX} Host", exmaple="0.0.0.0"
+        default="0.0.0.0", title=f"{TITLE_PREFIX} Host", examples=["0.0.0.0"]
     )
     app_security: bool = True
     app_port: int = Field(
         default=3000,
         title=f"{TITLE_PREFIX} Port",
         description="Environment variable for service and docker-compose.",
-        example="3000",
+        examples=["3000"],
     )
     app_mode: AppModeEnum = AppModeEnum.CLUSTER
-    app_timezone: str = Field(default="UTC", title="Timezone", example="Asia/Taipei")
+    app_timezone: str = Field(default="UTC", title="Timezone", examples=["Asia/Taipei"])
 
     app_docs: bool = True
     app_redoc: bool = True
@@ -81,15 +83,15 @@ class Setting(BaseSettings):
 
     app_docs_swagger_js_url: str = Field(
         default="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js",
-        example="/statics/swagger-ui-bundle.js",
+        examples=["/statics/swagger-ui-bundle.js"],
     )
     app_docs_swagger_css_url: str = Field(
         default="https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css",
-        example="/statics/swagger-ui.css",
+        examples=["/statics/swagger-ui.css"],
     )
     app_docs_redoc_js_url: str = Field(
         default="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js",
-        example="/statics/redoc.standalone.js",
+        examples=["/statics/redoc.standalone.js"],
     )
 
     app_user_front_settings_gallery_image_auto_play_time_interval: int = 5
@@ -149,16 +151,18 @@ class Setting(BaseSettings):
     database_type: DatabaseTypeEnum = DatabaseTypeEnum.POSTGRESQL
     database_url: Optional[str] = Field(
         default=None,
-        example="postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou",
+        examples=["postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou"],
     )
     database_echo: bool = False
     database_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
-        example="5430",
+        examples=["5430"],
     )
 
-    elastic_urls: Optional[str] = Field(default=None, example="http://localhost:9200")
+    elastic_urls: Optional[str] = Field(
+        default=None, examples=["http://localhost:9200"]
+    )
     elastic_size: int = 40
     elastic_index_gallery: str = f"{ELASTIC_INDEX_PREFIX}-gallery"
     elastic_index_video: str = f"{ELASTIC_INDEX_PREFIX}-video"
@@ -166,7 +170,7 @@ class Setting(BaseSettings):
     elasticsearch_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
-        example="9200",
+        examples=["9200"],
     )
 
     @property
@@ -180,32 +184,36 @@ class Setting(BaseSettings):
     storage_cache: str = "zetsubou"
     storage_backup: str = "backup"
 
-    storage_s3_aws_access_key_id: Optional[str] = Field(default=None, example="admin")
+    storage_s3_aws_access_key_id: Optional[str] = Field(
+        default=None, examples=["admin"]
+    )
     storage_s3_aws_secret_access_key: Optional[str] = Field(
-        default=None, example="wJalrXUtnFEMI"
+        default=None, examples=["wJalrXUtnFEMI"]
     )
     storage_s3_endpoint_url: Optional[str] = Field(
-        default=None, example="http://localhost:9000"
+        default=None, examples=["http://localhost:9000"]
     )
     storage_s3_volume: Optional[str] = Field(
         default=None,
         description="Environment variable for docker-compose.",
-        example="./dev/volumes/minio",
+        examples=["./dev/volumes/minio"],
     )
     storage_s3_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
-        example="9000",
+        examples=["9000"],
     )
     storage_s3_console_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
-        example="9001",
+        examples=["9001"],
     )
 
-    airflow_host: Optional[str] = Field(default=None, example="http://localhost:8080")
-    airflow_username: Optional[str] = Field(default=None, example="airflow")
-    airflow_password: Optional[str] = Field(default=None, example="airflow")
+    airflow_host: Optional[str] = Field(
+        default=None, examples=["http://localhost:8080"]
+    )
+    airflow_username: Optional[str] = Field(default=None, examples=["airflow"])
+    airflow_password: Optional[str] = Field(default=None, examples=["airflow"])
     airflow_create_admin: Optional[bool] = Field(
         default=True,
         description="If this value is true, an admin user will be created by `docker-compose.simple.yml` at startup.",
@@ -213,28 +221,27 @@ class Setting(BaseSettings):
     airflow_web_server_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
-        example="8080",
+        examples=["8080"],
     )
     airflow_simple_volume: Optional[str] = Field(
         default=None,
         description="Environment variable for docker-compose.",
-        example="./dev/volumes/airflow-simple",
+        examples=["./dev/volumes/airflow-simple"],
     )
     airflow_download_volume: Optional[str] = Field(
         default=None,
         description="Environment variable for docker-compose.",
-        example="./dev/volumes/minio/download",
+        examples=["./dev/volumes/minio/download"],
     )
 
-    redis_url: Optional[str] = Field(default=None, example="redis://localhost:6380/0")
+    redis_url: Optional[str] = Field(
+        default=None, examples=["redis://localhost:6380/0"]
+    )
     redis_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
-        example="6380",
+        examples=["6380"],
     )
-
-    class Config:
-        env_prefix = ENV_PREFIX
 
 
 setting = Setting(_env_file=str(DEFAULT_SETTING_PATH))

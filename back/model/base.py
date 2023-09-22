@@ -24,7 +24,7 @@ class SourceBaseModel(BaseModel):
         default=None,
         title="Path",
         description="File path with custom protocol.",
-        example="minio-1://bucket/prefix_1/prefix_1_1",
+        examples=["minio-1://bucket/prefix_1/prefix_1_1"],
     )
 
     @property

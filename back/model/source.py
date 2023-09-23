@@ -50,7 +50,7 @@ class Source(SourceBaseModel):
     last_updated: Optional[DatetimeStr] = Field(
         default=None,
         description=f"We use ISO format with timezone. Our datetime formats are `{datetime_format_db}`, `{datetime_format}`, and `{datetime_format_no_f}`.",
-        examples="2023-06-07T18:57:12.011241+08:00",
+        examples=["2023-06-07T18:57:12.011241+08:00"],
     )
     publication_date: Optional[DatetimeStr] = Field(
         default=None,

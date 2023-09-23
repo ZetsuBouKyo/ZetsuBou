@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from back.utils.model import Str
+from back.utils.model import TagStr
 
 
 class TagInsert(BaseModel):
@@ -15,7 +15,7 @@ class TagInsert(BaseModel):
 
 
 class TagCreate(BaseModel):
-    name: Str
+    name: TagStr
     category_ids: List[int] = []
     synonym_ids: List[int] = []
     representative_id: Optional[int] = None

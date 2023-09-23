@@ -8,7 +8,21 @@ from pydantic_core import core_schema
 from back.utils.dt import datetime_format, datetime_formats
 
 
-class Str(str):
+class _Str(str):
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source: Any, handler: Callable[[Any], core_schema.JsonSchema]
+    ) -> core_schema.CoreSchema:
+        return core_schema.general_before_validator_function(
+            cls._validate, core_schema.str_schema()
+        )
+
+    @classmethod
+    def _validate(cls, value: str, _: core_schema.ValidationInfo) -> str:
+        raise NotImplementedError
+
+
+class TagStr(_Str):
     @classmethod
     def __get_pydantic_json_schema__(
         cls, core_schema: core_schema.JsonSchema, handler: GetJsonSchemaHandler
@@ -20,12 +34,8 @@ class Str(str):
         json_schema.update(type="string", format="string")
         return json_schema
 
-    # @classmethod
-    # def __get_validators__(cls):
-    #     yield cls.validate
-
     @classmethod
-    def validate(cls, value: str, _: core_schema.ValidationInfo) -> str:
+    def _validate(cls, value: str, _: core_schema.ValidationInfo) -> str:
         if value is None:
             return value
         value = str(value)
@@ -33,14 +43,8 @@ class Str(str):
             return value
         raise TypeError(f"length of '{value}' should greater than 0")
 
-    @classmethod
-    def __get_pydantic_core_schema__(
-        cls, source: Any, handler: Callable[[Any], core_schema.JsonSchema]
-    ) -> core_schema.CoreSchema:
-        return core_schema.general_plain_validator_function(cls.validate)
 
-
-class DatetimeStr(str):
+class DatetimeStr(_Str):
     @classmethod
     def __get_pydantic_json_schema__(
         cls, core_schema: core_schema.JsonSchema, handler: GetJsonSchemaHandler
@@ -56,12 +60,8 @@ class DatetimeStr(str):
         )
         return json_schema
 
-    # @classmethod
-    # def __get_validators__(cls):
-    #     yield cls.validate
-
     @classmethod
-    def validate(
+    def _validate(
         cls, value: Union[str, datetime], _: core_schema.ValidationInfo
     ) -> str:
         if type(value) is str:
@@ -76,14 +76,8 @@ class DatetimeStr(str):
 
         raise TypeError("value should be str or datetime.datetime")
 
-    @classmethod
-    def __get_pydantic_core_schema__(
-        cls, source: Any, handler: Callable[[Any], core_schema.JsonSchema]
-    ) -> core_schema.CoreSchema:
-        return core_schema.general_plain_validator_function(cls.validate)
 
-
-class JsonStr(str):
+class JsonStr(_Str):
     @classmethod
     def __get_pydantic_json_schema__(
         cls, core_schema: core_schema.JsonSchema, handler: GetJsonSchemaHandler
@@ -95,27 +89,17 @@ class JsonStr(str):
         json_schema = handler.resolve_ref_schema(json_schema)
         json_schema.update(
             type="string",
-            format="JSON",
+            format="json",
         )
         return json_schema
 
     @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, value: Union[str, dict], _: core_schema.ValidationInfo) -> str:
-        if type(value) is str:
-            value = json.loads(value)
+    def _validate(cls, __input_value: str, _: core_schema.ValidationInfo) -> str:
+        if type(__input_value) is str:
+            value = json.loads(__input_value)
             value = json.dumps(value)
             return value
-        elif type(value) is dict:
-            return json.dumps(value)
+        elif type(__input_value) is dict:
+            return json.dumps(__input_value)
 
         raise TypeError("value should be str or json dict")
-
-    @classmethod
-    def __get_pydantic_core_schema__(
-        cls, source: Any, handler: Callable[[Any], core_schema.JsonSchema]
-    ) -> core_schema.CoreSchema:
-        return core_schema.general_plain_validator_function(cls.validate)

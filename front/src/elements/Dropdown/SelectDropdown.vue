@@ -24,6 +24,7 @@ interface Props {
   state: SelectDropdownState;
   group: string;
   mode: SelectDropdownMode;
+  default: any;
   options: Array<SelectDropdownOption>;
   origin: Origin;
   isAutoCompleteOptionCaseSensitive: boolean;
@@ -43,6 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
   state: () => initSelectDropdownState() as SelectDropdownState,
   group: undefined,
   mode: SelectDropdownMode.Button,
+  default: "",
   options: () => [],
   origin: Origin.BottomRight,
   isAutoCompleteOptionCaseSensitive: false,
@@ -306,6 +308,7 @@ defineExpose({ close });
           <input
             class="w-full modal-input"
             type="search"
+            :placeholder="default"
             v-model="state.title"
             @click.stop="toggleDropdown"
             @focus="focusOpenDropdown" />

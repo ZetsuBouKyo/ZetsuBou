@@ -492,13 +492,13 @@ defineExpose({
           <input
             class="modal-input flex-1 w-24 sm:w-full"
             type="text"
-            :placeholder="field.gte as string"
+            placeholder="e.g. hh:mm:ss, mm:ss, or ss"
             v-model="field.gte" />
           <span class="mx-4">to</span>
           <input
             class="modal-input flex-1 w-24 sm:w-full"
             type="text"
-            :placeholder="field.lte as string"
+            placeholder="e.g. hh:mm:ss, mm:ss, or ss"
             v-model="field.lte" />
         </div>
       </div>

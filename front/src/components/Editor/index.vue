@@ -24,7 +24,9 @@ import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { messageState } from "@/state/message";
 
 import { initRippleButtonState } from "@/elements/Button/RippleButton";
+import { isLeapYear } from "@/utils/datetime";
 import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
+import { pad } from "@/utils/number";
 import { watchTagFieldValues, watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
 
 const props = defineProps({
@@ -74,6 +76,99 @@ rating.options = [
   { title: 5, value: 5 },
 ];
 
+interface Publication {
+  year: string;
+  month: string;
+  day: string;
+  timezone: string;
+}
+const publication = reactive<Publication>({ year: undefined, month: undefined, day: undefined, timezone: undefined });
+function initPublication() {
+  if (!state.data.publication_date) {
+    return;
+  }
+  const d = new Date(state.data.publication_date);
+  publication.year = pad(d.getFullYear(), 4);
+  publication.month = pad(d.getMonth() + 1, 2);
+  publication.day = pad(d.getDate(), 2);
+
+  let timezoneOffset = d.getTimezoneOffset();
+  let sign = "+";
+  if (timezoneOffset > 0) {
+    sign = "-";
+  } else {
+    timezoneOffset = timezoneOffset * -1;
+  }
+  const timezoneHour = Math.floor(timezoneOffset / 60);
+  const timezoneMin = timezoneOffset % 60;
+
+  const tH = pad(timezoneHour, 2);
+  const tM = pad(timezoneMin, 2);
+  publication.timezone = `${sign}${tH}:${tM}`;
+}
+initPublication();
+
+function getPublicationDatetime() {
+  if (
+    (publication.year === undefined || publication.year === "") &&
+    (publication.month === undefined || publication.month === "") &&
+    (publication.day === undefined || publication.day === "") &&
+    (publication.timezone === undefined || publication.timezone === "")
+  ) {
+    return null;
+  }
+  const yMessage = "year should be 0000 to 9999";
+  const mMessage = "month should be 01 to 12";
+  const dMessage = "day should be 01 to 31";
+  const dMessage28 = "day should be 01 to 28";
+  const dMessage29 = "day should be 01 to 29";
+  const tMessage = "timezone should be ±hh:mm";
+
+  const patternYear = /^([0-9][0-9][0-9][0-9])$/;
+  const patternMonth = /^(1[0-2]|0[1-9])$/;
+  const patternDay = /^(0[1-9]|[1-2][0-9]|3[0-1])$/;
+  const patternTimezone = /^(\+|-)(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
+
+  const year = publication.year.toString();
+  const month = publication.month.toString();
+  const day = publication.day.toString();
+  const timezone = publication.timezone.toString();
+
+  const y = Number(year);
+  const m = Number(month);
+  const d = Number(day);
+
+  if (isNaN(y) || !year.match(patternYear)) {
+    messageState.push(yMessage);
+    return undefined;
+  }
+  if (isNaN(m) || !month.match(patternMonth)) {
+    messageState.push(mMessage);
+    return undefined;
+  }
+  if (isNaN(d) || !day.match(patternDay)) {
+    messageState.push(dMessage);
+    return undefined;
+  }
+  if (!timezone.match(patternTimezone)) {
+    messageState.push(tMessage);
+    return undefined;
+  }
+  if (m === 2) {
+    if (isLeapYear(y)) {
+      if (d > 29) {
+        messageState.push(dMessage29);
+        return undefined;
+      }
+    } else if (d > 28) {
+      messageState.push(dMessage28);
+      return undefined;
+    }
+  }
+
+  return `${year}-${month}-${day}T00:00:00.000000${timezone}`;
+}
+
 const labels = initSelectDropdownState() as SelectDropdownState;
 watch(...watchLabels(labels, state));
 watch(...watchLabelsChipsLength(labels, state));
@@ -89,6 +184,12 @@ function saved() {
   messageState.pushWithLink(props.savedMessage, route.path);
 }
 function save() {
+  const publicationDate = getPublicationDatetime();
+  if (publicationDate === undefined) {
+    return;
+  }
+  state.data.publication_date = publicationDate;
+
   for (const field in privateState.tagFields) {
     state.data.tags[field] = [];
     for (const chip of privateState.tagFields[field].chips) {
@@ -151,6 +252,13 @@ defineExpose({ open, close, reset });
         :width-class="'w-16 xl:w-24  3xl:w-48'"
         :options-width-class="'w-16 xl:w-24  3xl:w-48'"
         :state="rating"></select-dropdown>
+    </div>
+    <div class="modal-row-10">
+      <span class="w-32 mr-4">Publication:</span>
+      <input class="modal-input w-20 3xl:w-48" type="text" placeholder="yyyy" v-model="publication.year" />
+      <input class="modal-input w-16 3xl:w-48 ml-2" type="text" placeholder="MM" v-model="publication.month" />
+      <input class="modal-input w-16 3xl:w-48 ml-2" type="text" placeholder="dd" v-model="publication.day" />
+      <input class="modal-input w-28 3xl:w-48 ml-2" type="text" placeholder="±hh:mm" v-model="publication.timezone" />
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Labels:</span>

@@ -65,3 +65,16 @@ export function secondToDuration(s: number): string {
 
   return `${hoursS}:${minutesS}:${secondsS}`;
 }
+
+export function isLeapYear(year: number): boolean {
+  if (year % 4 !== 0) {
+    return false;
+  }
+  if (year % 100 !== 0) {
+    return true;
+  }
+  if (year % 400 !== 0) {
+    return false;
+  }
+  return true;
+}

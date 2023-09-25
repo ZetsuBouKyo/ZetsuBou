@@ -393,6 +393,7 @@ The following two tabs are the details of `Web Search Analyzer`.
     | path.url            | path                | url                    |
     | name.default        | name                | default                |
     | raw_name.default    | raw_name            | default                |
+    | other_names.default | other_names         | default                |
     | src.url             | src                 | url                    |
     | attributes.category | attributes.category | keyword                |
     | attributes.uploader | attributes.uploader | keyword                |
@@ -406,6 +407,7 @@ The following two tabs are the details of `Web Search Analyzer`.
     | path.keyword        | path                | keyword                |
     | name.keyword        | name                | keyword                |
     | raw_name.keyword    | raw_name            | keyword                |
+    | other_names.keyword | other_names         | keyword                |
     | src.keyword         | src                 | keyword                |
     | attributes.category | attributes.category | keyword                |
     | attributes.uploader | attributes.uploader | keyword                |
@@ -419,6 +421,7 @@ The following two tabs are the details of `Web Search Analyzer`.
     | path.ngram          | path                | ngram                  |
     | name.ngram          | name                | ngram                  |
     | raw_name.ngram      | raw_name            | ngram                  |
+    | other_names.ngram   | other_names         | ngram                  |
     | src.ngram           | src                 | ngram                  |
     | attributes.category | attributes.category | keyword                |
     | attributes.uploader | attributes.uploader | keyword                |
@@ -427,16 +430,17 @@ The following two tabs are the details of `Web Search Analyzer`.
 
     Standard
 
-    | Full field name     | Field name          | Elasticsearch analyzer |
-    | ------------------- | ------------------- | ---------------------- |
-    | path.standard       | path                | standard               |
-    | name.standard       | name                | standard               |
-    | raw_name.standard   | raw_name            | standard               |
-    | src.standard        | src                 | standard               |
-    | attributes.category | attributes.category | keyword                |
-    | attributes.uploader | attributes.uploader | keyword                |
-    | labels              | labels              | keyword                |
-    | tags.\*             | tags.\*             | keyword                |
+    | Full field name      | Field name          | Elasticsearch analyzer |
+    | -------------------- | ------------------- | ---------------------- |
+    | path.standard        | path                | standard               |
+    | name.standard        | name                | standard               |
+    | raw_name.standard    | raw_name            | standard               |
+    | other_names.standard | other_names         | standard               |
+    | src.standard         | src                 | standard               |
+    | attributes.category  | attributes.category | keyword                |
+    | attributes.uploader  | attributes.uploader | keyword                |
+    | labels               | labels              | keyword                |
+    | tags.\*              | tags.\*             | keyword                |
 
     URL
 
@@ -454,6 +458,7 @@ The following two tabs are the details of `Web Search Analyzer`.
     | path.url            | path                | url                    |
     | name.default        | name                | default                |
     | raw_name.default    | raw_name            | default                |
+    | other_names.default | other_names         | default                |
     | src.url             | src                 | url                    |
     | attributes.category | attributes.category | keyword                |
     | attributes.uploader | attributes.uploader | keyword                |
@@ -467,6 +472,7 @@ The following two tabs are the details of `Web Search Analyzer`.
     | path.keyword        | path                | keyword                |
     | name.keyword        | name                | keyword                |
     | raw_name.keyword    | raw_name            | keyword                |
+    | other_names.keyword | other_names         | keyword                |
     | src.keyword         | src                 | keyword                |
     | attributes.category | attributes.category | keyword                |
     | attributes.uploader | attributes.uploader | keyword                |
@@ -480,6 +486,7 @@ The following two tabs are the details of `Web Search Analyzer`.
     | path.ngram          | path                | ngram                  |
     | name.ngram          | name                | ngram                  |
     | raw_name.ngram      | raw_name            | ngram                  |
+    | other_names.ngram   | other_names         | ngram                  |
     | src.ngram           | src                 | ngram                  |
     | attributes.category | attributes.category | keyword                |
     | attributes.uploader | attributes.uploader | keyword                |
@@ -488,16 +495,17 @@ The following two tabs are the details of `Web Search Analyzer`.
 
     Standard
 
-    | Full field name     | Field name          | Elasticsearch analyzer |
-    | ------------------- | ------------------- | ---------------------- |
-    | path.standard       | path                | standard               |
-    | name.standard       | name                | standard               |
-    | raw_name.standard   | raw_name            | standard               |
-    | src.standard        | src                 | standard               |
-    | attributes.category | attributes.category | keyword                |
-    | attributes.uploader | attributes.uploader | keyword                |
-    | labels              | labels              | keyword                |
-    | tags.\*             | tags.\*             | keyword                |
+    | Full field name      | Field name          | Elasticsearch analyzer |
+    | -------------------- | ------------------- | ---------------------- |
+    | path.standard        | path                | standard               |
+    | name.standard        | name                | standard               |
+    | raw_name.standard    | raw_name            | standard               |
+    | other_names.standard | other_names         | standard               |
+    | src.standard         | src                 | standard               |
+    | attributes.category  | attributes.category | keyword                |
+    | attributes.uploader  | attributes.uploader | keyword                |
+    | labels               | labels              | keyword                |
+    | tags.\*              | tags.\*             | keyword                |
 
     URL
 

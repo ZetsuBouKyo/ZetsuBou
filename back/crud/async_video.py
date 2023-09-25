@@ -39,6 +39,7 @@ elasticsearch_video_analyzer = {
     AnalyzerEnum.DEFAULT.value: [
         "path.url",
         "name.default",
+        "raw_name.default",
         "other_names.default",
         "attributes.uploader",
         "attributes.category",
@@ -50,6 +51,7 @@ elasticsearch_video_analyzer = {
         "path.keyword",
         "name.keyword",
         "raw_name.keyword",
+        "other_names.keyword",
         "attributes.uploader",
         "attributes.category",
         "src.keyword",
@@ -59,6 +61,7 @@ elasticsearch_video_analyzer = {
     AnalyzerEnum.NGRAM.value: [
         "path.ngram",
         "name.ngram",
+        "raw_name.ngram",
         "other_names.ngram",
         "attributes.uploader",
         "attributes.category",
@@ -69,6 +72,7 @@ elasticsearch_video_analyzer = {
     AnalyzerEnum.STANDARD.value: [
         "path.standard",
         "name.standard",
+        "raw_name.standard",
         "other_names.standard",
         "attributes.uploader",
         "attributes.category",

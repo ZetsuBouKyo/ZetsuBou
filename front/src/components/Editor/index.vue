@@ -17,6 +17,7 @@ import { PrivateState } from "./interface";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 import Modal from "@/elements/Modal/Modal.vue";
+import EditorStringArray from "./EditorStringArray.vue";
 
 import { getTagTokenStartWith } from "@/api/v1/tag/token";
 
@@ -61,6 +62,13 @@ const privateState = reactive<PrivateState<Token>>({
   tagFields: {},
   onGets: {},
 });
+
+function addSource() {
+  state.data.src.push("");
+}
+function removeSource(i: number) {
+  state.data.src.splice(i, 1);
+}
 
 const category = initSelectDropdownState() as SelectDropdownState;
 category.addInputWatch(state, "data.attributes.category", SelectDropdownAssignedValue.Title);
@@ -229,14 +237,8 @@ defineExpose({ open, close, reset });
       <span class="w-32 mr-4">Raw Name:</span>
       <input class="flex-1 modal-input" type="text" :placeholder="state.data.raw_name" v-model="state.data.raw_name" />
     </div>
-    <!-- <div class="modal-row-10">
-      <span class="w-32 mr-4">Source:</span>
-      <input
-        class="flex-1 modal-input"
-        type="text"
-        :placeholder="state.data.attributes.src"
-        v-model="state.data.attributes.src" />
-    </div> -->
+    <editor-string-array :title="'Other Names'" :state="state" :state-key="'data.other_names'"></editor-string-array>
+    <editor-string-array :title="'Sources'" :state="state" :state-key="'data.src'"></editor-string-array>
     <div class="modal-row-10">
       <span class="w-32 mr-4">Category:</span>
       <select-dropdown

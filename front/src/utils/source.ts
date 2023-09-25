@@ -1,6 +1,16 @@
 import { Source } from "@/interface/source";
 import { SourceState } from "@/interface/state";
 
+function cleanStringArray(arr: Array<string>): Array<string> {
+  const newArray = [];
+  for (const a of arr) {
+    if (a) {
+      newArray.push(a);
+    }
+  }
+  return newArray;
+}
+
 export function cleanData(state: SourceState<Source>) {
   if (state.data.id) {
     state.data.id = state.data.id.trim();
@@ -10,6 +20,14 @@ export function cleanData(state: SourceState<Source>) {
   }
   if (state.data.raw_name) {
     state.data.raw_name = state.data.raw_name.trim();
+  }
+
+  if (state.data.other_names.length > 0) {
+    state.data.other_names = cleanStringArray(state.data.other_names);
+  }
+
+  if (state.data.src.length > 0) {
+    state.data.src = cleanStringArray(state.data.src);
   }
 
   // clean attributes

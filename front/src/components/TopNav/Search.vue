@@ -186,9 +186,8 @@ function resetGeneralSearchQuery() {
 }
 
 function updateSearchQuery() {
-  if (route.query.page) {
-    state.query.page = Number(route.query.page);
-  }
+  state.query.page = 1;
+
   if (route.query.size) {
     state.query.size = Number(route.query.size);
   }

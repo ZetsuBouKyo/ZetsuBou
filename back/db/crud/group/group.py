@@ -41,7 +41,6 @@ class CrudGroup(GroupBase):
         if admin_group.id == id:
             raise HTTPException(
                 status_code=101,
-                detail=f"You don't have permission for deleting group id: {id} group "
-                f"name: {ScopeEnum.admin.name}",
+                detail=f"You don't have permission for deleting group id: {id} group name: {ScopeEnum.admin.name}",
             )
         return await delete_by_id(cls, id)

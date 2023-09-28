@@ -34,8 +34,7 @@ async def post_tag_category(category: TagCategoryCreate) -> TagCategoryCreated:
     if category.linked_id == category.token_id:
         raise HTTPException(
             status_code=409,
-            detail=f"Conflict between token id: {category.linked_id} and "
-            f"{category.token_id}",
+            detail=f"Conflict between token id: {category.linked_id} and {category.token_id}",
         )
     if await CrudTagToken.exists(category.linked_id) is None:
         raise HTTPException(

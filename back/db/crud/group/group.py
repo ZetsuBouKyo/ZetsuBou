@@ -4,9 +4,16 @@ from fastapi import HTTPException
 
 from back.model.scope import ScopeEnum
 
-from ...model import Group, GroupCreate, GroupCreated
+from ...model import Group, GroupCreate, GroupCreated, GroupUpdate
 from ...table import GroupBase
-from ..base import count_total, create, delete_by_id, get_row_by, get_rows_order_by_id
+from ..base import (
+    count_total,
+    create,
+    delete_by_id,
+    get_row_by,
+    get_rows_order_by_id,
+    update_by_id,
+)
 
 
 class CrudGroup(GroupBase):
@@ -34,6 +41,10 @@ class CrudGroup(GroupBase):
         return await get_rows_order_by_id(
             cls, Group, skip=skip, limit=limit, is_desc=is_desc
         )
+
+    @classmethod
+    async def update_by_id(cls, group: GroupUpdate) -> bool:
+        return await update_by_id(cls, group)
 
     @classmethod
     async def delete_by_id(cls, id: int) -> bool:

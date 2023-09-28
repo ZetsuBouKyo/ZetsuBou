@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 from back.db.crud import CrudGroup
-from back.db.model import Group
+from back.db.model import Group, GroupCreate, GroupCreated, GroupUpdate
 from back.dependency.base import get_pagination
 from back.dependency.security import api_security
 from back.model.base import Pagination
@@ -22,7 +22,7 @@ async def get_total_groups() -> int:
 
 
 @router.get(
-    "/group",
+    "/groups",
     response_model=List[Group],
     dependencies=[api_security([ScopeEnum.groups_get.name])],
 )
@@ -30,6 +30,24 @@ async def get_groups(pagination: Pagination = Depends(get_pagination)) -> List[G
     return await CrudGroup.get_rows_order_by_id(
         skip=pagination.skip, limit=pagination.size, is_desc=pagination.is_desc
     )
+
+
+@router.post(
+    "/group",
+    response_model=GroupCreated,
+    dependencies=[api_security([ScopeEnum.group_post.name])],
+)
+async def post_group(group: GroupCreate) -> GroupCreated:
+    return await CrudGroup.create(group)
+
+
+@router.put(
+    "/group",
+    response_model=bool,
+    dependencies=[api_security([ScopeEnum.group_post.name])],
+)
+async def post_group(group: GroupUpdate) -> bool:
+    return await CrudGroup.update_by_id(group)
 
 
 @router.delete(

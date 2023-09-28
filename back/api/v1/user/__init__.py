@@ -11,6 +11,8 @@ from back.db.model import (
     UserFrontSettings,
     UserFrontSettingsUpdateByUserId,
     UserUpdate,
+    UserWithGroup,
+    UserWithGroupUpdate,
 )
 from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
@@ -36,9 +38,25 @@ async def get_user_by_id(user_id: int):
     return await CrudUser.get_row_by_id(user_id)
 
 
+@router.get(
+    "/{user_id}/with-groups",
+    response_model=UserWithGroup,
+    dependencies=[api_security([ScopeEnum.user_get.name])],
+)
+async def get_user_with_groups_by_id(user_id: int) -> UserWithGroup:
+    return await CrudUser.get_row_with_groups_by_id(user_id)
+
+
 @router.put("/{user_id}", dependencies=[api_security([ScopeEnum.user_put.name])])
 async def put_user_by_id(user: UserUpdate):
     return await CrudUser.update_by_user(user)
+
+
+@router.put(
+    "/{user_id}/with-groups", dependencies=[api_security([ScopeEnum.user_put.name])]
+)
+async def put_user_with_groups_by_id(user_id: int, user: UserWithGroupUpdate):
+    return await CrudUser.update_by_user_with_group(user_id, user)
 
 
 @router.delete("/{user_id}", dependencies=[api_security([ScopeEnum.user_delete.name])])

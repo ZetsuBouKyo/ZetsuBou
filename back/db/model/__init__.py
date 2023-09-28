@@ -88,7 +88,18 @@ from .user.quest.quest import (
     UserQuestCreated,
     UserQuestUpdate,
 )
-from .user.user import User, UserCreate, UserCreated, UserUpdate
+from .user.user import (
+    User,
+    UserCreate,
+    UserCreated,
+    UserUpdate,
+    UserWithGroup,
+    UserWithGroupAndHashedPassword,
+    UserWithGroupAndHashedPasswordRow,
+    UserWithGroupCreate,
+    UserWithGroupRow,
+    UserWithGroupUpdate,
+)
 
 __all__ = [
     "Group",
@@ -176,4 +187,10 @@ __all__ = [
     "UserQuestCreated",
     "UserQuestUpdate",
     "UserUpdate",
+    "UserWithGroup",
+    "UserWithGroupAndHashedPassword",
+    "UserWithGroupAndHashedPasswordRow",
+    "UserWithGroupCreate",
+    "UserWithGroupRow",
+    "UserWithGroupUpdate",
 ]

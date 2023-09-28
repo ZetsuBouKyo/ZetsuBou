@@ -1,16 +1,29 @@
-from typing import List
+from typing import List, Union
 
 from fastapi import HTTPException
 from pydantic import BaseModel, EmailStr
-from sqlalchemy import update
+from sqlalchemy import delete, desc, update
 from sqlalchemy.future import select
+from sqlalchemy.orm import Session
 from sqlalchemy.sql import functions as func
 
 from back.security import get_hashed_password, verify_password
 from back.session.async_db import async_session
 
 from ...crud import CrudUserFrontSettings
-from ...model import Group, User, UserCreate, UserCreated, UserUpdate
+from ...model import (
+    Group,
+    User,
+    UserCreate,
+    UserCreated,
+    UserUpdate,
+    UserWithGroup,
+    UserWithGroupAndHashedPassword,
+    UserWithGroupAndHashedPasswordRow,
+    UserWithGroupCreate,
+    UserWithGroupRow,
+    UserWithGroupUpdate,
+)
 from ...table import GroupBase, UserBase, UserGroupBase
 from ..base import (
     batch_create,
@@ -22,6 +35,7 @@ from ..base import (
     get_row_by_id,
     get_rows_order_by_id,
 )
+from .group import update_group_ids_by_user_id
 
 
 def get_user_hashed_password(user: BaseModel) -> dict:
@@ -29,6 +43,170 @@ def get_user_hashed_password(user: BaseModel) -> dict:
     user["hashed_password"] = get_hashed_password(user["password"])
     del user["password"]
     return user
+
+
+class _CrudUser:
+    def __init__(
+        self,
+        session: Session,
+        base: UserBase,
+        user_id: int,
+        user: Union[UserUpdate, UserWithGroupUpdate],
+        user_group_base: UserGroupBase = UserGroupBase,
+        group_base: GroupBase = GroupBase,
+    ):
+        self.session = session
+        self.base = base
+        self.user_id = user_id
+        self.user = user
+        self.user_group_base = user_group_base
+        self.group_base = group_base
+
+        self.new_user = {}
+        self.with_group = type(user) == UserWithGroupUpdate
+        self.need_to_update = False
+
+    async def get_user_in_db(self):
+        if not self.with_group:
+            row = await self.session.execute(
+                select(self.base).where(self.base.id == self.user_id)
+            )
+            user_in_db = row.scalars().first()
+            if user_in_db is None:
+                raise HTTPException(status_code=401, detail="Not authenticated")
+        else:
+            statement = (
+                select(
+                    self.base.id,
+                    self.base.name,
+                    self.base.email,
+                    self.base.created,
+                    self.base.last_signin,
+                    self.base.hashed_password,
+                    self.user_group_base.group_id,
+                )
+                .where(self.base.id == self.user_id)
+                .outerjoin(
+                    self.user_group_base, self.base.id == self.user_group_base.user_id
+                )
+            )
+            _rows = await self.session.execute(statement)
+            user_in_db = None
+            for row in _rows.mappings():
+                r = UserWithGroupAndHashedPasswordRow(**row)
+                if user_in_db is None:
+                    group_ids = []
+                    group_names = []
+
+                    user_in_db = UserWithGroupAndHashedPassword(
+                        id=r.id,
+                        name=r.name,
+                        email=r.email,
+                        created=r.created,
+                        last_signin=r.last_signin,
+                        group_ids=group_ids,
+                        group_names=group_names,
+                        hashed_password=r.hashed_password,
+                    )
+                if r.group_id is not None and r.group_name is not None:
+                    user_in_db.group_ids.append(r.group_id)
+                    user_in_db.group_names.append(r.group_name)
+
+        return user_in_db
+
+    async def get_updated_user(self):
+        updated_user = {}
+        if not self.with_group:
+            row = await self.session.execute(
+                select(self.base).where(self.base.id == self.user_id)
+            )
+            first = row.scalars().first()
+            updated_user = first.__dict__
+        else:
+            statement = (
+                select(
+                    self.base.id,
+                    self.base.name,
+                    self.base.email,
+                    self.base.created,
+                    self.base.last_signin,
+                    self.user_group_base.group_id,
+                    self.group_base.name.label("group_name"),
+                )
+                .where(self.base.id == self.user_id)
+                .outerjoin(
+                    self.user_group_base, self.base.id == self.user_group_base.user_id
+                )
+                .outerjoin(
+                    self.group_base, self.group_base.id == self.user_group_base.group_id
+                )
+            )
+            _rows = await self.session.execute(statement)
+            rows = [row for row in _rows.mappings()]
+            if len(rows) != 1:
+                raise HTTPException(status_code=409, detail="Duplicate user")
+            updated_user = rows[0]
+        return updated_user
+
+    async def is_email(self):
+        new_user_email = self.user.email
+        if new_user_email != self.user_in_db.email:
+            row = await self.session.execute(
+                select(self.base).where(self.base.email == new_user_email)
+            )
+            user_check_email = row.scalars().first()
+            if user_check_email is not None:
+                raise HTTPException(
+                    status_code=409, detail=f"{new_user_email} already exists"
+                )
+            self.new_user.update(email=new_user_email)
+
+    async def _update(self):
+        if self.user.name is not None and self.user.name != self.user_in_db.name:
+            self.new_user.update(name=self.user.name)
+        if self.user.new_password is not None:
+            self.new_user.update(
+                hashed_password=get_hashed_password(self.user.new_password)
+            )
+
+        if self.new_user:
+            rows = await self.session.execute(
+                update(self.base)
+                .where(self.base.id == self.user_in_db.id)
+                .values(**self.new_user)
+            )
+            if self.with_group:
+                if len(self.user.group_ids) == 0:
+                    await self.session.execute(
+                        delete(self.user_group_base).where(
+                            self.user_group_base.user_id == self.user_id
+                        )
+                    )
+                else:
+                    await update_group_ids_by_user_id(
+                        self.session,
+                        self.user_group_base,
+                        self.user_id,
+                        self.user.group_ids,
+                    )
+
+            if rows.rowcount == 0:
+                raise HTTPException(status_code=500, detail="Update failed")
+
+            self.need_to_update = True
+
+    async def update(self):
+        self.user_in_db = await self.get_user_in_db()
+
+        if not verify_password(self.user.password, self.user_in_db.hashed_password):
+            raise HTTPException(status_code=401, detail="Not authenticated")
+
+        await self.is_email()
+        await self._update()
+
+        updated_user = await self.get_updated_user()
+
+        return updated_user
 
 
 class CrudUser(UserBase):
@@ -68,6 +246,46 @@ class CrudUser(UserBase):
         return await get_row_by_id(cls, id, User)
 
     @classmethod
+    async def get_row_with_groups_by_id(cls, id: int) -> UserWithGroup:
+        async with async_session() as session:
+            async with session.begin():
+                statement = (
+                    select(
+                        cls.id,
+                        cls.name,
+                        cls.email,
+                        cls.created,
+                        cls.last_signin,
+                        UserGroupBase.group_id,
+                        GroupBase.name.label("group_name"),
+                    )
+                    .where(cls.id == id)
+                    .outerjoin(UserGroupBase, cls.id == UserGroupBase.user_id)
+                    .outerjoin(GroupBase, GroupBase.id == UserGroupBase.group_id)
+                )
+                _rows = await session.execute(statement)
+                user = None
+                for row in _rows.mappings():
+                    r = UserWithGroupRow(**row)
+                    if user is None:
+                        group_ids = []
+                        group_names = []
+
+                        user = UserWithGroup(
+                            id=r.id,
+                            name=r.name,
+                            email=r.email,
+                            created=r.created,
+                            last_signin=r.last_signin,
+                            group_ids=group_ids,
+                            group_names=group_names,
+                        )
+                    if r.group_id is not None and r.group_name is not None:
+                        user.group_ids.append(r.group_id)
+                        user.group_names.append(r.group_name)
+        return user
+
+    @classmethod
     async def get_row_by_email(cls, email: EmailStr) -> User:
         return await get_row_by(cls, cls.email == email, User)
 
@@ -78,6 +296,69 @@ class CrudUser(UserBase):
         return await get_rows_order_by_id(
             cls, User, skip=skip, limit=limit, is_desc=is_desc
         )
+
+    @classmethod
+    async def get_rows_with_group_id_order_by_id(
+        cls, skip: int = 0, limit: int = 100, is_desc: bool = False
+    ) -> List[UserWithGroup]:
+        out = []
+        order = cls.id
+        if is_desc:
+            order = desc(cls.id)
+        async with async_session() as session:
+            async with session.begin():
+                sub_statement = (
+                    select(cls).offset(skip).limit(limit).order_by(order).subquery()
+                )
+
+                statement = (
+                    select(
+                        cls.id,
+                        cls.name,
+                        cls.email,
+                        cls.created,
+                        cls.last_signin,
+                        UserGroupBase.group_id,
+                        GroupBase.name.label("group_name"),
+                    )
+                    .select_from(cls)
+                    .join(sub_statement, sub_statement.c.id == cls.id)
+                    .outerjoin(
+                        UserGroupBase, sub_statement.c.id == UserGroupBase.user_id
+                    )
+                    .outerjoin(GroupBase, GroupBase.id == UserGroupBase.group_id)
+                )
+                rows = await session.execute(statement)
+                for row in rows.mappings():
+                    r = UserWithGroupRow(**row)
+                    if len(out) > 0:
+                        last: UserWithGroup = out[-1]
+                        if (
+                            (last.id == r.id)
+                            and r.group_id is not None
+                            and r.group_name is not None
+                        ):
+                            last.group_ids.append(r.group_id)
+                            last.group_names.append(r.group_name)
+                            continue
+
+                    group_ids = []
+                    group_names = []
+                    if r.group_id is not None and r.group_name is not None:
+                        group_ids.append(r.group_id)
+                        group_names.append(r.group_name)
+                    out.append(
+                        UserWithGroup(
+                            id=r.id,
+                            name=r.name,
+                            email=r.email,
+                            created=r.created,
+                            last_signin=r.last_signin,
+                            group_ids=group_ids,
+                            group_names=group_names,
+                        )
+                    )
+        return out
 
     @classmethod
     async def get_groups_by_id(cls, id: int) -> List[Group]:
@@ -98,37 +379,26 @@ class CrudUser(UserBase):
 
                 for row in rows.scalars().all():
                     out.append(Group(**row.__dict__))
+
         return out
 
     @classmethod
-    async def update_by_user(cls, user: UserUpdate) -> bool:
+    async def update_by_user(cls, user_id: int, user: UserUpdate) -> User:
         async with async_session() as session:
             async with session.begin():
-                row = await session.execute(select(cls).where(cls.email == user.email))
-                first = row.scalars().first()
-                if first is None:
-                    raise HTTPException(status_code=401, detail="Not authenticated")
-            async with session.begin():
-                if not verify_password(user.password, first.hashed_password):
-                    raise HTTPException(status_code=401, detail="Not authenticated")
+                crud = _CrudUser(session, cls, user_id, user)
+                updated_user = await crud.update()
+        return User(**updated_user)
 
-                new_user = {}
-                if user.name is not None and user.name != first.name:
-                    new_user["name"] = user.name
-                if user.new_password is not None:
-                    new_user["hashed_password"] = get_hashed_password(user.new_password)
-
-                if new_user:
-                    rows = await session.execute(
-                        update(cls).where(cls.email == first.email).values(**new_user)
-                    )
-                    await session.commit()
-                    if rows.rowcount == 0:
-                        raise HTTPException(status_code=500, detail="Update failed")
+    @classmethod
+    async def update_by_user_with_group(
+        cls, user_id: int, user: UserWithGroupUpdate
+    ) -> UserWithGroup:
+        async with async_session() as session:
             async with session.begin():
-                row = await session.execute(select(cls).where(cls.email == user.email))
-                first = row.scalars().first()
-        return User(**first.__dict__)
+                crud = _CrudUser(session, cls, user_id, user)
+                updated_user = await crud.update()
+        return UserWithGroup(**updated_user)
 
     @classmethod
     async def delete_all(cls):

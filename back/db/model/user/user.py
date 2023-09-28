@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr
 
@@ -30,3 +30,28 @@ class User(BaseModel):
     email: str
     created: DatetimeStr
     last_signin: DatetimeStr
+
+
+class UserWithGroupCreate(UserCreate):
+    group_ids: List[int]
+
+
+UserWithGroupUpdate = UserWithGroupCreate
+
+
+class UserWithGroupRow(User):
+    group_id: Optional[int] = None
+    group_name: Optional[str] = None
+
+
+class UserWithGroupAndHashedPasswordRow(UserWithGroupRow):
+    hashed_password: str
+
+
+class UserWithGroup(User):
+    group_ids: List[int] = []
+    group_names: List[str] = []
+
+
+class UserWithGroupAndHashedPassword(UserWithGroup):
+    hashed_password: str

@@ -2,11 +2,12 @@ from typing import List
 
 from sqlalchemy import delete, update
 from sqlalchemy.future import select
+from sqlalchemy.orm import Session
 
 from back.session.async_db import async_session
 
 from ...model import UserGroup, UserGroupCreate
-from ...table import GroupBase, UserBase, UserGroupBase
+from ...table import UserGroupBase
 from ..base import (
     create,
     delete_by_id,
@@ -16,6 +17,41 @@ from ..base import (
 )
 
 
+async def update_group_ids_by_user_id(
+    session: Session, user_group_base: UserGroupBase, user_id: int, group_ids: List[int]
+):
+    new_group_ids = set(group_ids)
+    to_deleted_ids = set()
+
+    rows = await session.execute(
+        select(user_group_base).where(user_group_base.user_id == user_id)
+    )
+    for row in rows.scalars().all():
+        user_group = UserGroup(**row.__dict__)
+        if user_group.group_id not in new_group_ids:
+            to_deleted_ids.add(user_group.id)
+        else:
+            new_group_ids.remove(user_group.group_id)
+    while new_group_ids and to_deleted_ids:
+        new_group_id = new_group_ids.pop()
+        to_update_id = to_deleted_ids.pop()
+        await session.execute(
+            update(user_group_base)
+            .where(user_group_base.id == to_update_id)
+            .values(user_id=user_id, group_id=new_group_id)
+        )
+
+    if new_group_ids:
+        for group_id in new_group_ids:
+            session.add(user_group_base(user_id=user_id, group_id=group_id))
+    if to_deleted_ids:
+        for id in to_deleted_ids:
+            await session.execute(
+                delete(user_group_base).where(user_group_base.id == id)
+            )
+    return True
+
+
 class CrudUserGroup(UserGroupBase):
     @classmethod
     async def create(cls, user_group: UserGroupCreate) -> UserGroup:
@@ -23,36 +59,12 @@ class CrudUserGroup(UserGroupBase):
 
     @classmethod
     async def update(cls, user_id: int, group_ids: List[int]):
-        new_group_ids = set(group_ids)
-        to_deleted_ids = set()
         async with async_session() as session:
             async with session.begin():
-                rows = await session.execute(select(cls).where(cls.user_id == user_id))
-                for row in rows.scalars().all():
-                    user_group = UserGroup(**row.__dict__)
-                    if user_group.group_id not in new_group_ids:
-                        to_deleted_ids.add(user_group.id)
-                    else:
-                        new_group_ids.remove(user_group.group_id)
-                while new_group_ids and to_deleted_ids:
-                    new_group_id = new_group_ids.pop()
-                    to_update_id = to_deleted_ids.pop()
-                    await session.execute(
-                        update(cls)
-                        .where(cls.id == to_update_id)
-                        .values(user_id=user_id, group_id=new_group_id)
-                    )
-
-                if new_group_ids:
-                    for group_id in new_group_ids:
-                        session.add(UserGroupBase(user_id=user_id, group_id=group_id))
-                if to_deleted_ids:
-                    for id in to_deleted_ids:
-                        await session.execute(
-                            delete(UserGroupBase).where(UserGroupBase.id == id)
-                        )
-
-        return True
+                res = await update_group_ids_by_user_id(
+                    session, cls, user_id, group_ids
+                )
+        return res
 
     @classmethod
     async def get_row_by_id(cls, id: int) -> UserGroup:

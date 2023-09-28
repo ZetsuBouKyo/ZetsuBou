@@ -1,5 +1,6 @@
 from typing import List
 
+from sqlalchemy import delete, update
 from sqlalchemy.future import select
 
 from back.session.async_db import async_session
@@ -21,32 +22,37 @@ class CrudUserGroup(UserGroupBase):
         return UserGroup(**await create(cls, user_group))
 
     @classmethod
-    async def batch_create(cls, user_groups: List[UserGroupCreate]):
-        out = []
+    async def update(cls, user_id: int, group_ids: List[int]):
+        new_group_ids = set(group_ids)
+        to_deleted_ids = set()
         async with async_session() as session:
-            for group in user_groups:
-                rows = await session.execute(
-                    select(UserBase).where(UserBase.id == group.user_id)
-                )
-                first = rows.scalars().first()
-                if first is None:
-                    session.rollback()
-                    return []
+            async with session.begin():
+                rows = await session.execute(select(cls).where(cls.user_id == user_id))
+                for row in rows.scalars().all():
+                    user_group = UserGroup(**row.__dict__)
+                    if user_group.group_id not in new_group_ids:
+                        to_deleted_ids.add(user_group.id)
+                    else:
+                        new_group_ids.remove(user_group.group_id)
+                while new_group_ids and to_deleted_ids:
+                    new_group_id = new_group_ids.pop()
+                    to_update_id = to_deleted_ids.pop()
+                    await session.execute(
+                        update(cls)
+                        .where(cls.id == to_update_id)
+                        .values(user_id=user_id, group_id=new_group_id)
+                    )
 
-                rows = await session.execute(
-                    select(GroupBase).where(GroupBase.id == group.group_id)
-                )
-                first = rows.scalars().first()
-                if first is None:
-                    session.rollback()
-                    return []
+                if new_group_ids:
+                    for group_id in new_group_ids:
+                        session.add(UserGroupBase(user_id=user_id, group_id=group_id))
+                if to_deleted_ids:
+                    for id in to_deleted_ids:
+                        await session.execute(
+                            delete(UserGroupBase).where(UserGroupBase.id == id)
+                        )
 
-                inst = cls(**group.model_dump())
-                session.add(inst)
-                await session.flush()
-                out.append(inst.__dict__)
-            session.commit()
-        return out
+        return True
 
     @classmethod
     async def get_row_by_id(cls, id: int) -> UserGroup:

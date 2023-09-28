@@ -132,7 +132,7 @@ class ScopeEnum(str, Enum):
     user_bookmark_gallery_put: str = "user.bookmark.gallery:put"
     user_bookmark_gallery_delete: str = "user.bookmark.gallery:delete"
     user_groups_get: str = "user.groups:get"
-    user_groups_post: str = "user.groups:post"
+    user_groups_put: str = "user.groups:put"
     user_front_settings_get: str = "user.front-settings:get"
     user_front_settings_put: str = "user.front-settings:put"
     user_elastic_total_count_queries_get: str = "user.elastic.total-count-queries:get"

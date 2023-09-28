@@ -10,7 +10,6 @@ from back.db.model import (
     UserCreated,
     UserFrontSettings,
     UserFrontSettingsUpdateByUserId,
-    UserGroupCreate,
     UserUpdate,
 )
 from back.dependency.security import api_security
@@ -52,18 +51,15 @@ async def delete_user_by_id(user_id: int):
     response_model=List[Group],
     dependencies=[api_security([ScopeEnum.user_groups_get.name])],
 )
-async def get_user_groups_by_id(user_id: int) -> List[Group]:
+async def get_user_groups(user_id: int) -> List[Group]:
     return await CrudUser.get_groups_by_id(user_id)
 
 
-@router.post(
-    "/{user_id}/groups", dependencies=[api_security([ScopeEnum.user_groups_post.name])]
+@router.put(
+    "/{user_id}/groups", dependencies=[api_security([ScopeEnum.user_groups_put.name])]
 )
-async def post_user_groups_by_id(user_id: int, group_ids: List[int]):
-    user_groups = []
-    for group_id in group_ids:
-        user_groups.append(UserGroupCreate(user_id=user_id, group_id=group_id))
-    return await CrudUserGroup.batch_create(user_groups)
+async def put_user_groups(user_id: int, group_ids: List[int]):
+    return await CrudUserGroup.update(user_id, group_ids)
 
 
 @router.put(

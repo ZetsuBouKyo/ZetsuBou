@@ -10,6 +10,7 @@ from back.logging.utils import get_all_loggers
 from back.settings import LoggingLevelEnum, setting
 
 APP_LOGGING_TO_FILE = setting.app_logging_to_file
+APP_LOGGING_LIBS = setting.app_logging_libs
 APP_LOGGING_LEVEL = setting.app_logging_level.value
 APP_LOGGING_FORMATTER_FMT = setting.app_logging_formatter_fmt
 
@@ -74,10 +75,18 @@ def init_zetsubou_logger(logging_level: LoggingLevelEnum = APP_LOGGING_LEVEL):
         )
         rotating_file_handler.setFormatter(rotating_file_formatter)
 
-        logger_zetsubou.addHandler(rotating_file_handler)
-        logger_uvicorn_error.addHandler(rotating_file_handler)
-        logger_uvicorn_access.addHandler(rotating_file_handler)
+        if not APP_LOGGING_LIBS:
+            logger_zetsubou.addHandler(rotating_file_handler)
+            logger_uvicorn_error.addHandler(rotating_file_handler)
+            logger_uvicorn_access.addHandler(rotating_file_handler)
+        else:
+            for logger in loggers:
+                logger.addHandler(rotating_file_handler)
 
-    logger_zetsubou.addHandler(stream_handler)
-    logger_uvicorn_error.addHandler(stream_handler)
-    logger_uvicorn_access.addHandler(stream_handler)
+    if not APP_LOGGING_LIBS:
+        logger_zetsubou.addHandler(stream_handler)
+        logger_uvicorn_error.addHandler(stream_handler)
+        logger_uvicorn_access.addHandler(stream_handler)
+    else:
+        for logger in loggers:
+            logger.addHandler(stream_handler)

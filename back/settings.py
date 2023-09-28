@@ -121,6 +121,10 @@ class Setting(BaseSettings):
         description="Used to encrypt token. Must be changed.",
     )
 
+    app_logging_libs: bool = Field(
+        default=False,
+        description="When this value is true, all loggers are attached to handlers.",
+    )
     app_logging_to_file: bool = Field(
         default=False,
         description="If this value is true, the application will write the log.",

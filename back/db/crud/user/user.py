@@ -35,6 +35,7 @@ from ..base import (
     get_row_by_id,
     get_rows_order_by_id,
 )
+from .front_settings import init_user_front_settings
 from .group import update_group_ids_by_user_id
 
 
@@ -222,12 +223,8 @@ class CrudUser(UserBase):
 
                 await session.flush()
                 created_user = UserCreated(**instance.__dict__)
-        if created_user is None or not created_user.id:
-            raise HTTPException(
-                status_code=500, detail="Internal Server Error: sqlalchemy create user"
-            )
-        if is_front_settings:
-            await CrudUserFrontSettings.init(created_user.id)
+                if is_front_settings:
+                    await init_user_front_settings(session, created_user.id)
 
         return created_user
 

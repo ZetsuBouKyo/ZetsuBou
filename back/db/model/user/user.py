@@ -1,8 +1,10 @@
 from typing import List, Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from back.utils.model import DatetimeStr
+
+field_group_ids = Field(..., examples=[[1]])
 
 
 class UserCreate(BaseModel):
@@ -12,9 +14,9 @@ class UserCreate(BaseModel):
 
 
 class UserCreated(BaseModel):
-    id: int
-    name: str
-    email: EmailStr
+    id: int = Field(..., examples=[1])
+    name: str = Field(..., examples=["ZetsuBouKyo"])
+    email: EmailStr = Field(..., examples=["zetsuboukyo@example.com"])
 
 
 class UserUpdate(BaseModel):
@@ -36,7 +38,12 @@ class UserWithGroupCreate(UserCreate):
     group_ids: List[int]
 
 
-UserWithGroupUpdate = UserWithGroupCreate
+class UserWithGroupCreated(UserCreated):
+    group_ids: List[int] = Field(..., examples=[[1]])
+
+
+class UserWithGroupUpdate(UserUpdate):
+    group_ids: List[int]
 
 
 class UserWithGroupRow(User):

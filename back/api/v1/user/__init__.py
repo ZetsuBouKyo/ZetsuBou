@@ -1,17 +1,19 @@
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from fastapi.responses import JSONResponse
+from typing_extensions import Annotated
 
 from back.db.crud import CrudUser, CrudUserFrontSettings, CrudUserGroup
 from back.db.model import (
     Group,
-    UserCreate,
-    UserCreated,
+    User,
     UserFrontSettings,
     UserFrontSettingsUpdateByUserId,
     UserUpdate,
     UserWithGroup,
+    UserWithGroupCreate,
+    UserWithGroupCreated,
     UserWithGroupUpdate,
 )
 from back.dependency.security import api_security
@@ -23,14 +25,42 @@ from .quest import router as quest
 
 router = APIRouter(prefix="/user", tags=["User"])
 
+post_user_openapi_examples = {
+    "admin": {
+        "summary": "An admin user",
+        "description": "Create a user with `group_id=1`. By default, `group_id=1` is `admin`.",
+        "value": {
+            "name": "ZetsuBouKyo",
+            "email": "zetsuboukyo@example.com",
+            "password": "password",
+            "group_ids": [1],
+        },
+    },
+    "plain": {
+        "summary": "A user without groups",
+        "description": "Create a user without groups.",
+        "value": {
+            "name": "ZetsuBouKyo",
+            "email": "zetsuboukyo@example.com",
+            "password": "password",
+            "group_ids": [],
+        },
+    },
+}
+
 
 @router.post(
     "",
-    response_model=UserCreated,
+    response_model=UserWithGroupCreated,
     dependencies=[api_security([ScopeEnum.user_post.name])],
 )
-async def post_user(user: UserCreate) -> UserCreated:
-    return await CrudUser.create(user)
+async def post_user(
+    user: Annotated[
+        UserWithGroupCreate,
+        Body(openapi_examples=post_user_openapi_examples),
+    ]
+) -> UserWithGroupCreated:
+    return await CrudUser.create_with_groups(user)
 
 
 @router.get("/{user_id}", dependencies=[api_security([ScopeEnum.user_get.name])])
@@ -47,13 +77,19 @@ async def get_user_with_groups_by_id(user_id: int) -> UserWithGroup:
     return await CrudUser.get_row_with_groups_by_id(user_id)
 
 
-@router.put("/{user_id}", dependencies=[api_security([ScopeEnum.user_put.name])])
-async def put_user_by_id(user: UserUpdate):
-    return await CrudUser.update_by_user(user)
+@router.put(
+    "/{user_id}",
+    response_model=User,
+    dependencies=[api_security([ScopeEnum.user_put.name])],
+)
+async def put_user_by_id(user_id: int, user: UserUpdate):
+    return await CrudUser.update_by_user(user_id, user)
 
 
 @router.put(
-    "/{user_id}/with-groups", dependencies=[api_security([ScopeEnum.user_put.name])]
+    "/{user_id}/with-groups",
+    response_model=UserWithGroup,
+    dependencies=[api_security([ScopeEnum.user_put.name])],
 )
 async def put_user_with_groups_by_id(user_id: int, user: UserWithGroupUpdate):
     return await CrudUser.update_by_user_with_group(user_id, user)

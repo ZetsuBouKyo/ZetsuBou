@@ -1,7 +1,7 @@
 from typing import List, Union
 
 from fastapi import HTTPException
-from pydantic import BaseModel, EmailStr
+from pydantic import EmailStr
 from sqlalchemy import delete, desc, update
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
@@ -10,17 +10,18 @@ from sqlalchemy.sql import functions as func
 from back.security import get_hashed_password, verify_password
 from back.session.async_db import async_session
 
-from ...crud import CrudUserFrontSettings
 from ...model import (
     Group,
     User,
     UserCreate,
     UserCreated,
+    UserGroup,
     UserUpdate,
     UserWithGroup,
     UserWithGroupAndHashedPassword,
     UserWithGroupAndHashedPasswordRow,
     UserWithGroupCreate,
+    UserWithGroupCreated,
     UserWithGroupRow,
     UserWithGroupUpdate,
 )
@@ -39,11 +40,12 @@ from .front_settings import init_user_front_settings
 from .group import update_group_ids_by_user_id
 
 
-def get_user_hashed_password(user: BaseModel) -> dict:
-    user = user.model_dump()
-    user["hashed_password"] = get_hashed_password(user["password"])
-    del user["password"]
-    return user
+def get_user_hashed_password(user: Union[UserCreate, UserWithGroupCreate]) -> dict:
+    u = {}
+    u.update(name=user.name)
+    u.update(email=user.email)
+    u.update(hashed_password=get_hashed_password(user.password))
+    return u
 
 
 class _CrudUser:
@@ -123,6 +125,7 @@ class _CrudUser:
             )
             first = row.scalars().first()
             updated_user = first.__dict__
+            updated_user = User(**updated_user)
         else:
             statement = (
                 select(
@@ -143,10 +146,25 @@ class _CrudUser:
                 )
             )
             _rows = await self.session.execute(statement)
-            rows = [row for row in _rows.mappings()]
-            if len(rows) != 1:
-                raise HTTPException(status_code=409, detail="Duplicate user")
-            updated_user = rows[0]
+            updated_user = None
+            for row in _rows.mappings():
+                r = UserWithGroupRow(**row)
+                if updated_user is None:
+                    group_ids = []
+                    group_names = []
+                    updated_user = UserWithGroup(
+                        id=r.id,
+                        name=r.name,
+                        email=r.email,
+                        created=r.created,
+                        last_signin=r.last_signin,
+                        group_ids=group_ids,
+                        group_names=group_names,
+                    )
+                if r.group_id is not None and r.group_name is not None:
+                    updated_user.group_ids.append(r.group_id)
+                    updated_user.group_names.append(r.group_name)
+
         return updated_user
 
     async def is_email(self):
@@ -196,8 +214,10 @@ class _CrudUser:
 
             self.need_to_update = True
 
-    async def update(self):
+    async def update(self) -> Union[User, UserWithGroup]:
         self.user_in_db = await self.get_user_in_db()
+        if self.user_in_db is None:
+            raise HTTPException(status_code=404, detail="User does not exist")
 
         if not verify_password(self.user.password, self.user_in_db.hashed_password):
             raise HTTPException(status_code=401, detail="Not authenticated")
@@ -206,8 +226,28 @@ class _CrudUser:
         await self._update()
 
         updated_user = await self.get_updated_user()
+        if updated_user is None:
+            raise HTTPException(status_code=500, detail="Update failed")
 
         return updated_user
+
+
+async def create_user(
+    session: Session,
+    user_base: UserBase,
+    user: Union[UserCreate, UserWithGroupCreate],
+    is_front_settings: bool = True,
+) -> UserCreated:
+    user_dict = get_user_hashed_password(user)
+    instance = user_base(**user_dict)
+
+    session.add(instance)
+    await session.flush()
+    created_user = UserCreated(**instance.__dict__)
+
+    if is_front_settings:
+        await init_user_front_settings(session, created_user.id)
+    return created_user
 
 
 class CrudUser(UserBase):
@@ -215,18 +255,40 @@ class CrudUser(UserBase):
     async def create(
         cls, user: UserCreate, is_front_settings: bool = True
     ) -> UserCreated:
-        user = get_user_hashed_password(user)
         async with async_session() as session:
-            instance = cls(**user)
             async with session.begin():
-                session.add(instance)
-
-                await session.flush()
-                created_user = UserCreated(**instance.__dict__)
-                if is_front_settings:
-                    await init_user_front_settings(session, created_user.id)
+                created_user = await create_user(
+                    session, cls, user, is_front_settings=is_front_settings
+                )
 
         return created_user
+
+    @classmethod
+    async def create_with_groups(
+        cls, user: UserWithGroupCreate, is_front_settings: bool = True
+    ) -> UserWithGroupCreated:
+        async with async_session() as session:
+            async with session.begin():
+                created_user = await create_user(
+                    session, cls, user, is_front_settings=is_front_settings
+                )
+                await update_group_ids_by_user_id(
+                    session, UserGroupBase, created_user.id, user.group_ids
+                )
+
+                rows = await session.execute(
+                    select(UserGroupBase).where(
+                        UserGroupBase.user_id == created_user.id
+                    )
+                )
+                user_group_ids = []
+                for row in rows.scalars().all():
+                    user_group = UserGroup(**row.__dict__)
+                    user_group_ids.append(user_group.group_id)
+
+                created_user_with_groups_dict = created_user.model_dump()
+                created_user_with_groups_dict.update(group_ids=user_group_ids)
+        return UserWithGroupCreated(**created_user_with_groups_dict)
 
     @classmethod
     async def batch_create(cls, users: List[UserCreate]):
@@ -324,6 +386,7 @@ class CrudUser(UserBase):
                         UserGroupBase, sub_statement.c.id == UserGroupBase.user_id
                     )
                     .outerjoin(GroupBase, GroupBase.id == UserGroupBase.group_id)
+                    .order_by(order)
                 )
                 rows = await session.execute(statement)
                 for row in rows.mappings():
@@ -385,7 +448,7 @@ class CrudUser(UserBase):
             async with session.begin():
                 crud = _CrudUser(session, cls, user_id, user)
                 updated_user = await crud.update()
-        return User(**updated_user)
+        return updated_user
 
     @classmethod
     async def update_by_user_with_group(
@@ -395,7 +458,7 @@ class CrudUser(UserBase):
             async with session.begin():
                 crud = _CrudUser(session, cls, user_id, user)
                 updated_user = await crud.update()
-        return UserWithGroup(**updated_user)
+        return updated_user
 
     @classmethod
     async def delete_all(cls):

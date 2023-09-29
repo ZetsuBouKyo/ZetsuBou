@@ -1,8 +1,9 @@
-from typing import Any
+from typing import Any, Union
 
 from pydantic import BaseModel
 from sqlalchemy import update
 from sqlalchemy.future import select
+from sqlalchemy.orm import Session
 
 from back.session.async_db import async_session
 from back.settings import setting
@@ -14,20 +15,6 @@ from ...table import (
     UserFrontSettingsGalleryPreviewSize,
     UserFrontSettingsVideoPreviewSize,
 )
-
-
-async def _update(session, instance, user_id, data):
-    await session.execute(
-        update(instance).where(instance.user_id == user_id).values(**data)
-    )
-
-
-async def _get(session, instance, user_id) -> dict:
-    rows = await session.execute(select(instance).where(instance.user_id == user_id))
-    first = rows.scalars().first()
-    if first is None:
-        return {}
-    return first.__dict__
 
 
 class UserFrontSettingsParameter(BaseModel):
@@ -59,35 +46,74 @@ _parameters = [
     },
 ]
 
+
 parameters = [UserFrontSettingsParameter(**p) for p in _parameters]
+
+UserFrontSettingsParameterBase = Union[
+    UserFrontSettingsGalleryImageAutoPlayTimeInterval,
+    UserFrontSettingsGalleryImagePreviewSize,
+    UserFrontSettingsGalleryPreviewSize,
+    UserFrontSettingsVideoPreviewSize,
+]
+
+
+async def _update(
+    session: Session, instance: UserFrontSettingsParameterBase, user_id: int, data: dict
+):
+    await session.execute(
+        update(instance).where(instance.user_id == user_id).values(**data)
+    )
+
+
+async def _get(
+    session: Session, instance: UserFrontSettingsParameterBase, user_id: int
+) -> dict:
+    rows = await session.execute(select(instance).where(instance.user_id == user_id))
+    first = rows.scalars().first()
+    if first is None:
+        return {}
+    return first.__dict__
+
+
+async def get_user_front_settings_by_user_id(
+    session: Session, user_id: int
+) -> UserFrontSettings:
+    s = {"user_id": user_id}
+    for p in parameters:
+        row = await _get(session, p.instance, user_id)
+        s[p.front_settings_key] = row.get(p.table_col, None)
+
+    return UserFrontSettings(**s)
+
+
+async def init_user_front_settings(session: Session, user_id: int):
+    default_settings = setting.get_app_user_front_settings(user_id)
+    settings = await get_user_front_settings_by_user_id(session, user_id)
+    settings = settings.model_dump()
+    for p in parameters:
+        key = p.front_settings_key
+        if settings.get(key, None) is None:
+            d = {p.table_col: default_settings.get(key), "user_id": user_id}
+            data = p.instance(**d)
+            session.add(data)
 
 
 class CrudUserFrontSettings:
     @classmethod
     async def init(cls, user_id: int) -> bool:
-        default_settings = setting.get_app_user_front_settings(user_id)
-        settings = await cls.get_row_by_user_id(user_id)
-        settings = settings.model_dump()
         async with async_session() as session:
             async with session.begin():
-                for p in parameters:
-                    key = p.front_settings_key
-                    if settings.get(key, None) is None:
-                        d = {p.table_col: default_settings.get(key), "user_id": user_id}
-                        data = p.instance(**d)
-                        session.add(data)
+                await init_user_front_settings(session, user_id)
         return True
 
     @classmethod
     async def get_row_by_user_id(cls, user_id: int) -> UserFrontSettings:
-        s = {"user_id": user_id}
         async with async_session() as session:
             async with session.begin():
-                for p in parameters:
-                    row = await _get(session, p.instance, user_id)
-                    s[p.front_settings_key] = row.get(p.table_col, None)
-
-        return UserFrontSettings(**s)
+                user_front_settings = await get_user_front_settings_by_user_id(
+                    session, user_id
+                )
+        return user_front_settings
 
     @classmethod
     async def update_by_user_id(cls, settings: UserFrontSettingsUpdateByUserId) -> bool:

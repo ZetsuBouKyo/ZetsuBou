@@ -13,6 +13,7 @@ import {
 import {
   CrudGetParam,
   CrudTableState,
+  EditorTypeEnum,
   Header,
   OnCloseEditor,
   OnCrudCreate,
@@ -175,6 +176,7 @@ function onCloseEditor() {
 
 function create() {
   state.row = {};
+  state.editor.type = EditorTypeEnum.Create;
   state.editor.handler = () => {
     props.onCrudCreate(state.row).then((response: any) => {
       if (response.status === 200) {
@@ -191,6 +193,7 @@ function update(row: Row) {
     return;
   }
   state.row = row;
+  state.editor.type = EditorTypeEnum.Update;
   state.editor.handler = () => {
     props.onCrudUpdate(state.row).then((response: any) => {
       if (response.status !== 200) {
@@ -261,6 +264,8 @@ routeState.setLoadFunction(load);
     :on-close="onCloseEditor"
     :class="editorClass">
     <slot name="editor"></slot>
+    <slot name="editor-create" v-if="state.editor.type === EditorTypeEnum.Create"></slot>
+    <slot name="editor-update" v-else-if="state.editor.type === EditorTypeEnum.Update"></slot>
     <div class="modal-row-reverse h-10">
       <button class="flex ml-2 btn btn-primary" @click="state.editor.handler">Save</button>
       <button class="flex ml-2 btn btn-primary" @click="editor.close">Cancel</button>

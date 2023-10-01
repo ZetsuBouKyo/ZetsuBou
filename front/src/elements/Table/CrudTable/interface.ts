@@ -10,7 +10,7 @@ import { Pagination, PaginationGetParam } from "@/elements/Pagination/pagination
 export interface Header {
   title: string;
   key: string;
-  handler?: (value: string | number) => string | number;
+  handler?: (value: any) => string | number;
 }
 
 export interface Row {
@@ -27,12 +27,18 @@ export interface Sheet {
   rows: Array<Row>;
 }
 
+export enum EditorTypeEnum {
+  Create = "create",
+  Update = "update",
+}
+
 export interface CrudTableState<Row> {
   sheet: Sheet;
   pagination: Pagination;
   row: Row;
   cache: Row;
   editor: {
+    type?: EditorTypeEnum;
     handler: () => void;
     title: string;
   };

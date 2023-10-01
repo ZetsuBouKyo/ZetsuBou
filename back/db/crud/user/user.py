@@ -67,7 +67,6 @@ class _CrudUser:
 
         self.new_user = {}
         self.with_group = type(user) == UserWithGroupUpdate
-        self.need_to_update = False
 
     async def get_user_in_db(self):
         if not self.with_group:
@@ -194,25 +193,23 @@ class _CrudUser:
                 .where(self.base.id == self.user_in_db.id)
                 .values(**self.new_user)
             )
-            if self.with_group:
-                if len(self.user.group_ids) == 0:
-                    await self.session.execute(
-                        delete(self.user_group_base).where(
-                            self.user_group_base.user_id == self.user_id
-                        )
-                    )
-                else:
-                    await update_group_ids_by_user_id(
-                        self.session,
-                        self.user_group_base,
-                        self.user_id,
-                        self.user.group_ids,
-                    )
-
             if rows.rowcount == 0:
                 raise HTTPException(status_code=500, detail="Update failed")
 
-            self.need_to_update = True
+        if self.with_group:
+            if len(self.user.group_ids) == 0:
+                await self.session.execute(
+                    delete(self.user_group_base).where(
+                        self.user_group_base.user_id == self.user_id
+                    )
+                )
+            else:
+                await update_group_ids_by_user_id(
+                    self.session,
+                    self.user_group_base,
+                    self.user_id,
+                    self.user.group_ids,
+                )
 
     async def update(self) -> Union[User, UserWithGroup]:
         self.user_in_db = await self.get_user_in_db()

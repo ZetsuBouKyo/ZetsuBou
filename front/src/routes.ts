@@ -25,6 +25,7 @@ import SettingTag from "./views/Vertical/Settings/Tag/TagTable.vue";
 import SettingTagAttribute from "./views/Vertical/Settings/Tag/TagAttributeTable.vue";
 import SettingTagFrontUI from "./views/Vertical/Settings/Tag/FrontUI/index.vue";
 import SettingTagToken from "./views/Vertical/Settings/Tag/TagTokenTable.vue";
+import SettingUsers from "./views/Vertical/Settings/Users/index.vue";
 import Vertical from "./views/Vertical/index.vue";
 import Video from "./views/Vertical/Video/index.vue";
 import Videos from "./views/Vertical/Videos.vue";
@@ -109,25 +110,26 @@ export const routes = [
           { path: "account", component: SettingAccount, meta: { title: "Account" } },
           { path: "appearance", component: SettingAppearance, meta: { title: "Appearance" } },
           { path: "authentication", component: SettingAuthentication, meta: { title: "Authentication" } },
-          { path: "storage-minio", component: SettingStorageMinioTable, meta: { title: "Storage Minio" } },
           { path: "elasticsearch-count", component: SettingElasticsearchCount, meta: { title: "Elasticsearch Count" } },
-          {
-            path: "elasticsearch-search",
-            component: SettingElasticsearchSearch,
-            meta: { title: "Elasticsearch Search" },
-          },
-          { path: "tag", component: SettingTag, meta: { title: "Tag" } },
-          { path: "tag-token", component: SettingTagToken, meta: { title: "Tag Token" } },
-          { path: "tag-attribute", component: SettingTagAttribute, meta: { title: "Tag Attribute" } },
-          { path: "tag-front-ui", component: SettingTagFrontUI, meta: { title: "Tag Front UI" } },
-          { path: "quest", component: SettingQuest, meta: { title: "Quest" } },
           {
             path: "elasticsearch-count-quest",
             component: SettingElasticsearchCountQuest,
             meta: { title: "Elasticsearch Count Quest" },
           },
+          {
+            path: "elasticsearch-search",
+            component: SettingElasticsearchSearch,
+            meta: { title: "Elasticsearch Search" },
+          },
           { path: "group", component: SettingGroup, meta: { title: "Group" } },
+          { path: "tag", component: SettingTag, meta: { title: "Tag" } },
+          { path: "tag-attribute", component: SettingTagAttribute, meta: { title: "Tag Attribute" } },
+          { path: "tag-front-ui", component: SettingTagFrontUI, meta: { title: "Tag Front UI" } },
+          { path: "tag-token", component: SettingTagToken, meta: { title: "Tag Token" } },
+          { path: "quest", component: SettingQuest, meta: { title: "Quest" } },
+          { path: "storage-minio", component: SettingStorageMinioTable, meta: { title: "Storage Minio" } },
           { path: "system", component: SettingSystem, meta: { title: "System" } },
+          { path: "users", component: SettingUsers, meta: { title: "Users" } },
         ],
       },
       { path: "/NotFound", component: NotFound },

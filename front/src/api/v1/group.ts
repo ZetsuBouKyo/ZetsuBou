@@ -37,3 +37,11 @@ export function deleteGroup(directory_id: string | number) {
     method: "delete",
   });
 }
+
+export function getGroups(params: any) {
+  return request({
+    url: `/api/v1/groups`,
+    method: "get",
+    params: params,
+  });
+}

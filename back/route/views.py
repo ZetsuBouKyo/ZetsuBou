@@ -181,6 +181,7 @@ private_router.add_api_route("/settings/tag-front-ui", index)
 private_router.add_api_route("/settings/quest", table)
 private_router.add_api_route("/settings/elasticsearch-count-quest", table)
 
+private_router.add_api_route("/settings/users", table)
 private_router.add_api_route("/settings/group", table)
 
 private_router.add_api_route("/video", index)

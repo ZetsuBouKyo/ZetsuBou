@@ -120,6 +120,7 @@ class ScopeEnum(str, Enum):
     task_standalone_ping_get: str = "task.standalone.ping:get"
 
     users_get: str = "users:get"
+    users_total_get: str = "users-total:get"
     user_post: str = "user:post"
     user_get: str = "user:get"
     user_put: str = "user:put"

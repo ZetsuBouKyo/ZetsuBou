@@ -1,10 +1,12 @@
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from back.db.crud import CrudUser
 from back.db.model import User, UserWithGroup
+from back.dependency.base import get_pagination
 from back.dependency.security import api_security
+from back.model.base import Pagination
 from back.model.scope import ScopeEnum
 
 router = APIRouter(prefix="", tags=["Users"])
@@ -25,9 +27,11 @@ async def count_total_users() -> int:
     dependencies=[api_security([ScopeEnum.users_get.name])],
 )
 async def get_users(
-    skip: int = 0, limit: int = 20, is_desc: bool = False
+    pagination: Pagination = Depends(get_pagination),
 ) -> List[User]:
-    return await CrudUser.get_rows_order_by_id(skip=skip, limit=limit, is_desc=is_desc)
+    return await CrudUser.get_rows_order_by_id(
+        skip=pagination.skip, limit=pagination.size, is_desc=pagination.is_desc
+    )
 
 
 @router.get(
@@ -36,8 +40,8 @@ async def get_users(
     dependencies=[api_security([ScopeEnum.users_get.name])],
 )
 async def get_users_with_groups(
-    skip: int = 0, limit: int = 20, is_desc: bool = False
+    pagination: Pagination = Depends(get_pagination),
 ) -> List[UserWithGroup]:
     return await CrudUser.get_rows_with_group_id_order_by_id(
-        skip=skip, limit=limit, is_desc=is_desc
+        skip=pagination.skip, limit=pagination.size, is_desc=pagination.is_desc
     )

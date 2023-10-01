@@ -63,13 +63,6 @@ const privateState = reactive<PrivateState<Token>>({
   onGets: {},
 });
 
-function addSource() {
-  state.data.src.push("");
-}
-function removeSource(i: number) {
-  state.data.src.splice(i, 1);
-}
-
 const category = initSelectDropdownState() as SelectDropdownState;
 category.addInputWatch(state, "data.attributes.category", SelectDropdownAssignedValue.Title);
 

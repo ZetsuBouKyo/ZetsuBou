@@ -34,6 +34,7 @@ import PaginationBase from "@/elements/Pagination/index.vue";
 import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
+import { messageState } from "@/state/message";
 import { routeState } from "@/state/route";
 
 import { getPagination } from "@/elements/Pagination/pagination";
@@ -181,7 +182,8 @@ function create() {
     props.onCrudCreate(state.row).then((response: any) => {
       if (response.status === 200) {
         editor.value.close();
-        window.location.reload();
+        load();
+        messageState.push("Created");
       }
     });
   };
@@ -199,7 +201,8 @@ function update(row: Row) {
       if (response.status !== 200) {
       } else {
         editor.value.close();
-        window.location.reload();
+        load();
+        messageState.push("Updated");
       }
     });
   };
@@ -208,7 +211,10 @@ function update(row: Row) {
 
 function deleteById(id: any) {
   props.onCrudDelete(id).then((response: any) => {
-    if (response.status === 200) {
+    if (response.status !== 200) {
+    } else {
+      load();
+      messageState.push("Deleted");
     }
   });
 }
@@ -218,7 +224,6 @@ const confirm = ref();
 function onConfirm() {
   deleteById(state.row.id);
   state.row = undefined;
-  window.location.reload();
 }
 
 function confirmRemove(row: any) {

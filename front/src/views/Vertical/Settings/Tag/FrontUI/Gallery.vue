@@ -9,6 +9,7 @@ import { getSettingFrontGalleryInterpretation, putSettingFrontGallery } from "@/
 import { getTagTokenStartWith } from "@/api/v1/tag/token";
 
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
+import { messageState } from "@/state/message";
 
 import { onGetTip, onMouseoverOption } from "@/utils/tag";
 
@@ -27,6 +28,8 @@ const onGetTagFieldsToOptions = tokenToOption;
 function load() {
   getSettingFrontGalleryInterpretation().then((response) => {
     const data = response.data as any;
+    categories.chips = [];
+    tagFields.chips = [];
     for (let i = 0; i < data.categories.length; i++) {
       const token = data.categories[i];
       const chip = tokenToOption(token);
@@ -58,7 +61,8 @@ function save() {
   }
 
   putSettingFrontGallery(query).then(() => {
-    window.location.reload();
+    load();
+    messageState.push("Saved");
   });
 }
 </script>

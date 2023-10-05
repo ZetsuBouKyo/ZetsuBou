@@ -1,16 +1,9 @@
-from back.db.crud import (
-    CrudGroup,
-    CrudUser,
-    CrudUserFrontSettings,
-    CrudUserGroup,
-    CrudUserQuestCategory,
-)
+from back.db.crud import CrudGroup, CrudUser, CrudUserGroup, CrudUserQuestCategory
 from back.db.model import (
     GroupCreate,
-    UserCreate,
-    UserGroupCreate,
     UserQuestCategoryCreate,
     UserQuestCategoryEnum,
+    UserWithGroupCreate,
 )
 from back.db.table import Base
 from back.model.scope import ScopeEnum
@@ -43,17 +36,14 @@ async def _init_table_data():
         )
         if len(admin_user_groups) == 0:
             if admin_user is None:
-                admin_user = await CrudUser.create(
-                    UserCreate(
-                        name=admin_name, email=admin_email, password=admin_password
+                admin_user = await CrudUser.create_with_groups(
+                    UserWithGroupCreate(
+                        name=admin_name,
+                        email=admin_email,
+                        password=admin_password,
+                        group_ids=[admin_group.id],
                     )
                 )
-                await CrudUserGroup.create(
-                    UserGroupCreate(user_id=admin_user.id, group_id=admin_group.id)
-                )
-
-    # create the user settings of admin
-    await CrudUserFrontSettings.init(admin_user.id)
 
     # create quest
     elastic_count_quest = ELASTIC_COUNT_QUEST

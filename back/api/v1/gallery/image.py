@@ -13,7 +13,7 @@ router = APIRouter(tags=["Gallery Image"])
 @router.get(
     "/{gallery_id}/images",
     response_model=List[str],
-    dependencies=[api_security([ScopeEnum.gallery_images_get.name])],
+    dependencies=[api_security([ScopeEnum.gallery_images_get.value])],
 )
 async def get_imgages(gallery_id: str) -> List[str]:
     crud = await get_crud_async_gallery(gallery_id)
@@ -22,7 +22,7 @@ async def get_imgages(gallery_id: str) -> List[str]:
 
 @router.get(
     "/{gallery_id}/cover",
-    dependencies=[view_security([ScopeEnum.gallery_cover_get.name])],
+    dependencies=[view_security([ScopeEnum.gallery_cover_get.value])],
 )
 async def get_cover(gallery_id: str) -> FileResponse:
     crud = await get_crud_async_gallery(gallery_id)
@@ -32,7 +32,7 @@ async def get_cover(gallery_id: str) -> FileResponse:
 
 @router.get(
     "/{gallery_id}/i/{img}",
-    dependencies=[view_security([ScopeEnum.gallery_image_get.name])],
+    dependencies=[view_security([ScopeEnum.gallery_image_get.value])],
 )
 async def get_image(gallery_id: str, img: str) -> FileResponse:
     crud = await get_crud_async_gallery(gallery_id)

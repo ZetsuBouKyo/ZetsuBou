@@ -1,6 +1,7 @@
 from .base import Base
 from .group.group import GroupBase
 from .image import ImageBase
+from .scope.group import ScopeGroupBase
 from .scope.scope import ScopeBase
 from .setting.front.gallery.category import SettingFrontGalleryCategoryBase
 from .setting.front.gallery.tag_field import SettingFrontGalleryTagFieldBase
@@ -34,6 +35,7 @@ __all__ = [
     "GroupBase",
     "ImageBase",
     "ScopeBase",
+    "ScopeGroupBase",
     "SettingFrontGalleryCategoryBase",
     "SettingFrontGalleryTagFieldBase",
     "SettingFrontVideoCategoryBase",

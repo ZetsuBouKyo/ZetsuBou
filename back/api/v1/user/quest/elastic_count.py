@@ -50,7 +50,7 @@ async def verify_user_elastic_count_quest(
 @router.get(
     "/{user_id}/total-elastic-count-quests",
     response_model=int,
-    dependencies=[api_security([ScopeEnum.user_total_elastic_count_quests_get.name])],
+    dependencies=[api_security([ScopeEnum.user_total_elastic_count_quests_get.value])],
 )
 async def count_total_user_elastic_count_quests(user_id: int) -> int:
     return await CrudUserElasticCountQuest.count_by_user_id(user_id)
@@ -59,7 +59,7 @@ async def count_total_user_elastic_count_quests(user_id: int) -> int:
 @router.get(
     "/{user_id}/elastic-count-quest/{quest_id}",
     response_model=UserElasticCountQuest,
-    dependencies=[api_security([ScopeEnum.user_elastic_count_quest_get.name])],
+    dependencies=[api_security([ScopeEnum.user_elastic_count_quest_get.value])],
 )
 async def get_user_elastic_count_quest(
     user_id: int, quest_id: int
@@ -72,7 +72,7 @@ async def get_user_elastic_count_quest(
 @router.get(
     "/{user_id}/elastic-count-quests",
     response_model=List[UserElasticCountQuest],
-    dependencies=[api_security([ScopeEnum.user_elastic_count_quests_get.name])],
+    dependencies=[api_security([ScopeEnum.user_elastic_count_quests_get.value])],
 )
 async def get_user_elastic_count_quests(
     user_id: int, pagination: Pagination = Depends(get_pagination)
@@ -87,7 +87,7 @@ async def get_user_elastic_count_quests(
     response_model=UserElasticCountQuestCreated,
     dependencies=[
         Depends(verify_user_elastic_count_quest),
-        api_security([ScopeEnum.user_elastic_count_quest_post.name]),
+        api_security([ScopeEnum.user_elastic_count_quest_post.value]),
     ],
 )
 async def post_user_elastic_count_quest(
@@ -101,7 +101,7 @@ async def post_user_elastic_count_quest(
     "/{user_id}/elastic-count-quest",
     dependencies=[
         Depends(verify_user_elastic_count_quest),
-        api_security([ScopeEnum.user_elastic_count_quest_put.name]),
+        api_security([ScopeEnum.user_elastic_count_quest_put.value]),
     ],
 )
 async def put_user_elastic_count_quest(
@@ -113,7 +113,7 @@ async def put_user_elastic_count_quest(
 
 @router.delete(
     "/{user_id}/elastic-count-quest/{quest_id}",
-    dependencies=[api_security([ScopeEnum.user_elastic_count_quest_delete.name])],
+    dependencies=[api_security([ScopeEnum.user_elastic_count_quest_delete.value])],
 )
 async def delete_user_elastic_count_quest(user_id: int, quest_id: int):
     return await CrudUserElasticCountQuest.delete_by_id_and_user_id(quest_id, user_id)

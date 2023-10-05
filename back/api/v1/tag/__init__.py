@@ -25,7 +25,7 @@ router.include_router(token)
 @router.get(
     "/search-for-tag-attributes",
     response_model=List[TagToken],
-    dependencies=[api_security([ScopeEnum.tag_search_for_tag_attributes_get.name])],
+    dependencies=[api_security([ScopeEnum.tag_search_for_tag_attributes_get.value])],
 )
 async def search(
     s: str = "", pagination: Pagination = Depends(get_pagination)
@@ -45,7 +45,7 @@ async def search(
 @router.get(
     "/tag/{tag_id}/interpretation",
     response_model=Optional[Tag],
-    dependencies=[api_security([ScopeEnum.tag_interpretation_get.name])],
+    dependencies=[api_security([ScopeEnum.tag_interpretation_get.value])],
 )
 async def get_interpretation_of_tag(tag_id: int) -> Tag:
     crud = CrudTag()
@@ -56,7 +56,7 @@ async def get_interpretation_of_tag(tag_id: int) -> Tag:
 @router.get(
     "/tag/{tag_id}",
     response_model=TagUpdate,
-    dependencies=[api_security([ScopeEnum.tag_get.name])],
+    dependencies=[api_security([ScopeEnum.tag_get.value])],
 )
 async def get_tag(tag_id: int) -> TagUpdate:
     crud = CrudTag()
@@ -66,20 +66,20 @@ async def get_tag(tag_id: int) -> TagUpdate:
 @router.delete(
     "/tag/{tag_id}",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.tag_delete.name])],
+    dependencies=[api_security([ScopeEnum.tag_delete.value])],
 )
 async def delete_tag(tag_id: int) -> bool:
     crud = CrudTag()
     return await crud.delete_by_id(tag_id)
 
 
-@router.post("/tag", dependencies=[api_security([ScopeEnum.tag_post.name])])
+@router.post("/tag", dependencies=[api_security([ScopeEnum.tag_post.value])])
 async def post_tag(tag: TagCreate):
     crud = CrudTag()
     return await crud.create(tag)
 
 
-@router.put("/tag", dependencies=[api_security([ScopeEnum.tag_put.name])])
+@router.put("/tag", dependencies=[api_security([ScopeEnum.tag_put.value])])
 async def put_tag(tag: TagUpdate):
     crud = CrudTag()
     return await crud.update(tag)

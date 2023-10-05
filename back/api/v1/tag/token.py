@@ -16,7 +16,7 @@ router = APIRouter(prefix="/tag", tags=["Tag Token"])
 @router.get(
     "/token-startswith",
     response_model=List[TagToken],
-    dependencies=[api_security([ScopeEnum.tag_token_startswith_get.name])],
+    dependencies=[api_security([ScopeEnum.tag_token_startswith_get.value])],
 )
 async def start_with(
     s: str = "",
@@ -54,7 +54,7 @@ async def start_with(
 @router.get(
     "/total-tokens",
     response_model=int,
-    dependencies=[api_security([ScopeEnum.tag_toal_tokens_get.name])],
+    dependencies=[api_security([ScopeEnum.tag_toal_tokens_get.value])],
 )
 async def count_total_tokens() -> int:
     return await CrudTagToken.count_total()
@@ -63,14 +63,14 @@ async def count_total_tokens() -> int:
 @router.get(
     "/token/{token_id}/exists",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.tag_token_exists_get.name])],
+    dependencies=[api_security([ScopeEnum.tag_token_exists_get.value])],
 )
 async def token_exists(token_id: int) -> bool:
     return await CrudTagToken.exists(token_id)
 
 
 @router.get(
-    "/token/{token_id}", dependencies=[api_security([ScopeEnum.tag_token_get.name])]
+    "/token/{token_id}", dependencies=[api_security([ScopeEnum.tag_token_get.value])]
 )
 async def get_token():
     # TODO:
@@ -80,7 +80,7 @@ async def get_token():
 @router.get(
     "/tokens",
     response_model=List[TagToken],
-    dependencies=[api_security([ScopeEnum.tag_tokens_get.name])],
+    dependencies=[api_security([ScopeEnum.tag_tokens_get.value])],
 )
 async def get_tokens(
     pagination: Pagination = Depends(get_pagination),
@@ -93,7 +93,7 @@ async def get_tokens(
 @router.post(
     "/token",
     response_model=TagTokenCreated,
-    dependencies=[api_security([ScopeEnum.tag_token_post.name])],
+    dependencies=[api_security([ScopeEnum.tag_token_post.value])],
 )
 async def post_token(token: TagTokenCreate) -> TagTokenCreated:
     return await CrudTagToken.create(token)
@@ -102,14 +102,14 @@ async def post_token(token: TagTokenCreate) -> TagTokenCreated:
 @router.put(
     "/token",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.tag_token_put.name])],
+    dependencies=[api_security([ScopeEnum.tag_token_put.value])],
 )
 async def put_token(token: TagTokenUpdate) -> bool:
     return await CrudTagToken.update_by_id(token)
 
 
 @router.delete(
-    "/token/{token_id}", dependencies=[api_security([ScopeEnum.tag_token_delete.name])]
+    "/token/{token_id}", dependencies=[api_security([ScopeEnum.tag_token_delete.value])]
 )
 async def delete_token(token_id: int) -> bool:
     # TODO: Delete token in elasticsearch

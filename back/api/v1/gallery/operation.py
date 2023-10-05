@@ -11,7 +11,7 @@ router = APIRouter(tags=["Gallery Operation"])
 @router.delete(
     "/{gallery_id}/delete",
     response_model=Message,
-    dependencies=[api_security([ScopeEnum.gallery_delete.name])],
+    dependencies=[api_security([ScopeEnum.gallery_delete.value])],
 )
 async def delete(gallery_id: str) -> Message:
     crud = await get_crud_async_gallery(gallery_id)

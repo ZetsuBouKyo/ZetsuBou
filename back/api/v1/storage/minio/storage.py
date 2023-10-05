@@ -22,7 +22,7 @@ router = APIRouter(tags=["Minio Storage"])
 
 @router.get(
     "/storage-categories",
-    dependencies=[api_security([ScopeEnum.storage_minio_storage_categories_get.name])],
+    dependencies=[api_security([ScopeEnum.storage_minio_storage_categories_get.value])],
 )
 def get_storage_categories() -> dict:
     return {e.name: e.value for e in StorageCategoryEnum}
@@ -31,7 +31,7 @@ def get_storage_categories() -> dict:
 @router.get(
     "/total-storages",
     response_model=int,
-    dependencies=[api_security([ScopeEnum.storage_minio_total_storages_get.name])],
+    dependencies=[api_security([ScopeEnum.storage_minio_total_storages_get.value])],
 )
 async def count_total_storages() -> int:
     return await CrudStorageMinio.count_total()
@@ -40,7 +40,7 @@ async def count_total_storages() -> int:
 @router.get(
     "/storages",
     response_model=List[StorageMinio],
-    dependencies=[api_security([ScopeEnum.storage_minio_storages_get.name])],
+    dependencies=[api_security([ScopeEnum.storage_minio_storages_get.value])],
 )
 async def get_storages(
     pagination: Pagination = Depends(get_pagination),
@@ -53,7 +53,7 @@ async def get_storages(
 @router.get(
     "/storage/{storage_id}/stat",
     response_model=StorageStat,
-    dependencies=[api_security([ScopeEnum.storage_minio_storage_stat_get.name])],
+    dependencies=[api_security([ScopeEnum.storage_minio_storage_stat_get.value])],
 )
 async def get_storage_stat(storage_id: int) -> StorageStat:
     storage = await CrudStorageMinio.get_row_by_id(storage_id)
@@ -71,7 +71,7 @@ async def get_storage_stat(storage_id: int) -> StorageStat:
 @router.post(
     "/storage",
     response_model=StorageMinioCreated,
-    dependencies=[api_security([ScopeEnum.storage_minio_storage_post.name])],
+    dependencies=[api_security([ScopeEnum.storage_minio_storage_post.value])],
 )
 async def post_storage(directory: StorageMinioCreate) -> StorageMinioCreated:
     return await CrudStorageMinio.create(directory)
@@ -80,7 +80,7 @@ async def post_storage(directory: StorageMinioCreate) -> StorageMinioCreated:
 @router.put(
     "/storage",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.storage_minio_storage_put.name])],
+    dependencies=[api_security([ScopeEnum.storage_minio_storage_put.value])],
 )
 async def put_storage(directory: StorageMinioUpdate) -> bool:
     return await CrudStorageMinio.update_by_id(directory)
@@ -89,7 +89,7 @@ async def put_storage(directory: StorageMinioUpdate) -> bool:
 @router.delete(
     "/storage/{directory_id}",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.storage_minio_storage_delete.name])],
+    dependencies=[api_security([ScopeEnum.storage_minio_storage_delete.value])],
 )
 async def delete_directory(directory_id: int) -> bool:
     return await CrudStorageMinio.delete_by_id(directory_id)

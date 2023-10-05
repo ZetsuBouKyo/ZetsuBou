@@ -52,7 +52,7 @@ post_user_openapi_examples = {
 @router.post(
     "",
     response_model=UserWithGroupCreated,
-    dependencies=[api_security([ScopeEnum.user_post.name])],
+    dependencies=[api_security([ScopeEnum.user_post.value])],
 )
 async def post_user(
     user: Annotated[
@@ -63,7 +63,7 @@ async def post_user(
     return await CrudUser.create_with_groups(user)
 
 
-@router.get("/{user_id}", dependencies=[api_security([ScopeEnum.user_get.name])])
+@router.get("/{user_id}", dependencies=[api_security([ScopeEnum.user_get.value])])
 async def get_user_by_id(user_id: int):
     return await CrudUser.get_row_by_id(user_id)
 
@@ -71,7 +71,7 @@ async def get_user_by_id(user_id: int):
 @router.get(
     "/{user_id}/with-groups",
     response_model=UserWithGroup,
-    dependencies=[api_security([ScopeEnum.user_get.name])],
+    dependencies=[api_security([ScopeEnum.user_get.value])],
 )
 async def get_user_with_groups_by_id(user_id: int) -> UserWithGroup:
     return await CrudUser.get_row_with_groups_by_id(user_id)
@@ -80,7 +80,7 @@ async def get_user_with_groups_by_id(user_id: int) -> UserWithGroup:
 @router.put(
     "/{user_id}",
     response_model=User,
-    dependencies=[api_security([ScopeEnum.user_put.name])],
+    dependencies=[api_security([ScopeEnum.user_put.value])],
 )
 async def put_user_by_id(user_id: int, user: UserUpdate):
     return await CrudUser.update_by_user(user_id, user)
@@ -89,13 +89,13 @@ async def put_user_by_id(user_id: int, user: UserUpdate):
 @router.put(
     "/{user_id}/with-groups",
     response_model=UserWithGroup,
-    dependencies=[api_security([ScopeEnum.user_put.name])],
+    dependencies=[api_security([ScopeEnum.user_put.value])],
 )
 async def put_user_with_groups_by_id(user_id: int, user: UserWithGroupUpdate):
     return await CrudUser.update_by_user_with_group(user_id, user)
 
 
-@router.delete("/{user_id}", dependencies=[api_security([ScopeEnum.user_delete.name])])
+@router.delete("/{user_id}", dependencies=[api_security([ScopeEnum.user_delete.value])])
 async def delete_user_by_id(user_id: int):
     return await CrudUser.delete_by_id(user_id)
 
@@ -103,14 +103,14 @@ async def delete_user_by_id(user_id: int):
 @router.get(
     "/{user_id}/groups",
     response_model=List[Group],
-    dependencies=[api_security([ScopeEnum.user_groups_get.name])],
+    dependencies=[api_security([ScopeEnum.user_groups_get.value])],
 )
 async def get_user_groups(user_id: int) -> List[Group]:
     return await CrudUser.get_groups_by_id(user_id)
 
 
 @router.put(
-    "/{user_id}/groups", dependencies=[api_security([ScopeEnum.user_groups_put.name])]
+    "/{user_id}/groups", dependencies=[api_security([ScopeEnum.user_groups_put.value])]
 )
 async def put_user_groups(user_id: int, group_ids: List[int]):
     return await CrudUserGroup.update(user_id, group_ids)
@@ -119,7 +119,7 @@ async def put_user_groups(user_id: int, group_ids: List[int]):
 @router.put(
     "/{user_id}/front-settings",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.user_front_settings_put.name])],
+    dependencies=[api_security([ScopeEnum.user_front_settings_put.value])],
 )
 async def put_user_front_settings(
     user_id: int, settings: UserFrontSettingsUpdateByUserId
@@ -134,7 +134,7 @@ async def put_user_front_settings(
 @router.get(
     "/{user_id}/front-settings",
     response_model=UserFrontSettings,
-    dependencies=[api_security([ScopeEnum.user_front_settings_get.name])],
+    dependencies=[api_security([ScopeEnum.user_front_settings_get.value])],
 )
 async def get_user_front_settings(user_id: int):
     return await CrudUserFrontSettings.get_row_by_user_id(user_id)

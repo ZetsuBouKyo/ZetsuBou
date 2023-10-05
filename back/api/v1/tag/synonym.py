@@ -31,7 +31,7 @@ async def verify_token_id(synonym):
 @router.get(
     "/synonyms",
     response_model=List[TagSynonym],
-    dependencies=[api_security([ScopeEnum.tag_synonyms_get.name])],
+    dependencies=[api_security([ScopeEnum.tag_synonyms_get.value])],
 )
 async def get_synonyms(
     pagination: Pagination = Depends(get_pagination),
@@ -44,7 +44,7 @@ async def get_synonyms(
 @router.post(
     "/synonym",
     response_model=TagSynonymCreated,
-    dependencies=[api_security([ScopeEnum.tag_synonym_post.name])],
+    dependencies=[api_security([ScopeEnum.tag_synonym_post.value])],
 )
 async def post_synonym(synonym: TagSynonymCreate) -> TagSynonymCreated:
     await verify_token_id(synonym)
@@ -54,7 +54,7 @@ async def post_synonym(synonym: TagSynonymCreate) -> TagSynonymCreated:
 @router.put(
     "/synonym",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.tag_synonym_put.name])],
+    dependencies=[api_security([ScopeEnum.tag_synonym_put.value])],
 )
 async def put_synonym(synonym: TagSynonymUpdate) -> bool:
     await verify_token_id(synonym)
@@ -64,7 +64,7 @@ async def put_synonym(synonym: TagSynonymUpdate) -> bool:
 @router.delete(
     "/synonym/{id}",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.tag_synonym_delete.name])],
+    dependencies=[api_security([ScopeEnum.tag_synonym_delete.value])],
 )
 async def delete_synonym(id: int) -> bool:
     return await CrudTagSynonym.delete_by_id(id)

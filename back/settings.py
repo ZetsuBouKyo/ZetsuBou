@@ -163,6 +163,10 @@ class Setting(BaseSettings):
         description="Environment variable for docker-compose.",
         examples=["5430"],
     )
+    database_initialization: Optional[bool] = Field(
+        default=True,
+        description="If this value is true, the tables in database will be automatically generated and updated.",
+    )
 
     elastic_urls: Optional[str] = Field(
         default=None, examples=["http://localhost:9200"]

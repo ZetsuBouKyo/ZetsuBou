@@ -21,7 +21,7 @@ ELASTIC_SIZE = setting.elastic_size
 @router.get(
     "/random",
     response_model=Videos,
-    dependencies=[api_security([ScopeEnum.video_random_get.name])],
+    dependencies=[api_security([ScopeEnum.video_random_get.value])],
 )
 async def get_random(
     analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
@@ -44,7 +44,7 @@ async def get_random(
 @router.get(
     "/advanced-search",
     response_model=Videos,
-    dependencies=[api_security([ScopeEnum.video_advanced_search_get.name])],
+    dependencies=[api_security([ScopeEnum.video_advanced_search_get.value])],
 )
 async def get_advanced_search(
     request: Request,
@@ -138,7 +138,7 @@ async def get_advanced_search(
 @router.get(
     "/search",
     response_model=Videos,
-    dependencies=[api_security([ScopeEnum.video_search_get.name])],
+    dependencies=[api_security([ScopeEnum.video_search_get.value])],
 )
 async def get_search(
     analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,

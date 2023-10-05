@@ -23,7 +23,7 @@ router = APIRouter(prefix="/system")
 @router.get(
     "",
     response_model=Setting,
-    dependencies=[api_security([ScopeEnum.setting_system_get.name])],
+    dependencies=[api_security([ScopeEnum.setting_system_get.value])],
 )
 def get_settings() -> Setting:
     return setting
@@ -32,7 +32,7 @@ def get_settings() -> Setting:
 @router.post(
     "",
     response_model=Setting,
-    dependencies=[api_security([ScopeEnum.setting_system_post.name])],
+    dependencies=[api_security([ScopeEnum.setting_system_post.value])],
 )
 def post_settings(setting: Setting) -> Setting:
     if is_setting():
@@ -47,7 +47,7 @@ def post_settings(setting: Setting) -> Setting:
 @router.put(
     "",
     response_model=Setting,
-    dependencies=[api_security([ScopeEnum.setting_system_put.name])],
+    dependencies=[api_security([ScopeEnum.setting_system_put.value])],
 )
 def put_settings(setting: Setting) -> Setting:
     update_settings(setting, force=True)
@@ -57,7 +57,7 @@ def put_settings(setting: Setting) -> Setting:
 @router.get(
     "/airflow",
     response_model=Setting,
-    dependencies=[api_security([ScopeEnum.setting_system_airflow_get.name])],
+    dependencies=[api_security([ScopeEnum.setting_system_airflow_get.value])],
 )
 def get_airflow_settings() -> Setting:
     setting = Setting(_env_file=str(AIRFLOW_SETTING_PATH))
@@ -67,7 +67,7 @@ def get_airflow_settings() -> Setting:
 @router.post(
     "/airflow",
     response_model=Setting,
-    dependencies=[api_security([ScopeEnum.setting_system_airflow_post.name])],
+    dependencies=[api_security([ScopeEnum.setting_system_airflow_post.value])],
 )
 def post_airflow_settings(setting: Setting) -> Setting:
     if is_airflow_setting():
@@ -82,7 +82,7 @@ def post_airflow_settings(setting: Setting) -> Setting:
 @router.put(
     "/airflow",
     response_model=Setting,
-    dependencies=[api_security([ScopeEnum.setting_system_airflow_put.name])],
+    dependencies=[api_security([ScopeEnum.setting_system_airflow_put.value])],
 )
 def put_airflow_settings(setting: Setting) -> Setting:
     update_airflow_settings(setting)

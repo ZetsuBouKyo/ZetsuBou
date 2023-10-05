@@ -15,7 +15,7 @@ router = APIRouter(prefix="", tags=["Users"])
 @router.get(
     "/total-users",
     response_model=int,
-    dependencies=[api_security([ScopeEnum.users_total_get.name])],
+    dependencies=[api_security([ScopeEnum.users_total_get.value])],
 )
 async def count_total_users() -> int:
     return await CrudUser.count_total()
@@ -24,7 +24,7 @@ async def count_total_users() -> int:
 @router.get(
     "/users",
     response_model=List[User],
-    dependencies=[api_security([ScopeEnum.users_get.name])],
+    dependencies=[api_security([ScopeEnum.users_get.value])],
 )
 async def get_users(
     pagination: Pagination = Depends(get_pagination),
@@ -37,7 +37,7 @@ async def get_users(
 @router.get(
     "/users/with-groups",
     response_model=List[UserWithGroup],
-    dependencies=[api_security([ScopeEnum.users_get.name])],
+    dependencies=[api_security([ScopeEnum.users_get.value])],
 )
 async def get_users_with_groups(
     pagination: Pagination = Depends(get_pagination),

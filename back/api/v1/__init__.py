@@ -4,6 +4,7 @@ from .elasticsearch import router as elasticsearch
 from .gallery import router as gallery
 from .group import router as group
 from .init import router as init
+from .scope import router as scope
 from .setting import router as setting
 from .storage import router as storage
 from .tag import router as tag
@@ -21,6 +22,7 @@ router.include_router(token)
 router.include_router(user)
 router.include_router(users)
 router.include_router(group)
+router.include_router(scope)
 router.include_router(setting)
 router.include_router(task)
 router.include_router(tag)

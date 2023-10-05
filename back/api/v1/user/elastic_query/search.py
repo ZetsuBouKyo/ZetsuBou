@@ -22,7 +22,9 @@ router = APIRouter()
 @router.get(
     "/{user_id}/elastic/total-search-queries",
     response_model=int,
-    dependencies=[api_security([ScopeEnum.user_elastic_total_search_queries_get.name])],
+    dependencies=[
+        api_security([ScopeEnum.user_elastic_total_search_queries_get.value])
+    ],
 )
 async def count_total_user_elastic_search_queries(user_id: int) -> int:
     return await CrudUserElasticSearchQuery.count_by_user_id(user_id)
@@ -31,7 +33,7 @@ async def count_total_user_elastic_search_queries(user_id: int) -> int:
 @router.get(
     "/{user_id}/elastic/search-queries",
     response_model=List[UserElasticSearchQuery],
-    dependencies=[api_security([ScopeEnum.user_elastic_search_queries_get.name])],
+    dependencies=[api_security([ScopeEnum.user_elastic_search_queries_get.value])],
 )
 async def get_user_elastic_search_queries(
     user_id: int, pagination: Pagination = Depends(get_pagination)
@@ -44,7 +46,7 @@ async def get_user_elastic_search_queries(
 @router.get(
     "/{user_id}/elastic/search-query",
     response_model=UserElasticSearchQuery,
-    dependencies=[api_security([ScopeEnum.user_elastic_search_query_get.name])],
+    dependencies=[api_security([ScopeEnum.user_elastic_search_query_get.value])],
 )
 async def get_user_elastic_search_query(
     user_id: int, query_id: int
@@ -55,7 +57,7 @@ async def get_user_elastic_search_query(
 @router.post(
     "/{user_id}/elastic/search-query",
     response_model=UserElasticSearchQueryCreated,
-    dependencies=[api_security([ScopeEnum.user_elastic_search_query_post.name])],
+    dependencies=[api_security([ScopeEnum.user_elastic_search_query_post.value])],
 )
 async def post_user_elastic_search_query(
     user_id: int, query: UserElasticSearchQueryCreate
@@ -67,7 +69,7 @@ async def post_user_elastic_search_query(
 @router.put(
     "/{user_id}/elastic/search-query",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.user_elastic_search_query_put.name])],
+    dependencies=[api_security([ScopeEnum.user_elastic_search_query_put.value])],
 )
 async def put_user_elastic_search_query(
     user_id: int, query: UserElasticSearchQueryUpdate
@@ -78,7 +80,7 @@ async def put_user_elastic_search_query(
 
 @router.delete(
     "/{user_id}/elastic/search-query/{query_id}",
-    dependencies=[api_security([ScopeEnum.user_elastic_search_query_delete.name])],
+    dependencies=[api_security([ScopeEnum.user_elastic_search_query_delete.value])],
 )
 async def delete_user_elastic_search_query_by_id(user_id: int, query_id: int) -> bool:
     return await CrudUserElasticSearchQuery.delete_by_id_and_user_id(query_id, user_id)

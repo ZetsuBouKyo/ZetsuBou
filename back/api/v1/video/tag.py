@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get(
     "/v/{video_id}/tag",
     response_model=Video,
-    dependencies=[api_security([ScopeEnum.video_tag_get.name])],
+    dependencies=[api_security([ScopeEnum.video_tag_get.value])],
 )
 async def get_tag(video_id: str) -> Video:
     video = await get_video_by_video_id(video_id)
@@ -21,7 +21,7 @@ async def get_tag(video_id: str) -> Video:
 @router.post(
     "/v/{video_id}/tag",
     response_model=Video,
-    dependencies=[api_security([ScopeEnum.video_tag_post.name])],
+    dependencies=[api_security([ScopeEnum.video_tag_post.value])],
 )
 async def post_tag(video_id: str, video: Video) -> Video:
     if video_id != video.id:

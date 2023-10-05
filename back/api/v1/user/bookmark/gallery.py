@@ -23,7 +23,7 @@ router = APIRouter()
 @router.get(
     "/{user_id}/total-bookmarks",
     response_model=int,
-    dependencies=[api_security([ScopeEnum.user_total_bookmarks_get.name])],
+    dependencies=[api_security([ScopeEnum.user_total_bookmarks_get.value])],
 )
 async def count_total_bookmarks(user_id: int) -> int:
     return await CrudUserBookmarkGallery.count_total_by_user_id(user_id)
@@ -32,7 +32,7 @@ async def count_total_bookmarks(user_id: int) -> int:
 @router.get(
     "/{user_id}/bookmarks/gallery/detail",
     response_model=List[GalleryBookmark],
-    dependencies=[api_security([ScopeEnum.user_bookmarks_gallery_detail_get.name])],
+    dependencies=[api_security([ScopeEnum.user_bookmarks_gallery_detail_get.value])],
 )
 async def get_detailed_gallery_bookmarks(
     user_id: int, pagination: Pagination = Depends(get_pagination)
@@ -61,7 +61,7 @@ async def get_detailed_gallery_bookmarks(
 @router.get(
     "/{user_id}/bookmarks/gallery",
     response_model=List[UserBookmarkGallery],
-    dependencies=[api_security([ScopeEnum.user_bookmarks_gallery_get.name])],
+    dependencies=[api_security([ScopeEnum.user_bookmarks_gallery_get.value])],
 )
 async def get_gallery_bookmarks(
     user_id: int, pagination: Pagination = Depends(get_pagination)
@@ -74,7 +74,7 @@ async def get_gallery_bookmarks(
 @router.get(
     "/{user_id}/bookmark/gallery/g/{gallery_id}",
     response_model=Optional[UserBookmarkGallery],
-    dependencies=[api_security([ScopeEnum.user_bookmark_gallery_get.name])],
+    dependencies=[api_security([ScopeEnum.user_bookmark_gallery_get.value])],
 )
 async def get_gallery_bookmark(user_id: int, gallery_id: str) -> UserBookmarkGallery:
     return await CrudUserBookmarkGallery.get_row_by_user_id_and_gallery_id(
@@ -85,7 +85,7 @@ async def get_gallery_bookmark(user_id: int, gallery_id: str) -> UserBookmarkGal
 @router.post(
     "/{user_id}/bookmark/gallery",
     response_model=UserBookmarkGalleryCreated,
-    dependencies=[api_security([ScopeEnum.user_bookmark_gallery_post.name])],
+    dependencies=[api_security([ScopeEnum.user_bookmark_gallery_post.value])],
 )
 async def post_gallery_bookmark(
     bookmark: UserBookmarkGalleryCreate,
@@ -96,7 +96,7 @@ async def post_gallery_bookmark(
 @router.put(
     "/{user_id}/bookmark/gallery",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.user_bookmark_gallery_put.name])],
+    dependencies=[api_security([ScopeEnum.user_bookmark_gallery_put.value])],
 )
 async def put_gallery_bookmark(
     bookmark: UserBookmarkGalleryUpdate,
@@ -107,7 +107,7 @@ async def put_gallery_bookmark(
 @router.delete(
     "/{user_id}/bookmark/gallery/b/{bookmark_id}",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.user_bookmark_gallery_delete.name])],
+    dependencies=[api_security([ScopeEnum.user_bookmark_gallery_delete.value])],
 )
 async def delete_gallery_bookmark(bookmark_id: int) -> bool:
     return await CrudUserBookmarkGallery.delete_by_id(bookmark_id)

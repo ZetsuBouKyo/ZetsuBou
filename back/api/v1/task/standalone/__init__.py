@@ -12,7 +12,7 @@ router.include_router(sync_new_galleries)
 
 @router.get(
     "/gallery/g/{gallery_id}/open",
-    dependencies=[api_security([ScopeEnum.task_standalone_gallery_open_get.name])],
+    dependencies=[api_security([ScopeEnum.task_standalone_gallery_open_get.value])],
 )
 async def get_open_gallery(gallery_id: str):
     await open_folder(gallery_id)

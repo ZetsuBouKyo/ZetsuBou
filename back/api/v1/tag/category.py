@@ -15,7 +15,7 @@ router = APIRouter(prefix="/tag", tags=["Tag Category"])
 @router.get(
     "/categories",
     response_model=List[TagCategory],
-    dependencies=[api_security([ScopeEnum.tag_categories_get.name])],
+    dependencies=[api_security([ScopeEnum.tag_categories_get.value])],
 )
 async def get_tag_categories(
     pagination: Pagination = Depends(get_pagination),
@@ -28,7 +28,7 @@ async def get_tag_categories(
 @router.post(
     "/category",
     response_model=TagCategoryCreated,
-    dependencies=[api_security([ScopeEnum.tag_category_post.name])],
+    dependencies=[api_security([ScopeEnum.tag_category_post.value])],
 )
 async def post_tag_category(category: TagCategoryCreate) -> TagCategoryCreated:
     if category.linked_id == category.token_id:
@@ -48,7 +48,7 @@ async def post_tag_category(category: TagCategoryCreate) -> TagCategoryCreated:
 
 
 @router.delete(
-    "/category/{id}", dependencies=[api_security([ScopeEnum.tag_category_delete.name])]
+    "/category/{id}", dependencies=[api_security([ScopeEnum.tag_category_delete.value])]
 )
 async def delete_tag_category(id: int):
     return await CrudTagCategory.delete_by_id(id)

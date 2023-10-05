@@ -28,7 +28,7 @@ router.include_router(video)
 @router.get(
     "/general",
     response_model=FrontGeneralSetting,
-    dependencies=[api_security([ScopeEnum.setting_front_general_get.name])],
+    dependencies=[api_security([ScopeEnum.setting_front_general_get.value])],
 )
 async def get_general_setting() -> FrontGeneralSetting:
     _front_general_setting = {

@@ -21,7 +21,7 @@ router = APIRouter(prefix="/gallery")
     "/category-startswith",
     response_model=List[TagToken],
     dependencies=[
-        api_security([ScopeEnum.setting_front_gallery_category_startswith_get.name])
+        api_security([ScopeEnum.setting_front_gallery_category_startswith_get.value])
     ],
 )
 async def startwith_category(
@@ -36,7 +36,7 @@ async def startwith_category(
     "/tag-field-startswith",
     response_model=List[TagToken],
     dependencies=[
-        api_security([ScopeEnum.setting_front_gallery_tag_field_startswith_get.name])
+        api_security([ScopeEnum.setting_front_gallery_tag_field_startswith_get.value])
     ],
 )
 async def startwith_tag_field(
@@ -51,7 +51,7 @@ async def startwith_tag_field(
     "/interpretation",
     response_model=SettingFrontGalleryInterpretation,
     dependencies=[
-        api_security([ScopeEnum.setting_front_gallery_interpretation_get.name])
+        api_security([ScopeEnum.setting_front_gallery_interpretation_get.value])
     ],
 )
 async def get_interpretation() -> SettingFrontGalleryInterpretation:
@@ -61,7 +61,7 @@ async def get_interpretation() -> SettingFrontGalleryInterpretation:
 @router.get(
     "/reset",
     response_model=SettingFrontGallery,
-    dependencies=[api_security([ScopeEnum.setting_front_gallery_reset_get.name])],
+    dependencies=[api_security([ScopeEnum.setting_front_gallery_reset_get.value])],
 )
 async def reset() -> SettingFrontGallery:
     return await CrudSettingFrontGallery.reset()
@@ -70,12 +70,14 @@ async def reset() -> SettingFrontGallery:
 @router.get(
     "",
     response_model=SettingFrontGallery,
-    dependencies=[api_security([ScopeEnum.setting_front_gallery_get.name])],
+    dependencies=[api_security([ScopeEnum.setting_front_gallery_get.value])],
 )
 async def get() -> SettingFrontGallery:
     return await CrudSettingFrontGallery.get()
 
 
-@router.put("", dependencies=[api_security([ScopeEnum.setting_front_gallery_put.name])])
+@router.put(
+    "", dependencies=[api_security([ScopeEnum.setting_front_gallery_put.value])]
+)
 async def put(setting: SettingFrontGalleryUpdate):
     return await CrudSettingFrontGallery.update(setting)

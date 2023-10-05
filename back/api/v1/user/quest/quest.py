@@ -66,7 +66,7 @@ async def get_elastic_count_quest_progress(quest_id: int) -> CurrentQuestProgres
 @router.get(
     "/{user_id}/current-quest-progress",
     response_model=CurrentQuestProgress,
-    dependencies=[api_security([ScopeEnum.user_current_quest_progress_get.name])],
+    dependencies=[api_security([ScopeEnum.user_current_quest_progress_get.value])],
 )
 async def get_user_current_quest_progress(user_id: int) -> CurrentQuestProgress:
     quests = await CrudUserQuest.get_top_priority(user_id)
@@ -90,7 +90,7 @@ async def get_user_current_quest_progress(user_id: int) -> CurrentQuestProgress:
 @router.get(
     "/{user_id}/total-quests",
     response_model=int,
-    dependencies=[api_security([ScopeEnum.user_total_quests_get.name])],
+    dependencies=[api_security([ScopeEnum.user_total_quests_get.value])],
 )
 async def count_total_user_quests(user_id: int) -> int:
     return await CrudUserQuest.count_by_user_id(user_id)
@@ -99,7 +99,7 @@ async def count_total_user_quests(user_id: int) -> int:
 @router.get(
     "/{user_id}/quests",
     response_model=List[UserQuest],
-    dependencies=[api_security([ScopeEnum.user_quests_get.name])],
+    dependencies=[api_security([ScopeEnum.user_quests_get.value])],
 )
 async def get_user_quests(
     user_id: int, pagination: Pagination = Depends(get_pagination)
@@ -114,7 +114,7 @@ async def get_user_quests(
     response_model=UserQuestCreated,
     dependencies=[
         Depends(verify_quest),
-        api_security([ScopeEnum.user_quest_post.name]),
+        api_security([ScopeEnum.user_quest_post.value]),
     ],
 )
 async def post_user_quest(user_id: int, quest: UserQuestCreate) -> UserQuestCreated:
@@ -124,7 +124,10 @@ async def post_user_quest(user_id: int, quest: UserQuestCreate) -> UserQuestCrea
 
 @router.put(
     "/{user_id}/quest",
-    dependencies=[Depends(verify_quest), api_security([ScopeEnum.user_quest_put.name])],
+    dependencies=[
+        Depends(verify_quest),
+        api_security([ScopeEnum.user_quest_put.value]),
+    ],
 )
 async def put_user_quest(user_id: int, quest: UserQuestUpdate):
     verify_user_id(user_id, quest)
@@ -133,7 +136,7 @@ async def put_user_quest(user_id: int, quest: UserQuestUpdate):
 
 @router.delete(
     "/{user_id}/quest/{quest_id}",
-    dependencies=[api_security([ScopeEnum.user_quest_delete.name])],
+    dependencies=[api_security([ScopeEnum.user_quest_delete.value])],
 )
 async def delete_user_quest(user_id: int, quest_id: int):
     return await CrudUserQuest.delete_by_id_and_user_id(quest_id, user_id)

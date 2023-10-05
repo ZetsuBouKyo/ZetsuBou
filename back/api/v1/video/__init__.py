@@ -13,7 +13,7 @@ router.include_router(query)
 router.include_router(tag)
 
 
-@router.get("/v/{video_id}", dependencies=[view_security([ScopeEnum.video_get.name])])
+@router.get("/v/{video_id}", dependencies=[view_security([ScopeEnum.video_get.value])])
 async def get_video(video_id: str) -> FileResponse:
     crud = await get_crud_async_video(video_id)
     video_url = await crud.get_video()
@@ -22,7 +22,7 @@ async def get_video(video_id: str) -> FileResponse:
 
 @router.get(
     "/v/{video_id}/cover",
-    dependencies=[view_security([ScopeEnum.video_cover_get.name])],
+    dependencies=[view_security([ScopeEnum.video_cover_get.value])],
 )
 async def get_cover(video_id: str) -> FileResponse:
     crud = await get_crud_async_video(video_id)

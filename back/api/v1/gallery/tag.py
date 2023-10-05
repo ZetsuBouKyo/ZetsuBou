@@ -11,7 +11,7 @@ router = APIRouter(tags=["Gallery Tag"])
 @router.get(
     "/{gallery_id}/tag",
     response_model=Gallery,
-    dependencies=[api_security([ScopeEnum.gallery_tag_get.name])],
+    dependencies=[api_security([ScopeEnum.gallery_tag_get.value])],
 )
 async def get_tag(gallery_id: str) -> Gallery:
     gallery = await get_gallery_by_gallery_id(gallery_id)
@@ -21,7 +21,7 @@ async def get_tag(gallery_id: str) -> Gallery:
 @router.post(
     "/{gallery_id}/tag",
     response_model=Gallery,
-    dependencies=[api_security([ScopeEnum.gallery_tag_post.name])],
+    dependencies=[api_security([ScopeEnum.gallery_tag_post.value])],
 )
 async def post_tag(gallery_id: str, gallery: Gallery) -> Gallery:
     if gallery_id != gallery.id:

@@ -12,7 +12,7 @@ router = APIRouter(prefix="/sync-new-galleries")
 @router.get(
     "",
     dependencies=[
-        api_security([ScopeEnum.task_standalone_gallery_sync_new_galleries_get.name])
+        api_security([ScopeEnum.task_standalone_gallery_sync_new_galleries_get.value])
     ],
 )
 async def sync_new_galleries(response: Response):
@@ -27,7 +27,7 @@ async def sync_new_galleries(response: Response):
     "/progress",
     response_model=ZetsuBouTask,
     dependencies=[
-        api_security([ScopeEnum.task_standalone_gallery_sync_new_galleries_get.name]),
+        api_security([ScopeEnum.task_standalone_gallery_sync_new_galleries_get.value]),
     ],
 )
 async def get_progress():
@@ -44,7 +44,7 @@ async def get_progress():
 @router.delete(
     "/progress",
     dependencies=[
-        api_security([ScopeEnum.task_standalone_gallery_sync_new_galleries_get.name]),
+        api_security([ScopeEnum.task_standalone_gallery_sync_new_galleries_get.value]),
     ],
 )
 async def delete_progress():

@@ -18,7 +18,7 @@ router = APIRouter(prefix="/ping")
 @router.get(
     "/services",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.init_ping_services_get.name])],
+    dependencies=[api_security([ScopeEnum.init_ping_services_get.value])],
 )
 async def get_ping_services() -> bool:
     return await ping()
@@ -27,7 +27,7 @@ async def get_ping_services() -> bool:
 @router.post(
     "/airflow",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.init_ping_airflow_post.name])],
+    dependencies=[api_security([ScopeEnum.init_ping_airflow_post.value])],
 )
 async def post_ping_airflow(
     airflow_host: str = Query(
@@ -49,7 +49,7 @@ async def post_ping_airflow(
 @router.post(
     "/elasticsearch",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.init_ping_elasticsearch_post.name])],
+    dependencies=[api_security([ScopeEnum.init_ping_elasticsearch_post.value])],
 )
 async def post_ping_elasticsearch(
     hosts: str = Query(
@@ -73,7 +73,7 @@ async def post_ping_elasticsearch(
 @router.post(
     "/postgres",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.init_ping_postgres_post.name])],
+    dependencies=[api_security([ScopeEnum.init_ping_postgres_post.value])],
 )
 async def post_ping_postgres(
     database_url: str = Query(
@@ -89,7 +89,7 @@ async def post_ping_postgres(
 @router.post(
     "/redis",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.init_ping_redis_post.name])],
+    dependencies=[api_security([ScopeEnum.init_ping_redis_post.value])],
 )
 async def post_ping_redis(
     redis_url: str = Query(
@@ -105,7 +105,7 @@ async def post_ping_redis(
 @router.post(
     "/storage",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.init_ping_storage_post.name])],
+    dependencies=[api_security([ScopeEnum.init_ping_storage_post.value])],
 )
 async def post_ping_storage(
     storage_protocol: SourceProtocolEnum = None,

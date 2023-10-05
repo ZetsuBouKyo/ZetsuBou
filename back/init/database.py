@@ -1,4 +1,10 @@
-from back.db.crud import CrudGroup, CrudUser, CrudUserGroup, CrudUserQuestCategory
+from back.db.crud import (
+    CrudGroup,
+    CrudScope,
+    CrudUser,
+    CrudUserGroup,
+    CrudUserQuestCategory,
+)
 from back.db.model import (
     GroupCreate,
     UserQuestCategoryCreate,
@@ -10,15 +16,20 @@ from back.model.scope import ScopeEnum
 from back.session.async_db import async_engine
 from back.settings import setting
 
-ADMIN_GROUP_NAME = ScopeEnum.admin.name
+ADMIN_GROUP_NAME = ScopeEnum.admin.value
 ADMIN_NAME = setting.app_admin_name
 ADMIN_EMAIL = setting.app_admin_email
 ADMIN_PASSWORD = setting.app_admin_password
+
+DATABASE_INIT = setting.database_initialization
 
 ELASTIC_COUNT_QUEST = UserQuestCategoryEnum.ELASTIC_COUNT_QUEST.value
 
 
 async def _init_table_data():
+    # create scopes
+    await CrudScope.sync()
+
     # create admin group
     admin_group_name = ADMIN_GROUP_NAME
     admin_group = await CrudGroup.get_row_by_name(admin_group_name)
@@ -63,4 +74,5 @@ async def create_tables():
 
 async def init_table():
     await create_tables()
-    await _init_table_data()
+    if DATABASE_INIT:
+        await _init_table_data()

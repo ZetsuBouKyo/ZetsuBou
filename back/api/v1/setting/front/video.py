@@ -21,7 +21,7 @@ router = APIRouter(prefix="/video")
     "/category-startswith",
     response_model=List[TagToken],
     dependencies=[
-        api_security([ScopeEnum.setting_front_video_category_startswith_get.name])
+        api_security([ScopeEnum.setting_front_video_category_startswith_get.value])
     ],
 )
 async def startwith_category(
@@ -36,7 +36,7 @@ async def startwith_category(
     "/tag-field-startswith",
     response_model=List[TagToken],
     dependencies=[
-        api_security([ScopeEnum.setting_front_video_tag_field_startswith_get.name])
+        api_security([ScopeEnum.setting_front_video_tag_field_startswith_get.value])
     ],
 )
 async def startwith_tag_field(
@@ -51,7 +51,7 @@ async def startwith_tag_field(
     "/interpretation",
     response_model=SettingFrontVideoInterpretation,
     dependencies=[
-        api_security([ScopeEnum.setting_front_video_interpretation_get.name])
+        api_security([ScopeEnum.setting_front_video_interpretation_get.value])
     ],
 )
 async def get_interpretation() -> SettingFrontVideoInterpretation:
@@ -61,7 +61,7 @@ async def get_interpretation() -> SettingFrontVideoInterpretation:
 @router.get(
     "/reset",
     response_model=SettingFrontVideo,
-    dependencies=[api_security([ScopeEnum.setting_front_video_reset_get.name])],
+    dependencies=[api_security([ScopeEnum.setting_front_video_reset_get.value])],
 )
 async def reset() -> SettingFrontVideo:
     return await CrudSettingFrontVideo.reset()
@@ -70,12 +70,12 @@ async def reset() -> SettingFrontVideo:
 @router.get(
     "",
     response_model=SettingFrontVideo,
-    dependencies=[api_security([ScopeEnum.setting_front_video_get.name])],
+    dependencies=[api_security([ScopeEnum.setting_front_video_get.value])],
 )
 async def get() -> SettingFrontVideo:
     return await CrudSettingFrontVideo.get()
 
 
-@router.put("", dependencies=[api_security([ScopeEnum.setting_front_video_put.name])])
+@router.put("", dependencies=[api_security([ScopeEnum.setting_front_video_put.value])])
 async def put(setting: SettingFrontVideoUpdate):
     return await CrudSettingFrontVideo.update(setting)

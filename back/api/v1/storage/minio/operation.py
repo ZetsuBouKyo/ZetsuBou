@@ -28,7 +28,7 @@ def get_prefix(prefix: str = ""):
 @router.get(
     "/list",
     response_model=List[S3Object],
-    dependencies=[api_security([ScopeEnum.storage_minio_list_get.name])],
+    dependencies=[api_security([ScopeEnum.storage_minio_list_get.value])],
 )
 async def get_minio_list(
     bucket_name: str = Depends(get_bucket_name),

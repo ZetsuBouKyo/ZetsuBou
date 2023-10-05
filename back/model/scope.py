@@ -5,11 +5,9 @@ class ScopeEnum(str, Enum):
     admin: str = "admin"
     guest: str = "guest"
 
-    elasticsearch: str = "elasticsearch"
     elasticsearch_query_examples_get: str = "elasticsearch.query-examples:get"
     elasticsearch_analyzers_get: str = "elasticsearch.analyzers:get"
 
-    gallery: str = "gallery"
     gallery_images_get: str = "gallery.images:get"
     gallery_image_get: str = "gallery.image:get"
     gallery_cover_get: str = "gallery.cover:get"
@@ -35,7 +33,6 @@ class ScopeEnum(str, Enum):
     init_ping_redis_post: str = "init.ping.redis:post"
     init_ping_storage_post: str = "init.ping.storage:post"
 
-    storage_minio: str = "storage.minio"
     storage_minio_list_get: str = "storage.minio.list:get"
     storage_minio_storages_get: str = "storage.minio.storages:get"
     storage_minio_storage_stat_get: str = "storage.minio.storage.stat:get"
@@ -45,7 +42,6 @@ class ScopeEnum(str, Enum):
     storage_minio_storage_categories_get: str = "storage.minio.storage-categories:get"
     storage_minio_total_storages_get: str = "storage.minio.total-storages:get"
 
-    setting: str = "setting"
     setting_front_general_get: str = "setting.front.general:get"
     setting_front_gallery_category_startswith_get: str = (
         "setting.front.gallery.category-startswith:get"
@@ -80,7 +76,6 @@ class ScopeEnum(str, Enum):
     setting_system_airflow_post: str = "setting.system.airflow:post"
     setting_system_airflow_put: str = "setting.system.airflow:put"
 
-    tag: str = "tag"
     tag_search_for_tag_attributes_get: str = "tag.search-for-tag-attributes:get"
     tag_interpretation_get: str = "tag.interpretation:get"
     tag_get: str = "tag:get"
@@ -161,7 +156,6 @@ class ScopeEnum(str, Enum):
     user_quest_put: str = "user.quest:put"
     user_quest_delete: str = "user.quest:delete"
 
-    video: str = "video"
     video_get: str = "video:get"
     video_cover_get: str = "video.cover:get"
     video_random_get: str = "video.random:get"
@@ -170,7 +164,6 @@ class ScopeEnum(str, Enum):
     video_tag_get: str = "video.tag:get"
     video_tag_post: str = "video.tag:post"
 
-    group: str = "group"
     total_groups_get: str = "total-groups:get"
     groups_get: str = "groups:get"
     group_post: str = "group:post"
@@ -178,4 +171,5 @@ class ScopeEnum(str, Enum):
     group_get: str = "group:get"
     group_delete: str = "group:delete"
 
-    sys_basic_setting_get: str = ""
+    scopes_get: str = "scopes:get"
+    scopes_startswith_get: str = "scopes.startswith:get"

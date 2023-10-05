@@ -20,7 +20,7 @@ router.include_router(ping)
 @router.get(
     "/check-host-ports",
     response_model=Dict[int, bool],
-    dependencies=[api_security([ScopeEnum.init_check_host_ports_get.name])],
+    dependencies=[api_security([ScopeEnum.init_check_host_ports_get.value])],
 )
 def check_host_ports() -> Dict[int, bool]:
     host_ports = {}
@@ -33,7 +33,7 @@ def check_host_ports() -> Dict[int, bool]:
 
 @router.get(
     "/download-redoc",
-    dependencies=[api_security([ScopeEnum.init_download_redoc_get.name])],
+    dependencies=[api_security([ScopeEnum.init_download_redoc_get.value])],
 )
 async def download_redoc():
     redoc_url = "https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"
@@ -47,7 +47,7 @@ async def download_redoc():
 
 @router.get(
     "/download-swagger",
-    dependencies=[api_security([ScopeEnum.init_download_swagger_get.name])],
+    dependencies=[api_security([ScopeEnum.init_download_swagger_get.value])],
 )
 async def download_swagger():
     swagger_url = "https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/swagger-ui-bundle.js"

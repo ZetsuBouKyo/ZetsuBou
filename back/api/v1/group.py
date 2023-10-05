@@ -15,7 +15,7 @@ router = APIRouter(tags=["Group"])
 @router.get(
     "/total-groups",
     response_model=int,
-    dependencies=[api_security([ScopeEnum.total_groups_get.name])],
+    dependencies=[api_security([ScopeEnum.total_groups_get.value])],
 )
 async def get_total_groups() -> int:
     return await CrudGroup.count_total()
@@ -24,7 +24,7 @@ async def get_total_groups() -> int:
 @router.get(
     "/groups",
     response_model=List[Group],
-    dependencies=[api_security([ScopeEnum.groups_get.name])],
+    dependencies=[api_security([ScopeEnum.groups_get.value])],
 )
 async def get_groups(pagination: Pagination = Depends(get_pagination)) -> List[Group]:
     return await CrudGroup.get_rows_order_by_id(
@@ -35,7 +35,7 @@ async def get_groups(pagination: Pagination = Depends(get_pagination)) -> List[G
 @router.post(
     "/group",
     response_model=GroupCreated,
-    dependencies=[api_security([ScopeEnum.group_post.name])],
+    dependencies=[api_security([ScopeEnum.group_post.value])],
 )
 async def post_group(group: GroupCreate) -> GroupCreated:
     return await CrudGroup.create(group)
@@ -44,7 +44,7 @@ async def post_group(group: GroupCreate) -> GroupCreated:
 @router.put(
     "/group",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.group_post.name])],
+    dependencies=[api_security([ScopeEnum.group_post.value])],
 )
 async def post_group(group: GroupUpdate) -> bool:
     return await CrudGroup.update_by_id(group)
@@ -53,7 +53,7 @@ async def post_group(group: GroupUpdate) -> bool:
 @router.delete(
     "/group/{group_id}",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.group_delete.name])],
+    dependencies=[api_security([ScopeEnum.group_delete.value])],
 )
 async def delete_group(group_id: int) -> bool:
     return await CrudGroup.delete_by_id(group_id)

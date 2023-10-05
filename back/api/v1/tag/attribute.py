@@ -20,7 +20,7 @@ router = APIRouter(prefix="/tag", tags=["Tag Attribute"])
 @router.get(
     "/total-attributes",
     response_model=int,
-    dependencies=[api_security([ScopeEnum.tag_total_attributes_get.name])],
+    dependencies=[api_security([ScopeEnum.tag_total_attributes_get.value])],
 )
 async def count_total_attributes() -> int:
     return await CrudTagAttribute.count_total()
@@ -29,7 +29,7 @@ async def count_total_attributes() -> int:
 @router.get(
     "/attributes",
     response_model=List[TagAttribute],
-    dependencies=[api_security([ScopeEnum.tag_attributes_get.name])],
+    dependencies=[api_security([ScopeEnum.tag_attributes_get.value])],
 )
 async def get_attributes(
     pagination: Pagination = Depends(get_pagination),
@@ -42,7 +42,7 @@ async def get_attributes(
 @router.post(
     "/attribute",
     response_model=TagAttributeCreated,
-    dependencies=[api_security([ScopeEnum.tag_attribute_post.name])],
+    dependencies=[api_security([ScopeEnum.tag_attribute_post.value])],
 )
 async def post_attribute(attribute: TagAttributeCreate) -> TagAttributeCreated:
     return await CrudTagAttribute.create(attribute)
@@ -51,7 +51,7 @@ async def post_attribute(attribute: TagAttributeCreate) -> TagAttributeCreated:
 @router.put(
     "/attribute",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.tag_attribute_put.name])],
+    dependencies=[api_security([ScopeEnum.tag_attribute_put.value])],
 )
 async def put_attribute(attribute: TagAttributeUpdate) -> bool:
     return await CrudTagAttribute.update_by_id(attribute)
@@ -60,7 +60,7 @@ async def put_attribute(attribute: TagAttributeUpdate) -> bool:
 @router.delete(
     "/attribute/{attribute_id}",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.tag_attribute_delete.name])],
+    dependencies=[api_security([ScopeEnum.tag_attribute_delete.value])],
 )
 async def delete_attribute(attribute_id: int) -> bool:
     # TODO: update elasticsearch

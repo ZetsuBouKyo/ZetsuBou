@@ -111,7 +111,7 @@ async def verify_with_scopes(security_scopes: SecurityScopes, token: Token):
         )
 
     token_scope_set = set(token.scopes)
-    if ScopeEnum.admin.name in token_scope_set:
+    if ScopeEnum.admin.value in token_scope_set:
         return True
 
     remaining_scopes = set()

@@ -2,10 +2,11 @@ from datetime import datetime
 from typing import Dict, List, Set, Union
 
 from pydantic import BaseModel
-from sqlalchemy import delete, desc, text, update
+from sqlalchemy import Column, delete, desc, text, update
 from sqlalchemy.engine.cursor import CursorResult
 from sqlalchemy.ext.asyncio.engine import AsyncEngine
 from sqlalchemy.future import select
+from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 from sqlalchemy.sql import functions as func
@@ -255,6 +256,48 @@ async def update_by_id(instance: DeclarativeMeta, data: Union[BaseModel, dict]) 
     if isinstance(data, BaseModel):
         data = data.model_dump()
     return await update_by_instance(instance, instance.id == data["id"], data)
+
+
+async def overwrite_relation_between_tables(
+    session: Session,
+    data: BaseModel,
+    data_parent_key: str,
+    data_children_key: str,
+    data_child_key: str,
+    instance: DeclarativeMeta,
+    instance_parent_col: Column,
+    data_model: BaseModel,
+) -> bool:
+    new_children_ids = set(getattr(data, data_children_key))
+    to_deleted_ids = set()
+
+    rows = await session.execute(select(instance).where(instance_parent_col == data.id))
+    for row in rows.scalars().all():
+        d = data_model(**row.__dict__)
+        child_id = getattr(d, data_child_key)
+        if child_id not in new_children_ids:
+            to_deleted_ids.add(d.id)
+        else:
+            new_children_ids.remove(child_id)
+
+    while new_children_ids and to_deleted_ids:
+        new_child_id = new_children_ids.pop()
+        to_update_id = to_deleted_ids.pop()
+        await session.execute(
+            update(instance)
+            .where(instance.id == to_update_id)
+            .values(**{data_parent_key: data.id, data_children_key: new_child_id})
+        )
+
+    if new_children_ids:
+        for child_id in new_children_ids:
+            session.add(
+                instance(**{data_parent_key: data.id, data_children_key: child_id})
+            )
+    if to_deleted_ids:
+        for id in to_deleted_ids:
+            await session.execute(delete(instance).where(instance.id == id))
+    return True
 
 
 async def delete_by(instance: DeclarativeMeta, condition) -> bool:

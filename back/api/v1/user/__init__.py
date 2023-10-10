@@ -71,7 +71,7 @@ async def get_user_by_id(user_id: int):
 @router.get(
     "/{user_id}/with-groups",
     response_model=UserWithGroup,
-    dependencies=[api_security([ScopeEnum.user_get.value])],
+    dependencies=[api_security([ScopeEnum.user_with_groups_get.value])],
 )
 async def get_user_with_groups_by_id(user_id: int) -> UserWithGroup:
     return await CrudUser.get_row_with_groups_by_id(user_id)
@@ -89,7 +89,7 @@ async def put_user_by_id(user_id: int, user: UserUpdate):
 @router.put(
     "/{user_id}/with-groups",
     response_model=UserWithGroup,
-    dependencies=[api_security([ScopeEnum.user_put.value])],
+    dependencies=[api_security([ScopeEnum.user_with_groups_put.value])],
 )
 async def put_user_with_groups_by_id(user_id: int, user: UserWithGroupUpdate):
     return await CrudUser.update_by_user_with_group(user_id, user)

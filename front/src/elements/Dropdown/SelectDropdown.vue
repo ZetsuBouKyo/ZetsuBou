@@ -185,7 +185,8 @@ function scrollNext() {
 
 function scroll(event: any) {
   const target = event.target;
-  if (target.scrollHeight - target.scrollTop === target.clientHeight) {
+  const diff = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight);
+  if (diff <= 1) {
     scrollNext();
   }
 }

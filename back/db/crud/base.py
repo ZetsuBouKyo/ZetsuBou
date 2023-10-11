@@ -286,13 +286,13 @@ async def overwrite_relation_between_tables(
         await session.execute(
             update(instance)
             .where(instance.id == to_update_id)
-            .values(**{data_parent_key: data.id, data_children_key: new_child_id})
+            .values(**{data_parent_key: data.id, data_child_key: new_child_id})
         )
 
     if new_children_ids:
         for child_id in new_children_ids:
             session.add(
-                instance(**{data_parent_key: data.id, data_children_key: child_id})
+                instance(**{data_parent_key: data.id, data_child_key: child_id})
             )
     if to_deleted_ids:
         for id in to_deleted_ids:

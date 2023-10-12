@@ -31,6 +31,6 @@ async def get_scopes(pagination: Pagination = Depends(get_pagination)) -> List[S
 async def startswith_scopes(
     name: str = "", pagination: Pagination = Depends(get_pagination)
 ) -> List[Scope]:
-    return await CrudScope.startwith(
+    return await CrudScope.startswith(
         name, skip=pagination.skip, limit=pagination.size, is_desc=pagination.is_desc
     )

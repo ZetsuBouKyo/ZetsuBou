@@ -11,10 +11,10 @@ from back.db.model import (
     UserFrontSettings,
     UserFrontSettingsUpdateByUserId,
     UserUpdate,
-    UserWithGroup,
-    UserWithGroupCreate,
-    UserWithGroupCreated,
-    UserWithGroupUpdate,
+    UserWithGroups,
+    UserWithGroupsCreate,
+    UserWithGroupsCreated,
+    UserWithGroupsUpdate,
 )
 from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
@@ -51,15 +51,15 @@ post_user_openapi_examples = {
 
 @router.post(
     "",
-    response_model=UserWithGroupCreated,
+    response_model=UserWithGroupsCreated,
     dependencies=[api_security([ScopeEnum.user_post.value])],
 )
 async def post_user(
     user: Annotated[
-        UserWithGroupCreate,
+        UserWithGroupsCreate,
         Body(openapi_examples=post_user_openapi_examples),
     ]
-) -> UserWithGroupCreated:
+) -> UserWithGroupsCreated:
     return await CrudUser.create_with_groups(user)
 
 
@@ -70,10 +70,10 @@ async def get_user_by_id(user_id: int):
 
 @router.get(
     "/{user_id}/with-groups",
-    response_model=UserWithGroup,
+    response_model=UserWithGroups,
     dependencies=[api_security([ScopeEnum.user_with_groups_get.value])],
 )
-async def get_user_with_groups_by_id(user_id: int) -> UserWithGroup:
+async def get_user_with_groups_by_id(user_id: int) -> UserWithGroups:
     return await CrudUser.get_row_with_groups_by_id(user_id)
 
 
@@ -88,10 +88,10 @@ async def put_user_by_id(user_id: int, user: UserUpdate):
 
 @router.put(
     "/{user_id}/with-groups",
-    response_model=UserWithGroup,
+    response_model=UserWithGroups,
     dependencies=[api_security([ScopeEnum.user_with_groups_put.value])],
 )
-async def put_user_with_groups_by_id(user_id: int, user: UserWithGroupUpdate):
+async def put_user_with_groups_by_id(user_id: int, user: UserWithGroupsUpdate):
     return await CrudUser.update_by_user_with_group(user_id, user)
 
 

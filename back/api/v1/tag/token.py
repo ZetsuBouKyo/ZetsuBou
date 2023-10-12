@@ -31,7 +31,7 @@ async def start_with(
             raise HTTPException(
                 status_code=409, detail="category and category_id should choose one"
             )
-        return await CrudTagToken.startwith_by_category(
+        return await CrudTagToken.startswith_by_category(
             s,
             category,
             skip=pagination.skip,
@@ -39,10 +39,10 @@ async def start_with(
             is_desc=pagination.is_desc,
         )
     if category_id is None:
-        return await CrudTagToken.startwith(
+        return await CrudTagToken.startswith(
             s, skip=pagination.skip, limit=pagination.size, is_desc=pagination.is_desc
         )
-    return await CrudTagToken.startwith_by_category_id(
+    return await CrudTagToken.startswith_by_category_id(
         s,
         category_id,
         skip=pagination.skip,

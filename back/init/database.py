@@ -9,7 +9,7 @@ from back.db.model import (
     GroupCreate,
     UserQuestCategoryCreate,
     UserQuestCategoryEnum,
-    UserWithGroupCreate,
+    UserWithGroupsCreate,
 )
 from back.db.table import Base
 from back.model.scope import ScopeEnum
@@ -48,7 +48,7 @@ async def _init_table_data():
         if len(admin_user_groups) == 0:
             if admin_user is None:
                 admin_user = await CrudUser.create_with_groups(
-                    UserWithGroupCreate(
+                    UserWithGroupsCreate(
                         name=admin_name,
                         email=admin_email,
                         password=admin_password,

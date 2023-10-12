@@ -3,11 +3,11 @@ import { reactive } from "vue";
 import { TagFieldsPrivateState } from "@/interface/tag";
 import { Source } from "@/interface/source";
 import { DataState } from "@/interface/state";
-import { GetTagTokenStartWithParam } from "@/api/v1/tag/token.interface";
+import { GetTagTokenStartsWithParam } from "@/api/v1/tag/token.interface";
 import { SelectDropdownOption, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
 
 import { getTagInterpretation, TagInterpretation } from "@/api/v1/tag/tag";
-import { getTagTokenStartWith } from "@/api/v1/tag/token";
+import { getTagTokenStartsWith } from "@/api/v1/tag/token";
 
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 
@@ -76,9 +76,9 @@ function updateTags(
   for (const field in sourceState.data.tags) {
     tagFieldsState.chips.push({ title: field, value: undefined });
     privateState.tagFields[field] = initSelectDropdownState() as SelectDropdownState;
-    privateState.onGets[field] = (params: GetTagTokenStartWithParam) => {
+    privateState.onGets[field] = (params: GetTagTokenStartsWithParam) => {
       params.category = field;
-      return getTagTokenStartWith(params);
+      return getTagTokenStartsWith(params);
     };
 
     for (const tagValue of sourceState.data.tags[field]) {
@@ -116,7 +116,7 @@ function updateTagFieldsChipsLength(
       privateState.tagFields[chip.title] = initSelectDropdownState() as SelectDropdownState;
       privateState.onGets[chip.title] = (params) => {
         params.category = chip.title;
-        return getTagTokenStartWith(params);
+        return getTagTokenStartsWith(params);
       };
     }
     if (sourceState.data.tags[chip.title] === undefined) {

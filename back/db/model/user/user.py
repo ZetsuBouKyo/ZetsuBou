@@ -34,15 +34,15 @@ class User(BaseModel):
     last_signin: DatetimeStr
 
 
-class UserWithGroupCreate(UserCreate):
+class UserWithGroupsCreate(UserCreate):
     group_ids: List[int]
 
 
-class UserWithGroupCreated(UserCreated):
+class UserWithGroupsCreated(UserCreated):
     group_ids: List[int] = Field(..., examples=[[1]])
 
 
-class UserWithGroupUpdate(UserUpdate):
+class UserWithGroupsUpdate(UserUpdate):
     group_ids: List[int]
 
 
@@ -55,10 +55,10 @@ class UserWithGroupAndHashedPasswordRow(UserWithGroupRow):
     hashed_password: str
 
 
-class UserWithGroup(User):
+class UserWithGroups(User):
     group_ids: List[int] = []
     group_names: List[str] = []
 
 
-class UserWithGroupAndHashedPassword(UserWithGroup):
+class UserWithGroupAndHashedPassword(UserWithGroups):
     hashed_password: str

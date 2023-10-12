@@ -104,13 +104,13 @@ from .user.user import (
     UserCreate,
     UserCreated,
     UserUpdate,
-    UserWithGroup,
     UserWithGroupAndHashedPassword,
     UserWithGroupAndHashedPasswordRow,
-    UserWithGroupCreate,
-    UserWithGroupCreated,
     UserWithGroupRow,
-    UserWithGroupUpdate,
+    UserWithGroups,
+    UserWithGroupsCreate,
+    UserWithGroupsCreated,
+    UserWithGroupsUpdate,
 )
 
 __all__ = [
@@ -203,11 +203,11 @@ __all__ = [
     "UserQuestCreated",
     "UserQuestUpdate",
     "UserUpdate",
-    "UserWithGroup",
+    "UserWithGroups",
     "UserWithGroupAndHashedPassword",
     "UserWithGroupAndHashedPasswordRow",
-    "UserWithGroupCreate",
-    "UserWithGroupCreated",
+    "UserWithGroupsCreate",
+    "UserWithGroupsCreated",
     "UserWithGroupRow",
-    "UserWithGroupUpdate",
+    "UserWithGroupsUpdate",
 ]

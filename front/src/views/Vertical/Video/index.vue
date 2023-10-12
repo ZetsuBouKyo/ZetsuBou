@@ -14,8 +14,8 @@ import RippleButton from "@/elements/Button/RippleButton.vue";
 import StarRating from "@/elements/Rating/StarRating.vue";
 
 import {
-  getSettingFrontVideoStartWithCategories,
-  getSettingFrontVideoStartWithTagFields,
+  getSettingFrontVideoStartsWithCategories,
+  getSettingFrontVideoStartsWithTagFields,
 } from "@/api/v1/setting/front/video";
 import { postVideoCreateCover } from "@/api/v1/task/airflow";
 import { getAdvancedSearch, getRandom, getSearch } from "@/api/v1/video/query";
@@ -146,8 +146,8 @@ function onOverwrite(state: SourceState<Video>, data: Video) {
     :state="videoState"
     :title="'Video Editor'"
     :saved-message="'Video tag saved'"
-    :on-get-category-starts-with="getSettingFrontVideoStartWithCategories"
-    :on-get-tag-field-starts-with="getSettingFrontVideoStartWithTagFields" />
+    :on-get-category-starts-with="getSettingFrontVideoStartsWithCategories"
+    :on-get-tag-field-starts-with="getSettingFrontVideoStartsWithTagFields" />
   <section class="body-font overflow-hidden lg:mx-8 mx-2">
     <div class="px-2 py-6 mx-auto" v-if="videoState.data">
       <div class="flex flex-row">

@@ -17,13 +17,13 @@ from ...model import (
     UserCreated,
     UserGroup,
     UserUpdate,
-    UserWithGroup,
     UserWithGroupAndHashedPassword,
     UserWithGroupAndHashedPasswordRow,
-    UserWithGroupCreate,
-    UserWithGroupCreated,
     UserWithGroupRow,
-    UserWithGroupUpdate,
+    UserWithGroups,
+    UserWithGroupsCreate,
+    UserWithGroupsCreated,
+    UserWithGroupsUpdate,
 )
 from ...table import GroupBase, UserBase, UserGroupBase
 from ..base import (
@@ -40,7 +40,7 @@ from .front_settings import init_user_front_settings
 from .group import update_group_ids_by_user_id
 
 
-def get_user_hashed_password(user: Union[UserCreate, UserWithGroupCreate]) -> dict:
+def get_user_hashed_password(user: Union[UserCreate, UserWithGroupsCreate]) -> dict:
     u = {}
     u.update(name=user.name)
     u.update(email=user.email)
@@ -54,7 +54,7 @@ class _CrudUser:
         session: Session,
         base: UserBase,
         user_id: int,
-        user: Union[UserUpdate, UserWithGroupUpdate],
+        user: Union[UserUpdate, UserWithGroupsUpdate],
         user_group_base: UserGroupBase = UserGroupBase,
         group_base: GroupBase = GroupBase,
     ):
@@ -66,7 +66,7 @@ class _CrudUser:
         self.group_base = group_base
 
         self.new_user = {}
-        self.with_group = type(user) == UserWithGroupUpdate
+        self.with_group = type(user) == UserWithGroupsUpdate
 
     async def get_user_in_db(self):
         if not self.with_group:
@@ -151,7 +151,7 @@ class _CrudUser:
                 if updated_user is None:
                     group_ids = []
                     group_names = []
-                    updated_user = UserWithGroup(
+                    updated_user = UserWithGroups(
                         id=r.id,
                         name=r.name,
                         email=r.email,
@@ -211,7 +211,7 @@ class _CrudUser:
                     self.user.group_ids,
                 )
 
-    async def update(self) -> Union[User, UserWithGroup]:
+    async def update(self) -> Union[User, UserWithGroups]:
         self.user_in_db = await self.get_user_in_db()
         if self.user_in_db is None:
             raise HTTPException(status_code=404, detail="User does not exist")
@@ -232,7 +232,7 @@ class _CrudUser:
 async def create_user(
     session: Session,
     user_base: UserBase,
-    user: Union[UserCreate, UserWithGroupCreate],
+    user: Union[UserCreate, UserWithGroupsCreate],
     is_front_settings: bool = True,
 ) -> UserCreated:
     user_dict = get_user_hashed_password(user)
@@ -262,8 +262,8 @@ class CrudUser(UserBase):
 
     @classmethod
     async def create_with_groups(
-        cls, user: UserWithGroupCreate, is_front_settings: bool = True
-    ) -> UserWithGroupCreated:
+        cls, user: UserWithGroupsCreate, is_front_settings: bool = True
+    ) -> UserWithGroupsCreated:
         async with async_session() as session:
             async with session.begin():
                 created_user = await create_user(
@@ -285,7 +285,7 @@ class CrudUser(UserBase):
 
                 created_user_with_groups_dict = created_user.model_dump()
                 created_user_with_groups_dict.update(group_ids=user_group_ids)
-        return UserWithGroupCreated(**created_user_with_groups_dict)
+        return UserWithGroupsCreated(**created_user_with_groups_dict)
 
     @classmethod
     async def batch_create(cls, users: List[UserCreate]):
@@ -302,7 +302,7 @@ class CrudUser(UserBase):
         return await get_row_by_id(cls, id, User)
 
     @classmethod
-    async def get_row_with_groups_by_id(cls, id: int) -> UserWithGroup:
+    async def get_row_with_groups_by_id(cls, id: int) -> UserWithGroups:
         async with async_session() as session:
             async with session.begin():
                 statement = (
@@ -327,7 +327,7 @@ class CrudUser(UserBase):
                         group_ids = []
                         group_names = []
 
-                        user = UserWithGroup(
+                        user = UserWithGroups(
                             id=r.id,
                             name=r.name,
                             email=r.email,
@@ -356,7 +356,7 @@ class CrudUser(UserBase):
     @classmethod
     async def get_rows_with_group_id_order_by_id(
         cls, skip: int = 0, limit: int = 100, is_desc: bool = False
-    ) -> List[UserWithGroup]:
+    ) -> List[UserWithGroups]:
         out = []
         order = cls.id
         if is_desc:
@@ -389,7 +389,7 @@ class CrudUser(UserBase):
                 for row in rows.mappings():
                     r = UserWithGroupRow(**row)
                     if len(out) > 0:
-                        last: UserWithGroup = out[-1]
+                        last: UserWithGroups = out[-1]
                         if (
                             (last.id == r.id)
                             and r.group_id is not None
@@ -405,7 +405,7 @@ class CrudUser(UserBase):
                         group_ids.append(r.group_id)
                         group_names.append(r.group_name)
                     out.append(
-                        UserWithGroup(
+                        UserWithGroups(
                             id=r.id,
                             name=r.name,
                             email=r.email,
@@ -449,8 +449,8 @@ class CrudUser(UserBase):
 
     @classmethod
     async def update_by_user_with_group(
-        cls, user_id: int, user: UserWithGroupUpdate
-    ) -> UserWithGroup:
+        cls, user_id: int, user: UserWithGroupsUpdate
+    ) -> UserWithGroups:
         async with async_session() as session:
             async with session.begin():
                 crud = _CrudUser(session, cls, user_id, user)

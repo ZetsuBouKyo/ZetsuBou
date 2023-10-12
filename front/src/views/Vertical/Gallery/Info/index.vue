@@ -16,8 +16,8 @@ import ControlPanel from "./ControlPanel.vue";
 
 import { deleteGalleryByID } from "@/api/v1/gallery/operation";
 import {
-  getSettingFrontGalleryStartWithCategories,
-  getSettingFrontGalleryStartWithTagFields,
+  getSettingFrontGalleryStartsWithCategories,
+  getSettingFrontGalleryStartsWithTagFields,
 } from "@/api/v1/setting/front/gallery";
 import { getTaskStandaloneGalleryOpen } from "@/api/v1/task/standalone";
 
@@ -111,8 +111,8 @@ function onOverwrite(state: SourceState<Gallery>, data: Gallery) {
     :state="galleryState"
     :title="'Gallery Editor'"
     :saved-message="'Gallery tag saved'"
-    :on-get-category-starts-with="getSettingFrontGalleryStartWithCategories"
-    :on-get-tag-field-starts-with="getSettingFrontGalleryStartWithTagFields" />
+    :on-get-category-starts-with="getSettingFrontGalleryStartsWithCategories"
+    :on-get-tag-field-starts-with="getSettingFrontGalleryStartsWithTagFields" />
   <section class="body-font overflow-hidden lg:mx-8 mx-2">
     <div class="px-2 py-6 mx-auto">
       <div class="md:w-full mx-auto flex flex-wrap w-full" v-if="galleryState.data">

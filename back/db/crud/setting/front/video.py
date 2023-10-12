@@ -48,27 +48,27 @@ class CrudSettingFrontVideo:
 
         c_skip = 0
         categories = []
-        tmp = await cls.startwith_category("", skip=c_skip, limit=limit)
+        tmp = await cls.startswith_category("", skip=c_skip, limit=limit)
         categories += tmp
         while tmp:
             c_skip += limit
-            tmp = await cls.startwith_category("", skip=c_skip, limit=limit)
+            tmp = await cls.startswith_category("", skip=c_skip, limit=limit)
             categories += tmp
 
         t_skip = 0
         tag_fields = []
-        tmp = await cls.startwith_tag_field("", skip=t_skip, limit=limit)
+        tmp = await cls.startswith_tag_field("", skip=t_skip, limit=limit)
         tag_fields += tmp
         while tmp:
             t_skip += limit
-            tmp = await cls.startwith_tag_field("", skip=t_skip, limit=limit)
+            tmp = await cls.startswith_tag_field("", skip=t_skip, limit=limit)
             tag_fields += tmp
         return SettingFrontVideoInterpretation(
             categories=categories, tag_fields=tag_fields
         )
 
     @classmethod
-    async def _startwith(
+    async def _startswith(
         cls,
         base: Union[SettingFrontVideoCategoryBase, SettingFrontVideoTagFieldBase],
         s: str,
@@ -94,18 +94,18 @@ class CrudSettingFrontVideo:
         return out
 
     @classmethod
-    async def startwith_category(
+    async def startswith_category(
         cls, s: str, skip: int = 0, limit: int = 100
     ) -> List[TagToken]:
-        return await cls._startwith(
+        return await cls._startswith(
             SettingFrontVideoCategoryBase, s, skip=skip, limit=limit
         )
 
     @classmethod
-    async def startwith_tag_field(
+    async def startswith_tag_field(
         cls, s: str, skip: int = 0, limit: int = 100
     ) -> List[TagToken]:
-        return await cls._startwith(
+        return await cls._startswith(
             SettingFrontVideoTagFieldBase, s, skip=skip, limit=limit
         )
 

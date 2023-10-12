@@ -6,7 +6,7 @@ import { SearchCategory, SearchState } from "@/interface/search";
 import { Token } from "@/interface/tag";
 
 import { getGalleryFieldNames, getVideoFieldNames } from "@/api/v1/elasticsearch";
-import { getTagTokenStartWith } from "@/api/v1/tag/token";
+import { getTagTokenStartsWith } from "@/api/v1/tag/token";
 
 enum SearchAutoCompleteOptionEnum {
   Command = "Command",
@@ -163,7 +163,7 @@ function updateOptions(cur: string, pre: string) {
   if (!s) {
     return;
   }
-  getTagTokenStartWith({ s: s, size: 5 }).then((response: any) => {
+  getTagTokenStartsWith({ s: s, size: 5 }).then((response: any) => {
     let tokens: Array<Token> = response.data;
     tokens = Array.from(new Set(tokens));
     for (const token of tokens) {

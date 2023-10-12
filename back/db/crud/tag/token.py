@@ -58,7 +58,7 @@ class CrudTagToken(TagTokenBase):
         )
 
     @classmethod
-    async def startwith(
+    async def startswith(
         cls, s: str, skip: int = 0, limit: int = 100, is_desc: bool = False
     ) -> List[TagToken]:
         return await get_rows_by_condition_order_by(
@@ -72,7 +72,7 @@ class CrudTagToken(TagTokenBase):
         )
 
     @classmethod
-    async def startwith_by_category(
+    async def startswith_by_category(
         cls,
         s: str,
         category: str,
@@ -109,7 +109,7 @@ class CrudTagToken(TagTokenBase):
         return out
 
     @classmethod
-    async def startwith_by_category_id(
+    async def startswith_by_category_id(
         cls,
         s: str,
         category_id: int,

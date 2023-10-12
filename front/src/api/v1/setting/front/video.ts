@@ -15,7 +15,7 @@ export function putSettingFrontVideo(data: any) {
   });
 }
 
-export function getSettingFrontVideoStartWithCategories(params: any) {
+export function getSettingFrontVideoStartsWithCategories(params: any) {
   return request({
     url: `/api/v1/setting/front/video/category-startswith`,
     method: "get",
@@ -23,7 +23,7 @@ export function getSettingFrontVideoStartWithCategories(params: any) {
   });
 }
 
-export function getSettingFrontVideoStartWithTagFields(params: any) {
+export function getSettingFrontVideoStartsWithTagFields(params: any) {
   return request({
     url: `/api/v1/setting/front/video/tag-field-startswith`,
     method: "get",

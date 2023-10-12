@@ -15,7 +15,7 @@ export function putSettingFrontGallery(data: any) {
   });
 }
 
-export function getSettingFrontGalleryStartWithCategories(params: any) {
+export function getSettingFrontGalleryStartsWithCategories(params: any) {
   return request({
     url: `/api/v1/setting/front/gallery/category-startswith`,
     method: "get",
@@ -23,7 +23,7 @@ export function getSettingFrontGalleryStartWithCategories(params: any) {
   });
 }
 
-export function getSettingFrontGalleryStartWithTagFields(params: any) {
+export function getSettingFrontGalleryStartsWithTagFields(params: any) {
   return request({
     url: `/api/v1/setting/front/gallery/tag-field-startswith`,
     method: "get",

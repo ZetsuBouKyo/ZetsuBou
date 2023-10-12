@@ -24,14 +24,14 @@ import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 
 import {
-  getSettingFrontGalleryStartWithCategories,
-  getSettingFrontGalleryStartWithTagFields,
+  getSettingFrontGalleryStartsWithCategories,
+  getSettingFrontGalleryStartsWithTagFields,
 } from "@/api/v1/setting/front/gallery";
 import {
-  getSettingFrontVideoStartWithCategories,
-  getSettingFrontVideoStartWithTagFields,
+  getSettingFrontVideoStartsWithCategories,
+  getSettingFrontVideoStartsWithTagFields,
 } from "@/api/v1/setting/front/video";
-import { getTagTokenStartWith } from "@/api/v1/tag/token";
+import { getTagTokenStartsWith } from "@/api/v1/tag/token";
 
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { settingState } from "@/state/Setting/front";
@@ -78,7 +78,7 @@ const categories = initSelectDropdownState() as SelectDropdownState;
 const onGetCategoriesToOptions = tokenToOption;
 
 const uploader = initSelectDropdownState() as SelectDropdownState;
-const onGetUploader = getTagTokenStartWith;
+const onGetUploader = getTagTokenStartsWith;
 const onGetUploaderToOptions = tokenToOption;
 
 function resetCategoryAndUploader() {
@@ -302,15 +302,15 @@ watch(
 );
 
 let onGetCategories: SelectDropdownOnGet<Token>;
-let getStartWithTagFields: SelectDropdownOnGet<Token>;
+let getStartsWithTagFields: SelectDropdownOnGet<Token>;
 switch (state.category) {
   case SearchCategory.Gallery:
-    onGetCategories = getSettingFrontGalleryStartWithCategories;
-    getStartWithTagFields = getSettingFrontGalleryStartWithTagFields;
+    onGetCategories = getSettingFrontGalleryStartsWithCategories;
+    getStartsWithTagFields = getSettingFrontGalleryStartsWithTagFields;
     break;
   case SearchCategory.Video:
-    onGetCategories = getSettingFrontVideoStartWithCategories;
-    getStartWithTagFields = getSettingFrontVideoStartWithTagFields;
+    onGetCategories = getSettingFrontVideoStartsWithCategories;
+    getStartsWithTagFields = getSettingFrontVideoStartsWithTagFields;
 }
 
 function search() {
@@ -539,7 +539,7 @@ defineExpose({
         :options-width-class="'w-64'"
         :origin="Origin.BottomLeft"
         :state="labels"
-        :on-get="getTagTokenStartWith"
+        :on-get="getTagTokenStartsWith"
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>
@@ -551,7 +551,7 @@ defineExpose({
         :options-width-class="'w-64'"
         :origin="Origin.BottomLeft"
         :state="tagFields"
-        :on-get="getStartWithTagFields"
+        :on-get="getStartsWithTagFields"
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>

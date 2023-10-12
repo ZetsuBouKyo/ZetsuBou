@@ -6,7 +6,7 @@ import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 
 import { getSettingFrontVideoInterpretation, putSettingFrontVideo } from "@/api/v1/setting/front/video";
-import { getTagTokenStartWith } from "@/api/v1/tag/token";
+import { getTagTokenStartsWith } from "@/api/v1/tag/token";
 
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { messageState } from "@/state/message";
@@ -18,11 +18,11 @@ function tokenToOption(token: { id: number; name: string }) {
 }
 
 const categories = initSelectDropdownState() as SelectDropdownState;
-const onGetCategories = getTagTokenStartWith;
+const onGetCategories = getTagTokenStartsWith;
 const onGetCategoriesToOptions = tokenToOption;
 
 const tagFields = initSelectDropdownState() as SelectDropdownState;
-const onGetTagFields = getTagTokenStartWith;
+const onGetTagFields = getTagTokenStartsWith;
 const onGetTagFieldsToOptions = tokenToOption;
 
 function load() {

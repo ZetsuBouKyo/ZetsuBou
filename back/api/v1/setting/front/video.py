@@ -24,10 +24,10 @@ router = APIRouter(prefix="/video")
         api_security([ScopeEnum.setting_front_video_category_startswith_get.value])
     ],
 )
-async def startwith_category(
+async def startswith_category(
     s: str = "", pagination: Pagination = Depends(get_pagination)
 ) -> List[TagToken]:
-    return await CrudSettingFrontVideo.startwith_category(
+    return await CrudSettingFrontVideo.startswith_category(
         s, skip=pagination.skip, limit=pagination.size
     )
 
@@ -39,10 +39,10 @@ async def startwith_category(
         api_security([ScopeEnum.setting_front_video_tag_field_startswith_get.value])
     ],
 )
-async def startwith_tag_field(
+async def startswith_tag_field(
     s: str = "", pagination: Pagination = Depends(get_pagination)
 ) -> List[TagToken]:
-    return await CrudSettingFrontVideo.startwith_tag_field(
+    return await CrudSettingFrontVideo.startswith_tag_field(
         s, skip=pagination.skip, limit=pagination.size
     )
 

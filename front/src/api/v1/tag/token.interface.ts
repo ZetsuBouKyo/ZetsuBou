@@ -1,6 +1,6 @@
 import { SelectDropdownGetParam } from "@/elements/Dropdown/SelectDropdown.interface";
 
-export interface GetTagTokenStartWithParam extends SelectDropdownGetParam {
+export interface GetTagTokenStartsWithParam extends SelectDropdownGetParam {
   category?: string;
   category_id?: number;
 }

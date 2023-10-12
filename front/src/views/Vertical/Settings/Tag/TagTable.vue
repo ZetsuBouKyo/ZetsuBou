@@ -17,7 +17,7 @@ import {
   putTag,
   searchForTagAttributes,
 } from "@/api/v1/tag/tag";
-import { getTagTokenStartWith, getTagTokenTotal, getTagTokens } from "@/api/v1/tag/token";
+import { getTagTokenStartsWith, getTagTokenTotal, getTagTokens } from "@/api/v1/tag/token";
 
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { initCrudTableState } from "@/elements/Table/CrudTable/CrudTable";
@@ -46,7 +46,7 @@ const onCrudGetTotal = getTagTokenTotal;
 const onCrudUpdate = putTag;
 const onCrudDelete = deleteTag;
 
-const onGetTokens = getTagTokenStartWith;
+const onGetTokens = getTagTokenStartsWith;
 function onGetTokensToOptions(data: { name: string | number; id: number }) {
   return { title: data.name, value: data.id };
 }
@@ -54,7 +54,7 @@ function onGetTokensToOptions(data: { name: string | number; id: number }) {
 const search: Search = {
   name: {
     title: "name",
-    onSearch: getTagTokenStartWith,
+    onSearch: getTagTokenStartsWith,
     onSearchToOptions: onGetTokensToOptions,
     onSearchGetTip: onGetTip,
     onSearchMouseoverOption: onMouseoverOption,

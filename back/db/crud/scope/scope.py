@@ -23,7 +23,7 @@ class CrudScope(ScopeBase):
         return ScopeCreated(**await create(cls, token))
 
     @classmethod
-    async def startwith(
+    async def startswith(
         cls, name: str, skip: int = 0, limit: int = 100, is_desc: bool = False
     ) -> List[Scope]:
         return await get_rows_by_condition_order_by(

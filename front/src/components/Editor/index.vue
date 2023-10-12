@@ -19,7 +19,7 @@ import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 import EditorStringArray from "./EditorStringArray.vue";
 
-import { getTagTokenStartWith } from "@/api/v1/tag/token";
+import { getTagTokenStartsWith } from "@/api/v1/tag/token";
 
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { messageState } from "@/state/message";
@@ -264,7 +264,7 @@ defineExpose({ open, close, reset });
         :origin="Origin.BottomLeft"
         :state="labels"
         :enable-input-chips-enter-event="false"
-        :on-get="getTagTokenStartWith"
+        :on-get="getTagTokenStartsWith"
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.InputChips" />
     </div>

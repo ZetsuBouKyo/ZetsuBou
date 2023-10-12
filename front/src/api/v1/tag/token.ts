@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-import { GetTagTokenStartWithParam } from "@/api/v1/tag/token.interface";
+import { GetTagTokenStartsWithParam } from "@/api/v1/tag/token.interface";
 
 export function getTagTokenTotal() {
   return request({
@@ -17,7 +17,7 @@ export function getTagTokens(params: any) {
   });
 }
 
-export function getTagTokenStartWith(params: GetTagTokenStartWithParam) {
+export function getTagTokenStartsWith(params: GetTagTokenStartsWithParam) {
   return request({
     url: `/api/v1/tag/token-startswith`,
     method: "get",

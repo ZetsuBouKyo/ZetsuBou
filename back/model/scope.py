@@ -1,7 +1,9 @@
 from enum import Enum
 
+from back.utils.enum import StrEnumMeta
 
-class ScopeEnum(str, Enum):
+
+class ScopeEnum(str, Enum, metaclass=StrEnumMeta):
     admin: str = "admin"
     guest: str = "guest"
 
@@ -178,3 +180,6 @@ class ScopeEnum(str, Enum):
 
     scopes_get: str = "scopes:get"
     scopes_startswith_get: str = "scopes.startswith:get"
+
+    def __contains__(cls, scope_value: str):
+        return scope_value in cls.__members__.values()

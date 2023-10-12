@@ -1,79 +1,89 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { watch } from "vue";
 
+import { Origin } from "@/elements/Dropdown/Dropdown.interface";
+import { SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
 import { CrudTableState, Header } from "@/elements/Table/CrudTable/interface";
 
+import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 import CrudTable from "@/elements/Table/CrudTable/index.vue";
 
-import { deleteGroup, getGroup, getGroupTotal, postGroup, putGroup } from "@/api/v1/group";
+import {
+  deleteGroup,
+  getGroupTotal,
+  getGroupWithScope,
+  getGroups,
+  postGroupWithScopeIDs,
+  putGroupWithScopeIDs,
+} from "@/api/v1/group";
+import { getScopesStartsWith } from "@/api/v1/scope";
 
+import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { initCrudTableState } from "@/elements/Table/CrudTable/CrudTable";
-
-interface Scope {
-  group_id: number;
-  id: number;
-  name?: string;
-}
 
 interface Row {
   id?: number;
   name: string;
-  scopes: Array<Scope>;
+  scope_ids?: Array<number>;
+  scope_names?: Array<string>;
 }
 
-const table = initCrudTableState() as CrudTableState<Row>;
-
-const prefix = reactive({
-  options: [],
-});
-
+const scopes = initSelectDropdownState() as SelectDropdownState;
+const onGetScopes = (param: any) => {
+  param.name = "";
+  return getScopesStartsWith(param);
+};
+function onGetScopesToOptions(data: { id: number; name: string }) {
+  return { title: data.name, value: data.id };
+}
 watch(
-  () => table.row,
+  () => scopes.chips.length,
   () => {
-    // const bucketName = bucketsDropdown.selectedValue as string;
-    // const prefixName = table.row.prefix as string;
-    // if (bucketName === undefined || prefixName === undefined) {
-    //   return;
-    // }
-    // if (prefixName.slice(-1) === "/") {
-    //   getPrefixAutoComplete(bucketName, prefixName);
-    // }
+    table.row.scope_ids = [];
+    for (const chip of scopes.chips) {
+      table.row.scope_ids.push(chip.value as number);
+      table.row.scope_names.push(chip.title as string);
+    }
   },
 );
 
-function load() {
-  // getMinioStorageCategories().then((response) => {
-  //   const data = response.data;
-  //   if (data) {
-  //     for (let key in data) {
-  //       categoriesDropdown.options.push({ title: key, value: data[key] });
-  //     }
-  //   }
-  // });
-}
+const table = initCrudTableState() as CrudTableState<Row>;
 
 const headers: Array<Header> = [
   { title: "Id", key: "id" },
   { title: "Name", key: "name" },
 ];
 
-const onCrudCreate = postGroup;
-const onCrudGet = getGroup;
+const onCrudCreate = postGroupWithScopeIDs;
+const onCrudGet = getGroups;
 const onCrudGetTotal = getGroupTotal;
-const onCrudUpdate = putGroup;
+const onCrudUpdate = putGroupWithScopeIDs;
 const onCrudDelete = deleteGroup;
 
 function onOpenEditor() {
-  load();
+  const groupID = table.row.id;
+  if (!groupID) {
+    return;
+  }
+  getGroupWithScope(groupID).then((response) => {
+    if (response.status === 200) {
+      const groupWithScopes = response.data;
+      table.row.scope_ids = groupWithScopes.scope_ids;
+      table.row.scope_names = groupWithScopes.scope_names;
+      scopes.chips = [];
+      for (const i in table.row.scope_ids) {
+        scopes.chips.push({ title: table.row.scope_names[i], value: table.row.scope_ids[i] });
+      }
+    }
+  });
 }
 
 function onCloseEditor() {
   table.row = {
     name: undefined,
-    scopes: [],
+    scope_ids: [],
+    scope_names: [],
   };
-  // reset(categoriesDropdown);
-  // reset(bucketsDropdown);
 }
 </script>
 
@@ -96,6 +106,18 @@ function onCloseEditor() {
         <div class="modal-row h-10">
           <span class="w-32 mr-4">Name:</span>
           <input class="flex-1 modal-input" type="text" :placeholder="table.row.name" v-model="table.row.name" />
+        </div>
+        <div class="modal-row">
+          <span class="w-32 mr-4">Scopes:</span>
+          <select-dropdown
+            class="flex-1"
+            :options-width-class="'w-64'"
+            :origin="Origin.BottomLeft"
+            :state="scopes"
+            :enable-input-chips-enter-event="false"
+            :on-get="onGetScopes"
+            :on-get-to-options="onGetScopesToOptions"
+            :mode="SelectDropdownMode.InputChips" />
         </div>
       </template>
     </crud-table>

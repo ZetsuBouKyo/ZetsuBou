@@ -168,10 +168,13 @@ class ScopeEnum(str, Enum):
 
     total_groups_get: str = "total-groups:get"
     groups_get: str = "groups:get"
+    group_get: str = "group:get"
     group_post: str = "group:post"
     group_put: str = "group:put"
-    group_get: str = "group:get"
     group_delete: str = "group:delete"
+    group_with_scopes_get: str = "group.with-scopes:get"
+    group_with_scope_ids_post: str = "group.with-scope-ids:post"
+    group_with_scope_ids_put: str = "group.with-scope-ids:put"
 
     scopes_get: str = "scopes:get"
     scopes_startswith_get: str = "scopes.startswith:get"

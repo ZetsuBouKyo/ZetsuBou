@@ -3,7 +3,15 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 from back.db.crud import CrudGroup
-from back.db.model import Group, GroupCreate, GroupCreated, GroupUpdate
+from back.db.model import (
+    Group,
+    GroupCreate,
+    GroupCreated,
+    GroupUpdate,
+    GroupWithScopeIdsSafeCreate,
+    GroupWithScopeIdsUpdate,
+    GroupWithScopes,
+)
 from back.dependency.base import get_pagination
 from back.dependency.security import api_security
 from back.model.base import Pagination
@@ -32,22 +40,42 @@ async def get_groups(pagination: Pagination = Depends(get_pagination)) -> List[G
     )
 
 
-@router.post(
-    "/group",
-    response_model=GroupCreated,
-    dependencies=[api_security([ScopeEnum.group_post.value])],
+@router.get(
+    "/group-with-scopes/{group_id}",
+    response_model=GroupWithScopes,
+    dependencies=[api_security([ScopeEnum.group_with_scopes_get.value])],
 )
-async def post_group(group: GroupCreate) -> GroupCreated:
-    return await CrudGroup.create(group)
+async def get_group_with_scopes(group_id: int) -> GroupWithScopes:
+    return await CrudGroup.get_row_with_scopes_by_id(group_id)
+
+
+@router.post(
+    "/group-with-scope-ids",
+    response_model=GroupWithScopes,
+    dependencies=[api_security([ScopeEnum.group_with_scope_ids_post.value])],
+)
+async def post_group_with_scope_ids(
+    group: GroupWithScopeIdsSafeCreate,
+) -> GroupWithScopes:
+    return await CrudGroup.safe_create_with_scope_ids(group)
 
 
 @router.put(
     "/group",
     response_model=bool,
-    dependencies=[api_security([ScopeEnum.group_post.value])],
+    dependencies=[api_security([ScopeEnum.group_put.value])],
 )
-async def post_group(group: GroupUpdate) -> bool:
+async def put_group(group: GroupUpdate) -> bool:
     return await CrudGroup.update_by_id(group)
+
+
+@router.put(
+    "/group-with-scope-ids",
+    response_model=bool,
+    dependencies=[api_security([ScopeEnum.group_with_scope_ids_put.value])],
+)
+async def put_group_with_scope_ids(group: GroupWithScopeIdsUpdate) -> bool:
+    return await CrudGroup.update_with_scope_ids_by_id(group)
 
 
 @router.delete(

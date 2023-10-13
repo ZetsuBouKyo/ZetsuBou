@@ -20,13 +20,16 @@ class Token(BaseModel):
 
 
 def create_access_token(
-    subject: Union[str, Any], scopes: List[str] = [], expires_delta: timedelta = None
+    subject: Union[str, Any],
+    groups: List[str] = [],
+    scopes: List[str] = [],
+    expires_delta: timedelta = None,
 ) -> str:
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=EXPIRED)
-    to_encode = {"exp": expire, "sub": str(subject), "scopes": scopes}
+    to_encode = {"exp": expire, "sub": str(subject), "groups": groups, "scopes": scopes}
     encoded_jwt = jwt.encode(
         to_encode,
         SECRET,

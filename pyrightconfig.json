@@ -1,0 +1,3 @@
+{
+    "exclude": ["**/__pycache__", "**/.git", "**/.pytest_cache", "**/node_modules", "dev", "front"]
+}

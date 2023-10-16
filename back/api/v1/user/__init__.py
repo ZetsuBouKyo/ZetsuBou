@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Body
 from fastapi.responses import JSONResponse
@@ -70,7 +70,7 @@ async def get_user_by_id(user_id: int):
 
 @router.get(
     "/{user_id}/with-groups",
-    response_model=UserWithGroups,
+    response_model=Optional[UserWithGroups],
     dependencies=[api_security([ScopeEnum.user_with_groups_get.value])],
 )
 async def get_user_with_groups_by_id(user_id: int) -> UserWithGroups:

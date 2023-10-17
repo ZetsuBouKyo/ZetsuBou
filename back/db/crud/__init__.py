@@ -1,4 +1,5 @@
 from .group.group import CrudGroup
+from .scope.group import CrudScopeGroup
 from .scope.scope import CrudScope
 from .setting.front.gallery import CrudSettingFrontGallery
 from .setting.front.video import CrudSettingFrontVideo
@@ -21,6 +22,7 @@ __all__ = [
     "CrudGroup",
     "CrudGroupPermission",
     "CrudScope",
+    "CrudScopeGroup",
     "CrudSettingFrontGallery",
     "CrudSettingFrontVideo",
     "CrudStorageMinio",

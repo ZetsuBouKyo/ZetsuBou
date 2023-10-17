@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 
 from fastapi import HTTPException
 from pydantic import EmailStr
@@ -247,6 +247,50 @@ async def create_user(
     return created_user
 
 
+async def get_user_with_groups_by_id(
+    session: Session,
+    id: int,
+    user_base: UserBase,
+    user_group_base: UserGroupBase = UserGroupBase,
+    group_base: GroupBase = GroupBase,
+) -> Optional[UserWithGroups]:
+    statement = (
+        select(
+            user_base.id,
+            user_base.name,
+            user_base.email,
+            user_base.created,
+            user_base.last_signin,
+            user_group_base.group_id,
+            group_base.name.label("group_name"),
+        )
+        .where(user_base.id == id)
+        .outerjoin(user_group_base, user_base.id == user_group_base.user_id)
+        .outerjoin(group_base, group_base.id == user_group_base.group_id)
+    )
+    _rows = await session.execute(statement)
+    user = None
+    for row in _rows.mappings():
+        r = UserWithGroupRow(**row)
+        if user is None:
+            group_ids = []
+            group_names = []
+
+            user = UserWithGroups(
+                id=r.id,
+                name=r.name,
+                email=r.email,
+                created=r.created,
+                last_signin=r.last_signin,
+                group_ids=group_ids,
+                group_names=group_names,
+            )
+        if r.group_id is not None and r.group_name is not None:
+            user.group_ids.append(r.group_id)
+            user.group_names.append(r.group_name)
+    return user
+
+
 class CrudUser(UserBase):
     @classmethod
     async def create(
@@ -302,43 +346,10 @@ class CrudUser(UserBase):
         return await get_row_by_id(cls, id, User)
 
     @classmethod
-    async def get_row_with_groups_by_id(cls, id: int) -> UserWithGroups:
+    async def get_row_with_groups_by_id(cls, id: int) -> Optional[UserWithGroups]:
         async with async_session() as session:
             async with session.begin():
-                statement = (
-                    select(
-                        cls.id,
-                        cls.name,
-                        cls.email,
-                        cls.created,
-                        cls.last_signin,
-                        UserGroupBase.group_id,
-                        GroupBase.name.label("group_name"),
-                    )
-                    .where(cls.id == id)
-                    .outerjoin(UserGroupBase, cls.id == UserGroupBase.user_id)
-                    .outerjoin(GroupBase, GroupBase.id == UserGroupBase.group_id)
-                )
-                _rows = await session.execute(statement)
-                user = None
-                for row in _rows.mappings():
-                    r = UserWithGroupRow(**row)
-                    if user is None:
-                        group_ids = []
-                        group_names = []
-
-                        user = UserWithGroups(
-                            id=r.id,
-                            name=r.name,
-                            email=r.email,
-                            created=r.created,
-                            last_signin=r.last_signin,
-                            group_ids=group_ids,
-                            group_names=group_names,
-                        )
-                    if r.group_id is not None and r.group_name is not None:
-                        user.group_ids.append(r.group_id)
-                        user.group_names.append(r.group_name)
+                user = await get_user_with_groups_by_id(session, id, cls)
         return user
 
     @classmethod
@@ -470,7 +481,7 @@ class CrudUser(UserBase):
         return await delete_by(cls, cls.email == email)
 
     @classmethod
-    async def verify(cls, email: EmailStr, password: str) -> User:
+    async def verify(cls, email: EmailStr, password: str) -> Optional[UserWithGroups]:
         first = None
         async with async_session() as session:
             async with session.begin():
@@ -489,5 +500,9 @@ class CrudUser(UserBase):
                         return None
                 else:
                     return None
+            async with session.begin():
+                user = await get_user_with_groups_by_id(
+                    session, first.id, user_base=cls
+                )
 
-        return User(**first.__dict__)
+        return user

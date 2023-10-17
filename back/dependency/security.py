@@ -7,7 +7,7 @@ from jose.exceptions import ExpiredSignatureError
 from jose.jwt import JWTError
 from pydantic import BaseModel, ValidationError
 
-from back.db.crud import CrudGroup, CrudScope
+from back.db.crud import CrudGroup
 from back.model.scope import ScopeEnum
 from back.settings import setting
 from back.utils.exceptions import RequiresLoginException
@@ -16,10 +16,7 @@ APP_SECURITY = setting.app_security
 SECRET = setting.app_security_secret
 ALGORITHM = setting.app_security_algorithm
 
-_scopes = {
-    "admin": "An account that has full priority in the system.",
-    "guest": "User who can only view content.",
-}
+_scopes = {scope.value: scope.value for scope in ScopeEnum}
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl="api/v1/token",
@@ -28,27 +25,10 @@ reusable_oauth2 = OAuth2PasswordBearer(
 )
 
 
-class Scope:
-    def __init__(self):
-        self._id_to_name = {}
-        self._name_to_id = {}
-        for scope in ScopeEnum:
-            self._id_to_name[scope.value] = scope.name
-            self._name_to_id[scope.name] = scope.value
-
-    def get_name_by_id(self, id: int) -> str:
-        return self._id_to_name.get(id, None)
-
-    def get_id_by_name(self, name: str) -> int:
-        return self._name_to_id.get(name, None)
-
-
-_scope = Scope()
-
-
 class Token(BaseModel):
     sub: int
     exp: int
+    groups: List[str] = []
     scopes: List[str] = []
 
 
@@ -111,8 +91,6 @@ async def verify_with_scopes(security_scopes: SecurityScopes, token: Token):
         )
 
     token_scope_set = set(token.scopes)
-    if ScopeEnum.admin.value in token_scope_set:
-        return True
 
     remaining_scopes = set()
     for scope in security_scopes.scopes:
@@ -123,22 +101,15 @@ async def verify_with_scopes(security_scopes: SecurityScopes, token: Token):
     if not remaining_scopes:
         return True
 
-    # This part could be optimized by caching the group-to-scope table.
-    group_scopes = set()
-    for scope in token_scope_set:
-        if _scope.get_id_by_name(scope) is not None:
-            continue
-        group = await CrudGroup.get_row_by_name(scope)
-        if group is None:
-            get_not_authenticated_exception(
-                security_scopes.scope_str, detail=f"Scope: {scope} not found"
-            )
+    group_names = token.groups
 
-        scopes_by_group_id = await CrudScope.get_all_rows_by_group_id_order_by_id(
-            group.id
-        )
-        for s in scopes_by_group_id:
-            group_scopes.add(_scope.get_name_by_id(s.id))
+    group_scopes = set()
+    for group_name in group_names:
+        group = await CrudGroup.get_row_with_scopes_by_name(group_name)
+        scope_names = group.scope_names
+        if scope_names is None:
+            continue
+        group_scopes |= set(scope_names)
 
     if remaining_scopes <= group_scopes:
         return True

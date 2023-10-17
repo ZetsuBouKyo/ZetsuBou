@@ -49,7 +49,7 @@ class CrudScope(ScopeBase):
         return await get_all_rows_order_by_id(cls)
 
     @classmethod
-    async def sync(cls) -> bool:
+    async def init(cls) -> bool:
         scopes_in_db = await cls.get_all_rows_order_by_id()
         scope_values_in_db = {s.get("name", None) for s in scopes_in_db}
         scope_values = {s.value for s in ScopeEnum}

@@ -12,11 +12,11 @@ from back.db.model import (
     UserWithGroupsCreate,
 )
 from back.db.table import Base
-from back.model.scope import ScopeEnum
+from back.model.group import BuiltInGroupEnum
 from back.session.async_db import async_engine
 from back.settings import setting
 
-ADMIN_GROUP_NAME = ScopeEnum.admin.value
+ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
 ADMIN_NAME = setting.app_admin_name
 ADMIN_EMAIL = setting.app_admin_email
 ADMIN_PASSWORD = setting.app_admin_password
@@ -28,7 +28,10 @@ ELASTIC_COUNT_QUEST = UserQuestCategoryEnum.ELASTIC_COUNT_QUEST.value
 
 async def _init_table_data():
     # create scopes
-    await CrudScope.sync()
+    await CrudScope.init()
+
+    # create groups
+    await CrudGroup.init()
 
     # create admin group
     admin_group_name = ADMIN_GROUP_NAME

@@ -6,6 +6,7 @@ from fastapi.param_functions import Form
 from fastapi.security import OAuth2PasswordRequestForm
 
 from back.db.crud import CrudUser
+from back.model.scope import ScopeEnum
 from back.security import create_access_token
 from back.settings import setting
 
@@ -46,16 +47,21 @@ async def get_token(form: ZetsuBouOAuth2PasswordRequestForm = Depends()):
     else:
         expires_delta = timedelta(minutes=form.expires)
 
-    if not form.scopes:
-        groups = await CrudUser.get_groups_by_id(user.id)
-        scopes = [group.name for group in groups]
+    groups = []
+    scopes = []
+
+    if form.scopes:
+        scopes = form.scopes
     else:
-        # TODO:
-        scopes = []
+        groups = user.group_names
+
+    for scope in scopes:
+        if scope not in ScopeEnum:
+            raise HTTPException(status_code=404, detail="`{scope}` not found")
 
     return {
         "access_token": create_access_token(
-            user.id, scopes=scopes, expires_delta=expires_delta
+            user.id, groups=groups, scopes=scopes, expires_delta=expires_delta
         ),
         "token_type": "bearer",
     }

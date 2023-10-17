@@ -94,7 +94,6 @@ async def verify_with_scopes(security_scopes: SecurityScopes, token: Token):
 
     remaining_scopes = set()
     for scope in security_scopes.scopes:
-        # token_scope_set should be in ScopeEnum or Group.name
         if scope not in token_scope_set:
             remaining_scopes.add(scope)
 

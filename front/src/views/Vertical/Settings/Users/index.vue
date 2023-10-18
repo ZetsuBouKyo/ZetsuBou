@@ -64,10 +64,18 @@ watch(
   },
 );
 
-const onCrudCreate = postUserWithGroups;
+const onCrudCreate = (row: Row) => {
+  if (row.group_ids === undefined) {
+    row.group_ids = [];
+  }
+  return postUserWithGroups(row);
+};
 const onCrudGet = getUsers;
 const onCrudGetTotal = getUsersTotal;
 const onCrudUpdate = (row: Row) => {
+  if (row.group_ids === undefined) {
+    row.group_ids = [];
+  }
   return putUserWithGroups(row.id, row);
 };
 const onCrudDelete = deleteUser;

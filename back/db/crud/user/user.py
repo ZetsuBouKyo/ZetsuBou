@@ -206,9 +206,9 @@ class _CrudUser:
             else:
                 await update_group_ids_by_user_id(
                     self.session,
-                    self.user_group_base,
                     self.user_id,
                     self.user.group_ids,
+                    user_group_base=self.user_group_base,
                 )
 
     async def update(self) -> Union[User, UserWithGroups]:
@@ -231,8 +231,8 @@ class _CrudUser:
 
 async def create_user(
     session: Session,
-    user_base: UserBase,
     user: Union[UserCreate, UserWithGroupsCreate],
+    user_base: UserBase = UserBase,
     is_front_settings: bool = True,
 ) -> UserCreated:
     user_dict = get_user_hashed_password(user)
@@ -250,7 +250,7 @@ async def create_user(
 async def get_user_with_groups_by_id(
     session: Session,
     id: int,
-    user_base: UserBase,
+    user_base: UserBase = UserBase,
     user_group_base: UserGroupBase = UserGroupBase,
     group_base: GroupBase = GroupBase,
 ) -> Optional[UserWithGroups]:
@@ -299,7 +299,7 @@ class CrudUser(UserBase):
         async with async_session() as session:
             async with session.begin():
                 created_user = await create_user(
-                    session, cls, user, is_front_settings=is_front_settings
+                    session, user, user_base=cls, is_front_settings=is_front_settings
                 )
 
         return created_user
@@ -311,10 +311,13 @@ class CrudUser(UserBase):
         async with async_session() as session:
             async with session.begin():
                 created_user = await create_user(
-                    session, cls, user, is_front_settings=is_front_settings
+                    session, user, user_base=cls, is_front_settings=is_front_settings
                 )
                 await update_group_ids_by_user_id(
-                    session, UserGroupBase, created_user.id, user.group_ids
+                    session,
+                    created_user.id,
+                    user.group_ids,
+                    user_group_base=UserGroupBase,
                 )
 
                 rows = await session.execute(
@@ -349,7 +352,7 @@ class CrudUser(UserBase):
     async def get_row_with_groups_by_id(cls, id: int) -> Optional[UserWithGroups]:
         async with async_session() as session:
             async with session.begin():
-                user = await get_user_with_groups_by_id(session, id, cls)
+                user = await get_user_with_groups_by_id(session, id, user_base=cls)
         return user
 
     @classmethod

@@ -18,7 +18,10 @@ from ..base import (
 
 
 async def update_group_ids_by_user_id(
-    session: Session, user_group_base: UserGroupBase, user_id: int, group_ids: List[int]
+    session: Session,
+    user_id: int,
+    group_ids: List[int],
+    user_group_base: UserGroupBase = UserGroupBase,
 ):
     new_group_ids = set(group_ids)
     to_deleted_ids = set()
@@ -62,7 +65,7 @@ class CrudUserGroup(UserGroupBase):
         async with async_session() as session:
             async with session.begin():
                 res = await update_group_ids_by_user_id(
-                    session, cls, user_id, group_ids
+                    session, user_id, group_ids, user_group_base=cls
                 )
         return res
 

@@ -12,7 +12,9 @@ from back.session.async_airflow import AsyncAirflowSession, dags
 from back.session.async_redis import async_redis
 
 router = APIRouter(
-    prefix="/cmd", tags=["Task"], dependencies=[api_security(ScopeEnum.task_cmd.value)]
+    prefix="/cmd",
+    tags=["Task"],
+    dependencies=[api_security([ScopeEnum.task_cmd.value])],
 )
 
 

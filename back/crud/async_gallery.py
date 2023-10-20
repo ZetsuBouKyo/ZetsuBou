@@ -703,7 +703,9 @@ class CrudAsyncGallerySync:
             await self.send_bulk(self._elasticsearch_to_storage_batches)
 
     async def _sync_storage_to_elasticsearch_without_progress(self):
-        async for source in self.storage_session.iter(self.root_source, self.depth):
+        async for source in self.storage_session.iter_directories(
+            self.root_source, self.depth
+        ):
             if source is None:
                 continue
 
@@ -725,7 +727,9 @@ class CrudAsyncGallerySync:
 
     async def _count_storage(self):
         self._sources = []
-        async for source in self.storage_session.iter(self.root_source, self.depth):
+        async for source in self.storage_session.iter_directories(
+            self.root_source, self.depth
+        ):
             if source is None:
                 continue
             self._sources.append(source)

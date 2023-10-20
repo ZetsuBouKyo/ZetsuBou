@@ -129,7 +129,7 @@ async def list_objects_v2(
     return S3GetPaginatorResponse(**resp)
 
 
-async def iter(client, bucket_name: str, prefix: str, depth: int):
+async def iter_prefixes(client, bucket_name: str, prefix: str, depth: int):
     if len(prefix) > 0 and prefix[-1] != "/":
         yield None
     depth -= 1
@@ -140,7 +140,7 @@ async def iter(client, bucket_name: str, prefix: str, depth: int):
         if depth == 0:
             yield obj
         else:
-            async for obj in iter(client, bucket_name, obj.prefix, depth):
+            async for obj in iter_prefixes(client, bucket_name, obj.prefix, depth):
                 yield obj
     yield None
 
@@ -456,8 +456,8 @@ class AsyncS3Session(AioSession):
 
         return images
 
-    async def iter(self, source: SourceBaseModel, depth: int):
-        async for obj in iter(
+    async def iter_directories(self, source: SourceBaseModel, depth: int):
+        async for obj in iter_prefixes(
             self.client, source.bucket_name, source.object_name, depth
         ):
             if obj is not None:

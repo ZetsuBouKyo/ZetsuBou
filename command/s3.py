@@ -10,7 +10,7 @@ from back.session.storage.async_s3 import (
     generate_presigned_url,
     get_object,
     get_source,
-    iter,
+    iter_prefixes,
     list_all,
     list_filenames,
     put_json,
@@ -353,7 +353,7 @@ async def _delete(
         print(resp)
 
 
-@app.command(name="iter")
+@app.command(name="iter-prefixes")
 async def _iter(
     bucket_name: str = typer.Argument(..., help="Bucket name."),
     prefix: str = typer.Argument(..., help="Prefix, object name or key."),
@@ -386,7 +386,7 @@ async def _iter(
     ) as session:
 
         async def nested_iter():
-            async for obj in iter(session.client, bucket_name, prefix, depth):
+            async for obj in iter_prefixes(session.client, bucket_name, prefix, depth):
                 if obj is not None:
                     yield obj
 

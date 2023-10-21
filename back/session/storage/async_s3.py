@@ -1,7 +1,8 @@
 import io
 import json
+from collections import deque
 from pathlib import Path
-from typing import List
+from typing import Deque, List, Tuple
 
 from aiobotocore.httpsession import EndpointConnectionError
 from aiobotocore.session import AioSession, ClientCreatorContext
@@ -17,7 +18,12 @@ from back.model.s3 import (
     S3PutObjectResponse,
     S3Response,
 )
-from back.model.storage import StorageStat
+from back.model.storage import (
+    StorageGalleries,
+    StorageGallery,
+    StorageGalleryCodeEnum,
+    StorageStat,
+)
 from back.settings import setting
 from back.utils.fs import alphanum_sorting
 from back.utils.image import is_browser_image, is_image
@@ -322,6 +328,88 @@ class AsyncS3Session(AioSession):
 
     async def close(self):
         await self.client.close()
+
+    async def are_galleries(
+        self, source: SourceBaseModel, depth: int
+    ) -> StorageGalleries:
+        s = StorageGalleries()
+        if depth > 0:
+            count_galleries = 0
+            total = 0
+            stack: Deque[Tuple[int, S3Object]] = deque([])
+            stack.append(
+                (
+                    depth,
+                    S3Object(bucket_name=source.bucket_name, prefix=source.object_name),
+                )
+            )
+
+            while stack:
+                d, s3_object = stack.popleft()
+                bucket_name = s3_object.bucket_name
+                prefix = s3_object.prefix
+
+                g_source = get_source(
+                    source.bucket_name,
+                    prefix=prefix,
+                    protocol=source.protocol,
+                )
+
+                if d == 0:
+                    total += 1
+
+                    if not prefix.endswith("/"):
+                        prefix += "/"
+
+                    paginator = self.client.get_paginator("list_objects_v2")
+                    async for page in paginator.paginate(
+                        Bucket=bucket_name, Prefix=prefix, Delimiter="/", MaxKeys=1000
+                    ):
+                        p_0 = S3GetPaginatorResponse(**page)
+                        for c in p_0.Contents:
+                            p = c.Key
+                            if is_browser_image(Path(p)):
+                                count_galleries += 1
+                                break
+                        else:
+                            g = StorageGallery(
+                                path=g_source.path,
+                                code=StorageGalleryCodeEnum.DOES_NOT_HAVE_IMAGES.value,
+                            )
+                            s.galleries.append(g)
+                    continue
+
+                if not bucket_name or bucket_name == "/":
+                    _resp = await self.client.list_buckets()
+                    resp = S3ListBucketsResponse(**_resp)
+                    for b in resp.Buckets:
+                        stack.append((d - 1, S3Object(bucket_name=b.Name)))
+                    continue
+
+                paginator = self.client.get_paginator("list_objects_v2")
+                async for page in paginator.paginate(
+                    Bucket=bucket_name, Prefix=prefix, Delimiter="/", MaxKeys=1000
+                ):
+                    p_1 = S3GetPaginatorResponse(**page)
+                    if len(p_1.Contents) > 0:
+                        g = StorageGallery(
+                            path=g_source.path,
+                            code=StorageGalleryCodeEnum.FILES_IN_THE_INTERNAL_NODES_OF_THE_STORAGE_PATH.value,
+                        )
+                        s.galleries.append(g)
+                    for p in p_1.CommonPrefixes:
+                        stack.append(
+                            (
+                                d - 1,
+                                S3Object(bucket_name=p_1.Name, prefix=p.Prefix),
+                            )
+                        )
+
+            if total != 0:
+                s.percentage = count_galleries / total
+            return s
+
+        raise ValueError("depth should be greater than 0.")
 
     def get_joined_source(
         self, base_source: SourceBaseModel, relative_path: str

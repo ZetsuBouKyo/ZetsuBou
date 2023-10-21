@@ -590,6 +590,12 @@ class CrudAsyncGallerySync:
             "track_total_hits": True,
         }
 
+    async def are_galleries(self):
+        async with self.storage_session:
+            return await self.storage_session.are_galleries(
+                self.root_source, self.depth
+            )
+
     async def iter_elasticsearch_batches(self, batches: List[dict]):
         for batch in batches:
             yield batch

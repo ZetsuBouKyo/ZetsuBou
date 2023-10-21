@@ -8,6 +8,7 @@ from back.db.crud import CrudStorageMinio
 from back.init.async_elasticsearch import create_gallery
 from back.model.base import SourceProtocolEnum
 from back.model.task import ZetsuBouTaskProgressEnum
+from back.session.storage import get_app_storage_session
 from back.settings import setting
 from lib.typer import ZetsuBouTyper
 
@@ -24,6 +25,26 @@ so on).
 app = ZetsuBouTyper(name="sync", help=_help)
 
 ELASTICSEARCH_URLS = setting.elastic_urls
+
+
+@app.command(
+    airflow_dag_id="are-galleries",
+    airflow_dag_sub_command="sync are-galleries",
+)
+async def are_galleries(
+    protocol: SourceProtocolEnum = typer.Argument(..., help="Storage protocol."),
+    storage_id: int = typer.Argument(..., help="Storage ID."),
+):
+    ti = time.time()
+
+    crud = await get_crud_sync(protocol, storage_id)
+    results = await crud.are_galleries()
+    print(results.model_dump_json(indent=4))
+
+    tf = time.time()
+
+    td = tf - ti
+    print(f"total time: {td}(s)")
 
 
 @app.command(

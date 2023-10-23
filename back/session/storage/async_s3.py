@@ -163,12 +163,16 @@ async def exists(client, bucket_name: str, object_name: str) -> bool:
         if not object_name.endswith("/"):
             object_name_with_delimiter = object_name + "/"
 
-        resp = await client.list_objects_v2(
-            Bucket=bucket_name,
-            Prefix=object_name_with_delimiter,
-            Delimiter="/",
-            MaxKeys=1,
-        )
+        try:
+            resp = await client.list_objects_v2(
+                Bucket=bucket_name,
+                Prefix=object_name_with_delimiter,
+                Delimiter="/",
+                MaxKeys=1,
+            )
+        except client.exceptions.NoSuchBucket:
+            return False
+
         prefixes = S3GetPaginatorResponse(**resp)
         if prefixes.KeyCount > 0:
             return True

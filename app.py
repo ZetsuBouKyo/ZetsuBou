@@ -67,28 +67,33 @@ async def starlette_http_exception_handler(request: Request, exc: Exception):
     return RedirectResponse("/NotFound")
 
 
+@app.exception_handler(AssertionError)
+async def assertion_error_handler(_: Request, exc: AssertionError):
+    return JSONResponse(status_code=500, content={"detail": exc.args})
+
+
 @app.exception_handler(HTTPException)
-async def fastapi_http_exception_handler(request: Request, exc: Exception):
+async def fastapi_http_exception_handler(_: Request, exc: Exception):
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 
 @app.exception_handler(NotFoundError)
-async def elastic_not_found_error(request: Request, exc: Exception):
+async def elastic_not_found_error_handler():
     return JSONResponse(status_code=404, content={"detail": "Repo tag not found"})
 
 
 @app.exception_handler(RequestError)
-async def elastic_request_error(request: Request, exc: Exception):
+async def elastic_request_error_handler(_: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"detail": exc.info})
 
 
 @app.exception_handler(S3Error)
-async def minio_s3error(request: Request, exc: Exception):
+async def minio_s3error_handler(_: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"detail": exc.code})
 
 
 @app.exception_handler(IntegrityError)
-async def sqlalchemy_integrity_error(request: Request, exc: Exception):
+async def sqlalchemy_integrity_error_handler(_: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
         content={"detail": f"Internal Server Error: sqlalchemy {exc.code}"},
@@ -96,7 +101,7 @@ async def sqlalchemy_integrity_error(request: Request, exc: Exception):
 
 
 @app.exception_handler(RequiresLoginException)
-async def requires_login_exception(request: Request, exc: Exception):
+async def requires_login_exception_handler(request: Request, _: Exception):
     if request.url.path == "/":
         return RedirectResponse("/login")
     return RedirectResponse(f"/login?redirect={request.url.path}")

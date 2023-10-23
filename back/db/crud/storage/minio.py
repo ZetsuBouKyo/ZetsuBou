@@ -1,5 +1,7 @@
 from typing import List
 
+from back.model.storage import StorageCategoryEnum
+
 from ...model import (
     StorageMinio,
     StorageMinioCreate,
@@ -22,6 +24,16 @@ from ..base import (
 class CrudStorageMinio(StorageMinioBase):
     @classmethod
     async def create(cls, directory: StorageMinioCreate) -> StorageMinioCreated:
+        category = directory.category
+        depth = directory.depth
+        if type(category) != int:
+            category = category.value
+
+        if category == StorageCategoryEnum.gallery.value:
+            assert depth > 0, "depth should greater than 0"
+        elif category == StorageCategoryEnum.video.value:
+            assert depth == -1, "depth should be -1"
+
         return StorageMinioCreated(**await create(cls, directory))
 
     @classmethod

@@ -78,7 +78,7 @@ async def list_all(client, bucket_name: str, prefix: str) -> List[S3Object]:
 
     paginator = client.get_paginator("list_objects_v2")
     async for page in paginator.paginate(
-        Bucket=bucket_name, Prefix=prefix, Delimiter="/"
+        Bucket=bucket_name, Prefix=prefix, Delimiter="/", MaxKeys=1000
     ):
         _page = S3GetPaginatorResponse(**page)
         for c in _page.Contents:
@@ -99,7 +99,7 @@ async def list_filenames(
 
     paginator = client.get_paginator("list_objects_v2")
     async for page in paginator.paginate(
-        Bucket=bucket_name, Prefix=_predix, Delimiter=delimiter
+        Bucket=bucket_name, Prefix=_predix, Delimiter=delimiter, MaxKeys=1000
     ):
         _page = S3GetPaginatorResponse(**page)
         for c in _page.Contents:
@@ -114,7 +114,7 @@ async def list_prefixes(client, bucket_name: str, prefix: str) -> List[S3Object]
 
     paginator = client.get_paginator("list_objects_v2")
     async for page in paginator.paginate(
-        Bucket=bucket_name, Prefix=prefix, Delimiter="/"
+        Bucket=bucket_name, Prefix=prefix, Delimiter="/", MaxKeys=1000
     ):
         _page = S3GetPaginatorResponse(**page)
         for p in _page.CommonPrefixes:
@@ -256,7 +256,7 @@ async def delete(client, bucket_name: str, prefix: str) -> bool:
 
     paginator = client.get_paginator("list_objects_v2")
     async for page in paginator.paginate(
-        Bucket=bucket_name, Prefix=_prefix, Delimiter="/"
+        Bucket=bucket_name, Prefix=_prefix, Delimiter="/", MaxKeys=1000
     ):
         _page = S3GetPaginatorResponse(**page)
 
@@ -481,7 +481,7 @@ class AsyncS3Session(AioSession):
 
         paginator = self.client.get_paginator("list_objects_v2")
         async for page in paginator.paginate(
-            Bucket=_bucket_name, Prefix=_predix, Delimiter=""
+            Bucket=_bucket_name, Prefix=_predix, Delimiter="", MaxKeys=1000
         ):
             _page = S3GetPaginatorResponse(**page)
             for c in _page.Contents:
@@ -519,7 +519,7 @@ class AsyncS3Session(AioSession):
 
         paginator = self.client.get_paginator("list_objects_v2")
         async for page in paginator.paginate(
-            Bucket=_bucket_name, Prefix=_predix, Delimiter=""
+            Bucket=_bucket_name, Prefix=_predix, Delimiter="", MaxKeys=1000
         ):
             _page = S3GetPaginatorResponse(**page)
             for c in _page.Contents:

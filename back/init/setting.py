@@ -8,6 +8,7 @@ from back.crud.setting import (
 )
 from back.init.check import check_host_port
 from back.settings import Setting
+from back.utils.exceptions import MaxRetriesExceededException
 
 
 def get_port(port: int, max_tries: int = 10, excludes: List[int] = []) -> int:
@@ -16,7 +17,7 @@ def get_port(port: int, max_tries: int = 10, excludes: List[int] = []) -> int:
         port += 1
         tries += 1
         if tries >= max_tries:
-            raise ValueError  # TODO:
+            raise MaxRetriesExceededException
     return port
 
 

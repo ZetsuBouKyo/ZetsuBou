@@ -1,6 +1,6 @@
 import uvicorn
 from elasticsearch.exceptions import NotFoundError, RequestError
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from minio.error import S3Error
@@ -61,29 +61,26 @@ app.add_event_handler("startup", startup)
 
 
 @app.exception_handler(StarletteHTTPException)
-async def starlette_http_exception_handler(request: Request, exc: Exception):
+async def starlette_http_exception_handler(
+    request: Request, exc: StarletteHTTPException
+):
     if request.url.path.startswith("/api"):
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
     return RedirectResponse("/NotFound")
 
 
-@app.exception_handler(AssertionError)
-async def assertion_error_handler(_: Request, exc: AssertionError):
+@app.exception_handler(Exception)
+async def exception_handler(_: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"detail": exc.args})
 
 
-@app.exception_handler(HTTPException)
-async def fastapi_http_exception_handler(_: Request, exc: Exception):
-    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
-
-
 @app.exception_handler(NotFoundError)
-async def elastic_not_found_error_handler():
+async def elasticsearch_not_found_error_handler():
     return JSONResponse(status_code=404, content={"detail": "Repo tag not found"})
 
 
 @app.exception_handler(RequestError)
-async def elastic_request_error_handler(_: Request, exc: Exception):
+async def elasticsearch_request_error_handler(_: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"detail": exc.info})
 
 

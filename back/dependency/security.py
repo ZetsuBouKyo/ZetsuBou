@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import Cookie, Depends, HTTPException, Security, status
-from fastapi.security import OAuth2PasswordBearer, SecurityScopes
+from fastapi.security import HTTPBearer, OAuth2PasswordBearer, SecurityScopes
 from jose import jwt
 from jose.exceptions import ExpiredSignatureError
 from jose.jwt import JWTError
@@ -15,11 +15,17 @@ from back.utils.exceptions import RequiresLoginException
 APP_SECURITY = setting.app_security
 SECRET = setting.app_security_secret
 ALGORITHM = setting.app_security_algorithm
+TOKEN_URL = "api/v1/token"
 
 _scopes = {scope.value: scope.value for scope in ScopeEnum}
-
+http_bearer_description = (
+    f"You can get the JWT (JSON Web Token) token from `/{TOKEN_URL}`."
+)
+http_bearer = HTTPBearer(
+    scheme_name="HTTP Header Bearer Token", description=http_bearer_description
+)
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl="api/v1/token",
+    tokenUrl=TOKEN_URL,
     scopes=_scopes,
     auto_error=False,
 )
@@ -53,7 +59,9 @@ def decode_token(token: str) -> Token:
     return Token(**payload)
 
 
-def extract_token(token: str = Depends(reusable_oauth2)) -> Token:
+def extract_token(
+    token: str = Depends(reusable_oauth2), _: str = Depends(http_bearer)
+) -> Token:
     if token is None:
         return None
     try:

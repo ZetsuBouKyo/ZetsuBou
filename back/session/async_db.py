@@ -1,6 +1,8 @@
+from typing import Any
+
 from sqlalchemy import event  # noqa: F401
 from sqlalchemy.engine import Engine  # noqa: F401
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from back.settings import DatabaseTypeEnum, setting  # noqa: F401
@@ -15,7 +17,41 @@ else:
     async_engine = None
 
 
-async_session = sessionmaker(async_engine, expire_on_commit=False, class_=AsyncSession)
+class DatabaseSession:
+    def __init__(
+        self,
+        async_engine: AsyncEngine,
+        expire_on_commit: bool = False,
+        class_: AsyncSession = AsyncSession,
+    ):
+        self.async_engine = async_engine
+        self.expire_on_commit = expire_on_commit
+        self.class_ = class_
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        return sessionmaker(
+            self.async_engine,
+            *args,
+            expire_on_commit=self.expire_on_commit,
+            class_=self.class_,
+            **kwargs
+        )()
+
+    def load(
+        self,
+        database_url: str,
+        echo: bool = ECHO,
+        expire_on_commit: bool = False,
+        class_: AsyncSession = AsyncSession,
+    ):
+        self.async_engine = create_async_engine(database_url, echo=echo)
+        self.expire_on_commit = expire_on_commit
+        self.class_ = class_
+
+
+async_session = DatabaseSession(
+    async_engine, expire_on_commit=False, class_=AsyncSession
+)
 
 # if DATABASE_TYPE == DatabaseTypeEnum.SQLITE:
 

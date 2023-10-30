@@ -13,7 +13,7 @@ from back.db.model import (
 )
 from back.db.table import Base
 from back.model.group import BuiltInGroupEnum
-from back.session.async_db import async_engine
+from back.session.async_db import async_session
 from back.settings import setting
 
 ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
@@ -71,7 +71,7 @@ async def _init_table_data():
 
 
 async def create_tables():
-    async with async_engine.begin() as conn:
+    async with async_session.async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 

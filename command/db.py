@@ -14,7 +14,7 @@ from back.db.crud.base import (
     list_tables,
     reset_auto_increment,
 )
-from back.session.async_db import async_engine, async_session
+from back.session.async_db import async_session
 from lib.typer import ZetsuBouTyper
 
 _help = """
@@ -25,7 +25,7 @@ app = ZetsuBouTyper(name="db", help=_help)
 
 @app.command()
 async def execute(sql: str = typer.Argument(..., help="SQL.")):
-    async with async_engine.begin() as conn:
+    async with async_session.async_engine.begin() as conn:
         statement = text(sql)
         rows = await conn.execute(statement)
         await conn.commit()
@@ -74,7 +74,7 @@ async def drop_table(table_name: str = typer.Argument(..., help="Table name.")):
     if table_name not in tables:
         return
     sql = f"DROP TABLE IF EXISTS {table_name}, permission CASCADE;"
-    async with async_engine.begin() as conn:
+    async with async_session.async_engine.begin() as conn:
         statement = text(sql)
         await conn.execute(statement)
         await conn.commit()
@@ -158,10 +158,15 @@ async def list_seqs():
 
 
 @app.command(name="list")
-async def _list(table_name: str = typer.Argument(..., help="Table name.")):
+async def _list(
+    table_name: str = typer.Argument(..., help="Table name."),
+    database_url: str = typer.Option(default=None),
+):
     """
     List all rows in a specific table.
     """
+    if database_url is not None:
+        async_session.load(database_url)
     table_instances = get_table_instances()
     table_class = table_instances[table_name]
     rows = await get_all_rows_order_by_id(table_class)

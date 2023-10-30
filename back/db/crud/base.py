@@ -13,7 +13,7 @@ from sqlalchemy.sql import functions as func
 from sqlalchemy.sql.elements import TextClause
 
 from back.db.table import Base
-from back.session.async_db import async_engine, async_session
+from back.session.async_db import async_session
 
 
 async def create(instance: DeclarativeMeta, data: Union[BaseModel, dict]) -> dict:
@@ -323,7 +323,7 @@ async def delete_all(instance: DeclarativeMeta):
 
 
 async def execute(
-    statement: TextClause, async_engine: AsyncEngine = async_engine
+    statement: TextClause, async_engine: AsyncEngine = async_session.async_engine
 ) -> CursorResult:
     out = None
     async with async_engine.begin() as conn:
@@ -395,7 +395,7 @@ def list_tables(base: DeclarativeMeta = Base) -> List[str]:
 async def reset_auto_increment(
     table_name: str,
     seq: str = None,
-    async_engine: AsyncEngine = async_engine,
+    async_engine: AsyncEngine = async_session.async_engine,
 ) -> CursorResult:
     table_exists(table_name)
 
@@ -407,7 +407,7 @@ async def reset_auto_increment(
     return await execute(statement, async_engine=async_engine)
 
 
-async def get_seqs(async_engine: AsyncEngine = async_engine) -> List[str]:
+async def get_seqs(async_engine: AsyncEngine = async_session.async_engine) -> List[str]:
     statement = text("SELECT * FROM information_schema.sequences;")
     rows = await execute(statement, async_engine=async_engine)
     return [row[2] for row in rows]

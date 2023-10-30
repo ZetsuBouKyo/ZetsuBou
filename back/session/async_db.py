@@ -11,20 +11,16 @@ DATABASE_TYPE = setting.database_type
 DATABASE_URL = setting.database_url
 ECHO = setting.database_echo
 
-if DATABASE_URL is not None:
-    async_engine = create_async_engine(DATABASE_URL, echo=ECHO)
-else:
-    async_engine = None
-
 
 class DatabaseSession:
     def __init__(
         self,
-        async_engine: AsyncEngine,
+        database_url: str,
+        echo: bool = ECHO,
         expire_on_commit: bool = False,
         class_: AsyncSession = AsyncSession,
     ):
-        self.async_engine = async_engine
+        self.async_engine = create_async_engine(database_url, echo=echo)
         self.expire_on_commit = expire_on_commit
         self.class_ = class_
 
@@ -50,7 +46,7 @@ class DatabaseSession:
 
 
 async_session = DatabaseSession(
-    async_engine, expire_on_commit=False, class_=AsyncSession
+    DATABASE_URL, echo=ECHO, expire_on_commit=False, class_=AsyncSession
 )
 
 # if DATABASE_TYPE == DatabaseTypeEnum.SQLITE:

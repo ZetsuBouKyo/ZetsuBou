@@ -54,10 +54,10 @@ interface Props {
   isRowDeletable: boolean;
   areRowsCustom: boolean;
   deleteConfirmMessage: string;
-  onCrudCreate: OnCrudCreate;
+  onCrudCreate?: OnCrudCreate;
   onCrudGet: OnCrudGet;
   onCrudGetTotal: OnCrudGetTotal;
-  onCrudUpdate: OnCrudUpdate;
+  onCrudUpdate?: OnCrudUpdate;
   onCrudDelete: OnCrudDelete;
   onOpenEditor: OnOpenEditor;
   onCloseEditor: OnCloseEditor;
@@ -179,13 +179,19 @@ function create() {
   state.row = {};
   state.editor.type = EditorTypeEnum.Create;
   state.editor.handler = () => {
-    props.onCrudCreate(state.row).then((response: any) => {
-      if (response.status === 200) {
-        editor.value.close();
-        load();
-        messageState.push("Created");
+    try {
+      props.onCrudCreate(state.row).then((response: any) => {
+        if (response.status === 200) {
+          editor.value.close();
+          load();
+          messageState.push("Created");
+        }
+      });
+    } catch (error) {
+      if (!(error instanceof TypeError)) {
+        throw error;
       }
-    });
+    }
   };
   editor.value.open();
 }
@@ -197,26 +203,38 @@ function update(row: Row) {
   state.row = row;
   state.editor.type = EditorTypeEnum.Update;
   state.editor.handler = () => {
-    props.onCrudUpdate(state.row).then((response: any) => {
-      if (response.status !== 200) {
-      } else {
-        editor.value.close();
-        load();
-        messageState.push("Updated");
+    try {
+      props.onCrudUpdate(state.row).then((response: any) => {
+        if (response.status !== 200) {
+        } else {
+          editor.value.close();
+          load();
+          messageState.push("Updated");
+        }
+      });
+    } catch (error) {
+      if (!(error instanceof TypeError)) {
+        throw error;
       }
-    });
+    }
   };
   editor.value.open();
 }
 
 function deleteById(id: any) {
-  props.onCrudDelete(id).then((response: any) => {
-    if (response.status !== 200) {
-    } else {
-      load();
-      messageState.push("Deleted");
+  try {
+    props.onCrudDelete(id).then((response: any) => {
+      if (response.status !== 200) {
+      } else {
+        load();
+        messageState.push("Deleted");
+      }
+    });
+  } catch (error) {
+    if (!(error instanceof TypeError)) {
+      throw error;
     }
-  });
+  }
 }
 
 const confirm = ref();

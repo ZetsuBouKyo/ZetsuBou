@@ -84,7 +84,7 @@ export const messageState = reactive<MessageState>({
     localStorage.setItem(localStorageKey.Message, JSON.stringify(history));
   },
   pushError: (error: any) => {
-    const detail = error.response.data.detail;
+    const detail = error?.response?.data?.detail;
     if (detail !== undefined) {
       messageState.push(detail);
     } else {

@@ -9,3 +9,15 @@ export function getUUID() {
     (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16),
   );
 }
+
+export function joinWithAnd(arr: Array<string>) {
+  let s = "";
+  if (arr.length === 1) {
+    s = arr[0];
+  } else if (arr.length === 2) {
+    s = arr.join(" and ");
+  } else if (arr.length > 2) {
+    s = arr.slice(0, -1).join(", ") + ", and " + arr.slice(-1);
+  }
+  return s;
+}

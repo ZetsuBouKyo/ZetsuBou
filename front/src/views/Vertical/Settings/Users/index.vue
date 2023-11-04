@@ -14,7 +14,10 @@ import { deleteUser, getUsers, getUsersTotal, postUserWithGroups, putUserWithGro
 import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { initCrudTableState } from "@/elements/Table/CrudTable/CrudTable";
 
+import { messageState } from "@/state/message";
+
 import { getDatetime } from "@/utils/datetime";
+import { joinWithAnd } from "@/utils/str";
 
 interface Row {
   id?: number;
@@ -64,7 +67,31 @@ watch(
   },
 );
 
+function checkInput(row: Row): boolean {
+  const inputs = [];
+  if (!row.name) {
+    inputs.push("name");
+  }
+  if (!row.email) {
+    inputs.push("email");
+  }
+  if (!row.password) {
+    inputs.push("password");
+  }
+  if (inputs.length > 0) {
+    const s = joinWithAnd(inputs);
+    const msg = `Please enter ${s}.`;
+    messageState.push(msg);
+    return false;
+  }
+
+  return true;
+}
 const onCrudCreate = (row: Row) => {
+  const c = checkInput(row);
+  if (!c) {
+    return;
+  }
   if (row.group_ids === undefined) {
     row.group_ids = [];
   }
@@ -73,9 +100,14 @@ const onCrudCreate = (row: Row) => {
 const onCrudGet = getUsers;
 const onCrudGetTotal = getUsersTotal;
 const onCrudUpdate = (row: Row) => {
+  const c = checkInput(row);
+  if (!c) {
+    return;
+  }
   if (row.group_ids === undefined) {
     row.group_ids = [];
   }
+
   return putUserWithGroups(row.id, row);
 };
 const onCrudDelete = deleteUser;

@@ -34,6 +34,10 @@ class User(BaseModel):
     last_signin: DatetimeStr
 
 
+class UserWithHashedPassword(User):
+    hashed_password: str
+
+
 class UserWithGroupsCreate(UserCreate):
     group_ids: List[int]
 

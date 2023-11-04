@@ -24,6 +24,7 @@ from ...model import (
     UserWithGroupsCreate,
     UserWithGroupsCreated,
     UserWithGroupsUpdate,
+    UserWithHashedPassword,
 )
 from ...table import GroupBase, UserBase, UserGroupBase
 from ..base import (
@@ -358,6 +359,12 @@ class CrudUser(UserBase):
     @classmethod
     async def get_row_by_email(cls, email: EmailStr) -> User:
         return await get_row_by(cls, cls.email == email, User)
+
+    @classmethod
+    async def get_row_with_hashed_password_by_email(
+        cls, email: EmailStr
+    ) -> UserWithHashedPassword:
+        return await get_row_by(cls, cls.email == email, UserWithHashedPassword)
 
     @classmethod
     async def get_rows_order_by_id(

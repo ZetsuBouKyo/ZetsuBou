@@ -1,3 +1,4 @@
+from logging import Logger
 from typing import List, Tuple
 
 from pydantic import BaseModel
@@ -5,7 +6,7 @@ from pydantic import BaseModel
 from back.utils.keyword import KeywordParser
 
 
-class TestDataModel(BaseModel):
+class DataModel(BaseModel):
     keywords: List[str]
     ans_remaining_keywords: str
     ans_includes: List[Tuple[str, str]]
@@ -130,20 +131,21 @@ raw_data = [
 
 
 def get_data():
-    return [TestDataModel(**d) for d in raw_data]
+    return [DataModel(**d) for d in raw_data]
 
 
-def test():
+def test(logger: Logger):
     parser = KeywordParser()
     data = get_data()
-    for d in data:
+    for i, d in enumerate(data):
+        case_index = i + 1
         for keywords in d.keywords:
-            print("\n")
             parsed_keywords = parser.parse(keywords)
-            print(f"keywords: {parsed_keywords.keywords}")
-            print(f"remaining keywords: {parsed_keywords.remaining_keywords}")
-            print(f"includes: {parsed_keywords.includes}")
-            print(f"excludes: {parsed_keywords.excludes}")
+            logger.debug(f"case: {case_index}")
+            logger.debug(f"keywords: {parsed_keywords.keywords}")
+            logger.debug(f"remaining keywords: {parsed_keywords.remaining_keywords}")
+            logger.debug(f"includes: {parsed_keywords.includes}")
+            logger.debug(f"excludes: {parsed_keywords.excludes}")
 
             assert parsed_keywords.keywords == keywords
             assert parsed_keywords.remaining_keywords == d.ans_remaining_keywords

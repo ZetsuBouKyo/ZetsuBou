@@ -109,7 +109,9 @@ start-airflow:
 stop-airflow:
 	docker-compose -f docker-compose.simple.yml stop zetsubou-airflow
 
-.PHONY: down
+.PHONY: tests-cov
+tests-cov:
+	pytest --cov=. tests/
 
 .PHONY: logs
 logs:

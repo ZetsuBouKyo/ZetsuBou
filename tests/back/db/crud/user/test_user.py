@@ -6,10 +6,12 @@ import pytest
 from faker import Faker
 from pydantic import ValidationError
 
-from back.db.crud import CrudGroup, CrudUser
+from back.db.crud import CrudGroup, CrudUser, CrudUserFrontSettings
+from back.db.crud.user.front_settings import _parameters
 from back.db.model import UserWithGroupsCreate, UserWithGroupsUpdate
 from back.model.group import BuiltInGroupEnum
 from back.security import verify_password
+from back.settings import setting
 
 ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
 GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value
@@ -28,6 +30,25 @@ async def assert_user(user: Union[UserWithGroupsCreate, UserWithGroupsUpdate]):
     created_user_with_groups = await CrudUser.get_row_with_groups_by_id(created_user.id)
 
     TestCase().assertCountEqual(user.group_ids, created_user_with_groups.group_ids)
+
+    # assert user front settings
+    default_settings = setting.get_app_user_front_settings(created_user.id)
+    default_setting_keys = [para.get("front_settings_key") for para in _parameters]
+    user_front_settings = await CrudUserFrontSettings.get_row_by_user_id(
+        created_user.id
+    )
+    user_front_settings = user_front_settings.model_dump()
+
+    for key in default_setting_keys:
+        default_setting = default_settings.get(key, None)
+        if default_setting is None:
+            continue
+
+        user_front_setting = user_front_settings.get(key, None)
+        if user_front_setting is None:
+            continue
+
+        assert default_setting == user_front_setting
 
 
 async def update_user_with_groups(user_id: int, user: UserWithGroupsUpdate):

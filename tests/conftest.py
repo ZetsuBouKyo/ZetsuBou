@@ -9,7 +9,6 @@ from fastapi.testclient import TestClient
 
 from back.init.database import init_table
 from back.init.logger import stream_handler
-from back.logging.utils import get_all_loggers
 from back.session.async_db import async_session
 from back.settings import setting
 
@@ -39,11 +38,6 @@ async def init_sqlite():
 
 @pytest.fixture(scope="session")
 def logger() -> logging.Logger:
-    loggers = get_all_loggers()
-    for logger in loggers:
-        logger.setLevel(logging.DEBUG)
-        logger.handlers = []
-
     logger = logging.getLogger("zetsubou.tests")
     logger.addHandler(stream_handler)
     print("\n")

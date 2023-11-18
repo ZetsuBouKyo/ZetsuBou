@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Set, Union
+from typing import Dict, List, Optional, Set, Type, TypeVar, Union
 
 from pydantic import BaseModel
 from sqlalchemy import Column, delete, desc, text, update
@@ -14,6 +14,8 @@ from sqlalchemy.sql.elements import TextClause
 
 from back.db.table import Base
 from back.session.async_db import async_session
+
+PydanticBaseModel = TypeVar("PydanticBaseModel")
 
 
 async def create(instance: DeclarativeMeta, data: Union[BaseModel, dict]) -> dict:
@@ -58,8 +60,8 @@ async def count_total(instance: DeclarativeMeta) -> int:
 
 
 async def get_row_by(
-    instance: DeclarativeMeta, condition, model: BaseModel
-) -> BaseModel:
+    instance: DeclarativeMeta, condition, model: Type[PydanticBaseModel]
+) -> Optional[PydanticBaseModel]:
     async with async_session() as session:
         async with session.begin():
             rows = await session.execute(select(instance).where(condition))
@@ -69,18 +71,20 @@ async def get_row_by(
     return model(**first.__dict__)
 
 
-async def get_row_by_id(instance: DeclarativeMeta, id, model: BaseModel) -> BaseModel:
+async def get_row_by_id(
+    instance: DeclarativeMeta, id, model: Type[PydanticBaseModel]
+) -> Optional[PydanticBaseModel]:
     return await get_row_by(instance, instance.id == id, model)
 
 
 async def get_rows_order_by(
     instance: DeclarativeMeta,
     order,
-    model: BaseModel = None,
+    model: Optional[Type[PydanticBaseModel]] = None,
     skip: int = 0,
     limit: int = 100,
     is_desc: bool = False,
-) -> List[BaseModel]:
+) -> List[PydanticBaseModel]:
     out = []
     if is_desc:
         order = desc(order)
@@ -105,8 +109,8 @@ async def get_rows_order_by(
 
 
 async def get_rows_order_by_id(
-    instance: DeclarativeMeta, model: BaseModel, **kwargs
-) -> List[BaseModel]:
+    instance: DeclarativeMeta, model: Type[PydanticBaseModel], **kwargs
+) -> List[PydanticBaseModel]:
     return await get_rows_order_by(instance, instance.id, model, **kwargs)
 
 
@@ -114,11 +118,11 @@ async def get_rows_by_condition_order_by(
     instance: DeclarativeMeta,
     condition,
     order,
-    model: BaseModel,
+    model: Type[PydanticBaseModel],
     skip: int = 0,
     limit: int = 100,
     is_desc: bool = False,
-) -> List[BaseModel]:
+) -> List[PydanticBaseModel]:
     out = []
     if is_desc:
         order = desc(order)
@@ -141,11 +145,11 @@ async def get_rows_by_condition_order_by(
 async def get_rows_by_condition_order_by_id(
     instance: DeclarativeMeta,
     condition,
-    model: BaseModel,
+    model: Type[PydanticBaseModel],
     skip: int = 0,
     limit: int = 100,
     is_desc: bool = False,
-) -> List[BaseModel]:
+) -> List[PydanticBaseModel]:
     return await get_rows_by_condition_order_by(
         instance, condition, instance.id, model, skip=skip, limit=limit, is_desc=is_desc
     )
@@ -154,11 +158,11 @@ async def get_rows_by_condition_order_by_id(
 async def get_rows_by_ids_order_by_id(
     instance: DeclarativeMeta,
     ids,
-    model: BaseModel,
+    model: Type[PydanticBaseModel],
     skip: int = 0,
     limit: int = 100,
     is_desc: bool = False,
-) -> List[BaseModel]:
+) -> List[PydanticBaseModel]:
     return await get_rows_by_condition_order_by_id(
         instance, instance.id.in_(ids), model, skip=skip, limit=limit, is_desc=is_desc
     )
@@ -167,10 +171,10 @@ async def get_rows_by_ids_order_by_id(
 async def iter_by_condition_order_by_id(
     instance: DeclarativeMeta,
     condition,
-    model: BaseModel,
+    model: Type[PydanticBaseModel],
     limit: int = 100,
     is_desc: bool = False,
-):
+) -> List[PydanticBaseModel]:
     skip = 0
     rows = await get_rows_by_condition_order_by_id(
         instance, condition, model, skip=skip, limit=limit, is_desc=is_desc
@@ -184,8 +188,11 @@ async def iter_by_condition_order_by_id(
 
 
 async def iter_order_by_id(
-    instance: DeclarativeMeta, model: BaseModel, limit: int = 100, is_desc: bool = False
-):
+    instance: DeclarativeMeta,
+    model: Type[PydanticBaseModel],
+    limit: int = 100,
+    is_desc: bool = False,
+) -> List[PydanticBaseModel]:
     skip = 0
     rows = await get_rows_order_by_id(
         instance, model, skip=skip, limit=limit, is_desc=is_desc
@@ -199,8 +206,11 @@ async def iter_order_by_id(
 
 
 async def get_all_rows_by_condition_order_by(
-    instance: DeclarativeMeta, condition, order, model: BaseModel = None
-) -> List[Union[dict, BaseModel]]:
+    instance: DeclarativeMeta,
+    condition,
+    order,
+    model: Optional[Type[PydanticBaseModel]] = None,
+) -> List[Union[dict, PydanticBaseModel]]:
     out = []
     skip = 0
     limit = 1000
@@ -218,8 +228,10 @@ async def get_all_rows_by_condition_order_by(
 
 
 async def get_all_rows_by_condition_order_by_id(
-    instance: DeclarativeMeta, condition, model: BaseModel = None
-) -> List[Union[dict, BaseModel]]:
+    instance: DeclarativeMeta,
+    condition,
+    model: Optional[Type[PydanticBaseModel]] = None,
+) -> List[Union[dict, PydanticBaseModel]]:
     return await get_all_rows_by_condition_order_by(
         instance, condition, instance.id, model=model
     )
@@ -239,7 +251,7 @@ async def get_all_rows_order_by_id(instance: DeclarativeMeta) -> List[dict]:
 
 
 async def update_by_instance(
-    instance: DeclarativeMeta, condition, data: Union[BaseModel, dict]
+    instance: DeclarativeMeta, condition, data: Union[Type[PydanticBaseModel], dict]
 ) -> bool:
     if isinstance(data, BaseModel):
         data = data.model_dump()
@@ -252,7 +264,9 @@ async def update_by_instance(
         return False
 
 
-async def update_by_id(instance: DeclarativeMeta, data: Union[BaseModel, dict]) -> bool:
+async def update_by_id(
+    instance: DeclarativeMeta, data: Union[Type[PydanticBaseModel], dict]
+) -> bool:
     if isinstance(data, BaseModel):
         data = data.model_dump()
     return await update_by_instance(instance, instance.id == data["id"], data)

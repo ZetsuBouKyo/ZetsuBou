@@ -63,7 +63,11 @@ async def post_user(
     return await CrudUser.create_with_groups(user)
 
 
-@router.get("/{user_id}", dependencies=[api_security([ScopeEnum.user_get.value])])
+@router.get(
+    "/{user_id}",
+    response_model=Optional[User],
+    dependencies=[api_security([ScopeEnum.user_get.value])],
+)
 async def get_user_by_id(user_id: int):
     return await CrudUser.get_row_by_id(user_id)
 

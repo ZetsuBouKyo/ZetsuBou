@@ -346,7 +346,7 @@ class CrudUser(UserBase):
         return await count_total(cls)
 
     @classmethod
-    async def get_row_by_id(cls, id: int) -> User:
+    async def get_row_by_id(cls, id: int) -> Optional[User]:
         return await get_row_by_id(cls, id, User)
 
     @classmethod
@@ -357,13 +357,13 @@ class CrudUser(UserBase):
         return user
 
     @classmethod
-    async def get_row_by_email(cls, email: EmailStr) -> User:
+    async def get_row_by_email(cls, email: EmailStr) -> Optional[User]:
         return await get_row_by(cls, cls.email == email, User)
 
     @classmethod
     async def get_row_with_hashed_password_by_email(
         cls, email: EmailStr
-    ) -> UserWithHashedPassword:
+    ) -> Optional[UserWithHashedPassword]:
         return await get_row_by(cls, cls.email == email, UserWithHashedPassword)
 
     @classmethod

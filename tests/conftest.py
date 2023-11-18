@@ -11,6 +11,7 @@ from back.init.database import init_table
 from back.init.logger import stream_handler
 from back.session.async_db import async_session
 from back.settings import setting
+from tests.general.logger import logger as _logger
 
 sys.path.append(str(Path.cwd()))
 
@@ -38,7 +39,6 @@ async def init_sqlite():
 
 @pytest.fixture(scope="session")
 def logger() -> logging.Logger:
-    logger = logging.getLogger("zetsubou.tests")
-    logger.addHandler(stream_handler)
+    _logger.addHandler(stream_handler)
     print("\n")
-    return logger
+    return _logger

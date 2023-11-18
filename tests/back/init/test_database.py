@@ -6,6 +6,7 @@ from back.model.group import BuiltInGroupEnum
 from back.security import verify_password
 from back.security.group import builtin_groups
 from back.settings import setting
+from tests.general.db import SQLiteSession
 
 ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
 GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value
@@ -46,7 +47,8 @@ async def check_quest():
 
 
 @pytest.mark.asyncio
-async def test_initialization(init_sqlite: None):
-    await check_groups_and_scopes()
-    await check_admin_user()
-    await check_quest()
+async def test_initialization():
+    async with SQLiteSession():
+        await check_groups_and_scopes()
+        await check_admin_user()
+        await check_quest()

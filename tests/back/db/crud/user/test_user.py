@@ -12,6 +12,8 @@ from back.db.model import UserWithGroupsCreate, UserWithGroupsUpdate
 from back.model.group import BuiltInGroupEnum
 from back.security import verify_password
 from back.settings import setting
+from tests.general.db import SQLiteSession
+from tests.general.user import UserSession
 
 ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
 GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value
@@ -57,67 +59,59 @@ async def update_user_with_groups(user_id: int, user: UserWithGroupsUpdate):
 
 
 @pytest.mark.asyncio
-async def test_crud(init_sqlite: None, logger: Logger):
-    admin_group = await CrudGroup.get_row_with_scopes_by_name(ADMIN_GROUP_NAME)
-    guest_group = await CrudGroup.get_row_with_scopes_by_name(GUEST_GROUP_NAME)
-
+async def test_crud(logger: Logger):
     fake = Faker()
-    name = fake.name()
-    email = fake.email()
-    password = fake.password()
 
-    logger.info(f"name: {name}")
-    logger.info(f"email: {email}")
-    logger.info(f"password: {password}")
+    async with SQLiteSession():
+        admin_group = await CrudGroup.get_row_with_scopes_by_name(ADMIN_GROUP_NAME)
+        guest_group = await CrudGroup.get_row_with_scopes_by_name(GUEST_GROUP_NAME)
 
-    user_with_groups_1 = UserWithGroupsCreate(
-        name=name, email=email, password=password, group_ids=[admin_group.id]
-    )
+    async with UserSession(group_ids=[admin_group.id]) as session:
+        user_with_groups_1 = session.user_with_groups
+        created_user_with_groups_1 = session.created_user_with_groups
 
-    created_user_with_groups_1 = await CrudUser.create_with_groups(user_with_groups_1)
-    user_id_1 = created_user_with_groups_1.id
-    await assert_user(user_with_groups_1)
+        user_id_1 = created_user_with_groups_1.id
+        await assert_user(user_with_groups_1)
 
-    user_with_groups_1_to_update_1 = UserWithGroupsUpdate(
-        name=user_with_groups_1.name,
-        email=user_with_groups_1.email,
-        password=user_with_groups_1.password,
-        group_ids=[admin_group.id, guest_group.id],
-    )
-    await update_user_with_groups(user_id_1, user_with_groups_1_to_update_1)
+        user_with_groups_1_to_update_1 = UserWithGroupsUpdate(
+            name=user_with_groups_1.name,
+            email=user_with_groups_1.email,
+            password=user_with_groups_1.password,
+            group_ids=[admin_group.id, guest_group.id],
+        )
+        await update_user_with_groups(user_id_1, user_with_groups_1_to_update_1)
 
-    new_name = fake.name()
-    new_password = fake.password()
-    user_with_groups_1_to_update_2 = UserWithGroupsUpdate(
-        name=new_name,
-        email=user_with_groups_1.email,
-        password=user_with_groups_1.password,
-        new_password=new_password,
-        group_ids=[],
-    )
-    await update_user_with_groups(user_id_1, user_with_groups_1_to_update_2)
-
-    try:
-        UserWithGroupsUpdate(
+        new_name = fake.name()
+        new_password = fake.password()
+        user_with_groups_1_to_update_2 = UserWithGroupsUpdate(
             name=new_name,
             email=user_with_groups_1.email,
-            password=None,
+            password=user_with_groups_1.password,
+            new_password=new_password,
             group_ids=[],
         )
-        assert False
-    except ValidationError:
-        ...
+        await update_user_with_groups(user_id_1, user_with_groups_1_to_update_2)
 
-    try:
-        UserWithGroupsUpdate(
-            name=new_name,
-            email=user_with_groups_1.email,
-            group_ids=[],
-        )
-        assert False
-    except ValidationError:
-        ...
+        try:
+            UserWithGroupsUpdate(
+                name=new_name,
+                email=user_with_groups_1.email,
+                password=None,
+                group_ids=[],
+            )
+            assert False
+        except ValidationError:
+            ...
 
-    await CrudUser.delete_by_id(user_id_1)
+        try:
+            UserWithGroupsUpdate(
+                name=new_name,
+                email=user_with_groups_1.email,
+                group_ids=[],
+            )
+            assert False
+        except ValidationError:
+            ...
+
     deleted_user_1 = await CrudUser.get_row_by_id(user_id_1)
     assert deleted_user_1 is None

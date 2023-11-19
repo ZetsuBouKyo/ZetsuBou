@@ -115,3 +115,13 @@ async def test_crud(logger: Logger):
 
     deleted_user_1 = await CrudUser.get_row_by_id(user_id_1)
     assert deleted_user_1 is None
+
+
+@pytest.mark.asyncio
+async def test_get_row_by_id(logger: Logger):
+    async with SQLiteSession():
+        users = await CrudUser.get_rows_order_by_id(is_desc=True)
+        user_id = users[0].id + 1
+        logger.debug(f"user ID: {user_id}")
+        user = await CrudUser.get_row_by_id(user_id)
+        assert user is None

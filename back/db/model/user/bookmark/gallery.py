@@ -16,7 +16,6 @@ class UserBookmarkGalleryUpdate(UserBookmarkGalleryCreate):
 
 
 class UserBookmarkGalleryCreated(UserBookmarkGalleryUpdate):
-    id: int
     modified: DatetimeStr
 
 

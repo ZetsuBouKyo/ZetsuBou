@@ -1,5 +1,7 @@
 from typing import List
 
+from sqlalchemy.sql import functions as func
+
 from ....model import (
     UserBookmarkGallery,
     UserBookmarkGalleryCreate,
@@ -23,7 +25,8 @@ class CrudUserBookmarkGallery(UserBookmarkGalleryBase):
     async def create(
         cls, bookmark: UserBookmarkGalleryCreate
     ) -> UserBookmarkGalleryCreated:
-        return UserBookmarkGalleryCreated(**await create(cls, bookmark))
+        created_bookmark = await create(cls, bookmark)
+        return UserBookmarkGalleryCreated(**created_bookmark)
 
     @classmethod
     async def count_total_by_user_id(cls, user_id: int) -> int:
@@ -68,6 +71,8 @@ class CrudUserBookmarkGallery(UserBookmarkGalleryBase):
 
     @classmethod
     async def update_by_id(cls, bookmark: UserBookmarkGalleryUpdate) -> bool:
+        bookmark = bookmark.model_dump()
+        bookmark["modified"] = func.now()
         return await update_by_id(cls, bookmark)
 
     @classmethod

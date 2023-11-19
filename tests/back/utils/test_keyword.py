@@ -4,6 +4,7 @@ from typing import List, Tuple
 from pydantic import BaseModel
 
 from back.utils.keyword import KeywordParser
+from tests.general.summary import divider
 
 
 class DataModel(BaseModel):
@@ -141,6 +142,7 @@ def test(logger: Logger):
         case_index = i + 1
         for keywords in d.keywords:
             parsed_keywords = parser.parse(keywords)
+            divider()
             logger.debug(f"case: {case_index}")
             logger.debug(f"keywords: {parsed_keywords.keywords}")
             logger.debug(f"remaining keywords: {parsed_keywords.remaining_keywords}")

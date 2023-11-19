@@ -25,7 +25,7 @@ async def create(instance: DeclarativeMeta, data: Union[BaseModel, dict]) -> dic
         data = instance(**data)
         async with session.begin():
             session.add(data)
-        await session.flush()
+        await session.refresh(data)
         return data.__dict__
 
 

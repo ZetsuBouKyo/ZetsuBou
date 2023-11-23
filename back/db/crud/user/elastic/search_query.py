@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import and_
 from sqlalchemy.sql import functions as func
@@ -33,13 +33,13 @@ class CrudUserElasticSearchQuery(UserElasticSearchQueryBase):
         return await count(cls, cls.user_id == user_id)
 
     @classmethod
-    async def get_row_by_id(cls, id: int) -> UserElasticSearchQuery:
+    async def get_row_by_id(cls, id: int) -> Optional[UserElasticSearchQuery]:
         return await get_row_by_id(cls, id, UserElasticSearchQuery)
 
     @classmethod
     async def get_row_by_id_and_user_id(
         cls, id: int, user_id: int
-    ) -> UserElasticSearchQuery:
+    ) -> Optional[UserElasticSearchQuery]:
         return await get_row_by(
             cls, and_(cls.id == id, cls.user_id == user_id), UserElasticSearchQuery
         )

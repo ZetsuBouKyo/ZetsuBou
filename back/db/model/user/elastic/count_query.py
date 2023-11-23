@@ -1,12 +1,10 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
 from back.utils.model import DatetimeStr, JsonStr
 
 
 class UserElasticCountQueryCreate(BaseModel):
-    user_id: Optional[int] = None
+    user_id: int
     name: str
     query: JsonStr
 
@@ -20,7 +18,7 @@ class UserElasticCountQueryCreated(BaseModel):
 
 class UserElasticCountQueryUpdate(BaseModel):
     id: int
-    user_id: Optional[int] = None
+    user_id: int
     name: str
     query: JsonStr
 

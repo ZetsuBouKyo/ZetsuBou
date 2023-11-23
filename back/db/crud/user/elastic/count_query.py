@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import and_
 from sqlalchemy.sql import functions as func
@@ -24,7 +24,9 @@ from ...base import (
 
 class CrudUserElasticCountQuery(UserElasticCountQueryBase):
     @classmethod
-    async def create(cls, query: UserElasticCountQueryCreate):
+    async def create(
+        cls, query: UserElasticCountQueryCreate
+    ) -> UserElasticCountQueryCreated:
         json.loads(query.query)
         return UserElasticCountQueryCreated(**await create(cls, query))
 
@@ -33,11 +35,13 @@ class CrudUserElasticCountQuery(UserElasticCountQueryBase):
         return await count(cls, cls.user_id == user_id)
 
     @classmethod
-    async def get_row_by_id(cls, id: int) -> UserElasticCountQuery:
+    async def get_row_by_id(cls, id: int) -> Optional[UserElasticCountQuery]:
         return await get_row_by_id(cls, id, UserElasticCountQuery)
 
     @classmethod
-    async def get_row_by_id_and_user_id(cls, id: int, user_id: int):
+    async def get_row_by_id_and_user_id(
+        cls, id: int, user_id: int
+    ) -> Optional[UserElasticCountQuery]:
         return await get_row_by(
             cls, and_(cls.id == id, cls.user_id == user_id), UserElasticCountQuery
         )

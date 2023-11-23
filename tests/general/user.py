@@ -32,11 +32,6 @@ class UserSession(SQLiteSession):
             self.password = fake.password()
 
     async def enter(self):
-        logger.info(f"name: {self.name}")
-        logger.info(f"email: {self.email}")
-        logger.info(f"group ids: {self.group_ids}")
-        logger.info(f"password: {self.password}")
-
         self.user_with_groups = UserWithGroupsCreate(
             name=self.name,
             email=self.email,
@@ -46,7 +41,12 @@ class UserSession(SQLiteSession):
         self.created_user_with_groups = await CrudUser.create_with_groups(
             self.user_with_groups
         )
-        logger.info(f"id: {self.created_user_with_groups.id}")
+
+        logger.info(f"user ID: {self.created_user_with_groups.id}")
+        logger.info(f"user name: {self.name}")
+        logger.info(f"user email: {self.email}")
+        logger.info(f"user group ids: {self.group_ids}")
+        logger.info(f"user password: {self.password}")
 
     async def exit(self):
         await CrudUser.delete_by_id(self.created_user_with_groups.id)

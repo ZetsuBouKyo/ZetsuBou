@@ -1,7 +1,55 @@
 from enum import Enum
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from pydantic import BaseModel
+
+
+class AirflowDagArgumentBase(BaseModel):
+    name: Optional[str] = None
+    type: Optional[str] = None
+
+
+class AirflowDagKeywordArgumentBase(BaseModel):
+    name: str
+    type: Optional[str] = None
+
+
+class AirflowDagArgument(AirflowDagArgumentBase):
+    value: Optional[Any] = None
+
+
+class AirflowDagKeywordArgument(AirflowDagKeywordArgumentBase):
+    key: Optional[str] = None
+    value: Optional[Any] = None
+
+
+class AirflowDagCommandRequest(BaseModel):
+    logical_date: Optional[str] = None
+    args: List[AirflowDagArgument] = []
+    kwargs: List[AirflowDagKeywordArgument] = []
+
+
+class AirflowDagSchemaArgument(AirflowDagArgumentBase):
+    param_decls: List[str] = []
+    choices: List[str] = []
+
+
+class AirflowDagSchemaKeywordArgument(AirflowDagKeywordArgumentBase):
+    default: Optional[Any] = None
+    param_decls: List[str] = []
+    choices: List[str] = []
+
+
+class AirflowDagCommandSchema(BaseModel):
+    dag_id: Optional[str] = None
+    sub_command: Optional[str] = None
+    doc: Optional[str] = None
+    args: List[AirflowDagSchemaArgument] = []
+    kwargs: List[AirflowDagSchemaKeywordArgument] = []
+
+
+class AirflowConf(BaseModel):
+    args: str = ""
 
 
 class AirflowUser(BaseModel):

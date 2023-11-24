@@ -10,10 +10,10 @@ from fastapi.dependencies.utils import get_typed_signature
 from typer import Typer
 from typer.models import ArgumentInfo, CommandFunctionType, OptionInfo
 
-from back.api.model.task.airflow import (
-    CommandSchema,
-    SchemaArgument,
-    SchemaKeywordArgument,
+from back.model.airflow import (
+    AirflowDagCommandSchema,
+    AirflowDagSchemaArgument,
+    AirflowDagSchemaKeywordArgument,
 )
 from back.session.async_airflow import dags
 
@@ -45,7 +45,7 @@ def airflow_dag_register(
 ):
     if airflow_dag_id is None or airflow_dag_sub_command is None:
         return
-    schema = CommandSchema(
+    schema = AirflowDagCommandSchema(
         dag_id=airflow_dag_id, sub_command=airflow_dag_sub_command, doc=f.__doc__
     )
     typed_signature = get_typed_signature(f)
@@ -61,13 +61,13 @@ def airflow_dag_register(
             param_decls = list(parameter.default.param_decls)
 
         if isinstance(parameter.default, ArgumentInfo):
-            arg = SchemaArgument(
+            arg = AirflowDagSchemaArgument(
                 name=name, type=parameter_type, choices=choices, param_decls=param_decls
             )
             schema.args.append(arg)
         elif isinstance(parameter.default, OptionInfo):
             name = name.replace("_", "-")
-            kwarg = SchemaKeywordArgument(
+            kwarg = AirflowDagSchemaKeywordArgument(
                 name=name,
                 type=parameter_type,
                 param_decls=list(parameter.default.param_decls),

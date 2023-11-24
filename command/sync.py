@@ -60,9 +60,9 @@ async def _storage(
     ),
     force: bool = typer.Option(
         False,
-        "-f/",
         "--force/",
-        help="If the value is true, the redundant documents in Elasticsearch indices will be deleted and the video cache files will be updated.",
+        "-f/",
+        help="If `--force` or `-f` is specified, the redundant documents in the Elasticsearch indices will be deleted and the video cache files will be updated.",
     ),
     progress: bool = typer.Option(
         default=True, help="Send progress information to Redis."
@@ -101,6 +101,12 @@ async def _storage(
     airflow_dag_sub_command="sync storages",
 )
 async def _storages(
+    force: bool = typer.Option(
+        False,
+        "--force/",
+        "-f/",
+        help="If `--force` or `-f` is specified, the redundant documents in the Elasticsearch indices will be deleted and the video cache files will be updated.",
+    ),
     progress: bool = typer.Option(
         True, "-p/", "--progress/", help="Send progress information to Redis."
     ),
@@ -142,6 +148,7 @@ async def _storages(
             progress_id=progress_id,
             progress_initial=initial,
             progress_final=final,
+            force=force,
             is_progress=progress,
         )
         await crud.sync()

@@ -28,6 +28,7 @@ from back.utils.dt import (
 
 ELASTICSEARCH_INDEX_VIDEO = setting.elastic_index_video
 ELASTICSEARCH_SIZE = setting.elastic_size
+ELASTICSEARCH_DELETE_REDUNDANT_DOCS = setting.elasticsearch_delete_redundant_docs
 
 BATCH_SIZE = 300
 
@@ -576,7 +577,7 @@ class CrudAsyncVideoSync:
         target_index: str = None,
         size: int = None,
         batch_size: int = None,
-        force: bool = False,
+        force: bool = ELASTICSEARCH_DELETE_REDUNDANT_DOCS,
         cache_home: str = None,
         cover_home: str = None,
         app_storage_protocol: SourceProtocolEnum = None,
@@ -683,7 +684,7 @@ class CrudAsyncVideoSync:
             return
 
         exists = await self.storage_session.exists(video)
-        if not exists:
+        if not exists and self.force:
             self._elasticsearch_to_storage_batches.append(
                 {
                     "_index": self.index,

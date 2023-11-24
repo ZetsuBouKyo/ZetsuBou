@@ -187,6 +187,12 @@ class Setting(BaseSettings):
             return []
         return cls.elastic_urls.split(",")
 
+    elasticsearch_delete_redundant_docs: Optional[bool] = Field(
+        default=False,
+        description="If the value is `True`, we will delete the documents that cannot be found in the storages during synchronization.",
+        examples=[False],
+    )
+
     storage_protocol: SourceProtocolEnum = SourceProtocolEnum.MINIO.value
     storage_expires_in_minutes: int = 7 * 24 * 60
     storage_cache: str = "zetsubou"

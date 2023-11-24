@@ -27,6 +27,7 @@ from back.utils.dt import (
 ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000
 ELASTICSEARCH_INDEX_GALLERY = setting.elastic_index_gallery
 ELASTICSEARCH_SIZE = setting.elastic_size
+ELASTICSEARCH_DELETE_REDUNDANT_DOCS = setting.elasticsearch_delete_redundant_docs
 
 BATCH_SIZE = 300
 
@@ -512,6 +513,7 @@ class CrudAsyncGallerySync:
         target_index: str = None,
         size: int = None,
         batch_size: int = None,
+        force: bool = ELASTICSEARCH_DELETE_REDUNDANT_DOCS,
         dir_fname: str = None,
         tag_fname: str = None,
         progress_id: str = None,
@@ -535,6 +537,7 @@ class CrudAsyncGallerySync:
         self.target_index = target_index  # the target index for synchronization
         self.size = size
         self.batch_size = batch_size
+        self.force = force
         self.dir_fname = dir_fname
         self.tag_fname = tag_fname
 
@@ -696,7 +699,7 @@ class CrudAsyncGallerySync:
             return
 
         exists = await self.storage_session.exists(gallery)
-        if not exists or gallery.id not in self.cache:
+        if (not exists or gallery.id not in self.cache) and self.force:
             self._elasticsearch_to_storage_batches.append(
                 {
                     "_index": self.index,

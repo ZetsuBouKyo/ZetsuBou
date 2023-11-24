@@ -55,11 +55,17 @@ async def are_galleries(
 async def _storage(
     protocol: SourceProtocolEnum = typer.Argument(..., help="Storage protocol."),
     storage_id: int = typer.Argument(..., help="Storage ID."),
-    progress: bool = typer.Option(
-        default=True, help="Send progress information to Redis."
-    ),
     elasticsearch_urls: str = typer.Option(
         default=ELASTICSEARCH_URLS, help="Elasticsearch URLs separated by `,`."
+    ),
+    force: bool = typer.Option(
+        False,
+        "-f/",
+        "--force/",
+        help="If the value is true, the redundant documents in Elasticsearch indices will be deleted and the video cache files will be updated.",
+    ),
+    progress: bool = typer.Option(
+        default=True, help="Send progress information to Redis."
     ),
     target_index: str = typer.Option(default=None, help="Target Elasticsearch index."),
 ):
@@ -76,7 +82,11 @@ async def _storage(
     ti = time.time()
 
     crud = await get_crud_sync(
-        protocol, storage_id, is_progress=progress, target_index=target_index
+        protocol,
+        storage_id,
+        force=force,
+        is_progress=progress,
+        target_index=target_index,
     )
     await crud.sync()
 

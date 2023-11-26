@@ -35,12 +35,13 @@ export function postSyncStorageMinio(id: number) {
       { type: "string", value: "minio" },
       { type: "number", value: id },
     ],
+    kwargs: [{ type: "boolean", name: "force", value: true }],
   };
   return runAirflowDag("sync-storage", data);
 }
 
 export function postSyncStoragesMinio() {
-  const data = {};
+  const data = { kwargs: [{ type: "boolean", name: "force", value: true }] };
   return runAirflowDag("sync-storages", data);
 }
 

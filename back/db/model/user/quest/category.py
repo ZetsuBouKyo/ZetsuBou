@@ -11,11 +11,8 @@ class UserQuestCategoryCreate(BaseModel):
     name: str
 
 
-class UserQuestCategoryCreated(BaseModel):
+class UserQuestCategoryCreated(UserQuestCategoryCreate):
     id: int
-    name: str
 
 
-class UserQuestCategory(BaseModel):
-    id: int
-    name: str
+UserQuestCategory = UserQuestCategoryCreated

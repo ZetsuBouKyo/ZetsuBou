@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import and_
 from sqlalchemy.sql import functions as func
@@ -33,13 +33,13 @@ class CrudUserElasticCountQuest(UserElasticCountQuestBase):
         return await count(cls, cls.user_id == user_id)
 
     @classmethod
-    async def get_row_by_id(cls, id: int) -> UserElasticCountQuest:
+    async def get_row_by_id(cls, id: int) -> Optional[UserElasticCountQuest]:
         return await get_row_by_id(cls, id, UserElasticCountQuest)
 
     @classmethod
     async def get_row_by_user_id_and_quest_id(
         cls, user_id: int, quest_id: int
-    ) -> UserElasticCountQuest:
+    ) -> Optional[UserElasticCountQuest]:
         return await get_row_by(
             cls, and_(cls.id == quest_id, cls.user_id == user_id), UserElasticCountQuest
         )

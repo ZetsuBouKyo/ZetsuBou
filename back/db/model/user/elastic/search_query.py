@@ -9,24 +9,13 @@ class UserElasticSearchQueryCreate(BaseModel):
     query: JsonStr
 
 
-class UserElasticSearchQueryCreated(BaseModel):
+class UserElasticSearchQueryCreated(UserElasticSearchQueryCreate):
     id: int
-    user_id: int
-    name: str
-    query: JsonStr
 
 
-class UserElasticSearchQueryUpdate(BaseModel):
-    id: int
-    user_id: int
-    name: str
-    query: JsonStr
+UserElasticSearchQueryUpdate = UserElasticSearchQueryCreated
 
 
-class UserElasticSearchQuery(BaseModel):
-    id: int
-    user_id: int
-    name: str
-    query: JsonStr
+class UserElasticSearchQuery(UserElasticSearchQueryCreated):
     created: DatetimeStr
     modified: DatetimeStr

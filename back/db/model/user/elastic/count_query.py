@@ -9,24 +9,13 @@ class UserElasticCountQueryCreate(BaseModel):
     query: JsonStr
 
 
-class UserElasticCountQueryCreated(BaseModel):
+class UserElasticCountQueryCreated(UserElasticCountQueryCreate):
     id: int
-    user_id: int
-    name: str
-    query: JsonStr
 
 
-class UserElasticCountQueryUpdate(BaseModel):
-    id: int
-    user_id: int
-    name: str
-    query: JsonStr
+UserElasticCountQueryUpdate = UserElasticCountQueryCreated
 
 
-class UserElasticCountQuery(BaseModel):
-    id: int
-    user_id: int
-    name: str
-    query: JsonStr
+class UserElasticCountQuery(UserElasticCountQueryCreated):
     created: DatetimeStr
     modified: DatetimeStr

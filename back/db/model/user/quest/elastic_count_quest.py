@@ -12,27 +12,13 @@ class UserElasticCountQuestCreate(BaseModel):
     denominator_id: int
 
 
-class UserElasticCountQuestCreated(BaseModel):
+class UserElasticCountQuestCreated(UserElasticCountQuestCreate):
     id: int
-    name: str
-    user_id: int
-    numerator_id: int
-    denominator_id: int
 
 
-class UserElasticCountQuestUpdate(BaseModel):
-    id: int
-    name: str
-    user_id: Optional[int] = None
-    numerator_id: int
-    denominator_id: int
+UserElasticCountQuestUpdate = UserElasticCountQuestCreated
 
 
-class UserElasticCountQuest(BaseModel):
-    id: int
-    name: str
-    user_id: int
-    numerator_id: int
-    denominator_id: int
+class UserElasticCountQuest(UserElasticCountQuestCreated):
     created: DatetimeStr
     modified: DatetimeStr

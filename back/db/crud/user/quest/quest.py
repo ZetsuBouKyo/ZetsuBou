@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import and_
 from sqlalchemy.sql import functions as func
@@ -9,6 +9,7 @@ from ...base import (
     count,
     create,
     delete_by,
+    get_row_by_id,
     get_rows_by_condition_order_by,
     update_by_id,
 )
@@ -28,6 +29,10 @@ class CrudUserQuest(UserQuestBase):
         return await get_rows_by_condition_order_by(
             cls, cls.user_id == user_id, cls.priority, UserQuest, 0, 1, False
         )
+
+    @classmethod
+    async def get_row_by_id(cls, id: int) -> Optional[UserQuest]:
+        return await get_row_by_id(cls, id, UserQuest)
 
     @classmethod
     async def get_rows_by_user_id_order_by_id(

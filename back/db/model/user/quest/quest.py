@@ -1,42 +1,24 @@
-from typing import Optional
-
 from pydantic import BaseModel
+from pydantic.types import NonNegativeInt
 
 from back.utils.model import DatetimeStr
 
 
 class UserQuestCreate(BaseModel):
-    user_id: Optional[int] = None
-    name: str
-    category_id: int
-    quest_id: int
-    priority: int
-
-
-class UserQuestCreated(BaseModel):
-    id: int
     user_id: int
     name: str
     category_id: int
     quest_id: int
-    priority: int
+    priority: NonNegativeInt
 
 
-class UserQuestUpdate(BaseModel):
+class UserQuestCreated(UserQuestCreate):
     id: int
-    user_id: Optional[int] = None
-    name: str
-    category_id: int
-    quest_id: int
-    priority: int
 
 
-class UserQuest(BaseModel):
-    id: int
-    user_id: int
-    name: str
-    category_id: int
-    quest_id: int
-    priority: int
+UserQuestUpdate = UserQuestCreated
+
+
+class UserQuest(UserQuestUpdate):
     created: DatetimeStr
     modified: DatetimeStr

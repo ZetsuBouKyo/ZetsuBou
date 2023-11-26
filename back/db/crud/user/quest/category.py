@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from ....model import (
     UserQuestCategory,
@@ -17,11 +17,11 @@ class CrudUserQuestCategory(UserQuestCategoryBase):
         return UserQuestCategoryCreated(**await create(cls, category))
 
     @classmethod
-    async def get_row_by_id(cls, id: int) -> UserQuestCategory:
+    async def get_row_by_id(cls, id: int) -> Optional[UserQuestCategory]:
         return await get_row_by_id(cls, id, UserQuestCategory)
 
     @classmethod
-    async def get_row_by_name(cls, name: str) -> UserQuestCategory:
+    async def get_row_by_name(cls, name: str) -> Optional[UserQuestCategory]:
         return await get_row_by(cls, cls.name == name, UserQuestCategory)
 
     @classmethod

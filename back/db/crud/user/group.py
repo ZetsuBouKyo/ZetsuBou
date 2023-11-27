@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import delete, update
 from sqlalchemy.future import select
@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from back.session.async_db import async_session
 
-from ...model import UserGroup, UserGroupCreate
+from ...model import UserGroup, UserGroupCreate, UserGroupCreated
 from ...table import UserGroupBase
 from ..base import (
     create,
@@ -57,21 +57,18 @@ async def update_group_ids_by_user_id(
 
 class CrudUserGroup(UserGroupBase):
     @classmethod
-    async def create(cls, user_group: UserGroupCreate) -> UserGroup:
+    async def create(cls, user_group: UserGroupCreate) -> UserGroupCreated:
         return UserGroup(**await create(cls, user_group))
 
     @classmethod
-    async def update(cls, user_id: int, group_ids: List[int]):
-        async with async_session() as session:
-            async with session.begin():
-                res = await update_group_ids_by_user_id(
-                    session, user_id, group_ids, user_group_base=cls
-                )
-        return res
+    async def get_row_by_id(cls, id: int) -> Optional[UserGroup]:
+        return await get_row_by(cls, cls.id == id, UserGroup)
 
     @classmethod
-    async def get_row_by_id(cls, id: int) -> UserGroup:
-        return await get_row_by(cls, cls.id == id, UserGroup)
+    async def get_rows_by_user_id_order_by_id(cls, user_id: int) -> List[UserGroup]:
+        return await get_rows_by_condition_order_by_id(
+            cls, cls.user_id == user_id, UserGroup, limit=1
+        )
 
     @classmethod
     async def get_rows_by_group_id_order_by_id(cls, group_id: int) -> List[UserGroup]:
@@ -86,6 +83,15 @@ class CrudUserGroup(UserGroupBase):
         return await get_rows_order_by_id(
             cls, UserGroup, skip=skip, limit=limit, is_desc=is_desc
         )
+
+    @classmethod
+    async def update(cls, user_id: int, group_ids: List[int]):
+        async with async_session() as session:
+            async with session.begin():
+                res = await update_group_ids_by_user_id(
+                    session, user_id, group_ids, user_group_base=cls
+                )
+        return res
 
     @classmethod
     async def delete_by_id(cls, id: int) -> bool:

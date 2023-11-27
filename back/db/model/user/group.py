@@ -6,7 +6,8 @@ class UserGroupCreate(BaseModel):
     group_id: int
 
 
-class UserGroup(BaseModel):
+class UserGroupCreated(UserGroupCreate):
     id: int
-    user_id: int
-    group_id: int
+
+
+UserGroup = UserGroupCreated

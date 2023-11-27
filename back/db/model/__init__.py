@@ -80,7 +80,7 @@ from .user.front_settings import (
     UserFrontSettingsCreated,
     UserFrontSettingsUpdateByUserId,
 )
-from .user.group import UserGroup, UserGroupCreate
+from .user.group import UserGroup, UserGroupCreate, UserGroupCreated
 from .user.quest.category import (
     UserQuestCategory,
     UserQuestCategoryCreate,
@@ -195,6 +195,7 @@ __all__ = [
     "UserFrontSettingsUpdateByUserId",
     "UserGroup",
     "UserGroupCreate",
+    "UserGroupCreated",
     "UserQuest",
     "UserQuestCategory",
     "UserQuestCategoryCreate",

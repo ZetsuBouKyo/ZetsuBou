@@ -3,6 +3,7 @@ from typing import Optional
 from urllib.parse import urlparse
 
 from pydantic import BaseModel, Field
+from pydantic.types import PositiveInt
 
 
 class SourceProtocolEnum(str, Enum):
@@ -10,8 +11,8 @@ class SourceProtocolEnum(str, Enum):
 
 
 class Pagination(BaseModel):
-    page: int = 1
-    size: int = 20
+    page: PositiveInt = 1
+    size: PositiveInt = 20
     is_desc: bool = False
 
     @property

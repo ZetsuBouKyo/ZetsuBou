@@ -184,15 +184,13 @@ async def test_crud(logger: Logger):
             quest_id=elasticsearch_count_quest_1_created.id,
             priority=quest_priority_2,
         )
-        try:
+
+        with pytest.raises(IntegrityError):
             await CrudUserQuest.create(quest_2)
-            assert False
-        except IntegrityError:
-            ...
 
         quest_name_3 = "Quest 3"
         quest_priority_3 = -1
-        try:
+        with pytest.raises(ValidationError):
             UserQuestCreate(
                 user_id=user.id,
                 name=quest_name_3,
@@ -200,9 +198,6 @@ async def test_crud(logger: Logger):
                 quest_id=elasticsearch_count_quest_1_created.id,
                 priority=quest_priority_3,
             )
-            assert False
-        except ValidationError:
-            ...
 
         quest_name_4 = "Quest 4"
         quest_priority_4 = 1
@@ -220,6 +215,8 @@ async def test_crud(logger: Logger):
 
         quests = await CrudUserQuest.get_rows_by_user_id_order_by_id(user.id)
         assert len(quests) == 2
+        quests_count = await CrudUserQuest.count_by_user_id(user.id)
+        assert quests_count == 2
 
         quest_name_4_to_update = "Quest 4 to update"
         quest_4_to_update = UserQuestUpdate(
@@ -244,6 +241,9 @@ async def test_crud(logger: Logger):
             priority=quest_priority_5,
         )
         quest_5_created = await CrudUserQuest.create(quest_5)
+        await CrudUserQuest.delete_by_id_and_user_id(quest_5_created.id, user.id)
+        quest_5_deleted = await CrudUserQuest.get_row_by_id(quest_5_created.id)
+        assert quest_5_deleted is None
 
         await CrudUserElasticCountQuery.delete_by_id_and_user_id(
             query_2_created.id, user.id

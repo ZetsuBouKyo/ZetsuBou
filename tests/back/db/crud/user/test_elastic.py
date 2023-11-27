@@ -53,16 +53,10 @@ async def case_1(crud, create_model, update_model):
         query_3_deleted = await crud.get_row_by_id(query_3_created.id)
         assert query_3_deleted is None
 
-        try:
+        with pytest.raises(Exception):
             query_name_4 = "test_4"
             query_json_4 = ""
-            query_4 = create_model(
-                user_id=user.id, name=query_name_4, query=query_json_4
-            )
-            await crud.create(query_4)
-            assert False
-        except:
-            ...
+            create_model(user_id=user.id, name=query_name_4, query=query_json_4)
 
     queries = await crud.get_rows_by_user_id_order_by_id(user.id)
     assert len(queries) == 0

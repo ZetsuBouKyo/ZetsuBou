@@ -53,7 +53,7 @@ class UserSession(SQLiteSession):
 
 
 @pytest.mark.asyncio
-async def test(logger: Logger):
+async def test(logger: Logger):  # pragma: no cover
     async with UserSession() as session:
         u = session.created_user_with_groups
 

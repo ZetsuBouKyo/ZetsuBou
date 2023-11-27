@@ -19,7 +19,9 @@ ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
 GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value
 
 
-async def assert_user(user: Union[UserWithGroupsCreate, UserWithGroupsUpdate]):
+async def assert_user(
+    user: Union[UserWithGroupsCreate, UserWithGroupsUpdate]
+):  # pragma: no cover
     created_user = await CrudUser.get_row_with_hashed_password_by_email(user.email)
 
     assert user.name == created_user.name
@@ -53,7 +55,9 @@ async def assert_user(user: Union[UserWithGroupsCreate, UserWithGroupsUpdate]):
         assert default_setting == user_front_setting
 
 
-async def update_user_with_groups(user_id: int, user: UserWithGroupsUpdate):
+async def update_user_with_groups(
+    user_id: int, user: UserWithGroupsUpdate
+):  # pragma: no cover
     await CrudUser.update_by_user_with_group(user_id, user)
     await assert_user(user)
 
@@ -92,26 +96,20 @@ async def test_crud(logger: Logger):
         )
         await update_user_with_groups(user_id_1, user_with_groups_1_to_update_2)
 
-        try:
+        with pytest.raises(ValidationError):
             UserWithGroupsUpdate(
                 name=new_name,
                 email=user_with_groups_1.email,
                 password=None,
                 group_ids=[],
             )
-            assert False
-        except ValidationError:
-            ...
 
-        try:
+        with pytest.raises(ValidationError):
             UserWithGroupsUpdate(
                 name=new_name,
                 email=user_with_groups_1.email,
                 group_ids=[],
             )
-            assert False
-        except ValidationError:
-            ...
 
     deleted_user_1 = await CrudUser.get_row_by_id(user_id_1)
     assert deleted_user_1 is None

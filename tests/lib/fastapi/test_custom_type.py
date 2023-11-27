@@ -15,7 +15,7 @@ app = FastAPI()
 
 
 @app.get("/user", response_model=User)
-def foo():
+def foo():  # pragma: no cover
     return User(email=DEFAULT_ADMIN_EMAIL)
 
 

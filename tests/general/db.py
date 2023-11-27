@@ -34,7 +34,7 @@ class SQLiteSession:
         def set_sqlite_pragma(dbapi_connection, _):
             cursor = dbapi_connection.cursor()
             cursor.execute("PRAGMA foreign_keys=ON")
-            cursor.close()
+            cursor.close()  # pragma: no cover
 
         await init_table()
 

@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 
 
 class RequiresLoginException(HTTPException):
@@ -15,5 +15,24 @@ AirflowConflictInArgumentsException = HTTPException(
 )
 
 
-def AirflowDagIDNotFoundException(dag_id):
-    return HTTPException(status_code=404, detail=f"Dag ID: {dag_id} not found")
+class AirflowDagIDNotFoundException(HTTPException):
+    def __init__(
+        self,
+        dag_id: str,
+    ):
+        super().__init__(status_code=404, detail=f"Dag ID: {dag_id} not found")
+
+
+class NotAuthenticatedException(HTTPException):
+    def __init__(self, scopes: str, detail: str = None):
+        authenticate_value = "Bearer"
+        if scopes:
+            authenticate_value = f"Bearer scope={scopes}"
+        if detail is None:
+            detail = "Not authenticated"
+
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=detail,
+            headers={"WWW-Authenticate": authenticate_value},
+        )

@@ -17,6 +17,8 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class Token(BaseModel):
     sub: int
     exp: int
+    groups: List[str] = []
+    scopes: List[str] = []
 
 
 def create_access_token(
@@ -36,6 +38,15 @@ def create_access_token(
         algorithm=ALGORITHM,
     )
     return encoded_jwt
+
+
+def decode_token(token: str) -> Token:
+    payload = jwt.decode(
+        token,
+        SECRET,
+        algorithms=[ALGORITHM],
+    )
+    return Token(**payload)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

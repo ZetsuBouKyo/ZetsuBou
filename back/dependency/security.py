@@ -2,15 +2,15 @@ from typing import List
 
 from fastapi import Cookie, Depends, HTTPException, Security, status
 from fastapi.security import HTTPBearer, OAuth2PasswordBearer, SecurityScopes
-from jose import jwt
 from jose.exceptions import ExpiredSignatureError
 from jose.jwt import JWTError
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 
 from back.db.crud import CrudGroup
 from back.model.scope import ScopeEnum
+from back.security import Token, decode_token
 from back.settings import setting
-from back.utils.exceptions import RequiresLoginException
+from back.utils.exceptions import NotAuthenticatedException, RequiresLoginException
 
 APP_SECURITY = setting.app_security
 SECRET = setting.app_security_secret
@@ -29,34 +29,6 @@ reusable_oauth2 = OAuth2PasswordBearer(
     scopes=_scopes,
     auto_error=False,
 )
-
-
-class Token(BaseModel):
-    sub: int
-    exp: int
-    groups: List[str] = []
-    scopes: List[str] = []
-
-
-def get_not_authenticated_exception(scopes: str, detail: str = None):
-    authenticate_value = "Bearer"
-    if scopes:
-        authenticate_value = f"Bearer scope={scopes}"
-
-    return HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail=detail,
-        headers={"WWW-Authenticate": authenticate_value},
-    )
-
-
-def decode_token(token: str) -> Token:
-    payload = jwt.decode(
-        token,
-        SECRET,
-        algorithms=[ALGORITHM],
-    )
-    return Token(**payload)
 
 
 def extract_token(
@@ -94,9 +66,7 @@ def extract_token_from_cookies(token: str = Cookie(None)) -> Token:
 
 async def verify_with_scopes(security_scopes: SecurityScopes, token: Token):
     if token is None:
-        raise get_not_authenticated_exception(
-            security_scopes.scope_str, detail="No token"
-        )
+        raise NotAuthenticatedException(security_scopes.scope_str, detail="No token")
 
     token_scope_set = set(token.scopes)
 
@@ -121,7 +91,7 @@ async def verify_with_scopes(security_scopes: SecurityScopes, token: Token):
     if remaining_scopes <= group_scopes:
         return True
 
-    raise get_not_authenticated_exception(
+    raise NotAuthenticatedException(
         security_scopes.scope_str, detail="Not enough permissions"
     )
 

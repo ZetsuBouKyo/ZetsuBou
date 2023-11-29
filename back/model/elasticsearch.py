@@ -43,9 +43,6 @@ class SearchResult(BaseModel, Generic[SourceT]):
     scroll_id: Optional[str] = Field(default=None, alias="_scroll_id")
     hits: Hits[SourceT] = Field(default=Hits[SourceT]())
 
-    def print(self):
-        print_json(data=self.model_dump())
-
 
 class Count(BaseModel):
     count: int

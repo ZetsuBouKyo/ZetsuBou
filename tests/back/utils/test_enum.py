@@ -15,3 +15,4 @@ def test():
         assert e.value in s
 
     assert "c" not in s
+    assert 1 not in s

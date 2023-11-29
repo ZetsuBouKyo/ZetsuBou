@@ -1,5 +1,14 @@
+import pytest
+
 from back.model.airflow import AirflowDagCommandRequest
-from back.session.async_airflow import get_args
+from back.session.async_airflow import get_args, is_dag_id
+from back.utils.exceptions import AirflowDagIDNotFoundException
+
+
+def test_is_dag_id():
+    dag_id = "random x"
+    with pytest.raises(AirflowDagIDNotFoundException):
+        is_dag_id(dag_id)
 
 
 def test_get_args():

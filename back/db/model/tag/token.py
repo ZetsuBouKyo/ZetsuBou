@@ -5,16 +5,8 @@ class TagTokenCreate(BaseModel):
     name: str
 
 
-class TagTokenCreated(BaseModel):
+class TagTokenCreated(TagTokenCreate):
     id: int
-    name: str
 
 
-class TagTokenUpdate(BaseModel):
-    id: int
-    name: str
-
-
-class TagToken(BaseModel):
-    id: int
-    name: str
+TagToken = TagTokenUpdate = TagTokenCreated

@@ -2,8 +2,9 @@ import json
 from datetime import datetime
 from typing import Any, Callable, Union
 
-from pydantic import GetJsonSchemaHandler
+from pydantic import GetJsonSchemaHandler, StringConstraints
 from pydantic_core import core_schema
+from typing_extensions import Annotated
 
 from back.utils.dt import datetime_format, datetime_formats
 
@@ -22,26 +23,10 @@ class _Str(str):
         raise NotImplementedError
 
 
-class TagStr(_Str):
-    @classmethod
-    def __get_pydantic_json_schema__(
-        cls, core_schema: core_schema.JsonSchema, handler: GetJsonSchemaHandler
-    ) -> None:
-        # json_schema = super().__get_pydantic_json_schema__(core_schema, handler)
-        # json_schema = handler.resolve_ref_schema(json_schema)
-        json_schema = handler(core_schema)
-        json_schema = handler.resolve_ref_schema(json_schema)
-        json_schema.update(type="string", format="string")
-        return json_schema
-
-    @classmethod
-    def _validate(cls, value: str, _: core_schema.ValidationInfo) -> str:
-        if value is None:
-            return value
-        value = str(value)
-        if len(value) > 0:
-            return value
-        raise TypeError(f"length of '{value}' should greater than 0")
+TagStr = Annotated[
+    str,
+    StringConstraints(min_length=1),
+]
 
 
 class DatetimeStr(_Str):

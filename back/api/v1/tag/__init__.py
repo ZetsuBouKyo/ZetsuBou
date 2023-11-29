@@ -11,14 +11,10 @@ from back.model.scope import ScopeEnum
 from back.model.tag import Tag, TagCreate, TagToken, TagUpdate
 
 from .attribute import router as attribute
-from .category import router as category
-from .synonym import router as synonym
 from .token import router as token
 
 router = APIRouter(tags=["Tag"])
 router.include_router(attribute)
-router.include_router(category)
-router.include_router(synonym)
 router.include_router(token)
 
 

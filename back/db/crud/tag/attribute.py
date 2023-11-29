@@ -28,14 +28,6 @@ class CrudTagAttribute(TagAttributeBase):
         return await count_total(cls)
 
     @classmethod
-    async def exists(cls, attr: Union[str, int]) -> bool:
-        if type(attr) is str:
-            return await cls.get_row_by_name(attr) is not None
-        elif type(attr) is int:
-            return await cls.get_row_by_id(attr) is not None
-        raise TypeError("attribute should be int or str")
-
-    @classmethod
     async def get_row_by_id(cls, id: int) -> TagAttribute:
         return await get_row_by_id(cls, id, TagAttribute)
 

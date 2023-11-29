@@ -1,20 +1,14 @@
 from pydantic import BaseModel
 
+from back.utils.model import TagStr
+
 
 class TagAttributeCreate(BaseModel):
-    name: str
+    name: TagStr
 
 
-class TagAttributeCreated(BaseModel):
+class TagAttributeCreated(TagAttributeCreate):
     id: int
-    name: str
 
 
-class TagAttributeUpdate(BaseModel):
-    id: int
-    name: str
-
-
-class TagAttribute(BaseModel):
-    id: int
-    name: str
+TagAttribute = TagAttributeUpdate = TagAttributeCreated

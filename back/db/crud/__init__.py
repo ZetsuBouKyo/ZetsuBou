@@ -5,6 +5,7 @@ from .setting.front.gallery import CrudSettingFrontGallery
 from .setting.front.video import CrudSettingFrontVideo
 from .storage.minio import CrudStorageMinio
 from .tag.attribute import CrudTagAttribute
+from .tag.category import CrudTagCategory
 from .tag.token import CrudTagToken
 from .user.bookmark.gallery import CrudUserBookmarkGallery
 from .user.elastic.count_query import CrudUserElasticCountQuery
@@ -25,6 +26,7 @@ __all__ = [
     "CrudSettingFrontVideo",
     "CrudStorageMinio",
     "CrudTagAttribute",
+    "CrudTagCategory",
     "CrudTagToken",
     "CrudUser",
     "CrudUserBookmarkGallery",

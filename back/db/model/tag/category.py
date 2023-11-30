@@ -6,8 +6,10 @@ class TagCategoryCreate(BaseModel):
     token_id: int
 
 
-class TagCategoryCreated(TagCategoryCreate):
+class TagCategoryCreated(BaseModel):
     id: int
+    linked_id: int
+    token_id: int
 
 
-TagCategory = TagCategoryUpdate = TagCategoryCreated
+TagCategory = TagCategoryCreated

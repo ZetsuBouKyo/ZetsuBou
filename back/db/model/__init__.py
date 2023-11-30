@@ -41,12 +41,7 @@ from .tag.attribute import (
     TagAttributeCreated,
     TagAttributeUpdate,
 )
-from .tag.category import (
-    TagCategory,
-    TagCategoryCreate,
-    TagCategoryCreated,
-    TagCategoryUpdate,
-)
+from .tag.category import TagCategory, TagCategoryCreate, TagCategoryCreated
 from .tag.representative import TagRepresentative
 from .tag.synonym import (
     TagSynonym,
@@ -159,7 +154,6 @@ __all__ = [
     "TagCategory",
     "TagCategoryCreate",
     "TagCategoryCreated",
-    "TagCategoryUpdate",
     "TagRepresentative",
     "TagSynonym",
     "TagSynonymCreate",

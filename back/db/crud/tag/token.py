@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import desc
 from sqlalchemy.future import select
@@ -11,7 +11,6 @@ from ..base import (
     count_total,
     create,
     delete_by_id,
-    get_row_by,
     get_row_by_id,
     get_rows_by_condition_order_by,
     get_rows_by_ids_order_by_id,
@@ -34,12 +33,8 @@ class CrudTagToken(TagTokenBase):
         return await cls.get_row_by_id(id) is not None
 
     @classmethod
-    async def get_row_by_id(cls, id: int) -> TagToken:
+    async def get_row_by_id(cls, id: int) -> Optional[TagToken]:
         return await get_row_by_id(cls, id, TagToken)
-
-    @classmethod
-    async def get_row_by_name(cls, name: str) -> TagToken:
-        return await get_row_by(cls, cls.name == name, TagToken)
 
     @classmethod
     async def get_rows_order_by_id(

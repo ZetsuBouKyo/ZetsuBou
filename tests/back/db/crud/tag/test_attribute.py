@@ -6,7 +6,6 @@ import pytest
 from back.db.crud import CrudTagAttribute
 from back.db.model import TagAttributeCreate, TagAttributeUpdate
 from tests.general.db import SQLiteSession
-from tests.general.summary import divider
 
 
 @pytest.mark.asyncio

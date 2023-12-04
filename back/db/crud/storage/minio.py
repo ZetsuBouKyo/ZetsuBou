@@ -1,4 +1,4 @@
-from typing import List
+from typing import AsyncIterator, List, Optional
 
 from back.model.storage import StorageCategoryEnum
 
@@ -41,7 +41,7 @@ class CrudStorageMinio(StorageMinioBase):
         return await count_total(cls)
 
     @classmethod
-    async def get_row_by_id(cls, id: int) -> StorageMinio:
+    async def get_row_by_id(cls, id: int) -> Optional[StorageMinio]:
         return await get_row_by_id(cls, id, StorageMinio)
 
     @classmethod
@@ -55,14 +55,22 @@ class CrudStorageMinio(StorageMinioBase):
     @classmethod
     async def iter_by_category_order_by_id(
         cls, category: int, limit: int = 100, is_desc: bool = False
-    ):
-        return iter_by_condition_order_by_id(
+    ) -> AsyncIterator[StorageMinio]:
+        async for rows in iter_by_condition_order_by_id(
             cls, cls.category == category, StorageMinio, limit=limit, is_desc=is_desc
-        )
+        ):
+            for row in rows:
+                yield row
 
     @classmethod
-    async def iter_order_by_id(cls, limit: int = 100, is_desc: bool = False):
-        return iter_order_by_id(cls, StorageMinio, limit=limit, is_desc=is_desc)
+    async def iter_order_by_id(
+        cls, limit: int = 100, is_desc: bool = False
+    ) -> AsyncIterator[StorageMinio]:
+        async for rows in iter_order_by_id(
+            cls, StorageMinio, limit=limit, is_desc=is_desc
+        ):
+            for row in rows:
+                yield row
 
     @classmethod
     async def update_by_id(cls, directory: StorageMinioUpdate) -> bool:

@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from typing import Any, Callable, Union
+from urllib.parse import urlparse
 
 from pydantic import GetJsonSchemaHandler, StringConstraints
 from pydantic_core import core_schema
@@ -14,7 +15,7 @@ class _Str(str):
     def __get_pydantic_core_schema__(
         cls, source: Any, handler: Callable[[Any], core_schema.JsonSchema]
     ) -> core_schema.CoreSchema:
-        return core_schema.general_before_validator_function(
+        return core_schema.with_info_before_validator_function(
             cls._validate, core_schema.str_schema()
         )
 
@@ -34,8 +35,6 @@ class DatetimeStr(_Str):
     def __get_pydantic_json_schema__(
         cls, core_schema: core_schema.JsonSchema, handler: GetJsonSchemaHandler
     ) -> None:
-        # json_schema = super().__get_pydantic_json_schema__(core_schema, handler)
-        # json_schema = handler.resolve_ref_schema(json_schema)
         json_schema = handler(core_schema)
         json_schema = handler.resolve_ref_schema(json_schema)
         json_schema.update(
@@ -67,9 +66,6 @@ class JsonStr(_Str):
     def __get_pydantic_json_schema__(
         cls, core_schema: core_schema.JsonSchema, handler: GetJsonSchemaHandler
     ) -> None:
-        #
-        # json_schema = super().__get_pydantic_json_schema__(core_schema, handler)
-        # json_schema = handler.resolve_ref_schema(json_schema)
         json_schema = handler(core_schema)
         json_schema = handler.resolve_ref_schema(json_schema)
         json_schema.update(
@@ -88,3 +84,35 @@ class JsonStr(_Str):
             return json.dumps(__input_value)
 
         raise TypeError("value should be str or json dict")
+
+
+class HttpUrlStr(_Str):
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: core_schema.JsonSchema, handler: GetJsonSchemaHandler
+    ) -> None:
+        json_schema = handler(core_schema)
+        json_schema = handler.resolve_ref_schema(json_schema)
+        json_schema.update(
+            type="string",
+            format="url",
+            examples=[
+                "http://example.com",
+                "https://example.com",
+                "http://localhost:3000",
+            ],
+        )
+        return json_schema
+
+    @classmethod
+    def _validate(cls, value: str, _: core_schema.ValidationInfo) -> str:
+        if type(value) is str:
+            url = urlparse(value)
+            if url.scheme != "http" and url.scheme != "https":
+                raise ValueError("wrong format")
+            url_str = url.geturl()
+            if value != url_str:
+                raise ValueError(f"`{value}` should be `{url_str}`")
+            return value
+
+        raise TypeError("value should be str")

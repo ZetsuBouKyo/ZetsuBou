@@ -18,9 +18,9 @@ COPY poetry.toml pyproject.toml /opt/airflow/zetsubou-venv/
 
 RUN chmod 755 /opt/airflow/zetsubou-venv/
 
-RUN pip install --no-cache-dir poetry pydantic
-
-RUN pip install --no-cache-dir "apache-airflow[celery]==2.6.2" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.6.2/constraints-3.7.txt"
+RUN pip install --upgrade pip \
+    && pip install --root-user-action=ignore --no-cache-dir poetry pydantic \
+    && pip install --root-user-action=ignore --no-cache-dir "apache-airflow[celery]==2.6.2" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.6.2/constraints-3.7.txt"
 
 WORKDIR /opt/airflow/zetsubou-venv
 

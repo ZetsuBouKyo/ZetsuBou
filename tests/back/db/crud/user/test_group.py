@@ -39,7 +39,7 @@ async def test_crud(logger: Logger):
         assert len(user_groups_by_user_id) == 1
 
         user_groups_by_group_id = await CrudUserGroup.get_rows_by_group_id_order_by_id(
-            user.id
+            user_group_id_1
         )
 
         assert len(user_groups_by_group_id) > 0

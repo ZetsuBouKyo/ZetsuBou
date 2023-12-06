@@ -2,15 +2,7 @@ from collections import deque
 from pathlib import Path
 from typing import List
 
-from pydantic import BaseModel
-
 from back.logging import logger_zetsubou
-
-
-class PathPattern(BaseModel):
-    pattern: str
-    left: bool
-
 
 excludes = [
     "__pycache__",
@@ -40,7 +32,10 @@ includes = ["front/dist", "front/doc_site", "front/public"]
 
 
 def get_watched_files(
-    home: Path = Path.cwd(), excludes: List[PathPattern] = excludes
+    home: Path = Path.cwd(),
+    root_excludes: List[str] = root_excludes,
+    excludes: List[str] = excludes,
+    includes: List[str] = includes,
 ) -> List[Path]:
     watched = []
     stack = deque([])

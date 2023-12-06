@@ -34,6 +34,7 @@ from command.test import app as test
 from command.utils import is_empty_dir
 from command.video import app as video
 from lib.typer import ZetsuBouTyper
+from lib.uvicorn.files import get_watched_files
 
 init_zetsubou_logger()
 
@@ -210,6 +211,14 @@ def pdf2img(
             fmt=fmt,
             size=(width, height),
         )
+
+
+@app.command()
+def watch():
+    files = get_watched_files()
+    files.sort()
+    for f in files:
+        print(str(f))
 
 
 if __name__ == "__main__":

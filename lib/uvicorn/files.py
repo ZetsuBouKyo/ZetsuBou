@@ -12,36 +12,29 @@ class PathPattern(BaseModel):
     left: bool
 
 
-def _get_both_side_patterns(patterns: List[str]) -> List[PathPattern]:
-    return [PathPattern(pattern=p, left=True) for p in patterns]
+excludes = [
+    "__pycache__",
+    ".git",
+    ".pytest_cache",
+    ".venv",
+    "node_modules",
+]
 
+root_excludes = [
+    ".python-version",
+    ".vscode",
+    "*.code-workspace",
+    "*.db",
+    "dev",
+    "front",
+    "logs",
+    "package-lock.json",
+    "poetry.lock*",
+    "target",
+]
 
-def _get_patterns(patterns: List[str]) -> List[PathPattern]:
-    return [PathPattern(pattern=p, left=False) for p in patterns]
+root_excludes += excludes
 
-
-excludes = _get_both_side_patterns(
-    [
-        "__pycache__",
-        ".git",
-        ".pytest_cache",
-        ".venv",
-        ".pytest_cache",
-        "node_modules",
-    ]
-) + _get_patterns(
-    [
-        ".python-version",
-        ".vscode" "*.code-workspace",
-        "*.db",
-        "dev",
-        "front",
-        "logs",
-        "package-lock.json",
-        "poetry.lock*",
-        "target",
-    ]
-)
 
 includes = ["front/dist", "front/doc_site", "front/public"]
 
@@ -50,20 +43,33 @@ def get_watched_files(
     home: Path = Path.cwd(), excludes: List[PathPattern] = excludes
 ) -> List[Path]:
     watched = []
-    stack = deque([p for p in home.glob("*")])
+    stack = deque([])
+    for p in home.glob("*"):
+        relative_p = p.relative_to(home)
+        first_path = Path(relative_p.parts[0])
+
+        skip = False
+        for ignore in root_excludes:
+            if first_path.match(ignore):
+                skip = True
+                break
+        if skip:
+            continue
+
+        stack.append(p)
+
+    for include in includes:
+        p = home / include
+        stack.append(p)
+
     while stack:
         skip = False
         p = stack.popleft()
         relative_p = p.relative_to(home)
         for ignore in excludes:
-            if not ignore.left:
-                first_path = Path(relative_p.parts[0])
-                if first_path.match(ignore.pattern):
-                    skip = True
-                    continue
-            elif relative_p.name == ignore.pattern:
+            if relative_p.name == ignore:
                 skip = True
-                continue
+                break
         if skip:
             continue
 
@@ -74,9 +80,5 @@ def get_watched_files(
 
         watched.append(p)
 
-    for include in includes:
-        p = home / include
-        for next_p in p.glob("**/*"):
-            watched.append(next_p)
     logger_zetsubou.info(f"watched files: {len(watched)}")
     return watched

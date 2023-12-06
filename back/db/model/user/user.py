@@ -26,10 +26,7 @@ class UserUpdate(BaseModel):
     new_password: Optional[str] = None
 
 
-class User(BaseModel):
-    id: int
-    name: str
-    email: str
+class User(UserCreated):
     created: DatetimeStr
     last_signin: DatetimeStr
 

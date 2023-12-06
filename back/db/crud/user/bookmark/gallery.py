@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.sql import functions as func
 
@@ -62,7 +62,7 @@ class CrudUserBookmarkGallery(UserBookmarkGalleryBase):
     @classmethod
     async def get_row_by_user_id_and_gallery_id(
         cls, user_id: int, gallery_id: str
-    ) -> UserBookmarkGallery:
+    ) -> Optional[UserBookmarkGallery]:
         return await get_row_by(
             cls,
             (cls.user_id == user_id) & (cls.gallery_id == gallery_id),

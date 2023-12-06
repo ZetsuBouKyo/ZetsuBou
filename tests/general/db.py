@@ -8,7 +8,7 @@ from back.settings import setting
 from tests.general.logger import logger
 
 DATABASE_URL_SQLITE = setting.test_database_url_sqlite
-TEST_VOLUMES_TESTS_DATABASE_SQLITE = setting.test_volumes_tests_database_sqlite
+TEST_VOLUMES_TESTS_DATABASE_SQLITE = setting.test_volumes_database_sqlite
 
 
 class SQLiteSession:

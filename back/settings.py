@@ -257,16 +257,14 @@ class Setting(BaseSettings):
         examples=["6380"],
     )
 
-    test_volumes_tests_database_sqlite: Optional[str] = Field(
+    test_volumes_database_sqlite: Optional[str] = Field(
         default="dev/volumes/tests/database/sqlite",
         description="Relative path to store the sqlite file.",
     )
 
     @property
     def test_database_url_sqlite(cls):
-        return (
-            f"sqlite+aiosqlite:///{cls.test_volumes_tests_database_sqlite}/zetsubou.db"
-        )
+        return f"sqlite+aiosqlite:///{cls.test_volumes_database_sqlite}/zetsubou.db"
 
 
 setting = Setting(_env_file=str(DEFAULT_SETTING_PATH))

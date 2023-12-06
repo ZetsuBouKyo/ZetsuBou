@@ -1,5 +1,6 @@
 import json
 from logging import Logger
+from typing import Union
 
 import pytest
 
@@ -14,13 +15,23 @@ from tests.general.user import UserSession
 
 
 @pytest.mark.asyncio
-async def case_1(crud, create_model, update_model):
+async def case_1(
+    crud: Union[CrudUserElasticCountQuery, CrudUserElasticSearchQuery],
+    create_model: Union[UserElasticCountQueryCreate, UserElasticSearchQueryCreate],
+    update_model: Union[UserElasticCountQueryUpdate, UserElasticSearchQueryUpdate],
+):
     async with UserSession() as session:
         user = session.created_user_with_groups
+        count_by_user_id_0 = await crud.count_by_user_id(user.id)
+
         query_name_1 = "test_1"
         query_json_1 = {"body": {"query": {"match_all": {}}}}
         query_1 = create_model(user_id=user.id, name=query_name_1, query=query_json_1)
         query_1_created = await crud.create(query_1)
+
+        count_by_user_id_1 = await crud.count_by_user_id(user.id)
+
+        assert count_by_user_id_1 == count_by_user_id_0 + 1
 
         assert query_1.name == query_1_created.name
         assert query_json_1 == json.loads(query_1_created.query)

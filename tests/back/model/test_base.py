@@ -1,40 +1,51 @@
+from logging import Logger
+
+import pytest
+
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 
 
-def assert_source_base_model(
+def get_path(
     protocol: SourceProtocolEnum, storage_id: int, bucket_name: str, object_name: str
 ):
-    path = f"{protocol}-{storage_id}://{bucket_name}{object_name}"
-    source = SourceBaseModel(path=path)
-
-    assert source.protocol == protocol
-    assert source.storage_id == storage_id
-    assert source.bucket_name == bucket_name
-    assert source.object_name == object_name
+    return f"{protocol}-{storage_id}://{bucket_name}{object_name}"
 
 
-def test_1():
+def test_1(logger: Logger):
+    data = [
+        (SourceProtocolEnum.MINIO.value, 1, "test", "/"),
+        (SourceProtocolEnum.MINIO.value, 1, "test", "/abc/def"),
+        (SourceProtocolEnum.MINIO.value, 1, "test", "/abc/def/"),
+    ]
+    for d in data:
+        path = get_path(*d)
+        logger.info(f"path: {path}")
+        source = SourceBaseModel(path=path)
+        assert source.protocol == d[0]
+        assert source.storage_id == d[1]
+        assert source.bucket_name == d[2]
+        assert source.object_name == d[3]
+
+
+def test_type_error(logger: Logger):
     protocol = SourceProtocolEnum.MINIO.value
-    storage_id = 1
-    bucket_name = "test"
-    object_name = "/"
-
-    assert_source_base_model(protocol, storage_id, bucket_name, object_name)
-
-
-def test_2():
-    protocol = SourceProtocolEnum.MINIO.value
-    storage_id = 1
-    bucket_name = "test"
-    object_name = "/abc/def"
-
-    assert_source_base_model(protocol, storage_id, bucket_name, object_name)
-
-
-def test_3():
-    protocol = SourceProtocolEnum.MINIO.value
-    storage_id = 1
+    storage_id = "abc"
     bucket_name = "test"
     object_name = "/abc/def/"
+    path = get_path(protocol, storage_id, bucket_name, object_name)
+    logger.info(f"path: {path}")
 
-    assert_source_base_model(protocol, storage_id, bucket_name, object_name)
+    with pytest.raises(ValueError):
+        source = SourceBaseModel(path=path)
+        source.storage_id
+
+
+def test_none(logger: Logger):
+    path = ""
+    logger.info(f"path: {path}")
+    source = SourceBaseModel(path=path)
+
+    assert source.protocol is None
+    assert source.storage_id is None
+    assert source.bucket_name is None
+    assert source.object_name is None

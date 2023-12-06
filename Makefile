@@ -14,22 +14,6 @@ APP_DEV_SERVICES := zetsubou-airflow zetsubou-elasticsearch zetsubou-minio zetsu
 
 .PHONY: test line check
 
-test:
-	echo "$(ZETSUBOU_TIMESTAMP)"
-
-
-line:
-	git ls-files | xargs wc -l || true
-
-check:
-	@docker > /dev/null 2>&1
-	@docker-compose > /dev/null 2>&1
-check-dev:
-	@poetry > /dev/null 2>&1
-	@docker > /dev/null 2>&1
-	@docker-compose > /dev/null 2>&1
-	@npm --version > /dev/null 2>&1
-
 .PHONY: build build-docker-app build-docker-airflow build-docker-minio-dev build-dev
 build-docker-app:
 	docker build --force-rm -f docker/Dockerfile.app -t zetsubou/app:0.0.1-python-3.8.16-slim-buster .
@@ -42,27 +26,14 @@ build-dev: build-docker-airflow-simple
 	source ./.venv/bin/activate; pre-commit install
 build: build-docker-app build-docker-airflow-simple
 
-.PHONY: docs
-docs:
-	mkdocs build
-	npx prettier --write front/doc_site/
-
-lint:
-	pre-commit run --all-files
-	npx commitlint --from "HEAD~1" --to "HEAD" --verbose
-
-.PHONY: init init-app-postgres init-app-elasticsearch init-redis
-init-app-elasticsearch:
-	mkdir -p $(ZETSUBOU_ELASTICSEARCH_VOLUME)
-	mkdir -p $(ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME)
-	chown -R 1000:1000 $(ZETSUBOU_ELASTICSEARCH_VOLUME)
-	touch $(ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME)/synonym.txt
-init-app-postgres:
-	mkdir -p $(ZETSUBOU_POSTGRES_DB_VOLUME)
-init-redis:
-	mkdir -p $(ZETSUBOU_REDIS_VOLUME)
-	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
-init: init-app-postgres init-app-elasticsearch init-redis
+check:
+	@docker > /dev/null 2>&1
+	@docker-compose > /dev/null 2>&1
+check-dev:
+	@poetry > /dev/null 2>&1
+	@docker > /dev/null 2>&1
+	@docker-compose > /dev/null 2>&1
+	@npm --version > /dev/null 2>&1
 
 .PHONY: clean clean-all clean-airflow clean-airflow-simple clean-app-elasticsearch clean-app-postgres clean-docker
 clean-airflow-simple:
@@ -81,6 +52,42 @@ clean-folders:
 	rm -rf ./venv
 clean: clean-folders clean-docker
 
+.PHONY: docs
+docs:
+	mkdocs build
+	npx prettier --write front/doc_site/
+.PHONY: down
+down:
+	docker-compose -f docker-compose.simple.yml down
+
+line:
+	git ls-files | xargs wc -l || true
+lint:
+	pre-commit run --all-files
+	npx commitlint --from "HEAD~1" --to "HEAD" --verbose
+.PHONY: logs
+logs:
+	docker-compose -f docker-compose.simple.yml logs $(service)
+
+.PHONY: init init-app-postgres init-app-elasticsearch init-redis
+init-app-elasticsearch:
+	mkdir -p $(ZETSUBOU_ELASTICSEARCH_VOLUME)
+	mkdir -p $(ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME)
+	chown -R 1000:1000 $(ZETSUBOU_ELASTICSEARCH_VOLUME)
+	touch $(ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME)/synonym.txt
+init-app-postgres:
+	mkdir -p $(ZETSUBOU_POSTGRES_DB_VOLUME)
+init-redis:
+	mkdir -p $(ZETSUBOU_REDIS_VOLUME)
+	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
+init: init-app-postgres init-app-elasticsearch init-redis
+
+pip-new:
+	poetry show -o
+
+requirements.txt:
+	poetry export -f requirements.txt -o requirements.txt --without-hashes
+
 .PHONY: reset-app reset-app-elasticsearch reset-app-postgres reset-airflow-simple
 reset-app-elasticsearch: clean-app-elasticsearch init-app-elasticsearch
 reset-app-postgres: clean-app-postgres init-app-postgres
@@ -88,34 +95,25 @@ reset-app: reset-app-elasticsearch reset-app-postgres
 
 reset-airflow-simple: clean-airflow-simple
 
-.PHONY: up-app-simple up-airflow-simple up-dev up
-up-app-simple:
-	docker-compose -f docker-compose.simple.yml up -d $(APP_SERVICES)
-up-airflow-simple:
-	docker-compose -f docker-compose.simple.yml up -d zetsubou-airflow
-up-dev:
-	docker-compose -f docker-compose.simple.yml up -d $(APP_DEV_SERVICES)
-up: up-app-simple
-
-.PHONY: down
-down:
-	docker-compose -f docker-compose.simple.yml down
-
 .PHONY: start-airflow
 start-airflow:
 	docker-compose -f docker-compose.simple.yml start zetsubou-airflow
-
 .PHONY: stop-airflow
 stop-airflow:
 	docker-compose -f docker-compose.simple.yml stop zetsubou-airflow
 
+test:
+	echo "$(ZETSUBOU_TIMESTAMP)"
+
 .PHONY: tests-cov
 tests-cov:
-	pytest --cov=. tests/
+	pytest --cov=. --cov-report term-missing tests/
 
-.PHONY: logs
-logs:
-	docker-compose -f docker-compose.simple.yml logs $(service)
-
-requirements.txt:
-	poetry export -f requirements.txt -o requirements.txt --without-hashes
+.PHONY: up-app-simple up-airflow-simple up-dev up
+up-airflow-simple:
+	docker-compose -f docker-compose.simple.yml up -d zetsubou-airflow
+up-app-simple:
+	docker-compose -f docker-compose.simple.yml up -d $(APP_SERVICES)
+up-dev:
+	docker-compose -f docker-compose.simple.yml up -d $(APP_DEV_SERVICES)
+up: up-app-simple

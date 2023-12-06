@@ -9,7 +9,6 @@ from sqlalchemy.sql.expression import true
 from back.session.async_db import async_session
 
 from ....model import (
-    SettingFrontGallery,
     SettingFrontGalleryCategory,
     SettingFrontGalleryInterpretation,
     SettingFrontGalleryTagField,
@@ -21,27 +20,9 @@ from ....table import (
     SettingFrontGalleryTagFieldBase,
     TagTokenBase,
 )
-from ...base import get_all_rows_by_condition_order_by_id
 
 
 class CrudSettingFrontGallery:
-    @classmethod
-    async def get(cls) -> SettingFrontGallery:
-        category_ids = await get_all_rows_by_condition_order_by_id(
-            SettingFrontGalleryCategoryBase,
-            SettingFrontGalleryCategoryBase.enable == true(),
-            SettingFrontGalleryCategory,
-        )
-        tag_field_ids = await get_all_rows_by_condition_order_by_id(
-            SettingFrontGalleryTagFieldBase,
-            SettingFrontGalleryTagFieldBase.enable == true(),
-            SettingFrontGalleryTagField,
-        )
-        return SettingFrontGallery(
-            category_ids=category_ids,
-            tag_field_ids=tag_field_ids,
-        )
-
     @classmethod
     async def get_interpretation(cls):
         limit = 100

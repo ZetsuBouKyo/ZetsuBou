@@ -100,13 +100,6 @@ async def init_user_front_settings(session: Session, user_id: int):
 
 class CrudUserFrontSettings:
     @classmethod
-    async def init(cls, user_id: int) -> bool:
-        async with async_session() as session:
-            async with session.begin():
-                await init_user_front_settings(session, user_id)
-        return True
-
-    @classmethod
     async def get_row_by_user_id(cls, user_id: int) -> UserFrontSettings:
         async with async_session() as session:
             async with session.begin():

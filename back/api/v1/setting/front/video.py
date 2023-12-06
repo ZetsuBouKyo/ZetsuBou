@@ -67,15 +67,6 @@ async def reset() -> SettingFrontVideo:
     return await CrudSettingFrontVideo.reset()
 
 
-@router.get(
-    "",
-    response_model=SettingFrontVideo,
-    dependencies=[api_security([ScopeEnum.setting_front_video_get.value])],
-)
-async def get() -> SettingFrontVideo:
-    return await CrudSettingFrontVideo.get()
-
-
 @router.put("", dependencies=[api_security([ScopeEnum.setting_front_video_put.value])])
 async def put(setting: SettingFrontVideoUpdate):
     return await CrudSettingFrontVideo.update(setting)

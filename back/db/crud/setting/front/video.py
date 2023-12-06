@@ -9,7 +9,6 @@ from sqlalchemy.sql.expression import true
 from back.session.async_db import async_session
 
 from ....model import (
-    SettingFrontVideo,
     SettingFrontVideoCategory,
     SettingFrontVideoInterpretation,
     SettingFrontVideoTagField,
@@ -21,27 +20,9 @@ from ....table import (
     SettingFrontVideoTagFieldBase,
     TagTokenBase,
 )
-from ...base import get_all_rows_by_condition_order_by_id
 
 
 class CrudSettingFrontVideo:
-    @classmethod
-    async def get(cls) -> SettingFrontVideo:
-        category_ids = await get_all_rows_by_condition_order_by_id(
-            SettingFrontVideoCategoryBase,
-            SettingFrontVideoCategoryBase.enable == true(),
-            SettingFrontVideoCategory,
-        )
-        tag_field_ids = await get_all_rows_by_condition_order_by_id(
-            SettingFrontVideoTagFieldBase,
-            SettingFrontVideoTagFieldBase.enable == true(),
-            SettingFrontVideoTagField,
-        )
-        return SettingFrontVideo(
-            category_ids=category_ids,
-            tag_field_ids=tag_field_ids,
-        )
-
     @classmethod
     async def get_interpretation(cls):
         limit = 100

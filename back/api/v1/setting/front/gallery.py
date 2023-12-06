@@ -67,15 +67,6 @@ async def reset() -> SettingFrontGallery:
     return await CrudSettingFrontGallery.reset()
 
 
-@router.get(
-    "",
-    response_model=SettingFrontGallery,
-    dependencies=[api_security([ScopeEnum.setting_front_gallery_get.value])],
-)
-async def get() -> SettingFrontGallery:
-    return await CrudSettingFrontGallery.get()
-
-
 @router.put(
     "", dependencies=[api_security([ScopeEnum.setting_front_gallery_put.value])]
 )

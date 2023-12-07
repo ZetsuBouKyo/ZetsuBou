@@ -1,6 +1,7 @@
 import os
 
-from sqlalchemy import text
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 
 from back.init.database import init_table
 from back.session.async_db import async_session
@@ -26,9 +27,7 @@ class SQLiteSession:
 
         database_url = DATABASE_URL_SQLITE
         async_session.load(database_url)
-
-        from sqlalchemy import event
-        from sqlalchemy.engine import Engine
+        self.async_session = async_session
 
         @event.listens_for(Engine, "connect")
         def set_sqlite_pragma(dbapi_connection, _):

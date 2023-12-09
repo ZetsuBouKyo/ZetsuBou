@@ -12,7 +12,7 @@ from back.db.model import (
     TagTokenCreate,
 )
 from back.model.tag import TagToken
-from tests.general.db import SQLiteSession
+from tests.general.session import SQLiteSession
 from tests.general.summary import divider
 
 

@@ -6,7 +6,7 @@ from back.db.crud import CrudScope
 from back.db.model import ScopeCreate, ScopeUpdate
 from back.model.scope import ScopeEnum
 from back.utils.enum import StrEnumMeta
-from tests.general.db import SQLiteSession
+from tests.general.session import SQLiteSession
 
 
 @pytest.mark.asyncio

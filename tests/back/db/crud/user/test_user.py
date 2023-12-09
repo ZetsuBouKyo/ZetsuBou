@@ -12,8 +12,7 @@ from back.db.model import UserWithGroupsCreate, UserWithGroupsUpdate
 from back.model.group import BuiltInGroupEnum
 from back.security import verify_password
 from back.settings import setting
-from tests.general.db import SQLiteSession
-from tests.general.user import UserSession
+from tests.general.session import SQLiteSession, UserSession
 
 ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
 GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value

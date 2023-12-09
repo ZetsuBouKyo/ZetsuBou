@@ -5,7 +5,7 @@ import pytest
 
 from back.db.crud import CrudTagCategory, CrudTagToken
 from back.db.model import TagCategoryCreate, TagTokenCreate, TagTokenUpdate
-from tests.general.db import SQLiteSession
+from tests.general.session import SQLiteSession
 
 
 @pytest.mark.asyncio

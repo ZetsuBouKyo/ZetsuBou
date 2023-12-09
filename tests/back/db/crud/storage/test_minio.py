@@ -6,7 +6,7 @@ from faker import Faker
 from back.db.crud import CrudStorageMinio
 from back.db.model import StorageMinioCreate, StorageMinioUpdate
 from back.model.storage import StorageCategoryEnum
-from tests.general.db import SQLiteSession
+from tests.general.session import SQLiteSession
 from tests.general.summary import divider
 
 

@@ -11,7 +11,7 @@ from back.db.model import (
     UserElasticSearchQueryCreate,
     UserElasticSearchQueryUpdate,
 )
-from tests.general.user import UserSession
+from tests.general.session import UserSession
 
 
 @pytest.mark.asyncio

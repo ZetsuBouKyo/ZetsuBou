@@ -3,7 +3,7 @@ from logging import Logger
 import pytest
 
 from back.db.crud import CrudScopeGroup
-from tests.general.db import SQLiteSession
+from tests.general.session import SQLiteSession
 
 
 @pytest.mark.asyncio

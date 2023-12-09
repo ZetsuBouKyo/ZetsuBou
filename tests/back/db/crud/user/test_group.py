@@ -5,8 +5,7 @@ import pytest
 from back.db.crud import CrudGroup, CrudUserGroup
 from back.db.model import UserGroupCreate
 from back.model.group import BuiltInGroupEnum
-from tests.general.db import SQLiteSession
-from tests.general.user import UserSession
+from tests.general.session import SQLiteSession, UserSession
 
 ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
 GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value

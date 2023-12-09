@@ -4,7 +4,7 @@ import pytest
 
 from back.db.crud import CrudUserFrontSettings
 from back.db.model import UserFrontSettingsUpdateByUserId
-from tests.general.user import UserSession
+from tests.general.session import UserSession
 
 
 @pytest.mark.asyncio

@@ -6,7 +6,7 @@ from back.model.group import BuiltInGroupEnum
 from back.security import verify_password
 from back.security.group import builtin_groups
 from back.settings import setting
-from tests.general.db import SQLiteSession
+from tests.general.session import SQLiteSession
 
 ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
 GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value

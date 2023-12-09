@@ -18,7 +18,7 @@ from back.db.model import (
     UserQuestCreate,
     UserQuestUpdate,
 )
-from tests.general.user import UserSession
+from tests.general.session import UserSession
 
 
 @pytest.mark.asyncio

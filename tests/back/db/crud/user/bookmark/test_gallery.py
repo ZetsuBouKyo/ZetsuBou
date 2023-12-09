@@ -5,7 +5,7 @@ import pytest
 
 from back.db.crud import CrudUserBookmarkGallery
 from back.db.model import UserBookmarkGalleryCreate, UserBookmarkGalleryUpdate
-from tests.general.user import UserSession
+from tests.general.session import UserSession
 
 
 @pytest.mark.asyncio

@@ -1,7 +1,7 @@
-from typing import List
+from typing import Dict, List, Optional
 
 from fastapi import HTTPException
-from sqlalchemy import ColumnExpressionArgument, select
+from sqlalchemy import ColumnExpressionArgument, select, update
 from sqlalchemy.orm import Session
 
 from back.model.group import BuiltInGroupEnum
@@ -36,9 +36,15 @@ from ..base import (
 async def overwrite_relation_between_scope_and_group(
     session: Session,
     group: GroupWithScopeIdsUpdate,
+    group_base: GroupBase = GroupBase,
     scope_group_base: ScopeGroupBase = ScopeGroupBase,
     scope_group_model: ScopeGroup = ScopeGroup,
 ):
+    await session.execute(
+        update(group_base)
+        .where(group_base.id == group.id)
+        .values(id=group.id, name=group.name)
+    )
     return await overwrite_relation_between_tables(
         session,
         group,
@@ -57,7 +63,7 @@ async def get_group_with_scopes_by_condition(
     scope_base: ScopeBase = ScopeBase,
     group_base: GroupBase = GroupBase,
     scope_group_base: ScopeGroupBase = ScopeGroupBase,
-) -> GroupWithScopes:
+) -> Optional[GroupWithScopes]:
     statement = (
         select(
             group_base.id,
@@ -116,12 +122,8 @@ async def safe_create_group(
     first = rows.scalars().first()
     if first is None:
         first = group_base(name=group.name)
-        session.add(group_base(name=group.name))
+        session.add(first)
         await session.flush()
-        rows = await session.execute(
-            select(group_base).where(group_base.name == group.name)
-        )
-        first = rows.scalars().first()
 
     group_to_update = GroupWithScopeIdsUpdate(
         id=first.id, name=group.name, scope_ids=group.scope_ids
@@ -133,6 +135,23 @@ async def safe_create_group(
 
 
 class CrudGroup(GroupBase):
+    @classmethod
+    async def init(cls, table: Dict[str, List[str]] = builtin_groups):
+        async with async_session() as session:
+            async with session.begin():
+                scopes = await get_all_rows_order_by_id(ScopeBase)
+                scope_map = OneToOneMap(scopes, "id", "name")
+
+                for group_name, scope_values in table.items():
+                    scope_ids = [
+                        scope_map.get_key(scope_value) for scope_value in scope_values
+                    ]
+                    scope_ids.sort()
+                    group = GroupWithScopeIdsSafeCreate(
+                        name=group_name, scope_ids=scope_ids
+                    )
+                    await safe_create_group(session, group, group_base=cls)
+
     @classmethod
     async def create(cls, group: GroupCreate) -> GroupCreated:
         return GroupCreated(**await create(cls, group))
@@ -147,44 +166,22 @@ class CrudGroup(GroupBase):
         return group
 
     @classmethod
-    async def init(cls):
-        async with async_session() as session:
-            async with session.begin():
-                scopes = await get_all_rows_order_by_id(ScopeBase)
-                scope_map = OneToOneMap(scopes, "id", "name")
-
-                for group in BuiltInGroupEnum:
-                    group_name = group.value
-                    scope_values = builtin_groups.get(group_name, None)
-                    if scope_values is None:
-                        continue
-
-                    scope_ids = [
-                        scope_map.get_key(scope_value) for scope_value in scope_values
-                    ]
-                    scope_ids.sort()
-                    group = GroupWithScopeIdsSafeCreate(
-                        name=group_name, scope_ids=scope_ids
-                    )
-                    await safe_create_group(session, group, group_base=cls)
-
-    @classmethod
     async def count_total(cls) -> int:
         return await count_total(cls)
 
     @classmethod
-    async def get_row_by_id(cls, id: int) -> Group:
+    async def get_row_by_id(cls, id: int) -> Optional[Group]:
         return await get_row_by(cls, cls.id == id, Group)
 
     @classmethod
-    async def get_row_with_scopes_by_id(cls, id: int) -> GroupWithScopes:
+    async def get_row_with_scopes_by_id(cls, id: int) -> Optional[GroupWithScopes]:
         async with async_session() as session:
             async with session.begin():
                 group = await get_group_with_scopes_by_condition(session, cls.id == id)
         return group
 
     @classmethod
-    async def get_row_with_scopes_by_name(cls, name: str) -> GroupWithScopes:
+    async def get_row_with_scopes_by_name(cls, name: str) -> Optional[GroupWithScopes]:
         async with async_session() as session:
             async with session.begin():
                 group = await get_group_with_scopes_by_condition(
@@ -193,8 +190,7 @@ class CrudGroup(GroupBase):
         return group
 
     @classmethod
-    async def get_row_by_name(cls, name: str) -> Group:
-        name = name.lower()
+    async def get_row_by_name(cls, name: str) -> Optional[Group]:
         return await get_row_by(cls, cls.name == name, Group)
 
     @classmethod

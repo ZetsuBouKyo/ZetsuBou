@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Optional, Set, Type, TypeVar, Union
+from typing import AsyncIterator, Dict, List, Optional, Set, Type, TypeVar, Union
 
 from pydantic import BaseModel
 from sqlalchemy import Column, delete, desc, text, update
@@ -15,7 +15,7 @@ from sqlalchemy.sql.elements import TextClause
 from back.db.table import Base
 from back.session.async_db import async_session
 
-PydanticBaseModel = TypeVar("PydanticBaseModel")
+PydanticBaseModel = TypeVar("PydanticBaseModel", bound=BaseModel)
 
 
 async def create(instance: DeclarativeMeta, data: Union[BaseModel, dict]) -> dict:
@@ -93,8 +93,6 @@ async def get_rows_order_by(
             rows = await session.execute(
                 select(instance).offset(skip).limit(limit).order_by(order)
             )
-        if rows is None:
-            return out
         for row in rows.scalars().all():
             if model is None:
                 row = row.__dict__
@@ -109,9 +107,15 @@ async def get_rows_order_by(
 
 
 async def get_rows_order_by_id(
-    instance: DeclarativeMeta, model: Type[PydanticBaseModel], **kwargs
+    instance: DeclarativeMeta,
+    model: Type[PydanticBaseModel],
+    skip: int = 0,
+    limit: int = 100,
+    is_desc: bool = False,
 ) -> List[PydanticBaseModel]:
-    return await get_rows_order_by(instance, instance.id, model, **kwargs)
+    return await get_rows_order_by(
+        instance, instance.id, model=model, skip=skip, limit=limit, is_desc=is_desc
+    )
 
 
 async def get_rows_by_condition_order_by(
@@ -135,8 +139,6 @@ async def get_rows_by_condition_order_by(
                 .limit(limit)
                 .order_by(order)
             )
-        if rows is None:
-            return out
         for row in rows.scalars().all():
             out.append(model(**row.__dict__))
     return out
@@ -174,13 +176,14 @@ async def iter_by_condition_order_by_id(
     model: Type[PydanticBaseModel],
     limit: int = 100,
     is_desc: bool = False,
-) -> List[PydanticBaseModel]:
+) -> AsyncIterator[PydanticBaseModel]:
     skip = 0
     rows = await get_rows_by_condition_order_by_id(
         instance, condition, model, skip=skip, limit=limit, is_desc=is_desc
     )
     while rows:
-        yield rows
+        for row in rows:
+            yield row
         skip += limit
         rows = await get_rows_by_condition_order_by_id(
             instance, condition, model, skip=skip, limit=limit, is_desc=is_desc
@@ -192,13 +195,14 @@ async def iter_order_by_id(
     model: Type[PydanticBaseModel],
     limit: int = 100,
     is_desc: bool = False,
-) -> List[PydanticBaseModel]:
+) -> AsyncIterator[PydanticBaseModel]:
     skip = 0
     rows = await get_rows_order_by_id(
         instance, model, skip=skip, limit=limit, is_desc=is_desc
     )
     while rows:
-        yield rows
+        for row in rows:
+            yield row
         skip += limit
         rows = await get_rows_order_by_id(
             instance, model, skip=skip, limit=limit, is_desc=is_desc
@@ -209,19 +213,19 @@ async def get_all_rows_by_condition_order_by(
     instance: DeclarativeMeta,
     condition,
     order,
-    model: Optional[Type[PydanticBaseModel]] = None,
-) -> List[Union[dict, PydanticBaseModel]]:
+    model: Type[PydanticBaseModel],
+) -> List[PydanticBaseModel]:
     out = []
     skip = 0
     limit = 1000
     rows = await get_rows_by_condition_order_by(
-        instance, condition, order, model=model, skip=skip, limit=limit
+        instance, condition, order, model, skip=skip, limit=limit
     )
     while rows:
         out += rows
         skip += limit
         rows = await get_rows_by_condition_order_by(
-            instance, condition, order, model=model, skip=skip, limit=limit
+            instance, condition, order, model, skip=skip, limit=limit
         )
 
     return out
@@ -230,10 +234,10 @@ async def get_all_rows_by_condition_order_by(
 async def get_all_rows_by_condition_order_by_id(
     instance: DeclarativeMeta,
     condition,
-    model: Optional[Type[PydanticBaseModel]] = None,
-) -> List[Union[dict, PydanticBaseModel]]:
+    model: Type[PydanticBaseModel],
+) -> List[PydanticBaseModel]:
     return await get_all_rows_by_condition_order_by(
-        instance, condition, instance.id, model=model
+        instance, condition, instance.id, model
     )
 
 
@@ -250,7 +254,7 @@ async def get_all_rows_order_by_id(instance: DeclarativeMeta) -> List[dict]:
     return out
 
 
-async def update_by_instance(
+async def update_by(
     instance: DeclarativeMeta, condition, data: Union[Type[PydanticBaseModel], dict]
 ) -> bool:
     if isinstance(data, BaseModel):
@@ -269,7 +273,7 @@ async def update_by_id(
 ) -> bool:
     if isinstance(data, BaseModel):
         data = data.model_dump()
-    return await update_by_instance(instance, instance.id == data["id"], data)
+    return await update_by(instance, instance.id == data["id"], data)
 
 
 async def overwrite_relation_between_tables(
@@ -410,8 +414,11 @@ async def reset_auto_increment(
     table_name: str,
     seq: str = None,
     async_engine: AsyncEngine = async_session.async_engine,
-) -> CursorResult:
-    table_exists(table_name)
+) -> Optional[CursorResult]:
+    try:
+        table_exists(table_name)
+    except ValueError:
+        return
 
     if seq is None:
         seq = f"{table_name}_id_seq"

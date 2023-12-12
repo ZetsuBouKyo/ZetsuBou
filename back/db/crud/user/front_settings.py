@@ -10,10 +10,10 @@ from back.settings import setting
 
 from ...model import UserFrontSettings, UserFrontSettingsUpdateByUserId
 from ...table import (
-    UserFrontSettingsGalleryImageAutoPlayTimeInterval,
-    UserFrontSettingsGalleryImagePreviewSize,
-    UserFrontSettingsGalleryPreviewSize,
-    UserFrontSettingsVideoPreviewSize,
+    UserFrontSettingsGalleryImageAutoPlayTimeIntervalBase,
+    UserFrontSettingsGalleryImagePreviewSizeBase,
+    UserFrontSettingsGalleryPreviewSizeBase,
+    UserFrontSettingsVideoPreviewSizeBase,
 )
 
 
@@ -25,22 +25,22 @@ class UserFrontSettingsParameter(BaseModel):
 
 _parameters = [
     {
-        "instance": UserFrontSettingsGalleryImageAutoPlayTimeInterval,
+        "instance": UserFrontSettingsGalleryImageAutoPlayTimeIntervalBase,
         "front_settings_key": "gallery_image_auto_play_time_interval",
         "table_col": "interval",
     },
     {
-        "instance": UserFrontSettingsGalleryImagePreviewSize,
+        "instance": UserFrontSettingsGalleryImagePreviewSizeBase,
         "front_settings_key": "gallery_image_preview_size",
         "table_col": "size",
     },
     {
-        "instance": UserFrontSettingsGalleryPreviewSize,
+        "instance": UserFrontSettingsGalleryPreviewSizeBase,
         "front_settings_key": "gallery_preview_size",
         "table_col": "size",
     },
     {
-        "instance": UserFrontSettingsVideoPreviewSize,
+        "instance": UserFrontSettingsVideoPreviewSizeBase,
         "front_settings_key": "video_preview_size",
         "table_col": "size",
     },
@@ -50,10 +50,10 @@ _parameters = [
 parameters = [UserFrontSettingsParameter(**p) for p in _parameters]
 
 UserFrontSettingsParameterBase = Union[
-    UserFrontSettingsGalleryImageAutoPlayTimeInterval,
-    UserFrontSettingsGalleryImagePreviewSize,
-    UserFrontSettingsGalleryPreviewSize,
-    UserFrontSettingsVideoPreviewSize,
+    UserFrontSettingsGalleryImageAutoPlayTimeIntervalBase,
+    UserFrontSettingsGalleryImagePreviewSizeBase,
+    UserFrontSettingsGalleryPreviewSizeBase,
+    UserFrontSettingsVideoPreviewSizeBase,
 ]
 
 

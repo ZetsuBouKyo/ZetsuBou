@@ -56,21 +56,19 @@ class CrudStorageMinio(StorageMinioBase):
     async def iter_by_category_order_by_id(
         cls, category: int, limit: int = 100, is_desc: bool = False
     ) -> AsyncIterator[StorageMinio]:
-        async for rows in iter_by_condition_order_by_id(
+        async for row in iter_by_condition_order_by_id(
             cls, cls.category == category, StorageMinio, limit=limit, is_desc=is_desc
         ):
-            for row in rows:
-                yield row
+            yield row
 
     @classmethod
     async def iter_order_by_id(
         cls, limit: int = 100, is_desc: bool = False
     ) -> AsyncIterator[StorageMinio]:
-        async for rows in iter_order_by_id(
+        async for row in iter_order_by_id(
             cls, StorageMinio, limit=limit, is_desc=is_desc
         ):
-            for row in rows:
-                yield row
+            yield row
 
     @classmethod
     async def update_by_id(cls, directory: StorageMinioUpdate) -> bool:

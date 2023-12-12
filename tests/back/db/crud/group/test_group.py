@@ -21,14 +21,15 @@ async def test_crud(logger: Logger):
     faker = Faker()
     async with SQLiteSession():
         group_name_1 = faker.name()
-        logger.info(f"name: {group_name_1}")
         group_1 = GroupCreate(name=group_name_1)
 
         total_0 = await CrudGroup.count_total()
         group_1_created = await CrudGroup.create(group_1)
         total_1 = await CrudGroup.count_total()
-
         assert total_1 == total_0 + 1
+
+        logger.info(f"ID: {group_1_created.id}")
+        logger.info(f"name: {group_name_1}")
 
         groups_1 = await CrudGroup.get_rows_order_by_id()
         assert len(groups_1) > 0

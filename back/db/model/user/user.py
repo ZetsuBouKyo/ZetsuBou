@@ -20,8 +20,8 @@ class UserCreated(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    email: EmailStr
     name: Optional[str] = None
+    email: EmailStr
     password: str
     new_password: Optional[str] = None
 

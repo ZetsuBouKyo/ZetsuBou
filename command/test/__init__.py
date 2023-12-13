@@ -33,6 +33,7 @@ def watch_files():
     Get all watched files.
     """
     filenames = get_watched_files()
+    filenames.sort()
     for filename in filenames:
         print(filename)
 

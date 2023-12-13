@@ -213,13 +213,5 @@ def pdf2img(
         )
 
 
-@app.command()
-def watch():
-    files = get_watched_files()
-    files.sort()
-    for f in files:
-        print(str(f))
-
-
 if __name__ == "__main__":
     app()

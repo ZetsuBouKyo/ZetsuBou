@@ -1,10 +1,11 @@
 import pytest
 
+from lib.httpx import ZetsuBouAsyncClient
 from tests.general.api import get_admin_headers
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_get_query_examples(client):
+async def test_get_query_examples(client: ZetsuBouAsyncClient):
     headers = get_admin_headers()
     async with client as ac:
         response = await ac.get("/api/v1/elasticsearch/query-examples", headers=headers)
@@ -12,7 +13,7 @@ async def test_get_query_examples(client):
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_get_analyzers(client):
+async def test_get_analyzers(client: ZetsuBouAsyncClient):
     headers = get_admin_headers()
     async with client as ac:
         response = await ac.get("/api/v1/elasticsearch/analyzers", headers=headers)
@@ -20,7 +21,7 @@ async def test_get_analyzers(client):
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_get_gallery_field_names(client):
+async def test_get_gallery_field_names(client: ZetsuBouAsyncClient):
     headers = get_admin_headers()
     async with client as ac:
         response = await ac.get(
@@ -30,7 +31,7 @@ async def test_get_gallery_field_names(client):
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_get_video_field_names(client):
+async def test_get_video_field_names(client: ZetsuBouAsyncClient):
     headers = get_admin_headers()
     async with client as ac:
         response = await ac.get(

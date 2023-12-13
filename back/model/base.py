@@ -2,8 +2,7 @@ from enum import Enum
 from typing import Optional
 from urllib.parse import urlparse
 
-from pydantic import BaseModel, Field
-from pydantic.types import PositiveInt
+from pydantic import BaseModel, Field, PositiveInt
 
 
 class SourceProtocolEnum(str, Enum):

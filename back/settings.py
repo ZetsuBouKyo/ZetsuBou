@@ -3,8 +3,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional
 
-from pydantic import Field
-from pydantic.networks import EmailStr
+from pydantic import EmailStr, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from back.model.base import SourceProtocolEnum

@@ -182,7 +182,9 @@ async def get_search(
     user_id = token.sub
     keywords = unquote(keywords)
 
-    crud = CrudAsyncElasticsearchGallery(size=size, analyzer=analyzer)
+    crud = CrudAsyncElasticsearchGallery(
+        size=size, analyzer=analyzer, is_from_setting_if_none=True
+    )
     if query_id is not None:
         user_es_query = await CrudUserElasticSearchQuery.get_row_by_id_and_user_id(
             query_id, user_id

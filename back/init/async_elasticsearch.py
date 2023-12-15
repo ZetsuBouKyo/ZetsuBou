@@ -5,7 +5,7 @@ from typing import Dict, List
 from elasticsearch import AsyncElasticsearch
 
 from back.model.elasticsearch import AnalyzerEnum, ElasticsearchField
-from back.session.async_elasticsearch import async_elasticsearch
+from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
 
 indices = [
@@ -184,7 +184,7 @@ async def create_tag(session: AsyncElasticsearch, index):
     await safe_create(session, index, body)
 
 
-async def init_indices(session: AsyncElasticsearch = async_elasticsearch):
+async def init_indices(session: AsyncElasticsearch = get_async_elasticsearch()):
     if not await session.ping():
         print("Elasticsearch not found")
         return

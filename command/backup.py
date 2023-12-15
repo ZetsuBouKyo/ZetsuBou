@@ -21,7 +21,7 @@ from back.init.async_elasticsearch import indices, init_indices
 from back.init.database import create_tables
 from back.model.base import SourceBaseModel
 from back.session.async_db import async_session
-from back.session.async_elasticsearch import async_elasticsearch
+from back.session.async_elasticsearch import get_async_elasticsearch
 from back.session.storage import get_app_storage_session
 from back.settings import setting
 from back.utils.dt import get_now
@@ -110,6 +110,7 @@ async def dump(
     """
     Dump the SQL databases and elasticsearch indices into JSON in minio.
     """
+    async_elasticsearch = get_async_elasticsearch()
 
     backup_date = get_now().replace(":", "-").replace(".", "-")
 
@@ -161,6 +162,7 @@ async def load(
     Load the SQL databases and elasticsearch indices from JSON in minio. Be careful, We
     must run this command before running the ZetsuBou webapp.
     """
+    async_elasticsearch = get_async_elasticsearch()
 
     await create_tables()
 

@@ -20,7 +20,7 @@ from back.model.gallery import Gallery
 from back.model.storage import StorageStat
 from back.model.task import ZetsuBouTaskProgressEnum
 from back.schema.basic import Message
-from back.session.async_elasticsearch import async_elasticsearch as _async_elasticsearch
+from back.session.async_elasticsearch import get_async_elasticsearch
 from back.session.storage.async_s3 import get_source
 from back.settings import setting
 from back.utils.dt import get_now
@@ -162,7 +162,7 @@ class _SyncNewGalleries:
             if self.elastic_index_gallery is None:
                 self.elastic_index_gallery = ELASTIC_INDEX_GALLERY
             if self.async_elasticsearch is None:
-                self.async_elasticsearch = _async_elasticsearch
+                self.async_elasticsearch = get_async_elasticsearch()
 
         self._sync_from_path = _check_path(self.sync_from_path)
         self._sync_to_path = _check_path(self.sync_to_path)

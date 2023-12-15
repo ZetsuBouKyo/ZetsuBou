@@ -7,7 +7,7 @@ from rich import print_json
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.init.async_elasticsearch import create_gallery, create_video, init_indices
 from back.model.elasticsearch import AnalyzerEnum
-from back.session.async_elasticsearch import async_elasticsearch
+from back.session.async_elasticsearch import get_async_elasticsearch
 from lib.typer import ZetsuBouTyper
 
 _help = """
@@ -21,7 +21,7 @@ async def create_gallery_index(index: str = typer.Argument(..., help="Index name
     """
     Create gallery index.
     """
-    await create_gallery(async_elasticsearch, index)
+    await create_gallery(get_async_elasticsearch(), index)
 
 
 @app.command()

@@ -29,7 +29,7 @@ from back.model.tag import (
     TagUpdate,
 )
 from back.session.async_db import async_session
-from back.session.async_elasticsearch import async_elasticsearch
+from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
 
 INDEX = setting.elastic_index_tag
@@ -66,7 +66,7 @@ class CrudAsyncElasticsearchTag(CrudAsyncElasticsearchBase[TagElastic]):
 class CrudTag:
     def __init__(
         self,
-        async_elasticsearch: AsyncElasticsearch = async_elasticsearch,
+        async_elasticsearch: AsyncElasticsearch = get_async_elasticsearch(),
         index: str = INDEX,
         size: int = SIZE,
         batch_size: int = BATCH_SIZE,

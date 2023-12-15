@@ -13,7 +13,7 @@ from back.model.elasticsearch import (
     SearchResult,
     SourceT,
 )
-from back.session.async_elasticsearch import async_elasticsearch
+from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
 from back.utils.keyword import KeywordParser
 
@@ -49,7 +49,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
     def init_from_setting(self):
         if self.hosts is None:
-            self.async_elasticsearch = async_elasticsearch
+            self.async_elasticsearch = get_async_elasticsearch()
         if self.size is None:
             self.size = ELASTICSEARCH_SIZE
 

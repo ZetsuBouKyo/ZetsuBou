@@ -1,7 +1,11 @@
+from typing import List
+
 from elasticsearch import AsyncElasticsearch
 
 from back.settings import setting
 
 HOSTS = setting.elastic_hosts
 
-async_elasticsearch = AsyncElasticsearch(hosts=HOSTS)
+
+def get_async_elasticsearch(hosts: List[str] = HOSTS) -> AsyncElasticsearch:
+    return AsyncElasticsearch(hosts=HOSTS)

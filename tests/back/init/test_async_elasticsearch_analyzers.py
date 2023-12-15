@@ -5,7 +5,7 @@ import pytest
 from pydantic import BaseModel
 
 from back.model.elasticsearch import AnalyzerEnum
-from back.session.async_elasticsearch import async_elasticsearch
+from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
 from tests.general.session import ElasticsearchSession
 from tests.general.summary import divider
@@ -160,8 +160,9 @@ def get_tokens(tokens: dict):
     return _tokens
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio(scope="session")
 async def test_analyzers(logger: Logger):
+    async_elasticsearch = get_async_elasticsearch()
     async with ElasticsearchSession():
         data = get_data()
         for d in data:

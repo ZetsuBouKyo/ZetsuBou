@@ -14,7 +14,7 @@ from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
 from back.model.task import ZetsuBouTaskProgressEnum
-from back.session.async_elasticsearch import async_elasticsearch
+from back.session.async_elasticsearch import get_async_elasticsearch
 from back.session.storage import get_storage_session_by_source
 from back.session.storage.async_s3 import AsyncS3Session
 from back.settings import setting
@@ -379,7 +379,7 @@ class CrudAsyncGallery:
 
         if is_from_setting_if_none:
             if self.hosts is None:
-                self.async_elasticsearch = async_elasticsearch
+                self.async_elasticsearch = get_async_elasticsearch()
             if self.index is None:
                 self.index = ELASTICSEARCH_INDEX_GALLERY
             if dir_fname is None:
@@ -558,7 +558,7 @@ class CrudAsyncGallerySync:
 
         if is_from_setting_if_none:
             if self.hosts is None:
-                self.async_elasticsearch = async_elasticsearch
+                self.async_elasticsearch = get_async_elasticsearch()
             if self.index is None:
                 self.index = ELASTICSEARCH_INDEX_GALLERY
             if self.size is None:

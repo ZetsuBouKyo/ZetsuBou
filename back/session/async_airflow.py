@@ -103,7 +103,7 @@ class AsyncAirflowSession:
         }
         if order_by is not None:
             data["order_by"] = order_by
-        data = json.dumps(data)
+
         url = urljoin(self.host, "/api/v1/dags/~/dagRuns/list")
         async with httpx.AsyncClient() as client:
             resp = await client.post(url, headers=headers, auth=self.auth, data=data)

@@ -82,7 +82,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             yield doc
 
     async def get_field_names(self) -> Set[str]:
-        resp = await self.async_elasticsearch.indices.get_mapping(self.index)
+        resp = await self.async_elasticsearch.indices.get_mapping(index=self.index)
         mappings = resp.get(self.index, {}).get("mappings", None)
         if mappings is None:
             return set()

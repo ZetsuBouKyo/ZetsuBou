@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from back.crud.async_gallery import get_crud_async_gallery, get_gallery_by_gallery_id
+from back.crud.async_gallery import CrudAsyncGallery, get_gallery_by_gallery_id
 from back.dependency.security import api_security
 from back.model.gallery import Gallery
 from back.model.scope import ScopeEnum
@@ -29,5 +29,6 @@ async def post_tag(gallery_id: str, gallery: Gallery) -> Gallery:
             status_code=409, detail="Conflict between post body and url parameter"
         )
 
-    crud = await get_crud_async_gallery(gallery_id)
-    return await crud.update(gallery)
+    async with CrudAsyncGallery(gallery_id, is_from_setting_if_none=True) as crud:
+        res = await crud.update(gallery)
+    return res

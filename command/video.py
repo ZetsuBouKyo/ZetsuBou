@@ -5,7 +5,7 @@ from pathlib import Path
 
 import typer
 
-from back.crud.async_video import get_crud_async_video
+from back.crud.async_video import CrudAsyncVideo
 from lib.typer import ZetsuBouTyper
 
 reserved_symbols = ["#"]
@@ -141,6 +141,5 @@ async def generate_cover(
 
     if frame is None:
         return
-
-    crud = await get_crud_async_video(video_id)
-    await crud.generate_cover(frame=frame)
+    async with CrudAsyncVideo(video_id, is_from_setting_if_none=True) as crud:
+        await crud.generate_cover(frame=frame)

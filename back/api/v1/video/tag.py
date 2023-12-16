@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from back.crud.async_video import get_crud_async_video, get_video_by_video_id
+from back.crud.async_video import CrudAsyncVideo, get_video_by_video_id
 from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
 from back.model.video import Video
@@ -28,6 +28,6 @@ async def post_tag(video_id: str, video: Video) -> Video:
         raise HTTPException(
             status_code=409, detail="Conflict between post body and url parameter"
         )
-
-    crud = await get_crud_async_video(video_id)
-    return await crud.update(video)
+    async with CrudAsyncVideo(video_id, is_from_setting_if_none=True) as crud:
+        res = await crud.update(video)
+    return res

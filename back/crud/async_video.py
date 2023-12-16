@@ -339,8 +339,9 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
 
 
 async def get_video_by_video_id(id: str) -> Video:
-    crud = CrudAsyncElasticsearchVideo(is_from_setting_if_none=True)
-    return await crud.get_by_id(id)
+    async with CrudAsyncElasticsearchVideo(is_from_setting_if_none=True) as crud:
+        doc = await crud.get_by_id(id)
+    return doc
 
 
 def _get_cover_source(
@@ -452,6 +453,16 @@ class CrudAsyncVideo:
             if self.storage_session is None:
                 self.storage_session = await get_storage_session_by_source(self.video)
 
+    async def close(self):
+        await self.async_elasticsearch.close()
+
+    async def __aenter__(self):
+        await self.init()
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.close()
+
     async def get_video(self) -> str:
         async with self.storage_session:
             return await self.storage_session.get_url(self.video)
@@ -519,12 +530,6 @@ class CrudAsyncVideo:
         )
 
         return new_video
-
-
-async def get_crud_async_video(video_id: str) -> CrudAsyncVideo:
-    crud = CrudAsyncVideo(video_id, is_from_setting_if_none=True)
-    await crud.init()
-    return crud
 
 
 async def _get_video_attrs(storage_session: AsyncS3Session, video: Video) -> Video:

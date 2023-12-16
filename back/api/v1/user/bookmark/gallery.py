@@ -45,16 +45,18 @@ async def get_detailed_gallery_bookmarks(
 
     gallery_ids = [bookmark.gallery_id for bookmark in bookmarks]
 
-    elasticsearch_crud = CrudAsyncElasticsearchGallery(
+    async with CrudAsyncElasticsearchGallery(
         size=pagination.size, is_from_setting_if_none=True
-    )
-    _galleries = await elasticsearch_crud.get_sources_by_ids(gallery_ids)
-    galleries = Galleries(**_galleries)
-    galleries_table = {hit.source.id: hit.source for hit in galleries.hits.hits}
-    detailed_bookmarks = [
-        GalleryBookmark(bookmark=bookmark, gallery=galleries_table[bookmark.gallery_id])
-        for bookmark in bookmarks
-    ]
+    ) as elasticsearch_crud:
+        _galleries = await elasticsearch_crud.get_sources_by_ids(gallery_ids)
+        galleries = Galleries(**_galleries)
+        galleries_table = {hit.source.id: hit.source for hit in galleries.hits.hits}
+        detailed_bookmarks = [
+            GalleryBookmark(
+                bookmark=bookmark, gallery=galleries_table[bookmark.gallery_id]
+            )
+            for bookmark in bookmarks
+        ]
     return detailed_bookmarks
 
 

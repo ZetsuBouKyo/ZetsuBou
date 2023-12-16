@@ -53,6 +53,15 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         if self.size is None:
             self.size = ELASTICSEARCH_SIZE
 
+    async def close(self):
+        await self.async_elasticsearch.close()
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.close()
+
     @property
     def fields(self) -> List[str]:
         raise NotImplementedError()
@@ -351,7 +360,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         return _resp
 
     async def custom(self, body: dict) -> dict:
-        return await self.advanced_search.search(index=self.index, body=body)
+        return await self.advanced_search(index=self.index, body=body)
 
     async def count(self, body: dict) -> Count:
         _resp = await self.async_elasticsearch.count(index=self.index, body=body)
@@ -403,7 +412,6 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         )
 
         source = await self.query(page, dsl)
-        await self.async_elasticsearch.close()
         return source
 
     async def match_all(self, page: int) -> dict:

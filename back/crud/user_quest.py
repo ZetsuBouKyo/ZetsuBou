@@ -16,6 +16,6 @@ class CrudElasticCount:
             )
         query_json = json.loads(query.query)
 
-        crud = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
-        c = await crud.count(query_json["body"])
+        async with CrudAsyncElasticsearchGallery(is_from_setting_if_none=True) as crud:
+            c = await crud.count(query_json["body"])
         return c.count

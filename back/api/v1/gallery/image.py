@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter
 from fastapi.responses import FileResponse, RedirectResponse
 
-from back.crud.async_gallery import get_crud_async_gallery
+from back.crud.async_gallery import CrudAsyncGallery
 from back.dependency.security import api_security, view_security
 from back.model.scope import ScopeEnum
 
@@ -16,8 +16,9 @@ router = APIRouter(tags=["Gallery Image"])
     dependencies=[api_security([ScopeEnum.gallery_images_get.value])],
 )
 async def get_imgages(gallery_id: str) -> List[str]:
-    crud = await get_crud_async_gallery(gallery_id)
-    return await crud.get_image_filenames()
+    async with CrudAsyncGallery(gallery_id, is_from_setting_if_none=True) as crud:
+        filenames = await crud.get_image_filenames()
+    return filenames
 
 
 @router.get(
@@ -25,8 +26,8 @@ async def get_imgages(gallery_id: str) -> List[str]:
     dependencies=[view_security([ScopeEnum.gallery_cover_get.value])],
 )
 async def get_cover(gallery_id: str) -> FileResponse:
-    crud = await get_crud_async_gallery(gallery_id)
-    cover = await crud.get_cover()
+    async with CrudAsyncGallery(gallery_id, is_from_setting_if_none=True) as crud:
+        cover = await crud.get_cover()
     return RedirectResponse(url=cover)
 
 
@@ -35,6 +36,6 @@ async def get_cover(gallery_id: str) -> FileResponse:
     dependencies=[view_security([ScopeEnum.gallery_image_get.value])],
 )
 async def get_image(gallery_id: str, img: str) -> FileResponse:
-    crud = await get_crud_async_gallery(gallery_id)
-    img_url = await crud.get_image(img)
+    async with CrudAsyncGallery(gallery_id, is_from_setting_if_none=True) as crud:
+        img_url = await crud.get_image(img)
     return RedirectResponse(url=img_url)

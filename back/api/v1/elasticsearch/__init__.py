@@ -41,9 +41,11 @@ def get_analyzers():
     dependencies=[api_security([ScopeEnum.elasticsearch_analyzers_get.value])],
 )
 async def get_gallery_field_names() -> List[str]:
-    crud = CrudAsyncElasticsearchBase(index=GALLERY_INDEX, is_from_setting_if_none=True)
-    field_names = list(await crud.get_field_names())
-    field_names.sort()
+    async with CrudAsyncElasticsearchBase(
+        index=GALLERY_INDEX, is_from_setting_if_none=True
+    ) as crud:
+        field_names = list(await crud.get_field_names())
+        field_names.sort()
     return field_names
 
 
@@ -53,7 +55,9 @@ async def get_gallery_field_names() -> List[str]:
     dependencies=[api_security([ScopeEnum.elasticsearch_analyzers_get.value])],
 )
 async def get_video_field_names() -> List[str]:
-    crud = CrudAsyncElasticsearchBase(index=VIDEO_INDEX, is_from_setting_if_none=True)
-    field_names = list(await crud.get_field_names())
-    field_names.sort()
+    async with CrudAsyncElasticsearchBase(
+        index=VIDEO_INDEX, is_from_setting_if_none=True
+    ) as crud:
+        field_names = list(await crud.get_field_names())
+        field_names.sort()
     return field_names

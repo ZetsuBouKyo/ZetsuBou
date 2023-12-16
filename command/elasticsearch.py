@@ -166,8 +166,9 @@ async def get_field_names(index: str = typer.Argument(..., help="Index name.")):
     """
     Get the field names of the index.
     """
-    crud = CrudAsyncElasticsearchBase(index=index)
-    _resp = await crud.get_field_names()
+    async with CrudAsyncElasticsearchBase(index=index) as crud:
+        _resp = await crud.get_field_names()
+        print(_resp)
 
 
 @app.command()

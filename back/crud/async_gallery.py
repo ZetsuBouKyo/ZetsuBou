@@ -306,8 +306,9 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
 
 
 async def get_gallery_by_gallery_id(id: str) -> Gallery:
-    crud = CrudAsyncElasticsearchGallery(is_from_setting_if_none=True)
-    return await crud.get_by_id(id)
+    async with CrudAsyncElasticsearchGallery(is_from_setting_if_none=True) as crud:
+        doc = await crud.get_by_id(id)
+    return doc
 
 
 def _get_tag_source(
@@ -390,6 +391,16 @@ class CrudAsyncGallery:
     async def init(self):
         self.gallery = await get_gallery_by_gallery_id(self.gallery_id)
         self.storage_session = await get_storage_session_by_source(self.gallery)
+
+    async def close(self):
+        await self.async_elasticsearch.close()
+
+    async def __aenter__(self):
+        await self.init()
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.close()
 
     def get_tag_source(self, gallery: Gallery) -> SourceBaseModel:
         return _get_tag_source(
@@ -492,12 +503,6 @@ class CrudAsyncGallery:
             await self.storage_session.delete(self.gallery)
         await self.async_elasticsearch.delete(index=self.index, id=self.gallery.id)
         return "ok"
-
-
-async def get_crud_async_gallery(gallery_id: str) -> CrudAsyncGallery:
-    crud = CrudAsyncGallery(gallery_id, is_from_setting_if_none=True)
-    await crud.init()
-    return crud
 
 
 class CrudAsyncGallerySync:

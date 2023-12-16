@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse, RedirectResponse
 
-from back.crud.async_video import get_crud_async_video
+from back.crud.async_video import CrudAsyncVideo
 from back.dependency.security import view_security
 from back.model.scope import ScopeEnum
 
@@ -15,8 +15,8 @@ router.include_router(tag)
 
 @router.get("/v/{video_id}", dependencies=[view_security([ScopeEnum.video_get.value])])
 async def get_video(video_id: str) -> FileResponse:
-    crud = await get_crud_async_video(video_id)
-    video_url = await crud.get_video()
+    async with CrudAsyncVideo(video_id, is_from_setting_if_none=True) as crud:
+        video_url = await crud.get_video()
     return RedirectResponse(url=video_url)
 
 
@@ -25,6 +25,6 @@ async def get_video(video_id: str) -> FileResponse:
     dependencies=[view_security([ScopeEnum.video_cover_get.value])],
 )
 async def get_cover(video_id: str) -> FileResponse:
-    crud = await get_crud_async_video(video_id)
-    cover = await crud.get_cover()
+    async with CrudAsyncVideo(video_id, is_from_setting_if_none=True) as crud:
+        cover = await crud.get_cover()
     return RedirectResponse(url=cover)

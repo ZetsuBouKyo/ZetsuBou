@@ -107,7 +107,7 @@ test:
 
 .PHONY: tests-cov
 tests-cov:
-	pytest --cov=. --cov-report term-missing tests/
+	pytest --cov=back --cov=command --cov=dags --cov=lib --cov=tests --cov-report term-missing tests/
 
 .PHONY: up-app-simple up-airflow-simple up-dev up
 up-airflow-simple:

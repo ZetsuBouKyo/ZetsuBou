@@ -321,12 +321,7 @@ def test_table(logger: Logger):
     with pytest.raises(ValueError):
         table_exists(table_name)
 
-    table_instances = get_table_instances()
-    table_dependents = {
-        table_name: get_dependent_tables(table_instance)
-        for table_name, table_instance in table_instances.items()
-    }
-    table_names_2 = flatten_dependent_tables(table_dependents)
+    table_names_2 = flatten_dependent_tables()
     assert len(table_names_2) == len(table_names_1)
 
 

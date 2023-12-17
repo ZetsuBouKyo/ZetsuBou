@@ -11,7 +11,6 @@ from tqdm import tqdm
 from back.db.crud.base import (
     flatten_dependent_tables,
     get_all_rows_order_by_id,
-    get_dependent_tables,
     get_primary_key_names_by_table_instance,
     get_table_instances,
     list_tables,
@@ -149,6 +148,7 @@ async def dump(
             await storage_session.put_object(
                 index_source, body, content_type="application/json"
             )
+    await async_elasticsearch.close()
 
 
 @app.command(airflow_dag_id="backup-load", airflow_dag_sub_command="backup load")
@@ -167,11 +167,7 @@ async def load(
     await create_tables()
 
     table_instances = get_table_instances()
-    table_dependents = {
-        table_name: get_dependent_tables(table_instance)
-        for table_name, table_instance in table_instances.items()
-    }
-    table_names = flatten_dependent_tables(table_dependents)
+    table_names = flatten_dependent_tables()
 
     storage_session = get_app_storage_session(is_from_setting_if_none=True)
     async with storage_session:

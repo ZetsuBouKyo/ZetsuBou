@@ -378,11 +378,17 @@ def get_dependent_tables(instance: DeclarativeMeta) -> Set[str]:
     return table_names
 
 
-def flatten_dependent_tables(dependent_tables: Set[str]) -> List[str]:
+def flatten_dependent_tables() -> List[str]:
+    table_instances = get_table_instances()
+    table_dependents = {
+        table_name: get_dependent_tables(table_instance)
+        for table_name, table_instance in table_instances.items()
+    }
+
     visited = set()
     tables = []
     stack = [
-        (table_name, dependents) for table_name, dependents in dependent_tables.items()
+        (table_name, dependents) for table_name, dependents in table_dependents.items()
     ]
 
     while stack:

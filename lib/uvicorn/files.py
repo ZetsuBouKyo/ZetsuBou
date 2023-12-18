@@ -77,3 +77,21 @@ def get_watched_files(
 
     logger_zetsubou.info(f"watched files: {len(watched)}")
     return watched
+
+
+def check_files(cwd: Path, files: List[str]) -> bool:
+    for f in files:
+        relative_f = f.relative_to(cwd)
+        for i, part in enumerate(relative_f.parts):
+            if i == 0:
+                if len(relative_f.parts) > 1:
+                    p = Path(part) / relative_f.parts[1]
+                    p = str(p)
+                    if p in includes:
+                        continue
+                for exclude in root_excludes:
+                    assert not Path(part).match(
+                        exclude
+                    ), f"`{relative_f}` should not be included."
+            assert part not in excludes, f"`{relative_f}` should not be included."
+    return True

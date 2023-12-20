@@ -1,17 +1,13 @@
-import redis.asyncio as _async_redis
-from redis.asyncio import Redis
-
 from back.settings import setting
+from lib.redis import ZetsuBouAsyncRedis
 
 REDIS_URL = setting.redis_url
 
-if REDIS_URL is not None:
-    async_redis = _async_redis.from_url(REDIS_URL)
-else:
-    async_redis = None
+
+def get_async_redis_session(url: str = REDIS_URL, **kwargs) -> ZetsuBouAsyncRedis:
+    if url is not None:
+        return ZetsuBouAsyncRedis.from_url(url, **kwargs)
+    return None
 
 
-async def list_pairs(key="*", async_redis: Redis = async_redis):
-    async for key in async_redis.scan_iter(key):
-        value = await async_redis.get(key)
-        yield key, value
+async_redis = get_async_redis_session()

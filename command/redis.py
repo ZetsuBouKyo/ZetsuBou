@@ -1,6 +1,6 @@
 import typer
 
-from back.session.async_redis import async_redis, list_pairs
+from back.session.async_redis import async_redis
 from lib.typer import ZetsuBouTyper
 
 _help = """
@@ -31,7 +31,7 @@ async def _list_pairs(key: str = typer.Option(default="*", help="Redis key.")):
     """
     List all key-value pairs.
     """
-    async for key, value in list_pairs(key=key):
+    async for key, value in async_redis.list_pairs(key=key):
         print(key, value)
 
 

@@ -8,4 +8,4 @@ HOSTS = setting.elastic_hosts
 
 
 def get_async_elasticsearch(hosts: List[str] = HOSTS) -> AsyncElasticsearch:
-    return AsyncElasticsearch(hosts=HOSTS)
+    return AsyncElasticsearch(hosts=hosts)

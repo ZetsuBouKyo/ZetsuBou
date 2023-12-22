@@ -1,4 +1,3 @@
-from logging import Logger
 from typing import List, Optional, Union
 
 import pytest
@@ -12,6 +11,7 @@ from back.db.model import (
     TagTokenCreate,
 )
 from back.model.tag import TagToken
+from tests.general.logger import logger
 from tests.general.session import SQLiteSession
 from tests.general.summary import divider
 
@@ -38,7 +38,6 @@ class TagSession(SQLiteSession):
 
 
 async def case_1(
-    logger: Logger,
     crud: Union[CrudSettingFrontGallery, CrudSettingFrontVideo],
     update_model: Union[SettingFrontGalleryUpdate, SettingFrontVideoUpdate],
 ):
@@ -141,7 +140,7 @@ async def case_1(
 
 
 @pytest.mark.asyncio
-async def test_crud_gallery(logger: Logger):
+async def test_crud_gallery():
     await case_1(logger, CrudSettingFrontGallery, SettingFrontGalleryUpdate)
     divider()
     await case_1(logger, CrudSettingFrontVideo, SettingFrontVideoUpdate)

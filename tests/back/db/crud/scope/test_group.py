@@ -1,5 +1,3 @@
-from logging import Logger
-
 import pytest
 
 from back.db.crud import CrudScopeGroup

@@ -1,4 +1,3 @@
-from logging import Logger
 from typing import List
 
 import pytest
@@ -53,7 +52,7 @@ class UserSession(SQLiteSession):
 
 
 @pytest.mark.asyncio
-async def test(logger: Logger):  # pragma: no cover
+async def test():  # pragma: no cover
     async with UserSession() as session:
         u = session.created_user_with_groups
 

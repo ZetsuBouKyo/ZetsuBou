@@ -1,9 +1,9 @@
-from logging import Logger
 from typing import List, Tuple
 
 from pydantic import BaseModel
 
 from back.utils.keyword import KeywordParser
+from tests.general.logger import logger
 from tests.general.summary import divider
 
 
@@ -135,7 +135,7 @@ def get_data():
     return [DataModel(**d) for d in raw_data]
 
 
-def test(logger: Logger):
+def test():
     parser = KeywordParser()
     data = get_data()
     for i, d in enumerate(data):

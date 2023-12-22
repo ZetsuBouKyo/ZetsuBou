@@ -19,13 +19,11 @@ def client() -> ZetsuBouAsyncClient:
     return ZetsuBouAsyncClient(app=app, base_url="http://test")
 
 
-@pytest.fixture(scope="session")
-def logger() -> logging.Logger:
+def pytest_sessionstart(session):
+    print(type(session))
     loggers = get_all_loggers()
     for logger in loggers:
         logger.setLevel(logging.WARNING)
         logger.handlers = []
     _logger.addHandler(stream_handler)
     _logger.setLevel(logging.DEBUG)
-    print("\n")
-    return _logger

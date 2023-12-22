@@ -1,5 +1,3 @@
-from logging import Logger
-
 import pytest
 from faker import Faker
 from pydantic import BaseModel
@@ -36,6 +34,7 @@ from back.db.crud.base import (
     update_by,
     update_by_id,
 )
+from tests.general.logger import logger
 from tests.general.session import SQLiteSession
 
 Base = declarative_base()
@@ -83,7 +82,7 @@ class TableSession(SQLiteSession):
 
 
 @pytest.mark.asyncio
-async def test_table_session(logger: Logger):
+async def test_table_session():
     async with TableSession():
         ...
     tables = list_tables()
@@ -91,7 +90,7 @@ async def test_table_session(logger: Logger):
 
 
 @pytest.mark.asyncio
-async def test_batch_create(logger: Logger):
+async def test_batch_create():
     async with TableSession():
         faker = Faker()
         num = 5
@@ -109,7 +108,7 @@ async def test_batch_create(logger: Logger):
 
 
 @pytest.mark.asyncio
-async def test_crud(logger: Logger):
+async def test_crud():
     async with TableSession():
         faker = Faker()
         row_1 = {"name": faker.name()}
@@ -193,7 +192,7 @@ async def test_crud(logger: Logger):
 
 
 @pytest.mark.asyncio
-async def test_get_rows_and_iter(logger: Logger):
+async def test_get_rows_and_iter():
     num = 20
     async with TableSession(row_num=num):
         c_0 = await count_total(A)
@@ -294,7 +293,7 @@ async def test_get_rows_and_iter(logger: Logger):
 
 
 @pytest.mark.asyncio
-async def test_get_rows_none(logger: Logger):
+async def test_get_rows_none():
     async with TableSession():
         rows_1 = await get_rows_order_by(A, A.id)
         assert len(rows_1) == 0
@@ -304,14 +303,14 @@ async def test_get_rows_none(logger: Logger):
 
 
 @pytest.mark.asyncio
-async def test_get_all_rows(logger: Logger):
+async def test_get_all_rows():
     num = 100
     async with TableSession(row_num=num):
         rows = await get_all_rows_order_by_id(A)
         assert len(rows) == num
 
 
-def test_table(logger: Logger):
+def test_table():
     table_names_1 = list_tables()
     for table_name in table_names_1:
         table_exists(table_name)
@@ -326,7 +325,7 @@ def test_table(logger: Logger):
 
 
 @pytest.mark.asyncio
-async def test_reset_auto_increment(logger: Logger):
+async def test_reset_auto_increment():
     table_instances = get_table_instances()
     for _, table_instance in table_instances.items():
         pk_names = get_primary_key_names_by_table_instance(table_instance)

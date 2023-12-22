@@ -1,5 +1,3 @@
-from logging import Logger
-
 import pytest
 from faker import Faker
 
@@ -11,7 +9,7 @@ from tests.general.summary import divider
 
 
 @pytest.mark.asyncio
-async def test_crud_gallery(logger: Logger):
+async def test_crud_gallery():
     faker = Faker()
     async with SQLiteSession():
         faker = Faker()

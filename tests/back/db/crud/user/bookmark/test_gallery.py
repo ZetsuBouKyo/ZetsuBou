@@ -1,15 +1,15 @@
-from logging import Logger
 from uuid import uuid4
 
 import pytest
 
 from back.db.crud import CrudUserBookmarkGallery
 from back.db.model import UserBookmarkGalleryCreate, UserBookmarkGalleryUpdate
+from tests.general.logger import logger
 from tests.general.session import UserSession
 
 
 @pytest.mark.asyncio
-async def test_crud(logger: Logger):
+async def test_crud():
     async with UserSession() as session:
         user = session.created_user_with_groups
 

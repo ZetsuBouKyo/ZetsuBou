@@ -1,5 +1,3 @@
-from logging import Logger
-
 import pytest
 
 from back.db.crud import CrudGroup, CrudUserGroup
@@ -12,7 +10,7 @@ GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value
 
 
 @pytest.mark.asyncio
-async def test_crud(logger: Logger):
+async def test_crud():
     async with SQLiteSession():
         admin_group = await CrudGroup.get_row_with_scopes_by_name(ADMIN_GROUP_NAME)
         guest_group = await CrudGroup.get_row_with_scopes_by_name(GUEST_GROUP_NAME)

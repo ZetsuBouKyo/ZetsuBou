@@ -1,5 +1,3 @@
-from logging import Logger
-
 import pytest
 
 from back.init.check import ping_elasticsearch
@@ -17,6 +15,6 @@ class ElasticsearchSession:
 
 
 @pytest.mark.asyncio
-async def test(logger: Logger):  # pragma: no cover
+async def test():  # pragma: no cover
     async with ElasticsearchSession():
         ...

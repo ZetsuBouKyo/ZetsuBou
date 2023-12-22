@@ -1,4 +1,3 @@
-from logging import Logger
 from uuid import uuid4
 
 import pytest
@@ -9,7 +8,7 @@ from tests.general.session import SQLiteSession
 
 
 @pytest.mark.asyncio
-async def test_crud(logger: Logger):
+async def test_crud():
     async with SQLiteSession():
         token_total_0 = await CrudTagToken.count_total()
 

@@ -1,4 +1,3 @@
-from logging import Logger
 from pathlib import Path
 
 import pytest
@@ -6,10 +5,11 @@ from uvicorn.config import Config
 from uvicorn.server import Server
 
 from lib.uvicorn.files import check_files
+from tests.general.logger import logger
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_change_reload(logger: Logger):
+async def test_change_reload():
     from lib import uvicorn
 
     config = Config("test")

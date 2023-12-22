@@ -1,5 +1,4 @@
 import json
-from logging import Logger
 from typing import Union
 
 import pytest
@@ -74,7 +73,7 @@ async def case_1(
 
 
 @pytest.mark.asyncio
-async def test_crud_elasticsearch_count_query(logger: Logger):
+async def test_crud_elasticsearch_count_query():
     await case_1(
         CrudUserElasticCountQuery,
         UserElasticCountQueryCreate,
@@ -83,7 +82,7 @@ async def test_crud_elasticsearch_count_query(logger: Logger):
 
 
 @pytest.mark.asyncio
-async def test_crud_elasticsearch_search_query(logger: Logger):
+async def test_crud_elasticsearch_search_query():
     await case_1(
         CrudUserElasticSearchQuery,
         UserElasticSearchQueryCreate,

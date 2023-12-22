@@ -1,15 +1,15 @@
-from logging import Logger
 from uuid import uuid4
 
 import pytest
 
 from back.db.crud import CrudTagAttribute
 from back.db.model import TagAttributeCreate, TagAttributeUpdate
+from tests.general.logger import logger
 from tests.general.session import SQLiteSession
 
 
 @pytest.mark.asyncio
-async def test_crud(logger: Logger):
+async def test_crud():
     async with SQLiteSession():
         attr_name_1 = str(uuid4())
         attr_total_0 = await CrudTagAttribute.count_total()

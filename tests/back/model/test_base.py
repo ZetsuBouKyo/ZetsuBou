@@ -1,8 +1,7 @@
-from logging import Logger
-
 import pytest
 
 from back.model.base import SourceBaseModel, SourceProtocolEnum
+from tests.general.logger import logger
 
 
 def get_path(
@@ -11,7 +10,7 @@ def get_path(
     return f"{protocol}-{storage_id}://{bucket_name}{object_name}"
 
 
-def test_1(logger: Logger):
+def test_1():
     data = [
         (SourceProtocolEnum.MINIO.value, 1, "test", "/"),
         (SourceProtocolEnum.MINIO.value, 1, "test", "/abc/def"),
@@ -27,7 +26,7 @@ def test_1(logger: Logger):
         assert source.object_name == d[3]
 
 
-def test_type_error(logger: Logger):
+def test_type_error():
     protocol = SourceProtocolEnum.MINIO.value
     storage_id = "abc"
     bucket_name = "test"
@@ -40,7 +39,7 @@ def test_type_error(logger: Logger):
         source.storage_id
 
 
-def test_none(logger: Logger):
+def test_none():
     path = ""
     logger.info(f"path: {path}")
     source = SourceBaseModel(path=path)

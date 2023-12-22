@@ -1,4 +1,3 @@
-from logging import Logger
 from typing import Union
 from unittest import TestCase
 
@@ -12,6 +11,7 @@ from back.db.model import UserWithGroupsCreate, UserWithGroupsUpdate
 from back.model.group import BuiltInGroupEnum
 from back.security import verify_password
 from back.settings import setting
+from tests.general.logger import logger
 from tests.general.session import SQLiteSession, UserSession
 
 ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
@@ -62,7 +62,7 @@ async def update_user_with_groups(
 
 
 @pytest.mark.asyncio
-async def test_crud(logger: Logger):
+async def test_crud():
     fake = Faker()
 
     async with SQLiteSession():
@@ -115,7 +115,7 @@ async def test_crud(logger: Logger):
 
 
 @pytest.mark.asyncio
-async def test_get_row_by_id(logger: Logger):
+async def test_get_row_by_id():
     async with SQLiteSession():
         users = await CrudUser.get_rows_order_by_id(is_desc=True)
         user_id = users[0].id + 1

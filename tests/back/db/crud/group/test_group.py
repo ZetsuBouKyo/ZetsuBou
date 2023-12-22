@@ -1,5 +1,3 @@
-from logging import Logger
-
 import pytest
 from faker import Faker
 from fastapi import HTTPException
@@ -13,11 +11,12 @@ from back.db.model import (
 )
 from back.model.group import BuiltInGroupEnum
 from back.model.scope import ScopeEnum
+from tests.general.logger import logger
 from tests.general.session import SQLiteSession
 
 
 @pytest.mark.asyncio
-async def test_crud(logger: Logger):
+async def test_crud():
     faker = Faker()
     async with SQLiteSession():
         group_name_1 = faker.name()
@@ -54,7 +53,7 @@ async def test_crud(logger: Logger):
 
 
 @pytest.mark.asyncio
-async def test_crud_with_scope_ids(logger: Logger):
+async def test_crud_with_scope_ids():
     faker = Faker()
     async with SQLiteSession():
         group_name_1 = faker.name()
@@ -101,7 +100,7 @@ async def test_crud_with_scope_ids(logger: Logger):
 
 
 @pytest.mark.asyncio
-async def test_init(logger: Logger):
+async def test_init():
     async with SQLiteSession():
         total_0 = await CrudGroup.count_total()
         await CrudGroup.init()
@@ -113,7 +112,7 @@ async def test_init(logger: Logger):
 
 
 @pytest.mark.asyncio
-async def test_exception(logger: Logger):
+async def test_exception():
     async with SQLiteSession():
         with pytest.raises(HTTPException):
             admin_group = await CrudGroup.get_row_by_name(BuiltInGroupEnum.admin.value)

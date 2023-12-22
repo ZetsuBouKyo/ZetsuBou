@@ -1,5 +1,3 @@
-from logging import Logger
-
 import pytest
 from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
@@ -22,7 +20,7 @@ from tests.general.session import UserSession
 
 
 @pytest.mark.asyncio
-async def test_crud(logger: Logger):
+async def test_crud():
     async with UserSession() as session:
         user = session.created_user_with_groups
 

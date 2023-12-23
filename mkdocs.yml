@@ -76,6 +76,9 @@ extra:
       link: https://github.com/ZetsuBouKyo/ZetsuBou
     - icon: fontawesome/brands/twitch
       link: https://www.twitch.tv/zetsuboukyo
+    - icon: fontawesome/solid/house
+      link: /
+
 
 nav:
   - Welcome: index.md
@@ -83,6 +86,7 @@ nav:
     - Launch an example: getting-started/launch-an-example.md
   - User Notes:
     - Searching: user-notes/searching.md
+    - Storage: user-notes/storage.md
   - Developer Notes:
     - Architecture: developer-notes/architecture.md
     - Environments: developer-notes/environments.md

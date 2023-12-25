@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import Optional, Union
 
 from back.settings import (
     DEFAULT_AIRFLOW_SETTING_NAME,
@@ -49,12 +50,14 @@ def get_airflow_simple_password(
     return password
 
 
-def get_setting_example(field_name: str):
+def get_setting_example(field_name: str) -> Optional[Union[str, int]]:
     schema = Setting.model_json_schema()
     properties = schema.get("properties", None)
-    example = properties.get(field_name, {}).get("example", None)
+    examples = properties.get(field_name, {}).get("examples", [])
+    if len(examples) == 0:
+        return None
 
-    return example
+    return examples[0]
 
 
 def write_settings(file_path: Path, data: str, force: bool = False):

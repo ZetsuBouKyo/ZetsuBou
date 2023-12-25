@@ -28,10 +28,10 @@ def init_settings_with_examples(setting: Setting) -> Setting:
 
     for field_name, field_value in setting.model_dump().items():
         if field_value is None:
-            example = properties.get(field_name, {}).get("example", None)
-            if example is None:
+            examples = properties.get(field_name, {}).get("examples", [])
+            if len(examples) == 0:
                 continue
-            new_setting[field_name] = example
+            new_setting[field_name] = examples[0]
         else:
             new_setting[field_name] = field_value
 

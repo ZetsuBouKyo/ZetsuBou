@@ -38,7 +38,7 @@ def print_setting():
     """
     Print setting in the form of JSON.
     """
-    print(setting.json(indent=4))
+    print(setting.model_dump_json(indent=4))
 
 
 @app.command()

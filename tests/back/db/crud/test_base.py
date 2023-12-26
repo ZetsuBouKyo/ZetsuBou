@@ -35,7 +35,7 @@ from back.db.crud.base import (
     update_by_id,
 )
 from tests.general.logger import logger
-from tests.general.session import SQLiteSession
+from tests.general.session import DatabaseSession
 
 Base = declarative_base()
 table_name = "tests_a"
@@ -58,7 +58,7 @@ class AModelCreated(AModelCreate):
 AModel = AModelUpdate = AModelCreated
 
 
-class TableSession(SQLiteSession):
+class TableSession(DatabaseSession):
     def __init__(self, row_num: int = 0):
         self.row_num = row_num
 

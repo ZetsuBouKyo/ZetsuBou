@@ -12,11 +12,11 @@ from back.db.model import (
 )
 from back.model.tag import TagToken
 from tests.general.logger import logger
-from tests.general.session import SQLiteSession
+from tests.general.session import DatabaseSession
 from tests.general.summary import divider
 
 
-class TagSession(SQLiteSession):
+class TagSession(DatabaseSession):
     def __init__(self, token_names: List[str] = []):
         self.token_names = token_names
         self.tokens: List[TagToken] = []

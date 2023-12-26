@@ -12,7 +12,7 @@ from back.model.group import BuiltInGroupEnum
 from back.security import verify_password
 from back.settings import setting
 from tests.general.logger import logger
-from tests.general.session import SQLiteSession, UserSession
+from tests.general.session import DatabaseSession, UserSession
 
 ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
 GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value
@@ -65,7 +65,7 @@ async def update_user_with_groups(
 async def test_crud():
     fake = Faker()
 
-    async with SQLiteSession():
+    async with DatabaseSession():
         admin_group = await CrudGroup.get_row_with_scopes_by_name(ADMIN_GROUP_NAME)
         guest_group = await CrudGroup.get_row_with_scopes_by_name(GUEST_GROUP_NAME)
 
@@ -116,7 +116,7 @@ async def test_crud():
 
 @pytest.mark.asyncio
 async def test_get_row_by_id():
-    async with SQLiteSession():
+    async with DatabaseSession():
         users = await CrudUser.get_rows_order_by_id(is_desc=True)
         user_id = users[0].id + 1
         logger.debug(f"user ID: {user_id}")

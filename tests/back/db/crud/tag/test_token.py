@@ -4,12 +4,12 @@ import pytest
 
 from back.db.crud import CrudTagCategory, CrudTagToken
 from back.db.model import TagCategoryCreate, TagTokenCreate, TagTokenUpdate
-from tests.general.session import SQLiteSession
+from tests.general.session import DatabaseSession
 
 
 @pytest.mark.asyncio
 async def test_crud():
-    async with SQLiteSession():
+    async with DatabaseSession():
         token_total_0 = await CrudTagToken.count_total()
 
         # create category token

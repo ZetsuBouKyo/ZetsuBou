@@ -6,10 +6,10 @@ from faker import Faker
 from back.db.crud import CrudUser
 from back.db.model import UserWithGroupsCreate
 from tests.general.logger import logger
-from tests.general.session.db.base import SQLiteSession
+from tests.general.session.db.base import DatabaseSession
 
 
-class UserSession(SQLiteSession):
+class UserSession(DatabaseSession):
     def __init__(
         self,
         name: str = None,

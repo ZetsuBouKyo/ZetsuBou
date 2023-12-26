@@ -12,13 +12,13 @@ from back.db.model import (
 from back.model.group import BuiltInGroupEnum
 from back.model.scope import ScopeEnum
 from tests.general.logger import logger
-from tests.general.session import SQLiteSession
+from tests.general.session import DatabaseSession
 
 
 @pytest.mark.asyncio
 async def test_crud():
     faker = Faker()
-    async with SQLiteSession():
+    async with DatabaseSession():
         group_name_1 = faker.name()
         group_1 = GroupCreate(name=group_name_1)
 
@@ -55,7 +55,7 @@ async def test_crud():
 @pytest.mark.asyncio
 async def test_crud_with_scope_ids():
     faker = Faker()
-    async with SQLiteSession():
+    async with DatabaseSession():
         group_name_1 = faker.name()
         logger.info(f"name: {group_name_1}")
 
@@ -101,7 +101,7 @@ async def test_crud_with_scope_ids():
 
 @pytest.mark.asyncio
 async def test_init():
-    async with SQLiteSession():
+    async with DatabaseSession():
         total_0 = await CrudGroup.count_total()
         await CrudGroup.init()
         total_1 = await CrudGroup.count_total()
@@ -113,7 +113,7 @@ async def test_init():
 
 @pytest.mark.asyncio
 async def test_exception():
-    async with SQLiteSession():
+    async with DatabaseSession():
         with pytest.raises(HTTPException):
             admin_group = await CrudGroup.get_row_by_name(BuiltInGroupEnum.admin.value)
             await CrudGroup.delete_by_id(admin_group.id)

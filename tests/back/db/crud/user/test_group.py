@@ -3,7 +3,7 @@ import pytest
 from back.db.crud import CrudGroup, CrudUserGroup
 from back.db.model import UserGroupCreate
 from back.model.group import BuiltInGroupEnum
-from tests.general.session import SQLiteSession, UserSession
+from tests.general.session import DatabaseSession, UserSession
 
 ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value
 GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value
@@ -11,7 +11,7 @@ GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value
 
 @pytest.mark.asyncio
 async def test_crud():
-    async with SQLiteSession():
+    async with DatabaseSession():
         admin_group = await CrudGroup.get_row_with_scopes_by_name(ADMIN_GROUP_NAME)
         guest_group = await CrudGroup.get_row_with_scopes_by_name(GUEST_GROUP_NAME)
 

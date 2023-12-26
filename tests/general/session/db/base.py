@@ -14,7 +14,7 @@ DATABASE_URL_POSTGRESQL = setting.test_database_url_postgresql
 TEST_VOLUMES_TESTS_DATABASE_SQLITE = setting.test_volumes_database_sqlite
 
 
-class SQLiteSession:
+class DatabaseSession:
     async def __aenter__(self):
         await self.init()
         await self.enter()

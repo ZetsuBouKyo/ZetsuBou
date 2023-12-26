@@ -6,12 +6,12 @@ from back.db.crud import CrudScope
 from back.db.model import ScopeCreate, ScopeUpdate
 from back.model.scope import ScopeEnum
 from back.utils.enum import StrEnumMeta
-from tests.general.session import SQLiteSession
+from tests.general.session import DatabaseSession
 
 
 @pytest.mark.asyncio
 async def test_crud():
-    async with SQLiteSession():
+    async with DatabaseSession():
         scopes_all = await CrudScope.get_all_rows_order_by_id()
         scopes = await CrudScope.get_rows_order_by_id()
         assert len(scopes) > 0
@@ -40,7 +40,7 @@ async def test_crud():
 
 @pytest.mark.asyncio
 async def test_init():
-    async with SQLiteSession():
+    async with DatabaseSession():
 
         class ScopeEnumPlus(str, Enum, metaclass=StrEnumMeta):
             tests: str = "tests plus"

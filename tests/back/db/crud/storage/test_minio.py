@@ -4,14 +4,14 @@ from faker import Faker
 from back.db.crud import CrudStorageMinio
 from back.db.model import StorageMinioCreate, StorageMinioUpdate
 from back.model.storage import StorageCategoryEnum
-from tests.general.session import SQLiteSession
+from tests.general.session import DatabaseSession
 from tests.general.summary import divider
 
 
 @pytest.mark.asyncio
 async def test_crud_gallery():
     faker = Faker()
-    async with SQLiteSession():
+    async with DatabaseSession():
         faker = Faker()
 
         storage_total_0 = await CrudStorageMinio.count_total()

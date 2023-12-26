@@ -261,6 +261,11 @@ class Setting(BaseSettings):
         description="Relative path to store the sqlite file.",
     )
 
+    test_database_url_postgresql: Optional[str] = Field(
+        default=None,
+        examples=["postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou"],
+    )
+
     @property
     def test_database_url_sqlite(cls):
         return f"sqlite+aiosqlite:///{cls.test_volumes_database_sqlite}/zetsubou.db"

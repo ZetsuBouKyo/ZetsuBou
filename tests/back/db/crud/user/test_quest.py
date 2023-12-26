@@ -198,7 +198,7 @@ async def test_crud():
             )
 
         quest_name_4 = "Quest 4"
-        quest_priority_4 = 1
+        quest_priority_4 = 4
         quest_4 = UserQuestCreate(
             user_id=user.id,
             name=quest_name_4,
@@ -230,7 +230,7 @@ async def test_crud():
         assert quest_4_updated.name == quest_name_4_to_update
 
         quest_name_5 = "Quest 5"
-        quest_priority_5 = 2
+        quest_priority_5 = 5
         quest_5 = UserQuestCreate(
             user_id=user.id,
             name=quest_name_5,

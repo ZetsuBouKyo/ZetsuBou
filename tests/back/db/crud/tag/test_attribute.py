@@ -11,7 +11,7 @@ from tests.general.session import SQLiteSession
 @pytest.mark.asyncio
 async def test_crud():
     async with SQLiteSession():
-        attr_name_1 = str(uuid4())
+        attr_name_1 = str(uuid4())[:8]
         attr_total_0 = await CrudTagAttribute.count_total()
         logger.info(f"attribute: {attr_name_1}")
         logger.info(f"total: {attr_total_0}")
@@ -34,7 +34,7 @@ async def test_crud():
         attrs = await CrudTagAttribute.get_rows_order_by_id()
         assert len(attrs) > 0
 
-        attr_name_1_to_update = str(uuid4())
+        attr_name_1_to_update = str(uuid4())[:8]
         logger.info(f"attribute (to update): {attr_name_1_to_update}")
 
         attr_1_to_update = TagAttributeUpdate(

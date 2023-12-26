@@ -4,6 +4,7 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 
 from back.settings import DatabaseTypeEnum, setting
 
@@ -40,7 +41,9 @@ class DatabaseSession:
         expire_on_commit: bool = False,
         class_: AsyncSession = AsyncSession,
     ):
-        self.async_engine = create_async_engine(database_url, echo=echo)
+        self.async_engine = create_async_engine(
+            database_url, echo=echo, poolclass=NullPool
+        )
         self.expire_on_commit = expire_on_commit
         self.class_ = class_
 

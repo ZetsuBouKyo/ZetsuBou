@@ -141,6 +141,6 @@ async def case_1(
 
 @pytest.mark.asyncio
 async def test_crud_gallery():
-    await case_1(logger, CrudSettingFrontGallery, SettingFrontGalleryUpdate)
+    await case_1(CrudSettingFrontGallery, SettingFrontGalleryUpdate)
     divider()
-    await case_1(logger, CrudSettingFrontVideo, SettingFrontVideoUpdate)
+    await case_1(CrudSettingFrontVideo, SettingFrontVideoUpdate)

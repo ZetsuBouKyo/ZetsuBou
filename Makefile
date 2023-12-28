@@ -82,6 +82,9 @@ init-redis:
 	chown -R 1001:1001 $(ZETSUBOU_REDIS_VOLUME)
 init: init-app-postgres init-app-elasticsearch init-redis
 
+.PHONY: ping pip-new
+ping:
+	python cli.py test service ping
 pip-new:
 	poetry show -o
 

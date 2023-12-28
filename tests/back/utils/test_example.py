@@ -1,10 +1,9 @@
-from faker import Faker
-
 from back.utils import get_example
+from lib.faker import ZetsuBouFaker
 
 
 def test_get_example():
-    faker = Faker()
+    faker = ZetsuBouFaker()
     base_id = 1
     base_name = faker.name()
     base_group_ids = [1]

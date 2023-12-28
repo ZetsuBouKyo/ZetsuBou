@@ -1,7 +1,6 @@
 from typing import List, Optional, Union
 
 import pytest
-from faker import Faker
 from fastapi import HTTPException
 
 from back.db.crud import CrudSettingFrontGallery, CrudSettingFrontVideo, CrudTagToken
@@ -11,6 +10,7 @@ from back.db.model import (
     TagTokenCreate,
 )
 from back.model.tag import TagToken
+from lib.faker import ZetsuBouFaker
 from tests.general.logger import logger
 from tests.general.session import DatabaseSession
 from tests.general.summary import divider
@@ -41,7 +41,7 @@ async def case_1(
     crud: Union[CrudSettingFrontGallery, CrudSettingFrontVideo],
     update_model: Union[SettingFrontGalleryUpdate, SettingFrontVideoUpdate],
 ):
-    faker = Faker()
+    faker = ZetsuBouFaker()
     token_name_1 = faker.name()
     token_name_2 = faker.name()
     token_name_3 = faker.name()

@@ -1,18 +1,17 @@
 import pytest
-from faker import Faker
 
 from back.db.crud import CrudStorageMinio
 from back.db.model import StorageMinioCreate, StorageMinioUpdate
 from back.model.storage import StorageCategoryEnum
+from lib.faker import ZetsuBouFaker
 from tests.general.session import DatabaseSession
 from tests.general.summary import divider
 
 
 @pytest.mark.asyncio
 async def test_crud_gallery():
-    faker = Faker()
     async with DatabaseSession():
-        faker = Faker()
+        faker = ZetsuBouFaker()
 
         storage_total_0 = await CrudStorageMinio.count_total()
 
@@ -20,11 +19,11 @@ async def test_crud_gallery():
         storage_category_1 = StorageCategoryEnum.gallery
         storage_name_1 = faker.name()
         storage_endpoint_1 = faker.url()
-        storage_bucket_name_1 = "".join(Faker().random_letters(10))
+        storage_bucket_name_1 = faker.random_string(10)
         storage_prefix_1 = f"{faker.name()}/"
         storage_depth_1 = 1
-        storage_access_key_1 = "".join(Faker().random_letters(10))
-        storage_secret_key_1 = "".join(Faker().random_letters(16))
+        storage_access_key_1 = faker.random_string(10)
+        storage_secret_key_1 = faker.random_string(16)
 
         storage_1 = StorageMinioCreate(
             category=storage_category_1,
@@ -53,11 +52,11 @@ async def test_crud_gallery():
         storage_category_2 = StorageCategoryEnum.gallery
         storage_name_2 = faker.name()
         storage_endpoint_2 = faker.url()
-        storage_bucket_name_2 = "".join(Faker().random_letters(10))
+        storage_bucket_name_2 = faker.random_string(10)
         storage_prefix_2 = f"{faker.name()}/"
         storage_depth_2 = 1
-        storage_access_key_2 = "".join(Faker().random_letters(10))
-        storage_secret_key_2 = "".join(Faker().random_letters(16))
+        storage_access_key_2 = faker.random_string(10)
+        storage_secret_key_2 = faker.random_string(16)
 
         storage_2 = StorageMinioCreate(
             category=storage_category_2,

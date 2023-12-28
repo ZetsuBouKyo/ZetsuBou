@@ -1,9 +1,8 @@
-from uuid import uuid4
-
 import pytest
 
 from back.db.crud import CrudTagAttribute
 from back.db.model import TagAttributeCreate, TagAttributeUpdate
+from lib.faker import ZetsuBouFaker
 from tests.general.logger import logger
 from tests.general.session import DatabaseSession
 
@@ -11,7 +10,8 @@ from tests.general.session import DatabaseSession
 @pytest.mark.asyncio
 async def test_crud():
     async with DatabaseSession():
-        attr_name_1 = str(uuid4())[:8]
+        faker = ZetsuBouFaker()
+        attr_name_1 = faker.random_string(8, is_lower=True)
         attr_total_0 = await CrudTagAttribute.count_total()
         logger.info(f"attribute: {attr_name_1}")
         logger.info(f"total: {attr_total_0}")
@@ -34,7 +34,7 @@ async def test_crud():
         attrs = await CrudTagAttribute.get_rows_order_by_id()
         assert len(attrs) > 0
 
-        attr_name_1_to_update = str(uuid4())[:8]
+        attr_name_1_to_update = faker.random_string(8, is_lower=True)
         logger.info(f"attribute (to update): {attr_name_1_to_update}")
 
         attr_1_to_update = TagAttributeUpdate(

@@ -1,5 +1,4 @@
 import pytest
-from faker import Faker
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base
@@ -34,6 +33,7 @@ from back.db.crud.base import (
     update_by,
     update_by_id,
 )
+from lib.faker import ZetsuBouFaker
 from tests.general.logger import logger
 from tests.general.session import DatabaseSession
 
@@ -67,7 +67,7 @@ class TableSession(DatabaseSession):
             await conn.run_sync(Base.metadata.create_all)
 
     async def create_data(self):
-        faker = Faker()
+        faker = ZetsuBouFaker()
         for _ in range(self.row_num):
             row = {"name": faker.name()}
             await create(A, row)
@@ -92,7 +92,7 @@ async def test_table_session():
 @pytest.mark.asyncio
 async def test_batch_create():
     async with TableSession():
-        faker = Faker()
+        faker = ZetsuBouFaker()
         num = 5
         rows_1 = [{"name": faker.name()} for _ in range(num)]
         await batch_create(A, rows_1)
@@ -110,7 +110,7 @@ async def test_batch_create():
 @pytest.mark.asyncio
 async def test_crud():
     async with TableSession():
-        faker = Faker()
+        faker = ZetsuBouFaker()
         row_1 = {"name": faker.name()}
         row_1_created = await create(A, row_1)
         row_1_created = AModel(**row_1_created)
@@ -315,8 +315,8 @@ def test_table():
     for table_name in table_names_1:
         table_exists(table_name)
 
-    faker = Faker()
-    table_name = "".join(faker.random_letters(20))
+    faker = ZetsuBouFaker()
+    table_name = faker.random_string(20)
     with pytest.raises(ValueError):
         table_exists(table_name)
 

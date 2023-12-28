@@ -1,5 +1,4 @@
 import pytest
-from faker import Faker
 from fastapi import HTTPException
 
 from back.db.crud import CrudGroup, CrudScope
@@ -11,13 +10,14 @@ from back.db.model import (
 )
 from back.model.group import BuiltInGroupEnum
 from back.model.scope import ScopeEnum
+from lib.faker import ZetsuBouFaker
 from tests.general.logger import logger
 from tests.general.session import DatabaseSession
 
 
 @pytest.mark.asyncio
 async def test_crud():
-    faker = Faker()
+    faker = ZetsuBouFaker()
     async with DatabaseSession():
         group_name_1 = faker.name()
         group_1 = GroupCreate(name=group_name_1)
@@ -54,7 +54,7 @@ async def test_crud():
 
 @pytest.mark.asyncio
 async def test_crud_with_scope_ids():
-    faker = Faker()
+    faker = ZetsuBouFaker()
     async with DatabaseSession():
         group_name_1 = faker.name()
         logger.info(f"name: {group_name_1}")

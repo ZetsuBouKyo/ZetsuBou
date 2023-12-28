@@ -2,7 +2,6 @@ from typing import Union
 from unittest import TestCase
 
 import pytest
-from faker import Faker
 from pydantic import ValidationError
 
 from back.db.crud import CrudGroup, CrudUser, CrudUserFrontSettings
@@ -11,6 +10,7 @@ from back.db.model import UserWithGroupsCreate, UserWithGroupsUpdate
 from back.model.group import BuiltInGroupEnum
 from back.security import verify_password
 from back.settings import setting
+from lib.faker import ZetsuBouFaker
 from tests.general.logger import logger
 from tests.general.session import DatabaseSession, UserSession
 
@@ -63,7 +63,7 @@ async def update_user_with_groups(
 
 @pytest.mark.asyncio
 async def test_crud():
-    fake = Faker()
+    fake = ZetsuBouFaker()
 
     async with DatabaseSession():
         admin_group = await CrudGroup.get_row_with_scopes_by_name(ADMIN_GROUP_NAME)

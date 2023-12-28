@@ -1,10 +1,10 @@
 from typing import List
 
 import pytest
-from faker import Faker
 
 from back.db.crud import CrudUser
 from back.db.model import UserWithGroupsCreate
+from lib.faker import ZetsuBouFaker
 from tests.general.logger import logger
 from tests.general.session.db.base import DatabaseSession
 
@@ -17,7 +17,7 @@ class UserSession(DatabaseSession):
         password: str = None,
         group_ids: List[int] = [],
     ):
-        fake = Faker()
+        fake = ZetsuBouFaker()
         self.name = name
         self.email = email
         self.password = password

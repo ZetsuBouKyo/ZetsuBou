@@ -195,7 +195,10 @@ class Setting(BaseSettings):
     storage_protocol: SourceProtocolEnum = SourceProtocolEnum.MINIO.value
     storage_expires_in_minutes: int = 7 * 24 * 60
     storage_cache: str = "zetsubou"
-    storage_backup: str = "backup"
+
+    @property
+    def storage_backup(cls):
+        return f"{cls.storage_cache}/backup"
 
     storage_s3_aws_access_key_id: Optional[str] = Field(
         default=None, examples=["admin"]

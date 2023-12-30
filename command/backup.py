@@ -26,8 +26,6 @@ from back.settings import setting
 from back.utils.dt import get_now
 from lib.typer import ZetsuBouTyper
 
-STORAGE_BACKUP = setting.storage_backup
-
 BACKUP_DATABASE = "db"
 BACKUP_ELASTICSEARCH = "elastic"
 
@@ -64,12 +62,12 @@ async def loads_from_json_file(fpath: Union[str, Path]):
 
 
 def get_database_table_source(backup_date: str, table_name: str):
-    data_path = f"{STORAGE_PROTOCOL}://{STORAGE_BACKUP}/{backup_date}/{BACKUP_DATABASE}/{table_name}.json"  # noqa
+    data_path = f"{STORAGE_PROTOCOL}://{STORAGE_BACKUP}/{backup_date}/{BACKUP_DATABASE}/{table_name}.json"
     return SourceBaseModel(path=data_path)
 
 
 def get_elasticsearch_index_source(backup_date: str, index: str):
-    data_path = f"{STORAGE_PROTOCOL}://{STORAGE_BACKUP}/{backup_date}/{BACKUP_ELASTICSEARCH}/{index}.json"  # noqa
+    data_path = f"{STORAGE_PROTOCOL}://{STORAGE_BACKUP}/{backup_date}/{BACKUP_ELASTICSEARCH}/{index}.json"
     return SourceBaseModel(path=data_path)
 
 

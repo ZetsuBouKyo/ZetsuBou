@@ -200,6 +200,14 @@ class Setting(BaseSettings):
     def storage_backup(cls):
         return f"{cls.storage_cache}/backup"
 
+    @property
+    def storage_tests_galleries(cls):
+        return f"{cls.storage_cache}/tests/galleries"
+
+    @property
+    def storage_tests_videos(cls):
+        return f"{cls.storage_cache}/tests/videos"
+
     storage_s3_aws_access_key_id: Optional[str] = Field(
         default=None, examples=["admin"]
     )

@@ -29,7 +29,7 @@ from back.utils.fs import alphanum_sorting
 from back.utils.image import is_browser_image, is_image
 from back.utils.video import is_video
 
-BUCKET_NAMES = [setting.storage_cache, setting.storage_backup]
+BUCKET_NAMES = [setting.storage_cache]
 
 STORAGE_S3_AWS_ACCESS_KEY_ID = setting.storage_s3_aws_access_key_id
 STORAGE_S3_AWS_SECRET_ACCESS_KEY = setting.storage_s3_aws_secret_access_key

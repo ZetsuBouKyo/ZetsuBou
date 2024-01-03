@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional
 
 from ...model import (
     TagAttribute,
@@ -28,11 +28,11 @@ class CrudTagAttribute(TagAttributeBase):
         return await count_total(cls)
 
     @classmethod
-    async def get_row_by_id(cls, id: int) -> TagAttribute:
+    async def get_row_by_id(cls, id: int) -> Optional[TagAttribute]:
         return await get_row_by_id(cls, id, TagAttribute)
 
     @classmethod
-    async def get_row_by_name(cls, name: str) -> TagAttribute:
+    async def get_row_by_name(cls, name: str) -> Optional[TagAttribute]:
         return await get_row_by(cls, cls.name == name, TagAttribute)
 
     @classmethod

@@ -5,7 +5,7 @@ from back.db.model import StorageMinioCreate, StorageMinioUpdate
 from back.model.storage import StorageCategoryEnum
 from lib.faker import ZetsuBouFaker
 from tests.general.session import DatabaseSession
-from tests.general.summary import divider
+from tests.general.summary import print_divider
 
 
 @pytest.mark.asyncio

@@ -13,7 +13,7 @@ from back.model.tag import TagToken
 from lib.faker import ZetsuBouFaker
 from tests.general.logger import logger
 from tests.general.session import DatabaseSession
-from tests.general.summary import divider
+from tests.general.summary import print_divider
 
 
 class TagSession(DatabaseSession):
@@ -142,5 +142,5 @@ async def case_1(
 @pytest.mark.asyncio
 async def test_crud_gallery():
     await case_1(CrudSettingFrontGallery, SettingFrontGalleryUpdate)
-    divider()
+    print_divider()
     await case_1(CrudSettingFrontVideo, SettingFrontVideoUpdate)

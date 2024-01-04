@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from back.utils.keyword import KeywordParser
 from tests.general.logger import logger
-from tests.general.summary import divider
+from tests.general.summary import print_divider
 
 
 class DataModel(BaseModel):
@@ -142,7 +142,7 @@ def test():
         case_index = i + 1
         for keywords in d.keywords:
             parsed_keywords = parser.parse(keywords)
-            divider()
+            print_divider()
             logger.debug(f"case: {case_index}")
             logger.debug(f"keywords: {parsed_keywords.keywords}")
             logger.debug(f"remaining keywords: {parsed_keywords.remaining_keywords}")

@@ -8,7 +8,7 @@ from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
 from tests.general.logger import logger
 from tests.general.session import ElasticsearchSession
-from tests.general.summary import divider
+from tests.general.summary import print_divider
 
 
 class DataModel(BaseModel):
@@ -171,7 +171,7 @@ async def test_analyzers():
             resp_tokens = resp["tokens"]
             tokens = get_tokens(resp_tokens)
 
-            divider()
+            print_divider()
             logger.debug(f"text: {d.text}")
             logger.debug(f"analyzer: {d.analyzer}")
             logger.debug(f"tokens: {tokens}")

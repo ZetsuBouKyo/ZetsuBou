@@ -6,7 +6,7 @@ from rich.style import Style
 from rich.text import Text
 
 
-def divider(
+def print_divider(
     title: Union[str, Text] = "",
     characters: str = "─",
     text_style: Union[str, Style] = "",

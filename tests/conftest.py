@@ -10,7 +10,7 @@ from back.init.logger import stream_handler
 from back.logging.utils import get_all_loggers
 from lib.httpx import ZetsuBouAsyncClient
 from tests.general.logger import logger as _logger
-from tests.general.summary import divider
+from tests.general.summary import print_divider
 
 sys.path.append(str(Path.cwd()))
 
@@ -35,13 +35,13 @@ def pytest_report_teststatus(report: TestReport):
     console = Console()
     if report.when == "call":
         if report.failed:
-            divider(title="failed", characters="=", text_style="red")
+            print_divider(title="failed", characters="=", text_style="red")
             return (report.outcome, "", "failed")
         elif report.passed:
-            divider(title="passed", characters="=", text_style="green")
+            print_divider(title="passed", characters="=", text_style="green")
             return (report.outcome, "", "passed")
         elif report.skipped:
-            divider(title="skipped", characters="=", text_style="white")
+            print_divider(title="skipped", characters="=", text_style="white")
             return (report.outcome, "", "skipped")
     elif report.when == "setup":
         func_name = report.location[-1]

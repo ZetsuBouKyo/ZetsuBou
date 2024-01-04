@@ -2,11 +2,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "pytest",
+            "name": "Python: pytest",
             "type": "python",
             "request": "launch",
             "module": "pytest",
             "args": ["-s", "${file}"],
+            "showReturnValue": true,
+            "justMyCode": false
+        },
+        {
+            "name": "Python: pytest-cov",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["--cov=.", "--cov-report", "term-missing", "tests/"],
             "showReturnValue": true,
             "justMyCode": false
         },

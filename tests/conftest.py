@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from _pytest.config import Config
 from _pytest.reports import TestReport
 from rich.console import Console
 
@@ -22,6 +23,11 @@ def client() -> ZetsuBouAsyncClient:
     return ZetsuBouAsyncClient(app=app, base_url="http://test")
 
 
+def pytest_collection_modifyitems(items):
+    for item in items:
+        item.add_marker("info")
+
+
 def pytest_sessionstart():
     loggers = get_all_loggers()
     for logger in loggers:
@@ -31,7 +37,10 @@ def pytest_sessionstart():
     _logger.setLevel(logging.DEBUG)
 
 
-def pytest_report_teststatus(report: TestReport):
+def pytest_report_teststatus(report: TestReport, config: Config):
+    if config.option.markexpr != "info":
+        return
+
     console = Console()
     if report.when == "call":
         if report.failed:

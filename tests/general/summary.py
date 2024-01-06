@@ -28,12 +28,14 @@ def print_divider(
     )
 
 
-def print_api_request(url: str, method: str, data: dict = None):
+def print_api_request(url: str, method: str, data: dict = None, params: dict = None):
     method = method.upper()
     logger.info(f"Request URL: {url}")
     logger.info(f"Request method: {method}")
     if data is not None:
         logger.info(f"Request data: {data}")
+    if params is not None:
+        logger.info(f"Request params: {params}")
 
 
 def print_api_response(response: Response):

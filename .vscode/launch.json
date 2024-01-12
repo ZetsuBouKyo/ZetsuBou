@@ -6,7 +6,7 @@
             "type": "python",
             "request": "launch",
             "module": "pytest",
-            "args": ["-m", "info", "-s", "${file}"],
+            "args": ["-m", "info", "-s"],
             "showReturnValue": true,
             "justMyCode": false
         },
@@ -15,7 +15,34 @@
             "type": "python",
             "request": "launch",
             "module": "pytest",
-            "args": ["--cov=.", "--cov-report", "term-missing", "tests/"],
+            "args": [
+                "--cov=back",
+                "--cov=command",
+                "--cov=dags",
+                "--cov=lib",
+                "--cov=tests",
+                "--cov-report",
+                "term-missing",
+                "${file}"
+            ],
+            "showReturnValue": true,
+            "justMyCode": false
+        },
+        {
+            "name": "Python: pytest-cov all",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "pytest",
+                "--cov=back",
+                "--cov=command",
+                "--cov=dags",
+                "--cov=lib",
+                "--cov=tests",
+                "--cov-report",
+                "term-missing tests/"
+            ],
             "showReturnValue": true,
             "justMyCode": false
         },

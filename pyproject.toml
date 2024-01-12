@@ -69,7 +69,10 @@ pre-commit = "^3.5.0"
 pytest-cov = "^4.1.0"
 
 [tool.pytest.ini_options]
-markers = ["info: marks the test with a custom test report."]
+markers = [
+    "info: marks tests with the custom test report.",
+    "integration: marks tests to run with Airflow, Elasticsearch, MinIO, PostgreSQL and Redis.",
+]
 
 [build-system]
 requires = ["poetry-core^1.0.0"]

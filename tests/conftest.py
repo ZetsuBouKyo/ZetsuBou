@@ -55,4 +55,9 @@ def pytest_report_teststatus(report: TestReport, config: Config):
     elif report.when == "setup":
         func_name = report.location[-1]
         console.print("\n")
-        console.print(f"[blue]function [green]{func_name}")
+        length = len(func_name) + 11
+        top = "[green]╔" + "═" * length + "╗"
+        console.print(top)
+        console.print(f"[green]║ [blue]function [green]{func_name} [green]║")
+        bottom = "[green]╚" + "═" * length + "╝"
+        console.print(bottom)

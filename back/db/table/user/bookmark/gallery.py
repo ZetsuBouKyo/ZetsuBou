@@ -22,6 +22,4 @@ class UserBookmarkGalleryBase(Base):
 
     @validates("modified")
     def validate_modified(self, _, value):
-        if type(value) is str:
-            return iso2datetime(value)
-        return value
+        return iso2datetime(value)

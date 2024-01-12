@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import List
+from typing import List, Union
 
 import pytz
+from sqlalchemy.sql.functions import now
 
 from back.settings import setting
 
@@ -17,13 +18,17 @@ def second2iso(time: float) -> str:
     return datetime.fromtimestamp(time).strftime(datetime_format)
 
 
-def iso2datetime(date: str, formats: List[str] = datetime_formats) -> datetime:
-    for f in formats:
-        try:
-            return datetime.strptime(date, f)
-        except ValueError:
-            pass
-    raise ValueError(f"time data {date} does not match any format")
+def iso2datetime(
+    date: Union[str, datetime, now], formats: List[str] = datetime_formats
+) -> Union[datetime, now]:
+    if type(date) is str:
+        for f in formats:
+            try:
+                return datetime.strptime(date, f)
+            except ValueError:
+                pass
+        raise ValueError(f"time data {date} does not match any format")
+    return date
 
 
 def is_isoformat_with_timezone(date: str) -> str:

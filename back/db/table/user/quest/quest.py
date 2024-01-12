@@ -38,15 +38,11 @@ class UserQuestBase(Base):
 
     @validates("created")
     def validate_created(self, _, value):
-        if type(value) is str:
-            return iso2datetime(value)
-        return value
+        return iso2datetime(value)
 
     @validates("modified")
     def validate_modified(self, _, value):
-        if type(value) is str:
-            return iso2datetime(value)
-        return value
+        return iso2datetime(value)
 
 
 Index("ix_user_quest_c_category_id", UserQuestBase.category_id)

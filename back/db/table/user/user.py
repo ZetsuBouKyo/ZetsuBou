@@ -18,12 +18,8 @@ class UserBase(Base):
 
     @validates("created")
     def validate_created(self, _, value):
-        if type(value) is str:
-            return iso2datetime(value)
-        return value
+        return iso2datetime(value)
 
     @validates("last_signin")
     def validate_last_signin(self, _, value):
-        if type(value) is str:
-            return iso2datetime(value)
-        return value
+        return iso2datetime(value)

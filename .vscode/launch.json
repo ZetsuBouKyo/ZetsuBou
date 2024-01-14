@@ -6,7 +6,7 @@
             "type": "python",
             "request": "launch",
             "module": "pytest",
-            "args": ["-m", "info", "-s"],
+            "args": ["-m", "info", "-s", "${file}"],
             "showReturnValue": true,
             "justMyCode": false
         },

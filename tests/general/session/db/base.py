@@ -23,7 +23,7 @@ class DatabaseSession:
     async def __aexit__(self, exc_type, exc, tb):
         await self.exit()
 
-    async def init(self):
+    async def init(self):  # pragma: no cover
         is_postgres = await ping_postgres(database_url=DATABASE_URL_POSTGRESQL)
         if is_postgres:
             logger.info("Initializing PostgreSQL...")
@@ -37,7 +37,7 @@ class DatabaseSession:
             def set_sqlite_pragma(dbapi_connection, _):
                 cursor = dbapi_connection.cursor()
                 cursor.execute("PRAGMA foreign_keys=ON")
-                cursor.close()  # pragma: no cover
+                cursor.close()
 
         async_session.load(database_url)
         self.async_session = async_session

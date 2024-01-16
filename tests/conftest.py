@@ -37,7 +37,7 @@ def pytest_sessionstart():
     _logger.setLevel(logging.DEBUG)
 
 
-def pytest_report_teststatus(report: TestReport, config: Config):
+def pytest_report_teststatus(report: TestReport, config: Config):  # pragma: no cover
     if config.option.markexpr != "info":
         return
 

@@ -32,7 +32,7 @@ def example(
     enum_int: IntEnum = typer.Argument(...),
     enum_str: StrEnum = typer.Argument(...),
     enum_any: AnyEnum = typer.Argument(...),
-):
+):  # pragma: no cover
     ...
 
 

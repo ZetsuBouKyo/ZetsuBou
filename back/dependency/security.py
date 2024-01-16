@@ -83,9 +83,9 @@ async def verify_with_scopes(security_scopes: SecurityScopes, token: Token):
     group_scopes = set()
     for group_name in group_names:
         group = await CrudGroup.get_row_with_scopes_by_name(group_name)
-        scope_names = group.scope_names
-        if scope_names is None:
+        if group is None:
             continue
+        scope_names = group.scope_names
         group_scopes |= set(scope_names)
 
     if remaining_scopes <= group_scopes:
@@ -115,17 +115,15 @@ async def do_nothing():
     pass
 
 
-def api_user_security():
-    pass
-
-
-def api_security(scopes: List[str] = []) -> Security:
-    if APP_SECURITY:
+def api_security(scopes: List[str] = [], app_security: bool = APP_SECURITY) -> Security:
+    if app_security:
         return Security(verify_api_with_scopes, scopes=scopes)
     return Security(do_nothing, scopes=scopes)
 
 
-def view_security(scopes: List[str] = []) -> Security:
-    if APP_SECURITY:
+def view_security(
+    scopes: List[str] = [], app_security: bool = APP_SECURITY
+) -> Security:
+    if app_security:
         return Security(verify_view_with_scope, scopes=scopes)
     return Security(do_nothing, scopes=scopes)

@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Optional
 
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import NotFoundError
@@ -247,7 +247,7 @@ class CrudTag:
     async def create(self, tag: TagCreate) -> TagInsert:
         return await self.insert(TagInsert(**tag.model_dump()))
 
-    async def get_row_by_id_by_elastic(self, tag_id: int) -> TagElastic:
+    async def get_row_by_id_by_elastic(self, tag_id: int) -> Optional[TagElastic]:
         try:
             hit = await self.async_elasticsearch.get(index=self.index, id=tag_id)
         except NotFoundError:
@@ -257,7 +257,7 @@ class CrudTag:
             return None
         return TagElastic(**source)
 
-    async def get_row_by_id(self, tag_id: int) -> TagUpdate:
+    async def get_row_by_id(self, tag_id: int) -> Optional[TagUpdate]:
         token = await CrudTagToken.get_row_by_id(tag_id)
         if token is None:
             return None
@@ -268,7 +268,7 @@ class CrudTag:
         elastic_tag["name"] = token.name
         return TagUpdate(**elastic_tag)
 
-    async def get_interpretation_by_id(self, tag_id: int) -> Tag:
+    async def get_interpretation_by_id(self, tag_id: int) -> Optional[Tag]:
         tag_in_ids = await self.get_row_by_id_by_elastic(tag_id)
         if tag_in_ids is None:
             return None
@@ -308,6 +308,22 @@ class CrudTag:
                 for id, value in tag_in_ids.attributes.items()
             ],
         )
+
+    async def get_interpretations_by_name(
+        self,
+        name: str,
+        skip: int = 0,
+        limit: int = 100,
+        is_desc: bool = False,
+    ) -> List[Tag]:
+        tokens = await CrudTagToken.get_rows_by_name_order_by_id(
+            name, skip=skip, limit=limit, is_desc=is_desc
+        )
+        tags = []
+        for token in tokens:
+            tag = await self.get_interpretation_by_id(token.id)
+            tags.append(tag)
+        return tags
 
     async def update(self, tag: TagUpdate) -> TagInsert:
         return await self.insert(TagInsert(**tag.model_dump()))

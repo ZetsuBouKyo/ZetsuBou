@@ -13,6 +13,7 @@ from ..base import (
     delete_by_id,
     get_row_by_id,
     get_rows_by_condition_order_by,
+    get_rows_by_condition_order_by_id,
     get_rows_by_ids_order_by_id,
     get_rows_order_by_id,
     update_by_id,
@@ -50,6 +51,14 @@ class CrudTagToken(TagTokenBase):
     ) -> List[TagToken]:
         return await get_rows_by_ids_order_by_id(
             cls, ids, TagToken, skip=skip, limit=limit, is_desc=is_desc
+        )
+
+    @classmethod
+    async def get_rows_by_name_order_by_id(
+        cls, name: str, skip: int = 0, limit: int = 100, is_desc: bool = False
+    ) -> List[TagToken]:
+        return await get_rows_by_condition_order_by_id(
+            cls, cls.name == name, TagToken, skip=skip, limit=limit, is_desc=is_desc
         )
 
     @classmethod

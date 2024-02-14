@@ -84,3 +84,21 @@ async def test_crud():
         await CrudTagToken.delete_by_id(token_2_created.id)
         token_2_deleted = await CrudTagToken.get_row_by_id(token_2_created.id)
         assert token_2_deleted is None
+
+
+@pytest.mark.asyncio
+async def test_get_rows_by_name_order_by_id():
+    async with DatabaseSession():
+        token_name_1 = str(uuid4())
+        token_1 = TagTokenCreate(name=token_name_1)
+        token_1_created_1 = await CrudTagToken.create(token_1)
+        tokens = await CrudTagToken.get_rows_by_name_order_by_id(token_name_1)
+        assert len(tokens) == 1
+        assert tokens[0].name == token_name_1
+
+        token_1_created_2 = await CrudTagToken.create(token_1)
+        tokens = await CrudTagToken.get_rows_by_name_order_by_id(token_name_1)
+        assert len(tokens) == 2
+
+        await CrudTagToken.delete_by_id(token_1_created_1.id)
+        await CrudTagToken.delete_by_id(token_1_created_2.id)

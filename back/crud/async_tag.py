@@ -185,9 +185,6 @@ class CrudTag:
                     )
 
     async def insert(self, tag: TagInsert) -> TagInsert:
-        if tag.name is None or tag.name == "":
-            raise ValueError("tag name should not be None or empty")
-
         old_tag = None
         if tag.id is not None:
             old_tag = await self.get_row_by_id_by_elastic(tag.id)

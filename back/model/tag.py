@@ -5,38 +5,26 @@ from pydantic import BaseModel, Field
 from back.utils.model import TagStr
 
 
-class TagInsert(BaseModel):
-    id: Optional[int] = None
-    name: Optional[str] = None
+class _TagBase(BaseModel):
     category_ids: List[int] = []
     synonym_ids: List[int] = []
     representative_id: Optional[int] = None
     attributes: Dict[int, str] = {}
 
 
-class TagCreate(BaseModel):
+class TagCreate(_TagBase):
     name: TagStr
-    category_ids: List[int] = []
-    synonym_ids: List[int] = []
-    representative_id: Optional[int] = None
-    attributes: Dict[int, str] = {}
 
 
-class TagUpdate(BaseModel):
+class TagInsert(TagCreate):
+    id: Optional[int] = None
+
+
+TagUpdate = TagInsert
+
+
+class TagElastic(_TagBase):
     id: int
-    name: str
-    category_ids: List[int] = []
-    synonym_ids: List[int] = []
-    representative_id: Optional[int] = None
-    attributes: Dict[int, str] = {}
-
-
-class TagElastic(BaseModel):
-    id: int
-    category_ids: List[int] = []
-    synonym_ids: List[int] = []
-    representative_id: Optional[int] = None
-    attributes: Dict[int, str] = {}
 
 
 class TagToken(BaseModel):

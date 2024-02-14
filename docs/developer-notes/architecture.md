@@ -1,5 +1,10 @@
 # Architecture
 
+## Services
+
+We use multiple services to run the application and make it possible to scale up in the
+future.
+
 ```mermaid
 ---
 title: ZetsuBou architecture

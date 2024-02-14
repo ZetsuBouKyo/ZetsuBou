@@ -100,7 +100,7 @@ class ZetsuBouTyper(Typer):
             airflow_dag_register(f, airflow_dag_id, airflow_dag_sub_command)
 
             @wraps(f)
-            def runner(*args, **kwargs):
+            def runner(*args, **kwargs):  # pragma: no cover
                 if sys.version_info >= (3, 11) and self.loop_factory:
                     with asyncio.Runner(loop_factory=self.loop_factory) as runner:
                         runner.run(f(*args, **kwargs))

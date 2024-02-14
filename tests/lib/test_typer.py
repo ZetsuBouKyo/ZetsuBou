@@ -2,6 +2,7 @@ from enum import Enum
 
 import typer
 from fastapi.dependencies.utils import get_typed_signature
+from pydantic import BaseModel
 from typer import Typer
 
 from lib.typer import get_parameter_type
@@ -22,6 +23,10 @@ class AnyEnum(Enum):
     b: int = 1
 
 
+class Other(BaseModel):
+    a: str = ""
+
+
 @app.command()
 def example(
     string: str = typer.Argument(...),
@@ -32,6 +37,7 @@ def example(
     enum_int: IntEnum = typer.Argument(...),
     enum_str: StrEnum = typer.Argument(...),
     enum_any: AnyEnum = typer.Argument(...),
+    other: Other = typer.Argument(...),
 ):  # pragma: no cover
     ...
 
@@ -58,3 +64,5 @@ def test_get_parameter_type():
             assert parameter_type == "string"
         elif name == "enum_any":
             assert parameter_type == "any"
+        elif name == "other":
+            assert parameter_type == "Other"

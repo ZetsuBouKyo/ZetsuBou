@@ -8,6 +8,7 @@ from rich.logging import RichHandler
 from back.logging import logger_zetsubou
 from back.logging.utils import get_all_loggers
 from back.settings import LoggingLevelEnum, setting
+from command.logging import logger_cli
 
 APP_LOGGING_TO_FILE = setting.app_logging_to_file
 APP_LOGGING_LIBS = setting.app_logging_libs
@@ -85,6 +86,7 @@ def init_zetsubou_logger(logging_level: LoggingLevelEnum = APP_LOGGING_LEVEL):
 
     if not APP_LOGGING_LIBS:
         logger_zetsubou.addHandler(stream_handler)
+        logger_cli.addHandler(stream_handler)
         logger_uvicorn_error.addHandler(stream_handler)
         logger_uvicorn_access.addHandler(stream_handler)
     else:

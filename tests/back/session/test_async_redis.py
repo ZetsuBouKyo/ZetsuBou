@@ -1,6 +1,6 @@
 import pytest
 
-from back.session.async_redis import async_redis
+from back.session.async_redis import async_redis, get_async_redis_session
 from lib.faker import ZetsuBouFaker
 from tests.general.logger import logger
 from tests.general.session import BaseIntegrationSession
@@ -23,3 +23,7 @@ async def test_async_redis():
         else:
             assert False, f"pair ({key}, {value}) not found"
         await async_redis.delete(key)
+
+
+def test_get_async_redis_session():
+    assert get_async_redis_session(url=None) is None

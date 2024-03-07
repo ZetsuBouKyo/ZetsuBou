@@ -197,7 +197,9 @@ async def load(
                 batch = rows[i * size : (i + 1) * size]
 
 
-@app.command(airflow_dag_id="backup-load", airflow_dag_sub_command="backup load")
+@app.command(
+    airflow_dag_id="backup-load-table", airflow_dag_sub_command="backup load-table"
+)
 async def load_table(
     table: str = typer.Argument(..., help="Table JSON path."),
     table_name: str = typer.Option(default=None, help="Table JSON path."),

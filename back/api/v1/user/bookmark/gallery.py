@@ -51,12 +51,13 @@ async def get_detailed_gallery_bookmarks(
         _galleries = await elasticsearch_crud.get_sources_by_ids(gallery_ids)
         galleries = Galleries(**_galleries)
         galleries_table = {hit.source.id: hit.source for hit in galleries.hits.hits}
-        detailed_bookmarks = [
-            GalleryBookmark(
-                bookmark=bookmark, gallery=galleries_table[bookmark.gallery_id]
-            )
-            for bookmark in bookmarks
-        ]
+        detailed_bookmarks = []
+        for bookmark in bookmarks:
+            gallery = galleries_table.get(bookmark.gallery_id, None)
+            if gallery is None:
+                continue
+            detailed_bookmark = GalleryBookmark(bookmark=bookmark, gallery=gallery)
+            detailed_bookmarks.append(detailed_bookmark)
     return detailed_bookmarks
 
 

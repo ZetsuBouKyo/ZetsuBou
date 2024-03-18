@@ -23,8 +23,7 @@ class FrontGeneralSettingGallery(FrontGeneralSettingBase):
     goto: FrontGeneralSettingGalleryGoto
 
 
-class FrontGeneralSettingVideo(FrontGeneralSettingBase):
-    ...
+class FrontGeneralSettingVideo(FrontGeneralSettingBase): ...
 
 
 class FrontGeneralSetting(BaseModel):

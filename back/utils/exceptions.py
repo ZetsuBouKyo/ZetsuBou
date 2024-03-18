@@ -1,12 +1,10 @@
 from fastapi import HTTPException, status
 
 
-class RequiresLoginException(HTTPException):
-    ...
+class RequiresLoginException(HTTPException): ...
 
 
-class MaxRetriesExceededException(Exception):
-    ...
+class MaxRetriesExceededException(Exception): ...
 
 
 AirflowConflictInArgumentsException = HTTPException(

@@ -129,7 +129,9 @@ class Setting(BaseSettings):
         description="If this value is true, the application will write the log.",
     )
     app_logging_level: LoggingLevelEnum = LoggingLevelEnum.WARNING.value
-    app_logging_formatter_fmt: str = "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"  # noqa
+    app_logging_formatter_fmt: str = (
+        "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"  # noqa
+    )
 
     app_gallery_sync_pages: bool = Field(
         default=False,

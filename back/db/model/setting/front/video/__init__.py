@@ -10,9 +10,9 @@ class SettingFrontVideoCreate(BaseModel):
     tag_field_ids: List[int] = []
 
 
-SettingFrontVideo = (
-    SettingFrontVideoUpdate
-) = SettingFrontVideoCreated = SettingFrontVideoCreate
+SettingFrontVideo = SettingFrontVideoUpdate = SettingFrontVideoCreated = (
+    SettingFrontVideoCreate
+)
 
 
 class SettingFrontVideoInterpretation(BaseModel):

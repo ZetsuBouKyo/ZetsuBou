@@ -1,3 +1,14 @@
 {
-    "recommendations": ["csstools.postcss"]
+    "recommendations": [
+        "bierner.markdown-mermaid",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-python.black-formatter",
+        "ms-python.debugpy",
+        "ms-python.isort",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "rvest.vs-code-prettier-eslint",
+        "vue.volar"
+    ]
 }

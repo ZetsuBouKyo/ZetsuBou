@@ -21,7 +21,7 @@ from back.db.model import (
 from back.dependency.security import api_security
 from back.model.example import ExampleEnum
 from back.model.scope import ScopeEnum
-from back.utils import get_example
+from back.utils import get_subset_dict
 
 from .bookmark import router as bookmark
 from .elastic_query import router as elastic_query
@@ -30,7 +30,7 @@ from .quest import router as quest
 
 
 def get_admin_user(*params: str) -> Dict[str, Any]:
-    return get_example(
+    return get_subset_dict(
         *params,
         base={
             "name": ExampleEnum.USER_NAME.value,
@@ -43,7 +43,7 @@ def get_admin_user(*params: str) -> Dict[str, Any]:
 
 
 def get_user(*params: str) -> Dict[str, Any]:
-    return get_example(
+    return get_subset_dict(
         *params,
         base={
             "name": ExampleEnum.USER_NAME.value,

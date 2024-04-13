@@ -91,3 +91,4 @@ nav:
     - Architecture: developer-notes/architecture.md
     - Environments: developer-notes/environments.md
     - Task: developer-notes/task.md
+    - Tests: developer-notes/tests.md

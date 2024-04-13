@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 import typer
 
-from back.session.async_redis import async_redis
+from back.session.async_redis import get_async_redis_session
 from command.logging import logger
 from lib.typer import ZetsuBouTyper
 
@@ -17,6 +17,8 @@ async def ping():
     """
     Ping the redis server.
     """
+    async_redis = get_async_redis_session()
+
     await async_redis.ping()
 
 
@@ -25,6 +27,8 @@ async def list(key: str = typer.Option(default="*", help="Redis key.")) -> List[
     """
     List all keys.
     """
+    async_redis = get_async_redis_session()
+
     keys = []
     async for key in async_redis.scan_iter(key):
         k = key.decode("utf-8")
@@ -40,6 +44,8 @@ async def _list_pairs(
     """
     List all key-value pairs.
     """
+    async_redis = get_async_redis_session()
+
     pairs = []
     async for key, value in async_redis.list_pairs(key=key):
         k = key.decode("utf-8")
@@ -57,6 +63,8 @@ async def set(
     """
     Set a key-value pair.
     """
+    async_redis = get_async_redis_session()
+
     await async_redis.set(key, value)
 
 
@@ -65,6 +73,8 @@ async def get(key: str = typer.Argument(..., help="Key.")) -> str:
     """
     Get the value of the key.
     """
+    async_redis = get_async_redis_session()
+
     value = await async_redis.get(key)
     v = value.decode("utf-8")
     logger.info(f"key: {key}")
@@ -77,4 +87,6 @@ async def flushall():
     """
     Delete all key-value pairs.
     """
+    async_redis = get_async_redis_session()
+
     await async_redis.flushall()

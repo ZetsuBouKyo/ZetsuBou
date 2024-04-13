@@ -86,7 +86,7 @@ x-airflow-common: &airflow-common
 
 services:
   airflow-postgres:
-    image: postgres:13
+    image: zetsuboukyo/postgres:13
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
@@ -103,7 +103,7 @@ services:
     restart: always
 
   airflow-redis:
-    image: redis:latest
+    image: zetsuboukyo/redis:6.2.6
     network_mode: host
     expose:
       - 6379

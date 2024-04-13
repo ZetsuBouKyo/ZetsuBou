@@ -10,7 +10,7 @@ There seems to be some changes in their
 [gateway](https://min.io/docs/minio/linux/operations/install-deploy-manage/migrate-fs-gateway.html).
 If you don't have MinIO service or other services that support S3 API yet, the tested
 version of the MinIO docker image in our application is
-`minio/minio:RELEASE.2022-02-26T02-54-46Z.fips`.
+`zetsuboukyo/minio:RELEASE.2022-02-26T02-54-46Z.fips`.
 
 ## Add a storage
 

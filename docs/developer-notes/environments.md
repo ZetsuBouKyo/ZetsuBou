@@ -29,7 +29,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 make build
 ```
 
-This command will build `zetsubou/app:0.0.1-python-3.8.16-slim-buster` and
+This command will build `zetsuboukyo/app:0.0.1-python-3.8.16-slim-buster` and
 `zetsubou/airflow:2.6.1-python3.8` docker images.
 
 ### Install the Python packages

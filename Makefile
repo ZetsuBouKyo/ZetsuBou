@@ -16,11 +16,11 @@ APP_DEV_SERVICES := zetsubou-airflow zetsubou-elasticsearch zetsubou-minio zetsu
 
 .PHONY: build build-docker-app build-docker-airflow build-docker-minio-dev build-dev
 build-docker-app:
-	docker build --force-rm -f docker/Dockerfile.app -t zetsubou/app:0.0.1-python-3.8.16-slim-buster .
+	docker build --force-rm -f docker/Dockerfile.app -t zetsuboukyo/app:0.0.1-python-3.8.16-slim-buster .
 build-docker-airflow:
-	docker build --force-rm -f docker/Dockerfile.airflow -t zetsubou/airflow:2.6.1-python3.8 .
+	docker build --force-rm -f docker/Dockerfile.airflow -t zetsuboukyo/airflow:2.6.1-python3.8 .
 build-docker-airflow-simple:
-	docker build --force-rm -f docker/Dockerfile.airflow.simple -t zetsubou/airflow-simple:2.6.2-python3.8 .
+	docker build --force-rm -f docker/Dockerfile.airflow.simple -t zetsuboukyo/airflow-simple:2.6.2-python3.8 .
 build-dev: build-docker-airflow-simple
 	poetry install
 	source ./.venv/bin/activate; pre-commit install

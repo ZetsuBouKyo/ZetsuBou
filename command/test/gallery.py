@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from random import randrange
-from typing import Iterator
+from typing import Generator, Iterator
 from uuid import uuid4
 
 import typer
@@ -31,7 +31,7 @@ def create_img(fpath: Path, format: str = "jpeg"):
     img.save(fpath, format)
 
 
-def get_gallery_names(num: int) -> str:
+def get_gallery_names(num: int) -> Generator[str, None, None]:
     padding = len(str(num))
     if padding < 3:
         padding = 3

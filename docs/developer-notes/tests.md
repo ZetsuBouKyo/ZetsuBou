@@ -10,8 +10,8 @@ stateDiagram-v2
 state Tags {
   generate_tags: Generate tags
   state generate_tags {
-    add_tags: Add tags
-    add_attributes: Add attributes
+    add_tags: Add tags (PostgreSQL)
+    add_attributes: Add attributes (PostgreSQL)
 
     add_attributes --> add_tags
   }
@@ -31,7 +31,7 @@ state Tags {
   generate_tags --> generate_front_tag_settings
 }
 
-generate_data: Generate data
+generate_data: Generate data (S3)
 state generate_data {
   generate_galleries: Generate galleries
   generate_videos: Generate videos
@@ -39,9 +39,9 @@ state generate_data {
 
 Tags --> generate_data
 
-add_storages: Add storages
-generate_data --> add_storages
-add_storages --> Synchronize
+add_storages: Add storages (PostgreSQL)
+add_storages --> generate_data
+generate_data --> Synchronize
 
 test_sources: Test gallery and video tags
 state test_sources {

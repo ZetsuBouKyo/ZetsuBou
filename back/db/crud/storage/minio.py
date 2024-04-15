@@ -13,6 +13,7 @@ from ..base import (
     count_total,
     create,
     delete_by_id,
+    get_all_rows_by_condition_order_by_id,
     get_row_by_id,
     get_rows_order_by_id,
     iter_by_condition_order_by_id,
@@ -26,8 +27,6 @@ class CrudStorageMinio(StorageMinioBase):
     async def create(cls, directory: StorageMinioCreate) -> StorageMinioCreated:
         category = directory.category
         depth = directory.depth
-        if type(category) != int:
-            category = category.value
 
         if category == StorageCategoryEnum.gallery.value:
             assert depth > 0, "depth should greater than 0"
@@ -35,6 +34,25 @@ class CrudStorageMinio(StorageMinioBase):
             assert depth == -1, "depth should be -1"
 
         return StorageMinioCreated(**await create(cls, directory))
+
+    @classmethod
+    async def safe_create(cls, directory: StorageMinioCreate) -> StorageMinioCreated:
+        existing_storages = await CrudStorageMinio.get_all_rows_by_name_order_by_id(
+            directory.name
+        )
+
+        field_names = directory.model_fields.keys()
+        for existing_storage in existing_storages:
+            for field_name in field_names:
+                storage_field_value = getattr(directory, field_name, None)
+                existing_storage_field_value = getattr(
+                    existing_storage, field_name, None
+                )
+                if storage_field_value != existing_storage_field_value:
+                    break
+            else:
+                return existing_storage
+        return await cls.create(directory)
 
     @classmethod
     async def count_total(cls) -> int:
@@ -50,6 +68,12 @@ class CrudStorageMinio(StorageMinioBase):
     ) -> List[StorageMinio]:
         return await get_rows_order_by_id(
             cls, StorageMinio, skip=skip, limit=limit, is_desc=is_desc
+        )
+
+    @classmethod
+    async def get_all_rows_by_name_order_by_id(cls, name: str) -> List[StorageMinio]:
+        return await get_all_rows_by_condition_order_by_id(
+            cls, cls.name == name, StorageMinio
         )
 
     @classmethod

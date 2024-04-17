@@ -551,8 +551,8 @@ class AsyncS3Session(AioSession):
 
     async def put_object(
         self, source: SourceBaseModel, body: bytes, content_type: str = None
-    ):
-        await put_object(
+    ) -> S3PutObjectResponse:
+        return await put_object(
             self.client,
             source.bucket_name,
             source.object_name,
@@ -567,8 +567,8 @@ class AsyncS3Session(AioSession):
         indent=4,
         ensure_ascii=False,
         encoding: str = "utf-8",
-    ):
-        await put_json(
+    ) -> S3PutObjectResponse:
+        return await put_json(
             self.client,
             source.bucket_name,
             source.object_name,

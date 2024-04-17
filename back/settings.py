@@ -129,7 +129,7 @@ class Setting(BaseSettings):
         description="If this value is true, the application will write the log.",
     )
     app_logging_level: LoggingLevelEnum = LoggingLevelEnum.WARNING.value
-    app_logging_formatter_fmt: str = "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"  # noqa
+    app_logging_formatter_fmt: str = "%(asctime)s - %(name)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s"
 
     app_gallery_sync_pages: bool = Field(
         default=False,
@@ -194,19 +194,23 @@ class Setting(BaseSettings):
 
     storage_protocol: SourceProtocolEnum = SourceProtocolEnum.MINIO.value
     storage_expires_in_minutes: int = 7 * 24 * 60
-    storage_cache: str = "zetsubou"
+
+    storage_cache: str = Field(
+        default="zetsubou", description="ZetsuBou S3 storage bucket name."
+    )
+    storage_tests: str = Field(
+        default="tests", description="ZetsuBou S3 storage prefix."
+    )
+    storage_tests_galleries: str = Field(
+        default="galleries", description="ZetsuBou S3 storage prefix."
+    )
+    storage_tests_videos: str = Field(
+        default="videos", description="ZetsuBou S3 storage prefix."
+    )
 
     @property
     def storage_backup(cls):
         return f"{cls.storage_cache}/backup"
-
-    @property
-    def storage_tests_galleries(cls):
-        return f"{cls.storage_cache}/tests/galleries"
-
-    @property
-    def storage_tests_videos(cls):
-        return f"{cls.storage_cache}/tests/videos"
 
     storage_s3_aws_access_key_id: Optional[str] = Field(
         default=None, examples=["admin"]

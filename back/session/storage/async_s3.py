@@ -415,17 +415,6 @@ class AsyncS3Session(AioSession):
 
         raise ValueError("depth should be greater than 0.")
 
-    def get_joined_source(
-        self, base_source: SourceBaseModel, relative_path: str
-    ) -> SourceBaseModel:
-        _base_path = base_source.path
-        _relative_path = relative_path
-        if not _base_path.endswith("/"):
-            _base_path += "/"
-        if _relative_path.startswith("/"):
-            _relative_path = _relative_path[1:]
-        return SourceBaseModel(path=_base_path + "/" + _relative_path)
-
     async def init(self):
         for bucket_name in BUCKET_NAMES:
             try:

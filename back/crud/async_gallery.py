@@ -311,16 +311,6 @@ async def get_gallery_by_gallery_id(id: str) -> Gallery:
     return doc
 
 
-def _get_tag_source(
-    storage_session: AsyncS3Session,
-    source: SourceBaseModel,
-    dir_fname: str,
-    tag_fname: str,
-) -> SourceBaseModel:
-    relative_path = dir_fname + "/" + tag_fname
-    return storage_session.get_joined_source(source, relative_path)
-
-
 async def _create_gallery_tag_in_storage(
     storage_session: AsyncS3Session,
     source: SourceBaseModel,
@@ -403,9 +393,7 @@ class CrudAsyncGallery:
         await self.close()
 
     def get_tag_source(self, gallery: Gallery) -> SourceBaseModel:
-        return _get_tag_source(
-            self.storage_session, gallery, self.dir_fname, self.tag_fname
-        )
+        return gallery.get_joined_source(self.dir_fname, self.tag_fname)
 
     async def update(self, new_gallery: Gallery) -> Gallery:
         async with self.storage_session:
@@ -487,9 +475,7 @@ class CrudAsyncGallery:
 
     async def get_image(self, image_name: str) -> str:
         async with self.storage_session:
-            image_source = self.storage_session.get_joined_source(
-                self.gallery, image_name
-            )
+            image_source = self.gallery.get_joined_source(image_name)
             return await self.storage_session.get_url(image_source)
 
     async def exists(
@@ -622,9 +608,7 @@ class CrudAsyncGallerySync:
         In some cases, we need to update the JSON file in storage as well.
         """
 
-        tag_source = _get_tag_source(
-            self.storage_session, source, self.dir_fname, self.tag_fname
-        )
+        tag_source = source.get_joined_source(self.dir_fname, self.tag_fname)
         if not await self.storage_session.exists(tag_source):
             tag = await _create_gallery_tag_in_storage(
                 self.storage_session, source, tag_source

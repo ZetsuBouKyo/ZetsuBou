@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from faker import Faker
 
+from back.model.base import SourceProtocolEnum
 from back.model.gallery import Gallery
 from lib.faker.gallery import galleries
 from lib.faker.tag import FakerTag, TagAttributeEnum, TagCategoryEnum, tags
@@ -42,6 +43,13 @@ class ZetsuBouFaker(Faker):
         self, image_formats: List[str] = image_formats
     ) -> Tuple[str, str, str]:
         return self.random_sample(image_formats, length=1)[0]
+
+    def minio_folder_path(self) -> str:
+        bucket_name = self.random_string()
+        path = f"{SourceProtocolEnum.MINIO.value}-{self.random_int()}://{bucket_name}"
+        prefix_length = self.random_int(min=0, max=3)
+        prefix = "/".join([self.random_string() for _ in range(prefix_length)])
+        return f"{path}/{prefix}/"
 
     def tag_attributes(self) -> List[str]:
         return [attr.value for attr in TagAttributeEnum]

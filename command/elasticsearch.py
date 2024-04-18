@@ -29,7 +29,7 @@ async def create_video_index(index: str = typer.Argument(..., help="Index name."
     """
     Create video index.
     """
-    await create_video(async_elasticsearch, index)
+    await create_video(get_async_elasticsearch(), index)
 
 
 @app.command()
@@ -37,6 +37,7 @@ async def delete(index: str = typer.Argument(..., help="Index name.")):
     """
     Delete the index.
     """
+    async_elasticsearch = get_async_elasticsearch()
 
     if index is None:
         return
@@ -51,6 +52,7 @@ async def list_indices():
     """
     List the indices.
     """
+    async_elasticsearch = get_async_elasticsearch()
 
     indices = await async_elasticsearch.indices.get_alias()
     for index in indices.keys():
@@ -71,6 +73,8 @@ async def reset():
     """
     Delete the indices and Initialize the indices.
     """
+    async_elasticsearch = get_async_elasticsearch()
+
     indices = await async_elasticsearch.indices.get_alias()
     for index in indices.keys():
         if await async_elasticsearch.indices.exists(index=index):
@@ -86,6 +90,8 @@ async def reindex(
     """
     Reindex the indices.
     """
+    async_elasticsearch = get_async_elasticsearch()
+
     if not await async_elasticsearch.indices.exists(index=source_index):
         print(f"{source_index} not found")
         return
@@ -114,6 +120,8 @@ async def analyze(
     """
     Analyze the text string and return the resulting tokens.
     """
+    async_elasticsearch = get_async_elasticsearch()
+
     print(f"index: {index}")
     print(f"analyzer: {analyzer}")
     print(f"text: {text}")
@@ -127,6 +135,8 @@ async def match_all(index: str = typer.Argument(..., help="Index name.")):
     """
     Send `match_all` query.
     """
+    async_elasticsearch = get_async_elasticsearch()
+
     query = {"match_all": {}}
     _resp = await async_elasticsearch.search(
         index=index, query=query, track_total_hits=True
@@ -144,6 +154,8 @@ async def match_phrase_prefix(
     """
     Send `match_phrase_prefix` query.
     """
+    async_elasticsearch = get_async_elasticsearch()
+
     if len(field) != len(text):
         print("The number of fields and text do not correspond to each other.")
         return
@@ -176,6 +188,8 @@ async def total(index: str = typer.Argument(..., help="Index name.")):
     """
     Get the total number of documents in specific index.
     """
+    async_elasticsearch = get_async_elasticsearch()
+
     query = {"match_all": {}}
     _resp = await async_elasticsearch.search(
         index=index, query=query, track_total_hits=True
@@ -189,6 +203,7 @@ async def mapping(index: str = typer.Argument(..., help="Index name.")):
     """
     Get the mapping of the index.
     """
+    async_elasticsearch = get_async_elasticsearch()
 
     _resp = await async_elasticsearch.indices.get_mapping(index=index)
     print_json(data=_resp)

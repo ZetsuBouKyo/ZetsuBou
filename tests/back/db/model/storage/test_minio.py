@@ -42,6 +42,17 @@ def test_right_data():
             "access_key": faker.random_string(10),
             "secret_key": faker.random_string(16),
         },
+        {
+            "id": 1,
+            "category": StorageCategoryEnum.video,
+            "name": faker.name(),
+            "endpoint": faker.url(),
+            "bucket_name": faker.random_string(10),
+            "prefix": "",
+            "depth": -1,
+            "access_key": faker.random_string(10),
+            "secret_key": faker.random_string(16),
+        },
     ]
 
     for data in right_data:
@@ -52,6 +63,10 @@ def test_right_data():
         bucket_name = data.get("bucket_name")
         prefix = data.get("prefix")
         path = f"{SourceProtocolEnum.MINIO.value}-{id}://{bucket_name}/{prefix}"
+        logger.info(f"path: {path}")
+
+        assert not storage.path.endswith("//")
+        assert storage.path.endswith("/")
         assert storage.path == path
         assert storage.source.path == path
         print_divider()

@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from uuid import uuid4
 
 from faker import Faker
@@ -71,6 +71,12 @@ class ZetsuBouFaker(Faker):
 
     def simple_galleries(self) -> List[Gallery]:
         return galleries
+
+    def simple_gallery_by_name(self, name: str) -> Optional[Gallery]:
+        for gallery in galleries:
+            if gallery.name == name:
+                return gallery
+        return None
 
     def random_minimum_gallery(self) -> Gallery:
         author_name = self.name()

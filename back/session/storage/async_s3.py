@@ -2,7 +2,7 @@ import io
 import json
 from collections import deque
 from pathlib import Path
-from typing import Deque, List, Tuple
+from typing import AsyncIterator, Deque, List, Optional, Tuple
 
 from aiobotocore.httpsession import EndpointConnectionError
 from aiobotocore.session import AioSession, ClientCreatorContext
@@ -135,7 +135,9 @@ async def list_objects_v2(
     return S3GetPaginatorResponse(**resp)
 
 
-async def iter_prefixes(client, bucket_name: str, prefix: str, depth: int):
+async def iter_prefixes(
+    client, bucket_name: str, prefix: str, depth: int
+) -> AsyncIterator[Optional[S3Object]]:
     if len(prefix) > 0 and prefix[-1] != "/":
         yield None
     depth -= 1
@@ -537,12 +539,14 @@ class AsyncS3Session(AioSession):
 
         return images
 
-    async def iter_directories(self, source: SourceBaseModel, depth: int):
+    async def iter_directories(
+        self, source: SourceBaseModel, depth: int
+    ) -> AsyncIterator[SourceBaseModel]:
         async for obj in iter_prefixes(
             self.client, source.bucket_name, source.object_name, depth
         ):
             if obj is not None:
-                obj_path = f"{source.protocol}-{source.storage_id}://{source.bucket_name}/{obj.prefix}"  # noqa
+                obj_path = f"{source.protocol}-{source.storage_id}://{source.bucket_name}/{obj.prefix}"
                 obj_source = SourceBaseModel(path=obj_path)
                 yield obj_source
 

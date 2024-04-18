@@ -1,10 +1,15 @@
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from back.model.base import SourceBaseModel
 from back.model.elasticsearch import SearchResult
 from back.model.source import Source, SourceAttributes
+from back.settings import setting
+
+DIR_FNAME = setting.gallery_dir_fname
+TAG_FNAME = setting.gallery_tag_fname
 
 
 class GalleryOrderedFieldEnum(str, Enum):
@@ -36,6 +41,13 @@ class Gallery(Source):
             }
         ],
     )
+
+    _tag_dir: str = DIR_FNAME
+    _tag_fname: str = TAG_FNAME
+
+    @property
+    def tag_source(cls) -> SourceBaseModel:
+        return cls.get_joined_source(cls._tag_dir, cls._tag_fname)
 
 
 Galleries = SearchResult[Gallery]

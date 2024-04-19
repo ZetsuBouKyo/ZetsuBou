@@ -29,4 +29,4 @@ zetsubou
 
 ## Other S3 storages
 
-These storages are used for storing galleries and videos.
+These storages are used to store galleries and videos.

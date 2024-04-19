@@ -90,5 +90,7 @@ nav:
   - Developer Notes:
     - Architecture: developer-notes/architecture.md
     - Environments: developer-notes/environments.md
+    - Settings: developer-notes/settings.md
+    - Storage: developer-notes/storage.md
     - Task: developer-notes/task.md
     - Tests: developer-notes/tests.md

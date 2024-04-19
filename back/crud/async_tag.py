@@ -343,7 +343,8 @@ class CrudTag:
         for token in tokens:
             tag = await self.get_interpretation_by_id(token.id)
             if tag is None:
-                continue
+                tag = Tag(id=token.id, name=token.name)
+
             tags.append(tag)
         return tags
 

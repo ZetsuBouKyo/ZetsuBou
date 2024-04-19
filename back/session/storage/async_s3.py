@@ -268,6 +268,9 @@ async def delete(client, bucket_name: str, prefix: str) -> bool:
         for p in _page.CommonPrefixes:
             await delete(client, bucket_name, p.Prefix)
 
+        if len(objects) == 0:
+            continue
+
         resp = await client.delete_objects(
             Bucket=bucket_name, Delete={"Objects": objects}
         )

@@ -297,12 +297,14 @@ class CrudTag:
                 TagToken(id=id, name=token_id_table[id])
                 for id in tag_in_ids.synonym_ids
             ],
-            representative=TagToken(
-                id=tag_in_ids.representative_id,
-                name=token_id_table[tag_in_ids.representative_id],
-            )
-            if tag_in_ids.representative_id
-            else None,
+            representative=(
+                TagToken(
+                    id=tag_in_ids.representative_id,
+                    name=token_id_table[tag_in_ids.representative_id],
+                )
+                if tag_in_ids.representative_id
+                else None
+            ),
             attributes=[
                 TagAttribute(id=id, name=attribute_id_table[id], value=value)
                 for id, value in tag_in_ids.attributes.items()
@@ -322,6 +324,8 @@ class CrudTag:
         tags = []
         for token in tokens:
             tag = await self.get_interpretation_by_id(token.id)
+            if tag is None:
+                continue
             tags.append(tag)
         return tags
 

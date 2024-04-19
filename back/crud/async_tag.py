@@ -18,6 +18,7 @@ from back.db.table import (
     TagSynonymBase,
     TagTokenBase,
 )
+from back.logging import logger_zetsubou
 from back.model.elasticsearch import AnalyzerEnum, SearchResult
 from back.model.tag import (
     Tag,
@@ -276,10 +277,12 @@ class CrudTag:
         if tag_in_ids.representative_id:
             token_ids.append(tag_in_ids.representative_id)
 
+        inconsistent = False
         token_id_table = {}
         for id in token_ids:
             token = await CrudTagToken.get_row_by_id(id)
             if token is None:
+                inconsistent = True
                 continue
             token_id_table[token.id] = token.name
 
@@ -287,8 +290,15 @@ class CrudTag:
         for attribute_id in tag_in_ids.attributes.keys():
             attribute = await CrudTagAttribute.get_row_by_id(attribute_id)
             if attribute is None:
+                inconsistent = True
                 continue
             attribute_id_table[attribute.id] = attribute.name
+
+        if inconsistent:
+            logger_zetsubou.info(
+                f"There is an inconsistency in the tag ID {tag_id} in Elasticsearch."
+            )
+            return None
 
         return Tag(
             id=tag_in_ids.id,
@@ -296,10 +306,12 @@ class CrudTag:
             categories=[
                 TagToken(id=id, name=token_id_table[id])
                 for id in tag_in_ids.category_ids
+                if token_id_table.get(id, None) is not None
             ],
             synonyms=[
                 TagToken(id=id, name=token_id_table[id])
                 for id in tag_in_ids.synonym_ids
+                if token_id_table.get(id, None) is not None
             ],
             representative=(
                 TagToken(
@@ -307,11 +319,13 @@ class CrudTag:
                     name=token_id_table[tag_in_ids.representative_id],
                 )
                 if tag_in_ids.representative_id
+                and token_id_table.get(tag_in_ids.representative_id, None) is not None
                 else None
             ),
             attributes=[
                 TagAttribute(id=id, name=attribute_id_table[id], value=value)
                 for id, value in tag_in_ids.attributes.items()
+                if attribute_id_table.get(id, None) is not None
             ],
         )
 

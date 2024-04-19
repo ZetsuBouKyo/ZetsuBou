@@ -23,6 +23,19 @@ STORAGE_CACHE = setting.storage_cache
 STORAGE_TESTS = setting.storage_tests
 STORAGE_TESTS_GALLERIES = setting.storage_tests_galleries
 
+delete_gallery_prefix = f"{STORAGE_TESTS}/{STORAGE_TESTS_GALLERIES}/delete/"
+delete_gallery_storage_name = "tests delete galleries"
+delete_gallery_storage = StorageMinioCreate(
+    category=StorageCategoryEnum.gallery,
+    name=delete_gallery_storage_name,
+    endpoint=STORAGE_S3_ENDPOINT_URL,
+    bucket_name=STORAGE_CACHE,
+    prefix=delete_gallery_prefix,
+    depth=1,
+    access_key=STORAGE_S3_AWS_ACCESS_KEY_ID,
+    secret_key=STORAGE_S3_AWS_SECRET_ACCESS_KEY,
+)
+
 simple_gallery_prefix = f"{STORAGE_TESTS}/{STORAGE_TESTS_GALLERIES}/simple/"
 simple_gallery_storage_name = "tests simple galleries"
 simple_gallery_storage = StorageMinioCreate(
@@ -118,6 +131,22 @@ async def _generate_galleries(
             break
         else:
             await callback(created_storage, storage_session, **kwargs)
+
+
+async def _generate_delete_galleries(
+    storage: StorageMinio, storage_session: AsyncS3Session
+):
+    faker = ZetsuBouFaker()
+    gallery = faker.random_minimum_gallery()
+    gallery_folder_name = faker.uuid4()
+    gallery.path = f"{storage.path}{gallery_folder_name}/"
+    await generate_gallery(storage_session, gallery)
+
+
+async def generate_delete_galleries(
+    storage: StorageMinioCreate = delete_gallery_storage,
+):
+    await _generate_galleries(storage, _generate_delete_galleries)
 
 
 async def _generate_simple_galleries(

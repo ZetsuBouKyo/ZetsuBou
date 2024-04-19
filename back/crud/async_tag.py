@@ -279,11 +279,15 @@ class CrudTag:
         token_id_table = {}
         for id in token_ids:
             token = await CrudTagToken.get_row_by_id(id)
+            if token is None:
+                continue
             token_id_table[token.id] = token.name
 
         attribute_id_table = {}
         for attribute_id in tag_in_ids.attributes.keys():
             attribute = await CrudTagAttribute.get_row_by_id(attribute_id)
+            if attribute is None:
+                continue
             attribute_id_table[attribute.id] = attribute.name
 
         return Tag(
@@ -334,12 +338,14 @@ class CrudTag:
 
     async def _delete_elastic(self, tag_id: int):
         query = {
-            "bool": {
-                "should": [
-                    {"term": {"category_ids": {"value": tag_id}}},
-                    {"term": {"synonym_ids": {"value": tag_id}}},
-                    {"term": {"representative_id": {"value": tag_id}}},
-                ]
+            "query": {
+                "bool": {
+                    "should": [
+                        {"term": {"category_ids": {"value": tag_id}}},
+                        {"term": {"synonym_ids": {"value": tag_id}}},
+                        {"term": {"representative_id": {"value": tag_id}}},
+                    ]
+                }
             }
         }
         batches = []

@@ -241,7 +241,7 @@ class CrudTag:
         await self.async_elasticsearch.index(
             index=self.index,
             id=tag.id,
-            body=TagElastic(**tag.model_dump()).model_dump(),
+            document=TagElastic(**tag.model_dump()).model_dump(),
         )
         return tag
 

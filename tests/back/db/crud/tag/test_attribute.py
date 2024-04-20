@@ -8,6 +8,7 @@ from tests.general.session import DatabaseSession
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud():
     async with DatabaseSession():
         faker = ZetsuBouFaker()

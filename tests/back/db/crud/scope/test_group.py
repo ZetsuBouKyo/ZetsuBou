@@ -5,6 +5,7 @@ from tests.general.session import DatabaseSession
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud():
     async with DatabaseSession():
         links = await CrudScopeGroup.get_all_rows_order_by_id()

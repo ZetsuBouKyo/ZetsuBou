@@ -14,6 +14,7 @@ SECRET_KEY = setting.storage_s3_aws_secret_access_key
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_get_storage_categories(client: ZetsuBouAsyncClient):
     headers = get_admin_headers()
     async with client as ac:
@@ -27,6 +28,7 @@ async def test_get_storage_categories(client: ZetsuBouAsyncClient):
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_crud(client: ZetsuBouAsyncClient):
     faker = ZetsuBouFaker()
     headers = get_admin_headers()

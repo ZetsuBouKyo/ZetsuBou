@@ -8,6 +8,7 @@ from tests.general.session import DatabaseSession
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud():
     async with DatabaseSession():
         token_total_0 = await CrudTagToken.count_total()
@@ -87,6 +88,7 @@ async def test_crud():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_get_rows_by_name_order_by_id():
     async with DatabaseSession():
         token_name_1 = str(uuid4())

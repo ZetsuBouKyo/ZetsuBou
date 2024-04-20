@@ -161,6 +161,7 @@ def get_tokens(tokens: dict):
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_analyzers():
     async_elasticsearch = get_async_elasticsearch()
     async with ElasticsearchSession():

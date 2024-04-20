@@ -62,6 +62,7 @@ async def _test_generate_delete_galleries(
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_generate_delete_galleries():
     await generate_delete_galleries()
     await generate_delete_galleries()  # generate again
@@ -96,6 +97,7 @@ async def _test_generate_simple_galleries(
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_generate_simple_galleries():
     await generate_simple_galleries()
     await _test_generate_galleries(
@@ -113,6 +115,7 @@ async def _test_generate_nested_galleries(
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_generate_nested_galleries():
     await generate_nested_galleries()
 

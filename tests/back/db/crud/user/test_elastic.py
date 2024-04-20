@@ -13,7 +13,6 @@ from back.db.model import (
 from tests.general.session import UserSession
 
 
-@pytest.mark.asyncio
 async def case_1(
     crud: Union[CrudUserElasticCountQuery, CrudUserElasticSearchQuery],
     create_model: Union[UserElasticCountQueryCreate, UserElasticSearchQueryCreate],
@@ -73,6 +72,7 @@ async def case_1(
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud_elasticsearch_count_query():
     await case_1(
         CrudUserElasticCountQuery,
@@ -82,6 +82,7 @@ async def test_crud_elasticsearch_count_query():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud_elasticsearch_search_query():
     await case_1(
         CrudUserElasticSearchQuery,

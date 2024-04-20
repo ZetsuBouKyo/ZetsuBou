@@ -62,6 +62,7 @@ async def update_user_with_groups(
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud():
     fake = ZetsuBouFaker()
 
@@ -115,6 +116,7 @@ async def test_crud():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_get_row_by_id():
     async with DatabaseSession():
         users = await CrudUser.get_rows_order_by_id(is_desc=True)

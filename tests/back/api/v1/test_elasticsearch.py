@@ -5,6 +5,7 @@ from tests.general.api import get_admin_headers
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_get_query_examples(client: ZetsuBouAsyncClient):
     headers = get_admin_headers()
     async with client as ac:
@@ -13,6 +14,7 @@ async def test_get_query_examples(client: ZetsuBouAsyncClient):
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_get_analyzers(client: ZetsuBouAsyncClient):
     headers = get_admin_headers()
     async with client as ac:
@@ -21,6 +23,7 @@ async def test_get_analyzers(client: ZetsuBouAsyncClient):
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_get_gallery_field_names(client: ZetsuBouAsyncClient):
     headers = get_admin_headers()
     async with client as ac:
@@ -31,6 +34,7 @@ async def test_get_gallery_field_names(client: ZetsuBouAsyncClient):
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_get_video_field_names(client: ZetsuBouAsyncClient):
     headers = get_admin_headers()
     async with client as ac:

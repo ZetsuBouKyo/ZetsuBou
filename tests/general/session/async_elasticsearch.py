@@ -15,6 +15,7 @@ class ElasticsearchSession:
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test():  # pragma: no cover
     async with ElasticsearchSession():
         ...

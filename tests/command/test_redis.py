@@ -7,12 +7,14 @@ from tests.general.session import BaseIntegrationSession
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_ping():
     async with BaseIntegrationSession():
         await cli_runner(ping)
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_crud():
     async with BaseIntegrationSession():
         faker = ZetsuBouFaker()

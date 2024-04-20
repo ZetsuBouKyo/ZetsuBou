@@ -86,6 +86,7 @@ def test_extract_token_from_cookies():
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_verify_with_scopes():
     security_scopes_1 = SecurityScopes()
     with pytest.raises(NotAuthenticatedException):
@@ -145,6 +146,7 @@ async def test_verify_with_scopes():
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_verify_api_with_scopes():
     sub_1 = 1
     scopes_1 = [
@@ -159,6 +161,7 @@ async def test_verify_api_with_scopes():
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_verify_view_with_scope():
     security_scopes_1 = SecurityScopes()
     with pytest.raises(RequiresLoginException):

@@ -10,6 +10,7 @@ GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud():
     async with DatabaseSession():
         admin_group = await CrudGroup.get_row_with_scopes_by_name(ADMIN_GROUP_NAME)

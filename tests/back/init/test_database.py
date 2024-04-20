@@ -47,6 +47,7 @@ async def check_quest():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_initialization():
     async with DatabaseSession():
         await check_groups_and_scopes()

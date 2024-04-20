@@ -10,6 +10,7 @@ from tests.general.session import DatabaseSession
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud():
     async with DatabaseSession():
         scopes_all = await CrudScope.get_all_rows_order_by_id()
@@ -39,6 +40,7 @@ async def test_crud():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_init():
     async with DatabaseSession():
 

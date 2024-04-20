@@ -8,6 +8,7 @@ from tests.general.summary import print_api_request, print_api_response, print_d
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_crud(client: ZetsuBouAsyncClient):
     faker = ZetsuBouFaker()
     attrs = [faker.random_string(number=8, is_lower=True) for _ in range(5)]

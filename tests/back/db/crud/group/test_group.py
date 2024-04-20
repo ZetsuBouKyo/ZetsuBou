@@ -16,6 +16,7 @@ from tests.general.session import DatabaseSession
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud():
     faker = ZetsuBouFaker()
     async with DatabaseSession():
@@ -53,6 +54,7 @@ async def test_crud():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud_with_scope_ids():
     faker = ZetsuBouFaker()
     async with DatabaseSession():
@@ -100,6 +102,7 @@ async def test_crud_with_scope_ids():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_init():
     async with DatabaseSession():
         total_0 = await CrudGroup.count_total()
@@ -112,6 +115,7 @@ async def test_init():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_exception():
     async with DatabaseSession():
         with pytest.raises(HTTPException):

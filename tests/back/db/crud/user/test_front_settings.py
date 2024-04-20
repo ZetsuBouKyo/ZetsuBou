@@ -6,6 +6,7 @@ from tests.general.session import UserSession
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud():
     async with UserSession() as session:
         user_1 = session.created_user_with_groups

@@ -82,6 +82,7 @@ class TableSession(DatabaseSession):
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_table_session():
     async with TableSession():
         ...
@@ -90,6 +91,7 @@ async def test_table_session():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_batch_create():
     async with TableSession():
         faker = ZetsuBouFaker()
@@ -108,6 +110,7 @@ async def test_batch_create():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud():
     async with TableSession():
         faker = ZetsuBouFaker()
@@ -192,6 +195,7 @@ async def test_crud():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_get_rows_and_iter():
     num = 20
     async with TableSession(row_num=num):
@@ -293,6 +297,7 @@ async def test_get_rows_and_iter():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_get_rows_none():
     async with TableSession():
         rows_1 = await get_rows_order_by(A, A.id)
@@ -303,6 +308,7 @@ async def test_get_rows_none():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_get_all_rows():
     num = 100
     async with TableSession(row_num=num):
@@ -310,6 +316,7 @@ async def test_get_all_rows():
         assert len(rows) == num
 
 
+@pytest.mark.integration
 def test_table():
     table_names_1 = list_tables()
     for table_name in table_names_1:
@@ -325,6 +332,7 @@ def test_table():
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_reset_auto_increment():
     table_instances = get_table_instances()
     for _, table_instance in table_instances.items():

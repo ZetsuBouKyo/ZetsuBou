@@ -7,6 +7,7 @@ from tests.general.session import BaseIntegrationSession
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_async_redis():
     async with BaseIntegrationSession():
         faker = ZetsuBouFaker()

@@ -140,6 +140,7 @@ async def case_1(
 
 
 @pytest.mark.asyncio
+@pytest.mark.integration
 async def test_crud_gallery():
     await case_1(CrudSettingFrontGallery, SettingFrontGalleryUpdate)
     print_divider()

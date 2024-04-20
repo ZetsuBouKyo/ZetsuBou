@@ -11,6 +11,7 @@ SECRET_KEY = setting.storage_s3_aws_secret_access_key
 
 
 @pytest.mark.asyncio(scope="session")
+@pytest.mark.integration
 async def test_get_minio_list(client: ZetsuBouAsyncClient):
     headers = get_admin_headers()
     async with client as ac:

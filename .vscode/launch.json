@@ -3,7 +3,7 @@
     "configurations": [
         {
             "name": "Python: pytest",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "pytest",
             "args": ["-m", "info", "-s", "${file}"],
@@ -12,7 +12,7 @@
         },
         {
             "name": "Python: pytest-cov",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "pytest",
             "args": [
@@ -30,7 +30,7 @@
         },
         {
             "name": "Python: pytest-cov all",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "pytest",
             "args": [
@@ -48,7 +48,7 @@
         },
         {
             "name": "Python: App",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "app.py",
             "console": "integratedTerminal",
@@ -56,7 +56,7 @@
         },
         {
             "name": "Python: CLI run",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "cli.py",
             "args": ["run"],

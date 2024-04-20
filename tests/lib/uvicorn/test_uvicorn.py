@@ -8,8 +8,7 @@ from lib.uvicorn.files import check_files
 from tests.general.logger import logger
 
 
-@pytest.mark.asyncio(scope="session")
-async def test_change_reload():
+def test_change_reload():
     from lib import uvicorn
 
     config = Config("test")

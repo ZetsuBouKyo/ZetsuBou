@@ -2,12 +2,11 @@ from typing import Dict
 
 from fastapi import APIRouter
 
+from back.api.v1.init.ping import router as ping
 from back.dependency.security import api_security
 from back.init.check import check_host_port
 from back.init.statics import get_static_file
 from back.model.scope import ScopeEnum
-
-from .ping import router as ping
 
 PORTS = [5430, 5431, 5555, 6379, 6380, 8080, 9000, 9001, 9200]
 

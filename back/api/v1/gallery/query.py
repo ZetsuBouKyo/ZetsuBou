@@ -3,6 +3,8 @@ from urllib.parse import unquote
 
 from fastapi import APIRouter, Body, Depends, Request
 
+from back.api.model.gallery import CustomQuery, query_examples
+from back.api.v1.utils import get_tags_and_labels_by_query_params
 from back.crud.async_gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserElasticSearchQuery
 from back.dependency.security import Token, api_security, extract_token
@@ -10,9 +12,6 @@ from back.model.elasticsearch import AnalyzerEnum, Count, QueryBooleanEnum
 from back.model.gallery import Galleries, GalleryOrderedFieldEnum
 from back.model.scope import ScopeEnum
 from back.settings import setting
-
-from ...model.gallery import CustomQuery, query_examples
-from ..utils import get_tags_and_labels_by_query_params
 
 router = APIRouter(tags=["Gallery Query"])
 

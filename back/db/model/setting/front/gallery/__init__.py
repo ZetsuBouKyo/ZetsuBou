@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from ....tag.token import TagToken
+from back.db.model.tag.token import TagToken
 
 
 class SettingFrontGalleryCreate(BaseModel):

@@ -1,7 +1,7 @@
 from typing import List
 
 from back.crud.setting import (
-    get_airflow_simple_password,
+    get_airflow_standalone_password,
     get_setting_example,
     update_airflow_settings,
     update_settings,
@@ -93,7 +93,7 @@ def init_example_settings(setting: Setting = None) -> Setting:
         setting.airflow_username = get_setting_example("airflow_username")
     if setting.airflow_password is None:
         try:
-            setting.airflow_password = get_airflow_simple_password()
+            setting.airflow_password = get_airflow_standalone_password()
         except FileNotFoundError:
             setting.airflow_password = get_setting_example("airflow_password")
 

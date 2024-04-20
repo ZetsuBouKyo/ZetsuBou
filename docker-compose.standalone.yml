@@ -16,7 +16,7 @@ services:
       - ./etc:/workspace/etc
       - ./logs:/workspace/logs
     depends_on:
-      zetsubou-airflow:
+      zetsubou-airflow-standalone:
         condition: service_healthy
       # zetsubou-elasticsearch:
       #   condition: service_healthy
@@ -25,10 +25,10 @@ services:
       zetsubou-postgres:
         condition: service_healthy
 
-  zetsubou-airflow:
-    image: zetsuboukyo/airflow-simple:2.6.2-python3.8
-    container_name: zetsubou-airflow-simple
-    command: /bin/bash -c /opt/airflow/zetsubou/scripts/run-airflow-simple
+  zetsubou-airflow-standalone:
+    image: zetsuboukyo/airflow-standalone:2.6.2-python3.8
+    container_name: zetsubou-airflow-standalone
+    command: /bin/bash -c /opt/airflow/zetsubou/scripts/run-airflow-standalone
     network_mode: host
     healthcheck:
       test: ["CMD", "bash", "-c", "[ -f /opt/airflow/zetsubou/etc/settings.env ]"]
@@ -43,8 +43,8 @@ services:
       AIRFLOW_HOME: /etc/airflow
       WEB_SERVER_PORT: ${ZETSUBOU_AIRFLOW_WEB_SERVER_PORT:-8080}
     volumes:
-      - ${ZETSUBOU_AIRFLOW_SIMPLE_VOLUME:-./dev/volumes/airflow-simple}:/etc/airflow/
-      - ${ZETSUBOU_AIRFLOW_SIMPLE_DAGS_VOLUME:-./dags}:/etc/airflow/dags
+      - ${ZETSUBOU_AIRFLOW_STANDALONE_VOLUME:-./dev/volumes/airflow-standalone}:/etc/airflow/
+      - ${ZETSUBOU_AIRFLOW_STANDALONE_DAGS_VOLUME:-./dags}:/etc/airflow/dags
       - ${ZETSUBOU_AIRFLOW_ZETSUBOU_VOLUME:-./}:/opt/airflow/zetsubou
       - ${ZETSUBOU_AIRFLOW_DOWNLOAD_VOLUME-./dev/volumes/airflow-download}:/opt/airflow/download
 
@@ -74,7 +74,7 @@ services:
       - ${ZETSUBOU_ELASTICSEARCH_VOLUME:-./dev/volumes/elasticsearch}:/usr/share/elasticsearch/data
       - ${ZETSUBOU_ELASTICSEARCH_ANALYSIS_VOLUME:-./etc/analysis}:/usr/share/elasticsearch/config/analysis
     depends_on:
-      zetsubou-airflow:
+      zetsubou-airflow-standalone:
         condition: service_healthy
 
   zetsubou-minio:
@@ -98,7 +98,7 @@ services:
       # - postgres_data:/var/lib/postgresql/data
       - ${ZETSUBOU_STORAGE_S3_VOLUME:-./dev/volumes/minio}:/data
     depends_on:
-      zetsubou-airflow:
+      zetsubou-airflow-standalone:
         condition: service_healthy
 
   zetsubou-postgres:
@@ -121,7 +121,7 @@ services:
       timeout: 30s
     restart: always
     depends_on:
-      zetsubou-airflow:
+      zetsubou-airflow-standalone:
         condition: service_healthy
 
   zetsubou-redis:
@@ -136,7 +136,7 @@ services:
       timeout: 30s
     restart: always
     depends_on:
-      zetsubou-airflow:
+      zetsubou-airflow-standalone:
         condition: service_healthy
 
 networks:

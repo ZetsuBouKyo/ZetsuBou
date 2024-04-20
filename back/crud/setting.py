@@ -16,12 +16,12 @@ SETTING_HOME = Path(DEFAULT_SETTING_HOME)
 SETTING_PATH = SETTING_HOME / DEFAULT_SETTING_NAME
 
 AIRFLOW_SETTING_PATH = SETTING_HOME / DEFAULT_AIRFLOW_SETTING_NAME
-if setting.airflow_simple_volume is not None:
-    AIRFLOW_SIMPLE_PASSWORD_PATH = (
-        Path(setting.airflow_simple_volume) / "standalone_admin_password.txt"
+if setting.airflow_standalone_volume is not None:
+    AIRFLOW_STANDALONE_PASSWORD_PATH = (
+        Path(setting.airflow_standalone_volume) / "standalone_admin_password.txt"
     )
 else:
-    AIRFLOW_SIMPLE_PASSWORD_PATH = None
+    AIRFLOW_STANDALONE_PASSWORD_PATH = None
 
 
 def get_envs(setting: Setting) -> str:
@@ -39,8 +39,8 @@ def get_envs(setting: Setting) -> str:
     return "\n".join(envs)
 
 
-def get_airflow_simple_password(
-    password_path: Path = AIRFLOW_SIMPLE_PASSWORD_PATH,
+def get_airflow_standalone_password(
+    password_path: Path = AIRFLOW_STANDALONE_PASSWORD_PATH,
 ) -> str:
     if password_path is None or not password_path.exists():
         raise FileNotFoundError(f"[Errno 2] No such file: '{password_path}'")

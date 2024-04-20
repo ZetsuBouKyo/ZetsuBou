@@ -88,7 +88,7 @@ export interface Setting {
   airflow_password?: string;
   airflow_create_admin?: boolean;
   airflow_web_server_port?: number;
-  airflow_simple_volume?: string;
+  airflow_standalone_volume?: string;
   airflow_download_volume?: string;
   redis_url?: string;
   redis_port?: number;

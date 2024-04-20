@@ -46,7 +46,7 @@ def create_admin(
     )
 
 
-def init_airflow_simple(s: Setting):
+def init_airflow_standalone(s: Setting):
     if AIRFLOW_CREATE_ADMIN:
         output = subprocess.run(
             ["airflow", "users", "list", "-o", "json"], capture_output=True

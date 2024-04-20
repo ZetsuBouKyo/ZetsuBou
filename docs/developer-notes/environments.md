@@ -48,7 +48,7 @@ make build
 ```
 
 This command will build `zetsuboukyo/app:0.0.1-python-3.8.16-slim-buster` and
-`zetsuboukyo/airflow-simple:2.6.2-python3.8` docker images.
+`zetsuboukyo/airflow-standalone:2.6.2-python3.8` docker images.
 
 ### Build frontend
 

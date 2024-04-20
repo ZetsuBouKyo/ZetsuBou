@@ -244,17 +244,17 @@ class Setting(BaseSettings):
     airflow_password: Optional[str] = Field(default=None, examples=["airflow"])
     airflow_create_admin: Optional[bool] = Field(
         default=True,
-        description="If this value is true, an admin user will be created by `docker-compose.simple.yml` at startup.",
+        description="If this value is true, an admin user will be created by `docker-compose.standalone.yml` at startup.",
     )
     airflow_web_server_port: Optional[int] = Field(
         default=None,
         description="Environment variable for docker-compose.",
         examples=["8080"],
     )
-    airflow_simple_volume: Optional[str] = Field(
+    airflow_standalone_volume: Optional[str] = Field(
         default=None,
         description="Environment variable for docker-compose.",
-        examples=["./dev/volumes/airflow-simple"],
+        examples=["./dev/volumes/airflow-standalone"],
     )
     airflow_download_volume: Optional[str] = Field(
         default=None,

@@ -12,7 +12,7 @@ zetsubou_webapp: ZetsuBou Webapp
 zetsubou_cli: ZetsuBou CLI
 zetsubou_airflow_cli: ZetsuBou CLI in Airflow
 makefile: Makefile
-docker_compose: Docker Compose (./docker-compose.simple.yml)
+docker_compose: Docker Compose (./docker-compose.standalone.yml)
 
 zetsubou_file: ./etc/settings.env
 airflow_file: ./etc/settings.airflow.env

@@ -11,7 +11,7 @@ import typer
 from pdf2image import convert_from_path
 
 from back.crud.setting import update_settings
-from back.init.airflow import init_airflow_simple
+from back.init.airflow import init_airflow_standalone
 from back.init.check import ping
 from back.init.logger import UVICORN_LOGGING_CONFIG, init_zetsubou_logger
 from back.init.setting import init_example_settings
@@ -85,7 +85,7 @@ def init_example():
     s = init_example_settings()
 
     # create admin user from settings if admin user in settings does not exist
-    init_airflow_simple(s)
+    init_airflow_standalone(s)
 
 
 @app.command()

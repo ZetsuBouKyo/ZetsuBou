@@ -118,7 +118,7 @@ async def _generate_galleries(
     storage: StorageMinioCreate,
     callback: Callable[[StorageMinio, AsyncS3Session], Awaitable[None]],
     **kwargs,
-):
+) -> Tuple[StorageMinio, AsyncS3Session]:
     created_storage = await CrudStorageMinio.safe_create(storage)
     storage_session = await get_storage_session_by_source(created_storage.source)
     async with storage_session:
@@ -132,6 +132,7 @@ async def _generate_galleries(
             break
         else:
             await callback(created_storage, storage_session, **kwargs)
+    return created_storage, storage_session
 
 
 async def _generate_delete_galleries(
@@ -146,8 +147,8 @@ async def _generate_delete_galleries(
 
 async def generate_delete_galleries(
     storage: StorageMinioCreate = delete_gallery_storage,
-):
-    await _generate_galleries(storage, _generate_delete_galleries)
+) -> Tuple[StorageMinio, AsyncS3Session]:
+    return await _generate_galleries(storage, _generate_delete_galleries)
 
 
 async def _generate_simple_galleries(
@@ -163,8 +164,8 @@ async def _generate_simple_galleries(
 
 async def generate_simple_galleries(
     storage: StorageMinioCreate = simple_gallery_storage,
-):
-    await _generate_galleries(storage, _generate_simple_galleries)
+) -> Tuple[StorageMinio, AsyncS3Session]:
+    return await _generate_galleries(storage, _generate_simple_galleries)
 
 
 async def _generate_nested_galleries(
@@ -186,13 +187,13 @@ async def _generate_nested_galleries(
 
 async def generate_nested_galleries(
     storage: StorageMinioCreate = nested_gallery_storage,
-):
-    await _generate_galleries(storage, _generate_nested_galleries)
+) -> Tuple[StorageMinio, AsyncS3Session]:
+    return await _generate_galleries(storage, _generate_nested_galleries)
 
 
 async def generate_nested_10001_galleries(
     storage: StorageMinioCreate = nested_10001_gallery_storage,
-):
-    await _generate_galleries(
+) -> Tuple[StorageMinio, AsyncS3Session]:
+    return await _generate_galleries(
         storage, _generate_nested_galleries, layer_1_length=100, layer_2_length=101
     )

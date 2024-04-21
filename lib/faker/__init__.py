@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List, Optional, Tuple
 from uuid import uuid4
 
@@ -67,15 +68,15 @@ class ZetsuBouFaker(Faker):
         return [category.value for category in TagCategoryEnum]
 
     def tags(self) -> List[FakerTag]:
-        return tags
+        return deepcopy(tags)
 
     def simple_galleries(self) -> List[Gallery]:
-        return galleries
+        return deepcopy(galleries)
 
     def simple_gallery_by_name(self, name: str) -> Optional[Gallery]:
         for gallery in galleries:
             if gallery.name == name:
-                return gallery
+                return deepcopy(gallery)
         return None
 
     def random_minimum_gallery(self) -> Gallery:

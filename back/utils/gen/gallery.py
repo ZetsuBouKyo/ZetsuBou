@@ -11,6 +11,7 @@ from back.session.storage import get_storage_session_by_source
 from back.session.storage.async_s3 import AsyncS3Session
 from back.settings import setting
 from lib.faker import ZetsuBouFaker
+from lib.zetsubou.exceptions import StorageServiceNotFoundException
 
 DIR_FNAME = setting.gallery_dir_fname
 TAG_FNAME = setting.gallery_tag_fname
@@ -123,7 +124,7 @@ async def _generate_galleries(
     async with storage_session:
         ping = await storage_session.ping()
         if not ping:
-            return
+            raise StorageServiceNotFoundException
 
         async for _ in storage_session.iter_directories(
             created_storage.source, storage.depth

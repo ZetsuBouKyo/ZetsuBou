@@ -110,7 +110,9 @@ test:
 .PHONY: tests-cov tests-not-integration
 tests-cov:
 	pytest --cov=back --cov=command --cov=dags --cov=lib --cov=tests --cov-report term-missing tests/
-tests-not-integration:
+tests-cov-not-gen:
+	pytest -m "not gen" --cov=back --cov=command --cov=dags --cov=lib --cov=tests --cov-report term-missing tests/
+tests-cov-not-integration:
 	pytest -m "not integration" --cov=back --cov=command --cov=dags --cov=lib --cov=tests --cov-report term-missing tests/
 
 .PHONY: up-airflow-standalone up-standalone up

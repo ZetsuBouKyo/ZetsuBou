@@ -1,7 +1,7 @@
 import pytest
 
 from back.init.check import ping_elasticsearch
-from tests.general.exceptions import NotFoundException
+from lib.zetsubou.exceptions import NotFoundException
 
 
 class ElasticsearchSession:

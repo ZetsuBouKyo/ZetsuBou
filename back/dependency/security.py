@@ -10,7 +10,7 @@ from back.db.crud import CrudGroup
 from back.model.scope import ScopeEnum
 from back.security import Token, decode_token
 from back.settings import setting
-from back.utils.exceptions import NotAuthenticatedException, RequiresLoginException
+from lib.zetsubou.exceptions import NotAuthenticatedException, RequiresLoginException
 
 APP_SECURITY = setting.app_security
 SECRET = setting.app_security_secret

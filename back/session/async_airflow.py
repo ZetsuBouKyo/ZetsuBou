@@ -14,7 +14,7 @@ from back.model.airflow import (
     AirflowDagRunsResponse,
 )
 from back.settings import setting
-from back.utils.exceptions import (
+from lib.zetsubou.exceptions import (
     AirflowConflictInArgumentsException,
     AirflowDagIDNotFoundException,
 )

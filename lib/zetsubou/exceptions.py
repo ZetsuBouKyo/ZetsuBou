@@ -36,3 +36,16 @@ class NotAuthenticatedException(HTTPException):
             detail=detail,
             headers={"WWW-Authenticate": authenticate_value},
         )
+
+
+class BaseException(Exception):
+    def __init__(self, message: str):
+        super().__init__(message)
+
+
+NotFoundException = BaseException
+
+ServicesNotFoundException = NotFoundException("Services not found.")
+StorageServiceNotFoundException = NotFoundException("Storage service not found.")
+
+NotEmptyException = BaseException("Should be empty.")

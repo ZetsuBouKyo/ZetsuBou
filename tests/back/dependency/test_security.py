@@ -17,8 +17,8 @@ from back.dependency.security import (
 from back.model.group import BuiltInGroupEnum
 from back.model.scope import ScopeEnum
 from back.security import Token, create_access_token
-from back.utils.exceptions import NotAuthenticatedException, RequiresLoginException
 from lib.faker import ZetsuBouFaker
+from lib.zetsubou.exceptions import NotAuthenticatedException, RequiresLoginException
 from tests.general.logger import logger
 from tests.general.summary import print_divider
 

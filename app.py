@@ -16,8 +16,8 @@ from back.init.database import init_table
 from back.init.route import router as init
 from back.route import router as views
 from back.settings import setting
-from back.utils.exceptions import RequiresLoginException
 from cli import app as cli_app  # noqa
+from lib.zetsubou.exceptions import RequiresLoginException
 
 APP_SECURITY = setting.app_security
 TITLE = setting.app_title

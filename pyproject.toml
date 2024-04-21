@@ -70,6 +70,7 @@ pytest-cov = "^4.1.0"
 
 [tool.pytest.ini_options]
 markers = [
+    "gen: marks tests with the generated data.",
     "info: marks tests with the custom test report.",
     "integration: marks tests to run with Airflow, Elasticsearch, MinIO, PostgreSQL and Redis.",
 ]

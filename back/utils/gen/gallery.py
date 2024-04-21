@@ -85,7 +85,7 @@ def generate_image(
     return img_bytes.getvalue()
 
 
-async def generate_gallery(storage_session: StorageMinio, gallery: Gallery):
+async def generate_gallery(storage_session: AsyncS3Session, gallery: Gallery):
     if not gallery.path:
         return
 

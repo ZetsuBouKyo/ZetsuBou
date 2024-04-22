@@ -3,6 +3,7 @@ import typer
 from back.model.image import ImageFormatEnum
 from back.utils.keyword import KeywordParser
 from command.test.gallery import app as gallery
+from command.test.route import app as route
 from command.test.service import app as service
 from command.test.video import app as video
 from lib.typer import ZetsuBouTyper
@@ -14,8 +15,9 @@ Test the functions or services.
 app = ZetsuBouTyper(name="test", help=_help)
 
 app.add_typer(gallery)
-app.add_typer(video)
+app.add_typer(route)
 app.add_typer(service)
+app.add_typer(video)
 
 
 @app.command(name="parse-keywords")

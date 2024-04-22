@@ -69,7 +69,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
     async def match_phrase_prefix(self, keywords: str, size: int = 5):
         raise NotImplementedError()
 
-    async def iter(self) -> AsyncGenerator[dict]:
+    async def iter(self) -> AsyncGenerator[dict, None]:
         dsl = {
             "size": self.size,
             "query": {"match_all": {}},

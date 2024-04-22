@@ -79,7 +79,7 @@ class CrudStorageMinio(StorageMinioBase):
     @classmethod
     async def iter_by_category_order_by_id(
         cls, category: int, limit: int = 100, is_desc: bool = False
-    ) -> AsyncGenerator[StorageMinio]:
+    ) -> AsyncGenerator[StorageMinio, None]:
         async for row in iter_by_condition_order_by_id(
             cls, cls.category == category, StorageMinio, limit=limit, is_desc=is_desc
         ):
@@ -88,7 +88,7 @@ class CrudStorageMinio(StorageMinioBase):
     @classmethod
     async def iter_order_by_id(
         cls, limit: int = 100, is_desc: bool = False
-    ) -> AsyncGenerator[StorageMinio]:
+    ) -> AsyncGenerator[StorageMinio, None]:
         async for row in iter_order_by_id(
             cls, StorageMinio, limit=limit, is_desc=is_desc
         ):

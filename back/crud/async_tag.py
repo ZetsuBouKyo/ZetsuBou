@@ -265,11 +265,20 @@ class CrudTag:
 
     async def get_row_by_id(self, tag_id: int) -> Optional[TagInserted]:
         token = await CrudTagToken.get_row_by_id(tag_id)
-        if token is None:
-            return None
         elastic_tag = await self.get_row_by_id_by_elasticsearch(tag_id)
-        if elastic_tag is None:
+
+        if token is None:
+            if elastic_tag is not None:
+                logger_zetsubou.warning(
+                    f"tag ID: {tag_id} exists in Elasticsearch but not in the database."
+                )
             return None
+        if elastic_tag is None:
+            logger_zetsubou.warning(
+                f"tag ID: {tag_id} exists in database but not in the Elasticsearch."
+            )
+            return None
+
         elastic_tag = elastic_tag.model_dump()
         elastic_tag["name"] = token.name
         return TagInserted(**elastic_tag)

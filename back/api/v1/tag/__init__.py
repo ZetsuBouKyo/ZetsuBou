@@ -8,7 +8,7 @@ from back.dependency.base import get_pagination
 from back.dependency.security import api_security
 from back.model.base import Pagination
 from back.model.scope import ScopeEnum
-from back.model.tag import Tag, TagCreate, TagToken, TagUpdate
+from back.model.tag import Tag, TagCreate, TagInserted, TagToken, TagUpdate
 
 from .attribute import router as attribute
 from .token import router as token
@@ -51,10 +51,10 @@ async def get_interpretation_of_tag(tag_id: int) -> Tag:
 
 @router.get(
     "/tag/{tag_id}",
-    response_model=TagUpdate,
+    response_model=TagInserted,
     dependencies=[api_security([ScopeEnum.tag_get.value])],
 )
-async def get_tag(tag_id: int) -> TagUpdate:
+async def get_tag(tag_id: int) -> TagInserted:
     crud = CrudTag()
     return await crud.get_row_by_id(tag_id)
 

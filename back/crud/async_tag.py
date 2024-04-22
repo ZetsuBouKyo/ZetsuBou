@@ -263,7 +263,7 @@ class CrudTag:
             return None
         return TagElasticsearch(**source)
 
-    async def get_row_by_id(self, tag_id: int) -> Optional[TagUpdate]:
+    async def get_row_by_id(self, tag_id: int) -> Optional[TagInserted]:
         token = await CrudTagToken.get_row_by_id(tag_id)
         if token is None:
             return None
@@ -272,7 +272,7 @@ class CrudTag:
             return None
         elastic_tag = elastic_tag.model_dump()
         elastic_tag["name"] = token.name
-        return TagUpdate(**elastic_tag)
+        return TagInserted(**elastic_tag)
 
     async def get_interpretation_by_id(self, tag_id: int) -> Optional[Tag]:
         tag_in_ids = await self.get_row_by_id_by_elasticsearch(tag_id)

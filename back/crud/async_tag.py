@@ -191,7 +191,7 @@ class CrudTag:
 
         old_tag = None
         if tag.id is not None:
-            old_tag = await self.get_row_by_id_by_elastic(tag.id)
+            old_tag = await self.get_row_by_id_by_elasticsearch(tag.id)
 
         tag_category_ids_set = set(tag.category_ids)
         tag.category_ids = list(tag_category_ids_set)
@@ -251,7 +251,9 @@ class CrudTag:
     async def create(self, tag: TagCreate) -> TagInserted:
         return await self.insert(tag)
 
-    async def get_row_by_id_by_elastic(self, tag_id: int) -> Optional[TagElasticsearch]:
+    async def get_row_by_id_by_elasticsearch(
+        self, tag_id: int
+    ) -> Optional[TagElasticsearch]:
         try:
             hit = await self.async_elasticsearch.get(index=self.index, id=tag_id)
         except NotFoundError:
@@ -265,7 +267,7 @@ class CrudTag:
         token = await CrudTagToken.get_row_by_id(tag_id)
         if token is None:
             return None
-        elastic_tag = await self.get_row_by_id_by_elastic(tag_id)
+        elastic_tag = await self.get_row_by_id_by_elasticsearch(tag_id)
         if elastic_tag is None:
             return None
         elastic_tag = elastic_tag.model_dump()
@@ -273,7 +275,7 @@ class CrudTag:
         return TagUpdate(**elastic_tag)
 
     async def get_interpretation_by_id(self, tag_id: int) -> Optional[Tag]:
-        tag_in_ids = await self.get_row_by_id_by_elastic(tag_id)
+        tag_in_ids = await self.get_row_by_id_by_elasticsearch(tag_id)
         if tag_in_ids is None:
             return None
         token_ids = [tag_in_ids.id] + tag_in_ids.category_ids + tag_in_ids.synonym_ids

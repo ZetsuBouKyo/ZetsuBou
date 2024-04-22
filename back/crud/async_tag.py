@@ -60,7 +60,7 @@ class CrudAsyncElasticsearchTag(CrudAsyncElasticsearchBase[TagElastic]):
         )
 
     @property
-    def fields(self):
+    def fields(self) -> List[str]:
         return ["attributes.*"]
 
 

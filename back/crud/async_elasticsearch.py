@@ -1,18 +1,12 @@
 from collections import deque
-from typing import Any, Generic, List, Set, Tuple
+from typing import Any, AsyncGenerator, Generic, List, Set, Tuple
 
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import NotFoundError
 from elasticsearch.helpers import async_scan
 from fastapi import HTTPException
 
-from back.model.elasticsearch import (
-    AnalyzerEnum,
-    Count,
-    QueryBooleanEnum,
-    SearchResult,
-    SourceT,
-)
+from back.model.elasticsearch import AnalyzerEnum, Count, QueryBooleanEnum, SourceT
 from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
 from back.utils.keyword import KeywordParser
@@ -75,7 +69,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
     async def match_phrase_prefix(self, keywords: str, size: int = 5):
         raise NotImplementedError()
 
-    async def iter(self) -> dict:
+    async def iter(self) -> AsyncGenerator[dict]:
         dsl = {
             "size": self.size,
             "query": {"match_all": {}},
@@ -147,7 +141,9 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
         return new_pairs, remaining_keywords
 
-    def _get_ngram_constant_score_query(self, keywords: List[str], fuzziness: int = 0):
+    def _get_ngram_constant_score_query(
+        self, keywords: List[str], fuzziness: int = 0
+    ) -> List[Any]:
         _keywords_ngram = "".join(keywords)
 
         ngram_fields = []
@@ -190,7 +186,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
         return ngram_constant_score_query + non_ngram_constant_score_query
 
-    def _get_constant_score_query(self, keywords: str, fuzziness: int = 0):
+    def _get_constant_score_query(self, keywords: str, fuzziness: int = 0) -> List[Any]:
         return [
             {
                 "constant_score": {

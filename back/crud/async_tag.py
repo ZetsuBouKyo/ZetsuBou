@@ -24,8 +24,9 @@ from back.model.tag import (
     Tag,
     TagAttribute,
     TagCreate,
-    TagElastic,
+    TagElasticsearch,
     TagInsert,
+    TagInserted,
     TagToken,
     TagUpdate,
 )
@@ -40,7 +41,7 @@ ES_SIZE = setting.elastic_size
 ELASTICSEARCH_INDEX_TAG = setting.elastic_index_tag
 
 
-class CrudAsyncElasticsearchTag(CrudAsyncElasticsearchBase[TagElastic]):
+class CrudAsyncElasticsearchTag(CrudAsyncElasticsearchBase[TagElasticsearch]):
     def __init__(
         self,
         hosts: List[str] = None,
@@ -172,7 +173,7 @@ class CrudTag:
                 )
             )
 
-    async def _check_attribures(self, session: AsyncSession, tag):
+    async def _check_attribures(self, session: AsyncSession, tag: TagInsert):
         if tag.attributes:
             for attr_id in tag.attributes.keys():
                 rows = await session.execute(
@@ -185,7 +186,7 @@ class CrudTag:
                         detail=f"Token Attribute id: {attr_id} not found",
                     )
 
-    async def insert(self, tag: TagInsert) -> TagInsert:
+    async def insert(self, tag: TagInsert) -> TagInserted:
         tag = TagInsert(**tag.model_dump())
 
         old_tag = None
@@ -243,14 +244,14 @@ class CrudTag:
         await self.async_elasticsearch.index(
             index=self.index,
             id=tag.id,
-            document=TagElastic(**tag.model_dump()).model_dump(),
+            document=TagElasticsearch(**tag.model_dump()).model_dump(),
         )
         return tag
 
-    async def create(self, tag: TagCreate) -> TagInsert:
+    async def create(self, tag: TagCreate) -> TagInserted:
         return await self.insert(tag)
 
-    async def get_row_by_id_by_elastic(self, tag_id: int) -> Optional[TagElastic]:
+    async def get_row_by_id_by_elastic(self, tag_id: int) -> Optional[TagElasticsearch]:
         try:
             hit = await self.async_elasticsearch.get(index=self.index, id=tag_id)
         except NotFoundError:
@@ -258,7 +259,7 @@ class CrudTag:
         source = hit.get("_source", None)
         if source is None:
             return None
-        return TagElastic(**source)
+        return TagElasticsearch(**source)
 
     async def get_row_by_id(self, tag_id: int) -> Optional[TagUpdate]:
         token = await CrudTagToken.get_row_by_id(tag_id)
@@ -350,7 +351,7 @@ class CrudTag:
             tags.append(tag)
         return tags
 
-    async def update(self, tag: TagUpdate) -> TagInsert:
+    async def update(self, tag: TagUpdate) -> TagInserted:
         return await self.insert(tag)
 
     async def _delete_elastic(self, tag_id: int):
@@ -372,7 +373,7 @@ class CrudTag:
         ):
             hits = SearchResult(**doc)
             for hit in hits.hits.hits:
-                tag = TagElastic(**hit.source)
+                tag = TagElasticsearch(**hit.source)
                 try:
                     tag.category_ids.remove(tag_id)
                 except ValueError:

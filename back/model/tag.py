@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from back.utils.model import TagStr
 
@@ -20,10 +20,14 @@ class TagInsert(TagCreate):
     id: Optional[int] = None
 
 
+class TagInserted(TagCreate):
+    id: int
+
+
 TagUpdate = TagInsert
 
 
-class TagElastic(_TagBase):
+class TagElasticsearch(_TagBase):
     id: int
 
 

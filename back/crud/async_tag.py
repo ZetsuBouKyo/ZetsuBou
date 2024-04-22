@@ -186,6 +186,8 @@ class CrudTag:
                     )
 
     async def insert(self, tag: TagInsert) -> TagInsert:
+        tag = TagInsert(**tag.model_dump())
+
         old_tag = None
         if tag.id is not None:
             old_tag = await self.get_row_by_id_by_elastic(tag.id)
@@ -246,7 +248,7 @@ class CrudTag:
         return tag
 
     async def create(self, tag: TagCreate) -> TagInsert:
-        return await self.insert(TagInsert(**tag.model_dump()))
+        return await self.insert(tag)
 
     async def get_row_by_id_by_elastic(self, tag_id: int) -> Optional[TagElastic]:
         try:

@@ -351,7 +351,7 @@ class CrudTag:
         return tags
 
     async def update(self, tag: TagUpdate) -> TagInsert:
-        return await self.insert(TagInsert(**tag.model_dump()))
+        return await self.insert(tag)
 
     async def _delete_elastic(self, tag_id: int):
         query = {

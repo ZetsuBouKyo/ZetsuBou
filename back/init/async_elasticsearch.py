@@ -71,38 +71,40 @@ settings = {
     }
 }
 
-name_fields = {
-    "keyword": {"type": "keyword", "ignore_above": 256},
+text_fields = {
     "default": {
         "type": "text",
         "analyzer": AnalyzerEnum.DEFAULT.value,
         "search_analyzer": AnalyzerEnum.SYNONYM.value,
     },
-    "standard": {
-        "type": "text",
-        "analyzer": AnalyzerEnum.STANDARD.value,
-    },
+    "keyword": {"type": "keyword", "ignore_above": 256},
     "ngram": {
         "type": "text",
         "analyzer": AnalyzerEnum.NGRAM.value,
+    },
+    "standard": {
+        "type": "text",
+        "analyzer": AnalyzerEnum.STANDARD.value,
     },
 }
 
 url_fields = {
     "keyword": {"type": "keyword", "ignore_above": 256},
-    "standard": {
-        "type": "text",
-        "analyzer": AnalyzerEnum.STANDARD.value,
-    },
     "ngram": {
         "type": "text",
         "analyzer": AnalyzerEnum.NGRAM.value,
+    },
+    "standard": {
+        "type": "text",
+        "analyzer": AnalyzerEnum.STANDARD.value,
     },
     "url": {
         "type": "text",
         "analyzer": AnalyzerEnum.URL.value,
     },
 }
+
+token_fields = {"keyword": {"type": "keyword", "ignore_above": 256}}
 
 mappings = {
     "properties": {
@@ -112,15 +114,15 @@ mappings = {
         },
         "name": {
             "type": "text",
-            "fields": name_fields,
+            "fields": text_fields,
         },
         "raw_name": {
             "type": "text",
-            "fields": name_fields,
+            "fields": text_fields,
         },
         "other_names": {
             "type": "text",
-            "fields": name_fields,
+            "fields": text_fields,
         },
         "src": {
             "type": "text",
@@ -132,6 +134,26 @@ mappings = {
 
 gallery_mappings = copy.deepcopy(mappings)
 video_mappings = copy.deepcopy(mappings)
+tag_mappings = {
+    "dynamic_templates": [
+        {
+            "attribute_value": {
+                "path_match": "attributes.*",
+                "mapping": {
+                    "type": "text",
+                    "copy_to": "attribute_value",
+                    "fields": text_fields,
+                },
+            }
+        }
+    ],
+    "properties": {
+        "id": {"type": "text", "fields": token_fields},
+        "category_ids": {"type": "text", "fields": token_fields},
+        "synonym_ids": {"type": "text", "fields": token_fields},
+        "representative_id": {"type": "text", "fields": token_fields},
+    },
+}
 
 
 def get_field_analyzer_from_mapping(
@@ -164,23 +186,17 @@ async def safe_create(session: AsyncElasticsearch, index: str, body: dict):
 
 
 async def create_gallery(session: AsyncElasticsearch, index: str):
-    body = {
-        "settings": settings,
-        "mappings": gallery_mappings,
-    }
+    body = {"settings": settings, "mappings": gallery_mappings}
     await safe_create(session, index, body)
 
 
 async def create_video(session: AsyncElasticsearch, index: str):
-    body = {
-        "settings": settings,
-        "mappings": video_mappings,
-    }
+    body = {"settings": settings, "mappings": video_mappings}
     await safe_create(session, index, body)
 
 
 async def create_tag(session: AsyncElasticsearch, index):
-    body = {"settings": settings}
+    body = {"settings": settings, "mappings": tag_mappings}
     await safe_create(session, index, body)
 
 

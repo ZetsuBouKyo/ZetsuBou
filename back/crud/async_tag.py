@@ -19,7 +19,7 @@ from back.db.table import (
     TagTokenBase,
 )
 from back.logging import logger_zetsubou
-from back.model.elasticsearch import AnalyzerEnum, SearchResult
+from back.model.elasticsearch import AnalyzerEnum
 from back.model.tag import (
     Tag,
     TagAttribute,
@@ -382,28 +382,29 @@ class CrudTag:
         async for doc in async_scan(
             client=self.async_elasticsearch, query=query, index=self.index
         ):
-            hits = SearchResult(**doc)
-            for hit in hits.hits.hits:
-                tag = TagElasticsearch(**hit.source)
-                try:
-                    tag.category_ids.remove(tag_id)
-                except ValueError:
-                    pass
-                try:
-                    tag.synonym_ids.remove(tag_id)
-                except ValueError:
-                    pass
-                if tag.representative_id == tag_id:
-                    tag.representative_id = None
-                action = {
-                    "_index": self.index,
-                    "_id": tag.id,
-                    "_source": tag.model_dump(),
-                }
-                batches.append(action)
-                if len(batches) > self.batch_size:
-                    await async_bulk(self.async_elasticsearch, batches)
-                    batches = []
+            source = doc.get("_source", None)
+            if source is None:
+                continue
+            tag = TagElasticsearch(**source)
+            try:
+                tag.category_ids.remove(tag_id)
+            except ValueError:
+                pass
+            try:
+                tag.synonym_ids.remove(tag_id)
+            except ValueError:
+                pass
+            if tag.representative_id == tag_id:
+                tag.representative_id = None
+            action = {
+                "_index": self.index,
+                "_id": tag.id,
+                "_source": tag.model_dump(),
+            }
+            batches.append(action)
+            if len(batches) > self.batch_size:
+                await async_bulk(self.async_elasticsearch, batches)
+                batches = []
         if len(batches) > 0:
             await async_bulk(self.async_elasticsearch, batches)
 

@@ -365,7 +365,7 @@ class CrudTag:
     async def update(self, tag: TagUpdate) -> TagInserted:
         return await self.insert(tag)
 
-    async def _delete_elastic(self, tag_id: int):
+    async def delete_related_elasticsearch_docs(self, tag_id: int):
         query = {
             "query": {
                 "bool": {
@@ -413,7 +413,7 @@ class CrudTag:
                 await session.execute(
                     delete(TagTokenBase).where(TagTokenBase.id == tag_id)
                 )
-        await self._delete_elastic(tag_id)
+        await self.delete_related_elasticsearch_docs(tag_id)
         try:
             await self.async_elasticsearch.delete(index=self.index, id=tag_id)
         except NotFoundError:

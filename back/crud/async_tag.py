@@ -30,7 +30,7 @@ from back.model.tag import (
     TagToken,
     TagUpdate,
 )
-from back.session.async_db import async_session
+from back.session.async_db import DatabaseSession, async_session
 from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
 
@@ -68,12 +68,14 @@ class CrudAsyncElasticsearchTag(CrudAsyncElasticsearchBase[TagElasticsearch]):
 class CrudTag:
     def __init__(
         self,
+        async_database: DatabaseSession = async_session,
         async_elasticsearch: AsyncElasticsearch = get_async_elasticsearch(),
         index: str = INDEX,
         size: int = SIZE,
         batch_size: int = BATCH_SIZE,
     ):
         self.async_elasticsearch = async_elasticsearch
+        self.async_database = async_database
         self.index = index
         self.size = size
         self.batch_size = batch_size
@@ -214,7 +216,7 @@ class CrudTag:
             synonyms_ids_to_add = tag_synonym_ids_set - old_tag_synonym_ids_set
             synonyms_ids_to_delete = old_tag_synonym_ids_set - tag_synonym_ids_set
 
-        async with async_session() as session:
+        async with self.async_database() as session:
             async with session.begin():
                 if tag.id is None:
                     token = TagTokenBase(name=tag.name)
@@ -409,7 +411,7 @@ class CrudTag:
             await async_bulk(self.async_elasticsearch, batches)
 
     async def delete_by_id(self, tag_id: int) -> bool:
-        async with async_session() as session:
+        async with self.async_database() as session:
             async with session.begin():
                 await session.execute(
                     delete(TagTokenBase).where(TagTokenBase.id == tag_id)

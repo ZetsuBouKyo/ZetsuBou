@@ -144,7 +144,10 @@ async def analyze(
 
 
 @app.command()
-async def match_all(index: str = typer.Argument(..., help="Index name.")):
+async def match_all(
+    index: str = typer.Argument(..., help="Index name."),
+    size: int = typer.Option(default=10, help="Size."),
+):
     """
     Send `match_all` query.
     """
@@ -152,7 +155,7 @@ async def match_all(index: str = typer.Argument(..., help="Index name.")):
 
     query = {"match_all": {}}
     _resp = await async_elasticsearch.search(
-        index=index, query=query, track_total_hits=True
+        index=index, query=query, track_total_hits=True, size=size
     )
     print_json(data=_resp)
 

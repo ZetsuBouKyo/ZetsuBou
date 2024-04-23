@@ -24,7 +24,7 @@ class TagInserted(TagCreate):
     id: int
 
 
-TagUpdate = TagInsert
+TagUpdate = TagInserted
 
 
 class TagElasticsearch(_TagBase):

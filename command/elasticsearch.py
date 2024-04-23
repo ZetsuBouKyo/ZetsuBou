@@ -26,7 +26,9 @@ async def create_gallery_index(index: str = typer.Argument(..., help="Index name
     """
     Create gallery index.
     """
-    await create_gallery(get_async_elasticsearch(), index)
+    async_elasticsearch = get_async_elasticsearch()
+    await create_gallery(async_elasticsearch, index)
+    await async_elasticsearch.close()
 
 
 @app.command()
@@ -34,7 +36,9 @@ async def create_video_index(index: str = typer.Argument(..., help="Index name."
     """
     Create video index.
     """
-    await create_video(get_async_elasticsearch(), index)
+    async_elasticsearch = get_async_elasticsearch()
+    await create_video(async_elasticsearch, index)
+    await async_elasticsearch.close()
 
 
 @app.command()
@@ -42,7 +46,9 @@ async def create_tag_index(index: str = typer.Argument(..., help="Index name."))
     """
     Create tag index.
     """
+    async_elasticsearch = get_async_elasticsearch()
     await create_tag(get_async_elasticsearch(), index)
+    await async_elasticsearch.close()
 
 
 @app.command()
@@ -59,6 +65,8 @@ async def delete(index: str = typer.Argument(..., help="Index name.")):
     if await async_elasticsearch.indices.exists(index=index):
         await async_elasticsearch.indices.delete(index=index, ignore=[400, 404])
 
+    await async_elasticsearch.close()
+
 
 @app.command()
 async def list_indices():
@@ -71,14 +79,17 @@ async def list_indices():
     for index in indices.keys():
         print(index)
 
+    await async_elasticsearch.close()
+
 
 @app.command()
 async def init():
     """
     Initialize the indices if the index does not exist.
     """
-
-    await init_indices()
+    async_elasticsearch = get_async_elasticsearch()
+    await init_indices(sesion=async_elasticsearch)
+    await async_elasticsearch.close()
 
 
 @app.command()
@@ -92,7 +103,8 @@ async def reset():
     for index in indices.keys():
         if await async_elasticsearch.indices.exists(index=index):
             await async_elasticsearch.indices.delete(index=index, ignore=[400, 404])
-    await init_indices()
+    await init_indices(sesion=async_elasticsearch)
+    await async_elasticsearch.close()
 
 
 @app.command()
@@ -121,6 +133,8 @@ async def reindex(
         query=query,
     )
 
+    await async_elasticsearch.close()
+
 
 @app.command()
 async def analyze(
@@ -142,6 +156,8 @@ async def analyze(
     resp = await async_elasticsearch.indices.analyze(body=body, index=index)
     print_json(data=resp)
 
+    await async_elasticsearch.close()
+
 
 @app.command()
 async def match_all(
@@ -158,6 +174,8 @@ async def match_all(
         index=index, query=query, track_total_hits=True, size=size
     )
     print_json(data=_resp)
+
+    await async_elasticsearch.close()
 
 
 @app.command()
@@ -188,6 +206,8 @@ async def match_phrase_prefix(
     _resp = await async_elasticsearch.search(index=index, query=query, size=size)
     print_json(data=_resp)
 
+    await async_elasticsearch.close()
+
 
 @app.command()
 async def get_field_names(index: str = typer.Argument(..., help="Index name.")):
@@ -213,6 +233,8 @@ async def total(index: str = typer.Argument(..., help="Index name.")):
     total = _resp.get("hits", {}).get("total", {}).get("value", None)
     print(f"total: {total}")
 
+    await async_elasticsearch.close()
+
 
 @app.command()
 async def mapping(index: str = typer.Argument(..., help="Index name.")):
@@ -223,3 +245,5 @@ async def mapping(index: str = typer.Argument(..., help="Index name.")):
 
     _resp = await async_elasticsearch.indices.get_mapping(index=index)
     print_json(data=_resp)
+
+    await async_elasticsearch.close()

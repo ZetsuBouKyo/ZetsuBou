@@ -5,7 +5,12 @@ from elasticsearch.helpers import async_reindex
 from rich import print_json
 
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
-from back.init.async_elasticsearch import create_gallery, create_video, init_indices
+from back.init.async_elasticsearch import (
+    create_gallery,
+    create_tag,
+    create_video,
+    init_indices,
+)
 from back.model.elasticsearch import AnalyzerEnum
 from back.session.async_elasticsearch import get_async_elasticsearch
 from lib.typer import ZetsuBouTyper
@@ -30,6 +35,14 @@ async def create_video_index(index: str = typer.Argument(..., help="Index name."
     Create video index.
     """
     await create_video(get_async_elasticsearch(), index)
+
+
+@app.command()
+async def create_tag_index(index: str = typer.Argument(..., help="Index name.")):
+    """
+    Create tag index.
+    """
+    await create_tag(get_async_elasticsearch(), index)
 
 
 @app.command()

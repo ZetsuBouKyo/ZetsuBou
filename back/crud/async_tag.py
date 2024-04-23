@@ -309,7 +309,7 @@ class CrudTag:
             attribute_id_table[attribute.id] = attribute.name
 
         if inconsistent:
-            logger_zetsubou.info(
+            logger_zetsubou.warning(
                 f"There is an inconsistency in the tag ID {tag_id} in Elasticsearch."
             )
             return None

@@ -5,6 +5,7 @@ from back.db.crud import CrudTagAttribute
 from back.db.model import TagAttributeCreate
 from back.logging import logger_zetsubou
 from back.model.tag import Tag, TagInsert
+from back.session.async_elasticsearch import AsyncElasticsearch, get_async_elasticsearch
 from lib.faker import ZetsuBouFaker
 from lib.faker.tag import FakerTag
 
@@ -29,8 +30,11 @@ async def delete_tag_attributes():
             await CrudTagAttribute.delete_by_id(tag_attribute.id)
 
 
-async def get_tag(faker_tag: FakerTag) -> Optional[Tag]:
-    crud = CrudTag()
+async def get_tag(
+    faker_tag: FakerTag,
+    async_elasticsearch: AsyncElasticsearch = get_async_elasticsearch(),
+) -> Optional[Tag]:
+    crud = CrudTag(async_elasticsearch=async_elasticsearch)
     existing_tags = await crud.get_interpretations_by_name(faker_tag.name)
     faker_tag_categories = set(faker_tag.categories)
     for existing_tag in existing_tags:
@@ -49,14 +53,16 @@ async def get_tag(faker_tag: FakerTag) -> Optional[Tag]:
     return None
 
 
-async def generate_tags():
+async def generate_tags(
+    async_elasticsearch: AsyncElasticsearch = get_async_elasticsearch(),
+):
     tag_table: Dict[str, int] = {}
     faker = ZetsuBouFaker()
     tags = faker.tags()
 
-    crud = CrudTag()
+    crud = CrudTag(async_elasticsearch=async_elasticsearch)
     for faker_tag in tags:
-        existing_tag = await get_tag(faker_tag)
+        existing_tag = await get_tag(faker_tag, async_elasticsearch=async_elasticsearch)
         if existing_tag is not None:
             tag_table[existing_tag.name] = existing_tag.id
             continue
@@ -71,12 +77,14 @@ async def generate_tags():
         tag_table[inserted_tag.name] = inserted_tag.id
 
 
-async def delete_tags():
+async def delete_tags(
+    async_elasticsearch: AsyncElasticsearch = get_async_elasticsearch(),
+):
     faker = ZetsuBouFaker()
     tags = faker.tags()
     tags.reverse()
-    crud = CrudTag()
+    crud = CrudTag(async_elasticsearch=async_elasticsearch)
     for faker_tag in tags:
-        existing_tag = await get_tag(faker_tag)
+        existing_tag = await get_tag(faker_tag, async_elasticsearch=async_elasticsearch)
         if existing_tag is not None:
             await crud.delete_by_id(existing_tag.id)

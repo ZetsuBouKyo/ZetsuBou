@@ -6,6 +6,7 @@ import pytest
 from back.crud.async_tag import CrudTag
 from back.db.crud import CrudTagAttribute
 from back.model.tag import Tag, TagAttribute, TagToken
+from back.session.async_elasticsearch import get_async_elasticsearch
 from back.utils.gen.tag import (
     delete_tag_attributes,
     delete_tags,
@@ -84,16 +85,17 @@ async def test_generate_tag_attributes():
 @pytest.mark.gen
 @pytest.mark.integration
 async def test_generate_tags():
-    await delete_tags()
-    await delete_tags()
+    async_elasticsearch = get_async_elasticsearch()
+    await delete_tags(async_elasticsearch=async_elasticsearch)
+    await delete_tags(async_elasticsearch=async_elasticsearch)
 
-    await generate_tags()
-    await generate_tags()
+    await generate_tags(async_elasticsearch=async_elasticsearch)
+    await generate_tags(async_elasticsearch=async_elasticsearch)
 
     faker = ZetsuBouFaker()
     faker_tags = faker.tags()
     for faker_tag in faker_tags:
-        tag = await get_tag(faker_tag)
+        tag = await get_tag(faker_tag, async_elasticsearch=async_elasticsearch)
         assert tag is not None
 
     await delete_tags()

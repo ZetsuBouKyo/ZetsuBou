@@ -71,13 +71,17 @@ class Setting(BaseSettings):
     app_mode: AppModeEnum = AppModeEnum.CLUSTER
     app_timezone: str = Field(default="UTC", title="Timezone", examples=["Asia/Taipei"])
 
-    app_docs: bool = True
-    app_redoc: bool = True
+    app_docs: bool = Field(
+        default=True, title="Swagger", description="An API document."
+    )
+    app_redoc: bool = Field(default=True, title="ReDoc", description="An API document.")
 
-    app_title: str = Field(default="ZetsuBou")
+    app_title: str = Field(default="ZetsuBou", title="APP title")
     app_front: str = "./front/dist"
     app_front_docs: str = "./front/doc_site"
-    app_favicon: str = "/favicon.ico"
+    app_favicon: str = Field(
+        default="/favicon.ico", title="Favicon", description="A favicon relative URL."
+    )
     app_statics: str = "./statics"
 
     app_docs_swagger_js_url: str = Field(

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from back.crud.async_sync import get_crud_sync
 from back.db.model import StorageMinio
@@ -7,7 +7,7 @@ from back.init.check import ping
 from back.model.gallery import Gallery
 from back.session.storage.async_s3 import AsyncS3Session
 from back.settings import setting
-from back.utils.gen.gallery import generate_simple_galleries
+from back.utils.gen.gallery import generate_delete_galleries, generate_simple_galleries
 from lib.faker import ZetsuBouFaker
 from lib.zetsubou.exceptions import NotFoundException, ServicesNotFoundException
 
@@ -41,10 +41,8 @@ class BaseIntegrationSession:
     async def exit(self):
         ...
 
-        ...
 
-
-class SimpleGalleryIntegrationSession(BaseIntegrationSession):
+class GalleryIntegrationSession(BaseIntegrationSession):
     def __init__(
         self,
         faker: ZetsuBouFaker = ZetsuBouFaker(),
@@ -63,9 +61,12 @@ class SimpleGalleryIntegrationSession(BaseIntegrationSession):
         self.storage: Optional[StorageMinio] = None
         self.galleries: List[Gallery] = []
 
+    async def generate_galleries(self) -> Tuple[StorageMinio, AsyncS3Session]:
+        raise NotImplementedError
+
     async def enter(self):
         self.galleries = []
-        self.storage, self.storage_session = await generate_simple_galleries()
+        self.storage, self.storage_session = await self.generate_galleries()
 
         crud = await get_crud_sync(
             self.storage.source.protocol,
@@ -85,5 +86,12 @@ class SimpleGalleryIntegrationSession(BaseIntegrationSession):
                 gallery_tag = await self.storage_session.get_json(gallery_tag_source)
                 self.galleries.append(Gallery(**gallery_tag))
 
-    async def exit(self):
-        ...
+
+class SimpleGalleryIntegrationSession(GalleryIntegrationSession):
+    async def generate_galleries(self) -> Tuple[StorageMinio, AsyncS3Session]:
+        return await generate_simple_galleries()
+
+
+class DeleteGalleryIntegrationSession(GalleryIntegrationSession):
+    async def generate_galleries(self) -> Tuple[StorageMinio, AsyncS3Session]:
+        return await generate_delete_galleries()

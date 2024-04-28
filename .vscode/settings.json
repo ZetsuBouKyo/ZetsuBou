@@ -1,12 +1,15 @@
 {
     "[css]": {
-        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+        "editor.tabSize": 2
     },
     "[html]": {
-        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+        "editor.tabSize": 2
     },
     "[javascript]": {
-        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+        "editor.tabSize": 2
     },
     "[json]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -35,7 +38,8 @@
         "editor.tabSize": 4
     },
     "[typescript]": {
-        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+        "editor.tabSize": 2
     },
     "[vue]": {
         "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
@@ -43,7 +47,8 @@
             "source.fixAll": "explicit",
             "source.organizeImports": "explicit",
             "source.sortImports": "explicit"
-        }
+        },
+        "editor.tabSize": 2
     },
     "[yaml]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -51,10 +56,12 @@
             "comments": false,
             "other": true,
             "strings": true
-        }
+        },
+        "editor.tabSize": 2
     },
     "[yml]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
     },
     "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
     "editor.formatOnType": false,

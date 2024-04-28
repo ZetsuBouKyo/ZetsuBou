@@ -10,9 +10,9 @@ class SettingFrontGalleryCreate(BaseModel):
     tag_field_ids: List[int] = []
 
 
-SettingFrontGallery = (
-    SettingFrontGalleryUpdate
-) = SettingFrontGalleryCreated = SettingFrontGalleryCreate
+SettingFrontGallery = SettingFrontGalleryUpdate = SettingFrontGalleryCreated = (
+    SettingFrontGalleryCreate
+)
 
 
 class SettingFrontGalleryInterpretation(BaseModel):

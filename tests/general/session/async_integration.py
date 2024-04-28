@@ -35,11 +35,9 @@ class BaseIntegrationSession:
     async def __aexit__(self, exc_type, exc, tb):  # pragma: no cover
         await self.exit()
 
-    async def enter(self):
-        ...
+    async def enter(self): ...
 
-    async def exit(self):
-        ...
+    async def exit(self): ...
 
 
 class GalleryIntegrationSession(BaseIntegrationSession):

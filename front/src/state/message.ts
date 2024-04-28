@@ -75,7 +75,12 @@ export const messageState = reactive<MessageState>({
     _push(message);
   },
   pushWithLink: (detail: string, link: string) => {
-    const message: Message = { id: getUUID(), detail: detail, lastUpdated: new Date().toLocaleString(), link: link };
+    const message: Message = {
+      id: getUUID(),
+      detail: detail,
+      lastUpdated: new Date().toLocaleString(),
+      link: link,
+    };
     _push(message);
   },
   pushHistory: (message: Message) => {

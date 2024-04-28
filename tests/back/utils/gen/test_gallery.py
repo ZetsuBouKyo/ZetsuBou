@@ -41,8 +41,7 @@ async def test_generate_galleries():
         instance: AsyncS3Session = mock.return_value
         instance.ping.return_value = False
 
-        async def callback():
-            ...
+        async def callback(): ...
 
         with pytest.raises(Exception):
             await _generate_galleries(simple_gallery_storage, callback)

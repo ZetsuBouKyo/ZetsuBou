@@ -379,10 +379,10 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         }
 
         if keywords:
-            dsl["query"]["function_score"]["query"] = dsl[
-                "query"
-            ] = await self.get_match_query(
-                keywords, fuzziness=fuzziness, boolean=boolean
+            dsl["query"]["function_score"]["query"] = dsl["query"] = (
+                await self.get_match_query(
+                    keywords, fuzziness=fuzziness, boolean=boolean
+                )
             )
 
         return await self.query(page, dsl)

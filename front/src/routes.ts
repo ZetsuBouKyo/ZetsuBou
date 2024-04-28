@@ -60,8 +60,16 @@ export const routes = [
         component: Galleries,
         meta: { title: "Gallery", search: SearchCategory.Gallery, base: SearchBase.Search },
         children: [
-          { path: "random", component: Galleries, meta: { title: "Gallery Random", base: SearchBase.Random } },
-          { path: "search", component: Galleries, meta: { title: "Gallery Search", base: SearchBase.Search } },
+          {
+            path: "random",
+            component: Galleries,
+            meta: { title: "Gallery Random", base: SearchBase.Random },
+          },
+          {
+            path: "search",
+            component: Galleries,
+            meta: { title: "Gallery Search", base: SearchBase.Search },
+          },
           {
             path: "advanced-search",
             component: Galleries,
@@ -110,7 +118,11 @@ export const routes = [
           { path: "account", component: SettingAccount, meta: { title: "Account" } },
           { path: "appearance", component: SettingAppearance, meta: { title: "Appearance" } },
           { path: "authentication", component: SettingAuthentication, meta: { title: "Authentication" } },
-          { path: "elasticsearch-count", component: SettingElasticsearchCount, meta: { title: "Elasticsearch Count" } },
+          {
+            path: "elasticsearch-count",
+            component: SettingElasticsearchCount,
+            meta: { title: "Elasticsearch Count" },
+          },
           {
             path: "elasticsearch-count-quest",
             component: SettingElasticsearchCountQuest,

@@ -5,11 +5,11 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 onMounted(async () => {
-  await router.isReady();
+    await router.isReady();
 });
 </script>
 <template>
-  <main>
-    <router-view class="text-gray-400" />
-  </main>
+    <main>
+        <router-view class="text-gray-400" />
+    </main>
 </template>

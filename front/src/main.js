@@ -8,8 +8,8 @@ import { routes } from "./routes.ts";
 const app = createApp(App);
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
+    history: createWebHistory(),
+    routes,
 });
 
 app.use(router);

@@ -13,31 +13,31 @@
 @import "@/layouts/Setting/setting.css";
 
 @layer base {
-  a {
-    @apply focus:outline-none;
-  }
+    a {
+        @apply focus:outline-none;
+    }
 }
 
 @layer utilities {
-  .scrollbar-gray-900-2::-webkit-scrollbar {
-    @apply w-2 h-full bg-gray-900 rounded-md;
-  }
-  .scrollbar-gray-900-2::-webkit-scrollbar-thumb {
-    background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
-    @apply bg-gray-800 rounded-md;
-  }
-  .scrollbar-gray-900-2::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-600;
-  }
+    .scrollbar-gray-900-2::-webkit-scrollbar {
+        @apply w-2 h-full bg-gray-900 rounded-md;
+    }
+    .scrollbar-gray-900-2::-webkit-scrollbar-thumb {
+        background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+        @apply bg-gray-800 rounded-md;
+    }
+    .scrollbar-gray-900-2::-webkit-scrollbar-thumb:hover {
+        @apply bg-gray-600;
+    }
 
-  .scrollbar-gray-100-2::-webkit-scrollbar {
-    @apply w-2 h-full bg-gray-100 rounded-md;
-  }
-  .scrollbar-gray-100-2::-webkit-scrollbar-thumb {
-    background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
-    @apply bg-gray-500 rounded-md;
-  }
-  .scrollbar-gray-100-2::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-900;
-  }
+    .scrollbar-gray-100-2::-webkit-scrollbar {
+        @apply w-2 h-full bg-gray-100 rounded-md;
+    }
+    .scrollbar-gray-100-2::-webkit-scrollbar-thumb {
+        background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+        @apply bg-gray-500 rounded-md;
+    }
+    .scrollbar-gray-100-2::-webkit-scrollbar-thumb:hover {
+        @apply bg-gray-900;
+    }
 }

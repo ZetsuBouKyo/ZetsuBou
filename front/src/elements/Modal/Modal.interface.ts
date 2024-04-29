@@ -1,4 +1,4 @@
 export enum ModalPosition {
-  fixed = "fixed",
-  absolute = "absolute",
+    fixed = "fixed",
+    absolute = "absolute",
 }

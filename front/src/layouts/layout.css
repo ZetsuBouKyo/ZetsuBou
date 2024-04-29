@@ -1,5 +1,5 @@
 @layer utilities {
-  .layout-container {
-    @apply flex flex-col w-2/3 mx-auto mt-4;
-  }
+    .layout-container {
+        @apply flex flex-col w-2/3 mx-auto mt-4;
+    }
 }

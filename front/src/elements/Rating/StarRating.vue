@@ -2,16 +2,16 @@
 import Rating from "./index.vue";
 
 interface Props {
-  filled: number;
+    filled: number;
 }
 withDefaults(defineProps<Props>(), { filled: undefined });
 </script>
 
 <template>
-  <div v-if="filled !== null && filled !== undefined">
-    <rating :filled="filled" />
-  </div>
-  <div v-else>
-    <rating :filled="0" />
-  </div>
+    <div v-if="filled !== null && filled !== undefined">
+        <rating :filled="filled" />
+    </div>
+    <div v-else>
+        <rating :filled="0" />
+    </div>
 </template>

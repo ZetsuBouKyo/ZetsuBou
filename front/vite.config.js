@@ -6,29 +6,29 @@ import IconsResolver from "unplugin-icons/resolver";
 import path from "path";
 
 export default defineConfig({
-  plugins: [
-    vue(),
-    Components({
-      dirs: [],
-      resolvers: [
-        // auto import icons
-        // https://github.com/antfu/unplugin-icons
-        IconsResolver({
-          componentPrefix: "icon",
+    plugins: [
+        vue(),
+        Components({
+            dirs: [],
+            resolvers: [
+                // auto import icons
+                // https://github.com/antfu/unplugin-icons
+                IconsResolver({
+                    componentPrefix: "icon",
+                }),
+            ],
         }),
-      ],
-    }),
-    Icons(),
-  ],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "/src"),
+        Icons(),
+    ],
+    resolve: {
+        alias: {
+            "@": path.resolve(__dirname, "/src"),
+        },
     },
-  },
-  server: {
-    open: true,
-  },
-  build: {
-    sourcemap: true,
-  },
+    server: {
+        open: true,
+    },
+    build: {
+        sourcemap: true,
+    },
 });

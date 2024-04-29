@@ -3,48 +3,48 @@
         "scope": "vue",
         "prefix": "<te",
         "body": ["<template>", "</template>", "", "<script lang=\"ts\">", "\texport default {", "\t}", "</script>", ""],
-        "description": "ZetsuBou"
+        "description": "ZetsuBou",
     },
     "ZetsuBou props": {
         "scope": "vue,javascript,typescript",
         "prefix": "pr",
         "body": ["props: {", "\t$2: {", "\t\ttype: Object as PropType<$1>,", "\t\tdefault: undefined,", "\t},", "},"],
-        "description": "ZetsuBou"
+        "description": "ZetsuBou",
     },
     "ZetsuBou watch": {
         "scope": "vue,javascript,typescript",
         "prefix": "wa",
         "body": ["watch(", "\t() => $1,", "\t() => {}", ")"],
-        "description": "ZetsuBou"
+        "description": "ZetsuBou",
     },
     "ZetsuBou setup": {
         "scope": "vue,javascript,typescript",
         "prefix": "se",
         "body": ["setup(props) {", "\treturn {...props}", "}"],
-        "description": "ZetsuBou"
+        "description": "ZetsuBou",
     },
     "ZetsuBou PropType": {
         "scope": "vue,javascript,typescript",
         "prefix": ["PropType", "PropType "],
         "body": ["import { PropType } from \"vue\";"],
-        "description": "ZetsuBou"
+        "description": "ZetsuBou",
     },
     "ZetsuBou props interface and withDefaults": {
         "scope": "vue,javascript,typescript",
         "prefix": ["i", "in", "int", "interface"],
         "body": ["interface Props {", "}", "const props = withDefaults(defineProps<Props>(), {", "});"],
-        "description": "ZetsuBou"
+        "description": "ZetsuBou",
     },
     "ZetsuBou withDefaults": {
         "scope": "vue,javascript,typescript",
         "prefix": ["wi", "wit", "with"],
         "body": ["withDefaults(defineProps<Props>(), {", "});"],
-        "description": "ZetsuBou"
+        "description": "ZetsuBou",
     },
     "ZetsuBou props withDefaults": {
         "scope": "vue,javascript,typescript",
         "prefix": ["c", "co", "con", "const"],
         "body": ["const props = withDefaults(defineProps<Props>(), {", "});"],
-        "description": "ZetsuBou"
-    }
+        "description": "ZetsuBou",
+    },
 }

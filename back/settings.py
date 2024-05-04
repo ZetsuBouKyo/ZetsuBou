@@ -282,6 +282,11 @@ class Setting(BaseSettings):
         description="Relative path to store the sqlite file.",
     )
 
+    test_volumes_files: Optional[str] = Field(
+        default="dev/volumes/tests/files",
+        description="Relative path to store the files for testing.",
+    )
+
     test_database_url_postgresql: Optional[str] = Field(
         default=None,
         examples=["postgresql+asyncpg://zetsubou:zetsubou@localhost:5430/zetsubou"],

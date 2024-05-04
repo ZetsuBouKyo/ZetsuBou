@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from airflow import DAG
-from airflow.operators.bash import BashOperator
+from airflow import DAG  # type: ignore
+from airflow.operators.bash import BashOperator  # type: ignore
 from model import Task
 
 PYTHON_PATH = "/opt/airflow/zetsubou-venv/.venv/bin/python3"
@@ -93,7 +93,7 @@ try:
     import sys
 
     sys.path.append("/opt/airflow/zetsubou")
-    from plugins.dags import plugin_tasks
+    from plugins.dags import plugin_tasks  # type: ignore
 
     tasks += plugin_tasks
 except ModuleNotFoundError:

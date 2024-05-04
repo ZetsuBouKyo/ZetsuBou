@@ -1,7 +1,7 @@
 import json
 from collections import defaultdict
 from datetime import datetime, timezone
-from typing import List
+from typing import DefaultDict, List
 from urllib.parse import urljoin
 
 import httpx
@@ -30,7 +30,7 @@ headers = {
     "Content-Type": "application/json",
 }
 
-dags = defaultdict(lambda: None)
+dags: DefaultDict[str, AirflowDagCommandSchema] = defaultdict(lambda: None)
 
 
 class AsyncAirflowSession:

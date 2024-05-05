@@ -6,7 +6,12 @@ from elasticsearch.exceptions import NotFoundError
 from elasticsearch.helpers import async_scan
 from fastapi import HTTPException
 
-from back.model.elasticsearch import AnalyzerEnum, Count, QueryBooleanEnum, SourceT
+from back.model.elasticsearch import (
+    AnalyzerEnum,
+    ElasticsearchCountResult,
+    ElasticsearchQueryBooleanEnum,
+    SourceT,
+)
 from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
 from back.utils.keyword import KeywordParser
@@ -81,7 +86,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         async for doc in async_scan(
             client=self.async_elasticsearch, query=dsl, index=self.index
         ):
-            # resp = SearchResult[SourceT](**doc)
+            # resp = ElasticsearchSearchResult[SourceT](**doc)
             yield doc
 
     async def get_field_names(self) -> Set[str]:
@@ -206,7 +211,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         self,
         keywords: str,
         fuzziness: int = 0,
-        boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+        boolean: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     ) -> dict:
         field_names = await self.get_field_names()
         parser = KeywordParser()
@@ -271,7 +276,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         field_name: str,
         analyzer: AnalyzerEnum,
         fuzziness: int,
-        boolean: QueryBooleanEnum,
+        boolean: ElasticsearchQueryBooleanEnum,
     ):
         if type(analyzer) is not str:
             _analyzer = analyzer.value
@@ -319,7 +324,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
             if page > (total // self.size + 1):
                 _resp = {"hits": {}}
-                # sources = SearchResult[SourceT](**{"hits": {}})
+                # sources = ElasticsearchSearchResult[SourceT](**{"hits": {}})
             else:
                 page -= max_page
 
@@ -346,28 +351,28 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
                 _resp = await self.async_elasticsearch.search(
                     index=self.index, body=dsl
                 )
-                # sources = SearchResult[SourceT](**_resp)
+                # sources = ElasticsearchSearchResult[SourceT](**_resp)
 
         else:
             dsl["from"] = self.get_from(page)
             _resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
-            # sources = SearchResult[SourceT](**_resp)
+            # sources = ElasticsearchSearchResult[SourceT](**_resp)
 
         return _resp
 
     async def custom(self, body: dict) -> dict:
         return await self.advanced_search(index=self.index, body=body)
 
-    async def count(self, body: dict) -> Count:
+    async def count(self, body: dict) -> ElasticsearchCountResult:
         _resp = await self.async_elasticsearch.count(index=self.index, body=body)
-        return Count(**_resp)
+        return ElasticsearchCountResult(**_resp)
 
     async def random(
         self,
         page: int,
         keywords: str = "",
         fuzziness: int = 0,
-        boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+        boolean: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         seed: int = 1048596,
     ) -> dict:
         dsl = self.get_basic_dsl()
@@ -396,7 +401,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         page: int,
         keywords: str,
         fuzziness: int = 0,
-        boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+        boolean: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     ) -> dict:
         if keywords is None or keywords == "":
             return await self.match_all(page)
@@ -435,5 +440,5 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             _resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
         except NotFoundError:
             raise HTTPException(status_code=404, detail=f"{id} not found")
-        # sources = SearchResult[SourceT](**_resp)
+        # sources = ElasticsearchSearchResult[SourceT](**_resp)
         return _resp

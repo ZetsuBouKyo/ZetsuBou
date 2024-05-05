@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from back.model.elasticsearch import SearchResult
+from back.model.elasticsearch import ElasticsearchSearchResult
 from back.model.source import Source, SourceAttributes
 
 
@@ -27,4 +27,4 @@ class Video(Source):
     attributes: VideoAttributes = VideoAttributes()
 
 
-Videos = SearchResult[Video]
+Videos = ElasticsearchSearchResult[Video]

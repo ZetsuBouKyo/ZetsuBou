@@ -11,7 +11,7 @@ from back.crud.async_progress import Progress
 from back.init.check import ping_elasticsearch, ping_storage
 from back.logging import logger_zetsubou
 from back.model.base import SourceBaseModel, SourceProtocolEnum
-from back.model.elasticsearch import AnalyzerEnum, QueryBooleanEnum
+from back.model.elasticsearch import AnalyzerEnum, ElasticsearchQueryBooleanEnum
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
 from back.model.task import ZetsuBouTaskProgressEnum
 from back.session.async_elasticsearch import get_async_elasticsearch
@@ -126,23 +126,23 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
         keywords: str = None,
         keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         keywords_fuzziness: int = 0,
-        keywords_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+        keywords_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         name: str = None,
         name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         name_fuzziness: int = 0,
-        name_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+        name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         raw_name: str = None,
         raw_name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
         raw_name_fuzziness: int = 0,
-        raw_name_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+        raw_name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         src: str = None,
         src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
         src_fuzziness: int = 0,
-        src_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+        src_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         path: str = None,
         path_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
         path_fuzziness: int = 0,
-        path_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+        path_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         category: str = None,
         uploader: str = None,
         rating_gte: int = None,

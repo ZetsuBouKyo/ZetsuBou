@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import Field
 
 from back.model.base import SourceBaseModel
-from back.model.elasticsearch import SearchResult
+from back.model.elasticsearch import ElasticsearchSearchResult
 from back.model.source import Source, SourceAttributes
 from back.settings import setting
 
@@ -50,4 +50,4 @@ class Gallery(Source):
         return cls.get_joined_source(cls._tag_dir, cls._tag_fname)
 
 
-Galleries = SearchResult[Gallery]
+Galleries = ElasticsearchSearchResult[Gallery]

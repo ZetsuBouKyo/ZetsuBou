@@ -2,14 +2,16 @@ from typing import List
 
 from fastapi import APIRouter
 
+from back.api.model.elasticsearch import (
+    ElasticsearchAnalyzer,
+    ElasticsearchQueryExample,
+    query_examples,
+)
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.dependency.security import api_security
 from back.model.elasticsearch import AnalyzerEnum
 from back.model.scope import ScopeEnum
 from back.settings import setting
-
-from ...model.elasticsearch import ElasticsearchAnalyzer, ElasticsearchQueryExample
-from ...model.gallery import query_examples
 
 GALLERY_INDEX = setting.elastic_index_gallery
 VIDEO_INDEX = setting.elastic_index_video

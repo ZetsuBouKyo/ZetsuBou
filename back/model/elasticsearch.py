@@ -18,33 +18,33 @@ class AnalyzerEnum(str, Enum):
     URL: str = "url"
 
 
-class QueryBooleanEnum(str, Enum):
+class ElasticsearchQueryBooleanEnum(str, Enum):
     MUST: str = "must"
     SHOULD: str = "should"
 
 
-class Total(BaseModel):
+class ElasticsearchTotal(BaseModel):
     value: int = 0
 
 
-class Hit(BaseModel, Generic[SourceT]):
+class ElasticsearchHit(BaseModel, Generic[SourceT]):
     id: str = Field(alias="_id")
     source: Optional[SourceT] = Field(default={}, alias="_source")
     score: Optional[float] = Field(default=None, alias="_score")
     sort: List[Any] = Field(default=[])
 
 
-class Hits(BaseModel, Generic[SourceT]):
-    total: Total = Total()
-    hits: List[Hit[SourceT]] = []
+class ElasticsearchHits(BaseModel, Generic[SourceT]):
+    total: ElasticsearchTotal = ElasticsearchTotal()
+    hits: List[ElasticsearchHit[SourceT]] = []
 
 
-class SearchResult(BaseModel, Generic[SourceT]):
+class ElasticsearchSearchResult(BaseModel, Generic[SourceT]):
     scroll_id: Optional[str] = Field(default=None, alias="_scroll_id")
-    hits: Hits[SourceT] = Field(default=Hits[SourceT]())
+    hits: ElasticsearchHits[SourceT] = Field(default=ElasticsearchHits[SourceT]())
 
 
-class Count(BaseModel):
+class ElasticsearchCountResult(BaseModel):
     count: int
 
 

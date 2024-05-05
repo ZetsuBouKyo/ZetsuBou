@@ -438,7 +438,7 @@ async def test_crud_tag():
 async def test_temp():
     from elasticsearch.helpers import async_scan
 
-    from back.model.elasticsearch import SearchResult
+    from back.model.elasticsearch import ElasticsearchSearchResult
     from back.session.async_elasticsearch import get_async_elasticsearch
     from back.settings import setting
 
@@ -462,6 +462,6 @@ async def test_temp():
         client=async_elasticsearch, query=query, index=index, size=10
     ):
         print(doc)
-        hits = SearchResult(**doc)
+        hits = ElasticsearchSearchResult(**doc)
         for hit in hits.hits.hits:
             print(hit)

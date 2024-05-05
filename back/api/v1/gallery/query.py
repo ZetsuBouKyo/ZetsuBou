@@ -3,12 +3,16 @@ from urllib.parse import unquote
 
 from fastapi import APIRouter, Body, Depends, Request
 
-from back.api.model.gallery import CustomQuery, query_examples
+from back.api.model.elasticsearch import ElasticsearchBody, query_examples
 from back.api.v1.utils import get_tags_and_labels_by_query_params
 from back.crud.async_gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserElasticSearchQuery
 from back.dependency.security import Token, api_security, extract_token
-from back.model.elasticsearch import AnalyzerEnum, Count, QueryBooleanEnum
+from back.model.elasticsearch import (
+    AnalyzerEnum,
+    ElasticsearchCountResult,
+    ElasticsearchQueryBooleanEnum,
+)
 from back.model.gallery import Galleries, GalleryOrderedFieldEnum
 from back.model.scope import ScopeEnum
 from back.settings import setting
@@ -18,7 +22,7 @@ router = APIRouter(tags=["Gallery Query"])
 ELASTIC_SIZE = setting.elastic_size
 
 
-def get_body(query: CustomQuery):
+def get_body(query: ElasticsearchBody):
     body = query.body
     body = unquote(json.dumps(body))
     body = json.loads(body)
@@ -27,10 +31,10 @@ def get_body(query: CustomQuery):
 
 @router.get(
     "/count/{field}/{value}",
-    response_model=Count,
+    response_model=ElasticsearchCountResult,
     dependencies=[api_security([ScopeEnum.gallery_count_field_value_get.value])],
 )
-async def get_count_field(field: str, value: str):
+async def get_count_field(field: str, value: str) -> ElasticsearchCountResult:
     body = {"query": {"terms": {field: [value]}}}
     async with CrudAsyncElasticsearchGallery(is_from_setting_if_none=True) as crud:
         count = await crud.count(body)
@@ -39,10 +43,12 @@ async def get_count_field(field: str, value: str):
 
 @router.post(
     "/count",
-    response_model=Count,
+    response_model=ElasticsearchCountResult,
     dependencies=[api_security([ScopeEnum.gallery_count_post.value])],
 )
-async def post_count(query: CustomQuery = Body(..., examples=query_examples)) -> Count:
+async def post_count(
+    query: ElasticsearchBody = Body(..., examples=query_examples)
+) -> ElasticsearchCountResult:
     body = get_body(query)
     async with CrudAsyncElasticsearchGallery(is_from_setting_if_none=True) as crud:
         count = await crud.count(body)
@@ -61,7 +67,7 @@ async def get_random(
     page: int = 1,
     fuzziness: int = 0,
     size: int = ELASTIC_SIZE,
-    boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+    boolean: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
 ) -> Galleries:
     keywords = unquote(keywords)
     async with CrudAsyncElasticsearchGallery(
@@ -78,7 +84,9 @@ async def get_random(
     response_model=dict,
     dependencies=[api_security([ScopeEnum.gallery_custom_search_post.value])],
 )
-async def post_custom_search(query: CustomQuery = Body(..., examples=query_examples)):
+async def post_custom_search(
+    query: ElasticsearchBody = Body(..., examples=query_examples)
+):
     body = get_body(query)
     async with CrudAsyncElasticsearchGallery(is_from_setting_if_none=True) as crud:
         docs = await crud.custom(body)
@@ -97,23 +105,23 @@ async def get_advanced_search(
     keywords: str = None,
     keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     keywords_fuzziness: int = 0,
-    keywords_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+    keywords_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     name: str = None,
     name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     name_fuzziness: int = 0,
-    name_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+    name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     raw_name: str = None,
     raw_name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
     raw_name_fuzziness: int = 0,
-    raw_name_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+    raw_name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     src: str = None,
     src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
     src_fuzziness: int = 0,
-    src_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+    src_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     path: str = None,
     path_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
     path_fuzziness: int = 0,
-    path_bool: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+    path_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     category: str = None,
     uploader: str = None,
     rating_gte: int = None,
@@ -182,7 +190,7 @@ async def get_search(
     page: int = 1,
     fuzziness: int = 0,
     size: int = ELASTIC_SIZE,
-    boolean: QueryBooleanEnum = QueryBooleanEnum.SHOULD,
+    boolean: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
 ) -> Galleries:
     user_id = token.sub
     keywords = unquote(keywords)

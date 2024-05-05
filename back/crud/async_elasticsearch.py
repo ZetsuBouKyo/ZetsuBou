@@ -361,7 +361,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         return _resp
 
     async def custom(self, body: dict) -> dict:
-        return await self.advanced_search(index=self.index, body=body)
+        return await self.async_elasticsearch.search(index=self.index, body=body)
 
     async def count(self, body: dict) -> ElasticsearchCountResult:
         _resp = await self.async_elasticsearch.count(index=self.index, body=body)

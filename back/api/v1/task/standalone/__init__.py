@@ -4,10 +4,10 @@ from back.crud.standalone import open_folder
 from back.dependency.security import api_security
 from back.model.scope import ScopeEnum
 
-from .sync_new_galleries import router as sync_new_galleries
+from .sync_new_galleries import router as _sync_new_galleries
 
 router = APIRouter(prefix="/standalone")
-router.include_router(sync_new_galleries)
+router.include_router(_sync_new_galleries)
 
 
 @router.get(

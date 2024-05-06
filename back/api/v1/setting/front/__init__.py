@@ -12,8 +12,8 @@ from back.init.async_elasticsearch import (
 from back.model.scope import ScopeEnum
 from back.settings import setting
 
-from .gallery import router as gallery
-from .video import router as video
+from .gallery import router as _gallery
+from .video import router as _video
 
 APP_MODE = setting.app_mode
 APP_GALLERY_SYNC_PAGES_WHEN_GO_TO_GALLERY = (
@@ -21,8 +21,8 @@ APP_GALLERY_SYNC_PAGES_WHEN_GO_TO_GALLERY = (
 )
 
 router = APIRouter(prefix="/front")
-router.include_router(gallery)
-router.include_router(video)
+router.include_router(_gallery)
+router.include_router(_video)
 
 
 @router.get(

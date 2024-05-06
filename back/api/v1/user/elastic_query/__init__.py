@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from .count import router as count
-from .search import router as search
+from .count import router as _count
+from .search import router as _search
 
 router = APIRouter()
-router.include_router(count)
-router.include_router(search)
+router.include_router(_count)
+router.include_router(_search)

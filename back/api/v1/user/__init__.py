@@ -23,10 +23,10 @@ from back.model.example import ExampleEnum
 from back.model.scope import ScopeEnum
 from back.utils import get_subset_dict
 
-from .bookmark import router as bookmark
-from .elastic_query import router as elastic_query
+from .bookmark import router as _bookmark
+from .elastic_query import router as _elastic_query
 from .examples import param_path_user_id
-from .quest import router as quest
+from .quest import router as _quest
 
 
 def get_admin_user(*params: str) -> Dict[str, Any]:
@@ -290,6 +290,6 @@ async def get_user_front_settings(user_id: PositiveInt = param_path_user_id):
     return await CrudUserFrontSettings.get_row_by_user_id(user_id)
 
 
-router.include_router(elastic_query, tags=["User Elastic Query"])
-router.include_router(bookmark)
-router.include_router(quest)
+router.include_router(_elastic_query, tags=["User Elastic Query"])
+router.include_router(_bookmark)
+router.include_router(_quest)

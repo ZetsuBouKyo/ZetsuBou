@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 
-from .docs import router as docs
-from .statics import router as statics
-from .views import router as views
+from .docs import router as _docs
+from .statics import router as _statics
+from .views import router as _views
 
 router = APIRouter()
 
-router.include_router(docs, tags=["Docs"])
-router.include_router(statics, tags=["Statics"])
-router.include_router(views, tags=["Views"])
+router.include_router(_docs, tags=["Docs"])
+router.include_router(_statics, tags=["Statics"])
+router.include_router(_views, tags=["Views"])

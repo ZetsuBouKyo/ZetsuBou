@@ -10,12 +10,12 @@ from back.model.base import Pagination
 from back.model.scope import ScopeEnum
 from back.model.tag import Tag, TagCreate, TagInserted, TagToken, TagUpdate
 
-from .attribute import router as attribute
-from .token import router as token
+from .attribute import router as _attribute
+from .token import router as _token
 
 router = APIRouter(tags=["Tag"])
-router.include_router(attribute)
-router.include_router(token)
+router.include_router(_attribute)
+router.include_router(_token)
 
 
 @router.get(

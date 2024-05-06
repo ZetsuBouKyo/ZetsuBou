@@ -5,12 +5,12 @@ from back.crud.async_video import CrudAsyncVideo
 from back.dependency.security import view_security
 from back.model.scope import ScopeEnum
 
-from .query import router as query
-from .tag import router as tag
+from .query import router as _query
+from .tag import router as _tag
 
 router = APIRouter(prefix="/video", tags=["Video"])
-router.include_router(query)
-router.include_router(tag)
+router.include_router(_query)
+router.include_router(_tag)
 
 
 @router.get("/v/{video_id}", dependencies=[view_security([ScopeEnum.video_get.value])])

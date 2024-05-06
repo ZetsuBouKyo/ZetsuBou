@@ -202,13 +202,16 @@ async def get_search(
             user_es_query = await CrudUserElasticSearchQuery.get_row_by_id_and_user_id(
                 query_id, user_id
             )
+            if user_es_query is None:
+                return Galleries()
             query = json.loads(user_es_query.query)
             body = query.get("body", None)
             if body is None:
-                return []
+                return Galleries()
             docs = await crud.match_by_query(body, page)
         else:
             docs = await crud.match(
                 page, keywords, fuzziness=fuzziness, boolean=boolean
             )
+
     return docs

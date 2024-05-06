@@ -1,6 +1,4 @@
-from typing import Optional
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic.types import NonNegativeInt
 
 from back.model.string import DatetimeStr
@@ -20,12 +18,4 @@ class UserBookmarkGalleryCreated(UserBookmarkGalleryUpdate):
     modified: DatetimeStr
 
 
-UserBookmarkGalleryUpdated = UserBookmarkGalleryCreated
-
-
-class UserBookmarkGallery(BaseModel):
-    id: Optional[int] = None
-    user_id: Optional[int] = None
-    gallery_id: Optional[str] = None
-    page: Optional[NonNegativeInt] = None
-    modified: Optional[DatetimeStr] = None
+UserBookmarkGallery = UserBookmarkGalleryUpdated = UserBookmarkGalleryCreated

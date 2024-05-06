@@ -5,5 +5,5 @@ from back.model.gallery import Gallery
 
 
 class GalleryBookmark(BaseModel):
-    gallery: Gallery = Gallery()
-    bookmark: UserBookmarkGallery = UserBookmarkGallery()
+    gallery: Gallery
+    bookmark: UserBookmarkGallery

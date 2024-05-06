@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 
+from back.api.model.user.bookmark import GalleryBookmark
 from back.crud.async_gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserBookmarkGallery
 from back.db.model import (
@@ -13,7 +14,6 @@ from back.db.model import (
 from back.dependency.base import get_pagination
 from back.dependency.security import api_security
 from back.model.base import Pagination
-from back.model.bookmark import GalleryBookmark
 from back.model.gallery import Galleries
 from back.model.scope import ScopeEnum
 

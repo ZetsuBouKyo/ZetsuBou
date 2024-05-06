@@ -2,10 +2,12 @@ from copy import deepcopy
 from typing import List, Optional, Tuple
 from uuid import uuid4
 
+import pytz
 from faker import Faker
 
 from back.model.base import SourceProtocolEnum
 from back.model.gallery import Gallery
+from back.utils.dt import datetime_formats
 from lib.faker.gallery import galleries
 from lib.faker.tag import FakerTag, TagAttributeEnum, TagCategoryEnum, tags
 
@@ -31,6 +33,20 @@ class ZetsuBouFaker(Faker):
         if is_lower:
             s = s.lower()
         return s
+
+    def random_datetime_str(
+        self, datetime_formats: List[str] = datetime_formats
+    ) -> str:
+        date = self.date_time()
+
+        # If we don't apply the timezone here, there will be an inconsistency between
+        # datetime, datetime format, and datetime string.
+        date_with_tz = pytz.utc.localize(date)
+
+        f = self.random_sample(datetime_formats, length=1)[0]
+        date_str = date_with_tz.strftime(f)
+
+        return date_str
 
     def lower_name(self) -> str:
         return self.name().lower()

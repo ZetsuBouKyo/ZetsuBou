@@ -22,7 +22,7 @@ from back.logging import logger_zetsubou
 from back.model.elasticsearch import AnalyzerEnum
 from back.model.tag import (
     Tag,
-    TagAttribute,
+    TagAttributeWithValue,
     TagCreate,
     TagElasticsearch,
     TagInsert,
@@ -339,7 +339,7 @@ class CrudTag:
                 else None
             ),
             attributes=[
-                TagAttribute(id=id, name=attribute_id_table[id], value=value)
+                TagAttributeWithValue(id=id, name=attribute_id_table[id], value=value)
                 for id, value in tag_in_ids.attributes.items()
                 if attribute_id_table.get(id, None) is not None
             ],

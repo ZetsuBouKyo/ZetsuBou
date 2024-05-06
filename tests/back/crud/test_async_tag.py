@@ -11,9 +11,15 @@ from back.crud.async_tag import CrudAsyncElasticsearchTag, CrudTag
 from back.db.crud import CrudTagAttribute
 from back.db.model import TagAttribute, TagAttributeCreate
 from back.db.table import TagCategoryBase
-from back.model.tag import Tag
-from back.model.tag import TagAttribute as TagAttributeWithValue
-from back.model.tag import TagCreate, TagElasticsearch, TagInsert, TagToken, TagUpdate
+from back.model.tag import (
+    Tag,
+    TagAttributeWithValue,
+    TagCreate,
+    TagElasticsearch,
+    TagInsert,
+    TagToken,
+    TagUpdate,
+)
 from lib.faker import ZetsuBouFaker
 from tests.general.mock import (
     MockAsyncDatabaseSession,

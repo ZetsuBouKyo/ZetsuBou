@@ -36,7 +36,7 @@ class TagToken(BaseModel):
     name: str
 
 
-class TagAttribute(BaseModel):
+class TagAttributeWithValue(BaseModel):
     id: int
     name: str
     value: str
@@ -48,7 +48,7 @@ class Tag(BaseModel):
     categories: List[TagToken] = []
     synonyms: List[TagToken] = []
     representative: Optional[TagToken] = None
-    attributes: List[TagAttribute] = []
+    attributes: List[TagAttributeWithValue] = []
 
 
 TagInterpretation = Tag

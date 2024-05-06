@@ -5,7 +5,7 @@ import pytest
 
 from back.crud.async_tag import CrudTag
 from back.db.crud import CrudTagAttribute
-from back.model.tag import Tag, TagAttribute, TagToken
+from back.model.tag import Tag, TagAttributeWithValue, TagToken
 from back.session.async_elasticsearch import get_async_elasticsearch
 from back.utils.gen.tag import (
     delete_tag_attributes,
@@ -48,7 +48,7 @@ async def test_get_tag():
                 id=faker.random_int(),
                 name=tag_name,
                 attributes=[
-                    TagAttribute(
+                    TagAttributeWithValue(
                         id=faker.random_int(),
                         name=faker.random_string(),
                         value=faker.sentence(),

@@ -34,17 +34,20 @@ class ZetsuBouFaker(Faker):
             s = s.lower()
         return s
 
-    def random_datetime_str(
-        self, datetime_formats: List[str] = datetime_formats
-    ) -> str:
+    def random_datetime_with_utc(self):
         date = self.date_time()
-
         # If we don't apply the timezone here, there will be an inconsistency between
         # datetime, datetime format, and datetime string.
         date_with_tz = pytz.utc.localize(date)
+        return date_with_tz
+
+    def random_datetime_str(
+        self, datetime_formats: List[str] = datetime_formats
+    ) -> str:
+        date = self.random_datetime_with_utc()
 
         f = self.random_sample(datetime_formats, length=1)[0]
-        date_str = date_with_tz.strftime(f)
+        date_str = date.strftime(f)
 
         return date_str
 

@@ -1,13 +1,10 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 
 from back.db.crud import CrudGroup
 from back.db.model import (
     Group,
-    GroupCreate,
-    GroupCreated,
-    GroupUpdate,
     GroupWithScopeIdsSafeCreate,
     GroupWithScopeIdsUpdate,
     GroupWithScopes,
@@ -42,10 +39,10 @@ async def get_groups(pagination: Pagination = Depends(get_pagination)) -> List[G
 
 @router.get(
     "/group-with-scopes/{group_id}",
-    response_model=GroupWithScopes,
+    response_model=Optional[GroupWithScopes],
     dependencies=[api_security([ScopeEnum.group_with_scopes_get.value])],
 )
-async def get_group_with_scopes(group_id: int) -> GroupWithScopes:
+async def get_group_with_scopes(group_id: int) -> Optional[GroupWithScopes]:
     return await CrudGroup.get_row_with_scopes_by_id(group_id)
 
 
@@ -58,15 +55,6 @@ async def post_group_with_scope_ids(
     group: GroupWithScopeIdsSafeCreate,
 ) -> GroupWithScopes:
     return await CrudGroup.safe_create_with_scope_ids(group)
-
-
-@router.put(
-    "/group",
-    response_model=bool,
-    dependencies=[api_security([ScopeEnum.group_put.value])],
-)
-async def put_group(group: GroupUpdate) -> bool:
-    return await CrudGroup.update_by_id(group)
 
 
 @router.put(

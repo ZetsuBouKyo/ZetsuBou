@@ -1,6 +1,6 @@
 import { Pagination, Page, PaginationGetParam } from "./pagination.interface";
 
-function getPageUrl(page: number, path: string, query: PaginationGetParam) {
+export function getPageUrl(page: number, path: string, query: PaginationGetParam) {
   let paras = [];
   for (let key in query) {
     if (query[key] !== undefined) {
@@ -37,8 +37,10 @@ export function getPagination(path: string, totalItems: number, query: Paginatio
     totalPage: totalPage,
     totalItems: totalItems,
     current: current,
+    path: path,
     pages: [],
     perRound: 6,
+    query: query,
     toLastPage: getPageUrl(totalPage, path, query),
     toFirstPage: getPageUrl(1, path, query),
     toNextPage: getPageUrl(current + 1, path, query),

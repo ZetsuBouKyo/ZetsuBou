@@ -1,14 +1,75 @@
 <script setup lang="ts">
-import { PropType } from "vue";
+import { PropType, reactive, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
 import { Pagination } from "./pagination.interface";
 
-defineProps({
+import { getPageUrl } from "@/elements/Pagination/pagination";
+
+import { isPositiveInteger } from "@/utils/number";
+
+const leftInput = ref();
+const rightInput = ref();
+const router = useRouter();
+
+const props = defineProps({
   pagination: {
     type: Object as PropType<Pagination>,
     required: true,
   },
 });
+
+const pagination = props.pagination;
+
+const privateState = reactive({
+  page: undefined,
+  editLeft: false,
+  editRight: false,
+});
+
+function inputFocusOut() {
+  privateState.editLeft = false;
+  privateState.editRight = false;
+}
+
+function togglePageLeftInput() {
+  privateState.editLeft = true;
+  privateState.editRight = false;
+}
+
+watch(
+  () => leftInput.value,
+  () => {
+    if (!leftInput.value) {
+      return;
+    }
+    leftInput.value.focus();
+  },
+);
+
+function togglePageRightInput() {
+  privateState.editLeft = false;
+  privateState.editRight = true;
+}
+
+watch(
+  () => rightInput.value,
+  () => {
+    if (!rightInput.value) {
+      return;
+    }
+    rightInput.value.focus();
+  },
+);
+
+function jump() {
+  const page = Number(privateState.page);
+  if (!isPositiveInteger(page) || page > pagination.totalPage || page === 0) {
+    return;
+  }
+  const url = getPageUrl(page, pagination.path, pagination.query);
+  router.push(url);
+}
 
 function toTop() {
   window.scrollTo(0, 0);
@@ -35,12 +96,20 @@ function toTop() {
       <div
         v-if="pagination.pages[0].n > 1"
         class="w-12 md:flex justify-center items-center hidden cursor-default leading-5 transition duration-150">
-        ...
+        <div @click="togglePageLeftInput" v-if="!privateState.editLeft">...</div>
+        <input
+          ref="leftInput"
+          class="w-14 px-2 rounded-md border-gray-700 bg-gray-700 text-white placeholder-gray-400 focus:outline-none text-center"
+          :placeholder="pagination.totalPage.toString()"
+          v-model="privateState.page"
+          @focusout="inputFocusOut"
+          @keyup.enter="jump"
+          v-else />
       </div>
       <div
         v-for="(p, i) in pagination.pages"
         :key="i"
-        class="w-12 md:flex justify-center items-center hidden leading-5 transition duration-150 ease-in">
+        class="mx-4 md:flex justify-center items-center hidden leading-5 transition duration-150 ease-in">
         <a v-if="p.n === pagination.current" class="text-white cursor-default">{{ p.n }}</a>
         <router-link v-else class="cursor-pointer hover:opacity-50" :to="p.link" @click="toTop">{{ p.n }}</router-link>
       </div>
@@ -51,7 +120,15 @@ function toTop() {
       <div
         v-if="pagination.pages[pagination.pages.length - 1].n < pagination.totalPage"
         class="w-12 md:flex justify-center items-center hidden cursor-default leading-5 transition duration-150">
-        ...
+        <div @click="togglePageRightInput" v-if="!privateState.editRight">...</div>
+        <input
+          ref="rightInput"
+          class="w-14 px-2 rounded-md border-gray-700 bg-gray-700 text-white placeholder-gray-400 focus:outline-none text-center"
+          :placeholder="pagination.totalPage.toString()"
+          v-model="privateState.page"
+          @focusout="inputFocusOut"
+          @keyup.enter="jump"
+          v-else />
       </div>
     </div>
     <div

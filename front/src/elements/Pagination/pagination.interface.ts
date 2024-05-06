@@ -13,8 +13,10 @@ export interface Pagination {
   totalPage: number;
   totalItems: number;
   current: number;
+  path: string;
   pages: Array<Page>;
   perRound: number;
+  query: any;
   toLastPage?: string;
   toFirstPage?: string;
   toNextPage?: string;

@@ -14,7 +14,7 @@
             "from tests.general.api import get_admin_headers, get_admin_cookies",
             "from tests.general.summary import print_api_request, print_api_response, print_divider",
             "@pytest.mark.asyncio(scope=\"session\")",
-            "async def test_$0():..."
+            "async def test_$0(client: ZetsuBouAsyncClient):..."
         ],
         "description": "ZetsuBou pytest-asyncio decorator"
     },

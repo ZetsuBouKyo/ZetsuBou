@@ -58,7 +58,9 @@ class DatetimeStr(_Str):
         elif type(value) is datetime:
             return value.strftime(datetime_format)
 
-        raise TypeError("value should be str or datetime.datetime")
+        raise TypeError(
+            f"value should be str or datetime.datetime not {value} ({type(value)})"
+        )
 
 
 class JsonStr(_Str):

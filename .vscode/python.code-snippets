@@ -5,6 +5,25 @@
         "body": ["if __name__ == \"__main__\":"],
         "description": "ZetsuBou __name__"
     },
+    "zb.file.pytest.integration": {
+        "scope": "python",
+        "prefix": "@pytest",
+        "body": [
+            "import pytest",
+            "from lib.httpx import ZetsuBouAsyncClient",
+            "from tests.general.api import get_admin_headers, get_admin_cookies",
+            "from tests.general.summary import print_api_request, print_api_response, print_divider",
+            "@pytest.mark.asyncio(scope=\"session\")",
+            "async def test_$0():..."
+        ],
+        "description": "ZetsuBou pytest-asyncio decorator"
+    },
+    "zb.func.pytest.integration.api": {
+        "scope": "python",
+        "prefix": "@pytest",
+        "body": ["@pytest.mark.asyncio(scope=\"session\")", "async def test_$0(client: ZetsuBouAsyncClient):..."],
+        "description": "ZetsuBou pytest-asyncio decorator"
+    },
     "zb.pytest.mark.asyncio.session": {
         "scope": "python",
         "prefix": "@pytest",

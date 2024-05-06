@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict
 
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.storage import StorageCategoryEnum
-from back.utils.model import HttpUrlStr
+from back.model.string import HttpUrlStr
 
 
 class StorageMinioCreate(BaseModel):

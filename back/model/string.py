@@ -40,7 +40,11 @@ class DatetimeStr(_Str):
         json_schema.update(
             type="string",
             format="datetime",
-            examples=["1970-01-01T01:02:03.456789", "1970-01-01T01:02:03.456789+00:00"],
+            examples=[
+                "1970-01-01T01:02:03+00:00",
+                "1970-01-01T01:02:03.456789",
+                "1970-01-01T01:02:03.456789+00:00",
+            ],
         )
         return json_schema
 

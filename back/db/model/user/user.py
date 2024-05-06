@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
-from back.utils.model import DatetimeStr
+from back.model.string import DatetimeStr
 
 field_group_ids = Field(..., examples=[[1]])
 

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from back.utils.model import DatetimeStr, JsonStr
+from back.model.string import DatetimeStr, JsonStr
 
 
 class UserElasticSearchQueryCreate(BaseModel):

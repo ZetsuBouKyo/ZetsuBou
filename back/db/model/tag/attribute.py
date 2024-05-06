@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from back.utils.model import TagStr
+from back.model.string import TagStr
 
 
 class TagAttributeCreate(BaseModel):

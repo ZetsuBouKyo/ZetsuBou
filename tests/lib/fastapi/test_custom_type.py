@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pydantic import BaseModel, EmailStr
 
+from back.model.string import JsonStr as JSON
 from back.settings import DEFAULT_ADMIN_EMAIL
-from back.utils.model import JsonStr as JSON
 
 
 class User(BaseModel):

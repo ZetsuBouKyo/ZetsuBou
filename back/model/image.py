@@ -4,7 +4,7 @@ from typing import Dict
 from PIL.Image import registered_extensions
 from pydantic import BaseModel
 
-from back.utils.model import DatetimeStr
+from back.model.string import DatetimeStr
 
 _image_formats = {}
 for extension in registered_extensions().keys():

@@ -1,7 +1,7 @@
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from back.utils.model import HttpUrlStr, _Str
+from back.model.string import HttpUrlStr, _Str
 
 
 def test_str():

@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
-from back.utils.model import TagStr
+from back.model.string import TagStr
 
 
 class _TagBase(BaseModel):

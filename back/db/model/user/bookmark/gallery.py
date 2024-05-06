@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 from pydantic.types import NonNegativeInt
 
-from back.utils.model import DatetimeStr
+from back.model.string import DatetimeStr
 
 
 class UserBookmarkGalleryCreate(BaseModel):

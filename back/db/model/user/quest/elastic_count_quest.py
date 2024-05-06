@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from back.utils.model import DatetimeStr
+from back.model.string import DatetimeStr
 
 
 class UserElasticCountQuestCreate(BaseModel):

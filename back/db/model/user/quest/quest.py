@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from pydantic.types import NonNegativeInt
 
-from back.utils.model import DatetimeStr
+from back.model.string import DatetimeStr
 
 
 class UserQuestCreate(BaseModel):

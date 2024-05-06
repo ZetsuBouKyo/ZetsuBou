@@ -1,6 +1,6 @@
 from back.init.setting import init_example_settings, init_settings_with_examples
 from back.settings import Setting
-from tests.general.logger import logger
+from tests.general.logging import logger
 
 
 def test_init_settings_with_examples():

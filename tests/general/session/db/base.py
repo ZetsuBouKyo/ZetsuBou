@@ -7,7 +7,7 @@ from back.init.check import ping_postgres
 from back.init.database import init_table
 from back.session.async_db import async_session
 from back.settings import setting
-from tests.general.logger import logger
+from tests.general.logging import logger
 
 DATABASE_URL_SQLITE = setting.test_database_url_sqlite
 DATABASE_URL_POSTGRESQL = setting.test_database_url_postgresql

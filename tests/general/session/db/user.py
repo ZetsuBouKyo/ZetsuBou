@@ -5,7 +5,7 @@ import pytest
 from back.db.crud import CrudUser
 from back.db.model import UserWithGroupsCreate
 from lib.faker import ZetsuBouFaker
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.session.db.base import DatabaseSession
 
 

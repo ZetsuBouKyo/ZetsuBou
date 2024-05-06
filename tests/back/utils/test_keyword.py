@@ -3,7 +3,7 @@ from typing import List, Tuple
 from pydantic import BaseModel
 
 from back.utils.keyword import KeywordParser
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.summary import print_divider
 
 

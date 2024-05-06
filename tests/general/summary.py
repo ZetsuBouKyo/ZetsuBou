@@ -6,7 +6,7 @@ from rich.rule import Rule
 from rich.style import Style
 from rich.text import Text
 
-from tests.general.logger import logger
+from tests.general.logging import logger
 
 
 def print_divider(

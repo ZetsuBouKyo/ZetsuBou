@@ -2,7 +2,7 @@ from back.db.model import StorageMinio
 from back.model.base import SourceProtocolEnum
 from back.model.storage import StorageCategoryEnum
 from lib.faker import ZetsuBouFaker
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.summary import print_divider
 
 

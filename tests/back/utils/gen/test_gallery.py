@@ -23,7 +23,7 @@ from back.utils.gen.gallery import (
 )
 from lib.faker import ZetsuBouFaker
 from lib.zetsubou.exceptions import NotEmptyException, ServicesNotFoundException
-from tests.general.logger import logger
+from tests.general.logging import logger
 
 DIR_FNAME = setting.gallery_dir_fname
 TAG_FNAME = setting.gallery_tag_fname

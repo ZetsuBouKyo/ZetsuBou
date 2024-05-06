@@ -5,7 +5,7 @@ from uvicorn.config import Config
 from uvicorn.server import Server
 
 from lib.uvicorn.files import check_files
-from tests.general.logger import logger
+from tests.general.logging import logger
 
 
 def test_change_reload():

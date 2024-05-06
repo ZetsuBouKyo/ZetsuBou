@@ -10,7 +10,7 @@ from back.utils.dt import (
     iso2datetime,
     second2iso,
 )
-from tests.general.logger import logger
+from tests.general.logging import logger
 
 
 def test_second2iso():

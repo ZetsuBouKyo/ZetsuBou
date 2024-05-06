@@ -11,7 +11,7 @@ from back.model.group import BuiltInGroupEnum
 from back.security import verify_password
 from back.settings import setting
 from lib.faker import ZetsuBouFaker
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.session import DatabaseSession, UserSession
 
 ADMIN_GROUP_NAME = BuiltInGroupEnum.admin.value

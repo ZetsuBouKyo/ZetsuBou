@@ -11,7 +11,7 @@ from back.db.model import (
 from back.model.group import BuiltInGroupEnum
 from back.model.scope import ScopeEnum
 from lib.faker import ZetsuBouFaker
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.session import DatabaseSession
 
 

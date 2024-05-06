@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from back.model.elasticsearch import AnalyzerEnum
 from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.session import ElasticsearchSession
 from tests.general.summary import print_divider
 

@@ -2,7 +2,7 @@ import pytest
 
 from back.session.async_redis import async_redis, get_async_redis_session
 from lib.faker import ZetsuBouFaker
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.session import BaseIntegrationSession
 
 

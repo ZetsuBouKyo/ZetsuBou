@@ -1,7 +1,7 @@
 from back.model.gallery import Gallery
 from back.settings import setting
 from lib.faker import ZetsuBouFaker
-from tests.general.logger import logger
+from tests.general.logging import logger
 
 DIR_FNAME = setting.gallery_dir_fname
 TAG_FNAME = setting.gallery_tag_fname

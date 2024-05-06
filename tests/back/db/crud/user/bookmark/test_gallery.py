@@ -4,7 +4,7 @@ import pytest
 
 from back.db.crud import CrudUserBookmarkGallery
 from back.db.model import UserBookmarkGalleryCreate, UserBookmarkGalleryUpdate
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.session import UserSession
 
 

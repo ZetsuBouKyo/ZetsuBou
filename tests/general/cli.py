@@ -2,7 +2,7 @@ from inspect import iscoroutinefunction
 from logging import Logger
 from typing import Any, Sequence, Union
 
-from tests.general.logger import logger
+from tests.general.logging import logger
 
 
 async def cli_runner(

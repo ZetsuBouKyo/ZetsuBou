@@ -3,7 +3,7 @@ import pytest
 from back.db.crud import CrudTagAttribute
 from back.db.model import TagAttributeCreate, TagAttributeUpdate
 from lib.faker import ZetsuBouFaker
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.session import DatabaseSession
 
 

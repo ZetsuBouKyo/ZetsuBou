@@ -3,7 +3,7 @@ from typing import Union
 import pytest
 
 from back.model.base import SourceBaseModel, SourceProtocolEnum
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.summary import print_divider
 
 

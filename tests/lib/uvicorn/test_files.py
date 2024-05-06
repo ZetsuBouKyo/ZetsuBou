@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from lib.uvicorn.files import check_files, get_watched_files
-from tests.general.logger import logger
+from tests.general.logging import logger
 
 
 def test_get_watched_files():

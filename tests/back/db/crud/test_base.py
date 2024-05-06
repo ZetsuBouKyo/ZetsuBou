@@ -34,7 +34,7 @@ from back.db.crud.base import (
     update_by_id,
 )
 from lib.faker import ZetsuBouFaker
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.session import DatabaseSession
 
 Base = declarative_base()

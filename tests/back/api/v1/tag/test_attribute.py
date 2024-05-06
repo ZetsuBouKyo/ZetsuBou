@@ -3,7 +3,7 @@ import pytest
 from lib.faker import ZetsuBouFaker
 from lib.httpx import ZetsuBouAsyncClient
 from tests.general.api import get_admin_headers
-from tests.general.logger import logger
+from tests.general.logging import logger
 from tests.general.summary import print_api_request, print_api_response, print_divider
 
 

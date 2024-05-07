@@ -1,5 +1,4 @@
-from collections import defaultdict
-from typing import DefaultDict, Optional
+from typing import Optional, Union
 
 from back.crud.async_tag import CrudTag
 from back.db.crud import CrudTagAttribute
@@ -7,13 +6,16 @@ from back.db.model import TagAttributeCreate
 from back.logging import logger_zetsubou
 from back.model.tag import Tag, TagInsert
 from back.session.async_elasticsearch import AsyncElasticsearch, get_async_elasticsearch
+from back.utils.map import BiDict
 from lib.faker import ZetsuBouFaker
 from lib.faker.tag import FakerTag
 
 
-async def generate_tag_attributes() -> DefaultDict[str, Optional[int]]:
+async def generate_tag_attributes() -> (
+    BiDict[Union[int, str], Optional[Union[int, str]]]
+):
     faker = ZetsuBouFaker()
-    tag_attribute_table: DefaultDict[str, Optional[int]] = defaultdict(lambda: None)
+    tag_attribute_table: BiDict[Union[int, str], Optional[Union[int, str]]] = BiDict()
     for attribute_name in faker.tag_attributes():
         tag_attribute = await CrudTagAttribute.get_row_by_name(attribute_name)
         if tag_attribute is None:
@@ -59,8 +61,8 @@ async def get_tag(
 
 async def generate_tags(
     async_elasticsearch: AsyncElasticsearch = get_async_elasticsearch(),
-) -> DefaultDict[str, Optional[int]]:
-    tag_table: DefaultDict[str, Optional[int]] = defaultdict(lambda: None)
+) -> BiDict[Union[int, str], Optional[Union[int, str]]]:
+    tag_table: BiDict[Union[int, str], Optional[Union[int, str]]] = BiDict()
     faker = ZetsuBouFaker()
     tags = faker.tags()
 

@@ -24,7 +24,7 @@ from ....table import (
 
 class CrudSettingFrontGallery:
     @classmethod
-    async def get_interpretation(cls):
+    async def get_interpretation(cls) -> SettingFrontGalleryInterpretation:
         limit = 100
 
         c_skip = 0

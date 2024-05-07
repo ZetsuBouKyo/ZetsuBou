@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends
 
 from back.db.crud import CrudSettingFrontGallery
 from back.db.model import (
-    SettingFrontGallery,
     SettingFrontGalleryInterpretation,
     SettingFrontGalleryUpdate,
     TagToken,
@@ -60,15 +59,15 @@ async def get_interpretation() -> SettingFrontGalleryInterpretation:
 
 @router.get(
     "/reset",
-    response_model=SettingFrontGallery,
+    response_model=bool,
     dependencies=[api_security([ScopeEnum.setting_front_gallery_reset_get.value])],
 )
-async def reset() -> SettingFrontGallery:
+async def reset_settings() -> bool:
     return await CrudSettingFrontGallery.reset()
 
 
 @router.put(
     "", dependencies=[api_security([ScopeEnum.setting_front_gallery_put.value])]
 )
-async def put(setting: SettingFrontGalleryUpdate):
+async def put_settings(setting: SettingFrontGalleryUpdate):
     return await CrudSettingFrontGallery.update(setting)

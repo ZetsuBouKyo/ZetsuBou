@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from back.crud.async_sync import get_crud_sync
 from back.db.model import StorageMinio
@@ -8,6 +8,8 @@ from back.model.gallery import Gallery
 from back.session.storage.async_s3 import AsyncS3Session
 from back.settings import setting
 from back.utils.gen.gallery import generate_delete_galleries, generate_simple_galleries
+from back.utils.gen.tag import generate_tag_attributes, generate_tags
+from back.utils.map import BiDict
 from lib.faker import ZetsuBouFaker
 from lib.zetsubou.exceptions import NotFoundException, ServicesNotFoundException
 
@@ -38,6 +40,15 @@ class BaseIntegrationSession:
     async def enter(self): ...
 
     async def exit(self): ...
+
+
+class TagIntegrationSession(BaseIntegrationSession):
+    tags: BiDict[Union[int, str], Optional[Union[int, str]]]
+    tag_attributes: BiDict[Union[int, str], Optional[Union[int, str]]]
+
+    async def enter(self):
+        self.tag_attributes = await generate_tag_attributes()
+        self.tags = await generate_tags()
 
 
 class GalleryIntegrationSession(BaseIntegrationSession):

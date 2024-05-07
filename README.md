@@ -7,7 +7,15 @@
 
 [ZetsuBou](https://zetsuboukyo.github.io/) is a web-based app for hosting your own image galleries and videos. The app is written in Python 3 and Vue 3.
 
+## Previews
+
+### Galleries
+
 ![demo image](docs/assets/example/preview-galleries.png)
+
+### Gallery
+
+![demo image](docs/assets/example/preview-gallery.png)
 
 **There would be no backwards compatibility at all.**
 

@@ -1,4 +1,5 @@
-from typing import Dict, Optional
+from collections import defaultdict
+from typing import DefaultDict, Optional
 
 from back.crud.async_tag import CrudTag
 from back.db.crud import CrudTagAttribute
@@ -10,8 +11,9 @@ from lib.faker import ZetsuBouFaker
 from lib.faker.tag import FakerTag
 
 
-async def generate_tag_attributes():
+async def generate_tag_attributes() -> DefaultDict[str, Optional[int]]:
     faker = ZetsuBouFaker()
+    tag_attribute_table: DefaultDict[str, Optional[int]] = defaultdict(lambda: None)
     for attribute_name in faker.tag_attributes():
         tag_attribute = await CrudTagAttribute.get_row_by_name(attribute_name)
         if tag_attribute is None:
@@ -20,6 +22,8 @@ async def generate_tag_attributes():
             )
         else:
             logger_zetsubou.info(f"tag attribute: {attribute_name} exists.")
+        tag_attribute_table[tag_attribute.name] = tag_attribute.id
+    return tag_attribute_table
 
 
 async def delete_tag_attributes():
@@ -55,8 +59,8 @@ async def get_tag(
 
 async def generate_tags(
     async_elasticsearch: AsyncElasticsearch = get_async_elasticsearch(),
-):
-    tag_table: Dict[str, int] = {}
+) -> DefaultDict[str, Optional[int]]:
+    tag_table: DefaultDict[str, Optional[int]] = defaultdict(lambda: None)
     faker = ZetsuBouFaker()
     tags = faker.tags()
 
@@ -75,6 +79,7 @@ async def generate_tags(
             TagInsert(name=faker_tag.name, category_ids=tag_category_ids)
         )
         tag_table[inserted_tag.name] = inserted_tag.id
+    return tag_table
 
 
 async def delete_tags(

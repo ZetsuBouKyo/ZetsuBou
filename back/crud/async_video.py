@@ -13,7 +13,10 @@ from back.crud.async_progress import Progress
 from back.init.check import ping_elasticsearch, ping_storage
 from back.logging import logger_zetsubou
 from back.model.base import SourceBaseModel, SourceProtocolEnum
-from back.model.elasticsearch import AnalyzerEnum, ElasticsearchQueryBooleanEnum
+from back.model.elasticsearch import (
+    ElasticsearchAnalyzerEnum,
+    ElasticsearchQueryBooleanEnum,
+)
 from back.model.task import ZetsuBouTaskProgressEnum
 from back.model.video import Video, VideoOrderedFieldEnum, Videos
 from back.session.async_elasticsearch import get_async_elasticsearch
@@ -37,7 +40,7 @@ STORAGE_CACHE = setting.storage_cache
 VIDEO_COVER_HOME = "video/cover"
 
 elasticsearch_video_analyzer = {
-    AnalyzerEnum.DEFAULT.value: [
+    ElasticsearchAnalyzerEnum.DEFAULT.value: [
         "path.url",
         "name.default",
         "raw_name.default",
@@ -48,7 +51,7 @@ elasticsearch_video_analyzer = {
         "labels",
         "tags.*",
     ],
-    AnalyzerEnum.KEYWORD.value: [
+    ElasticsearchAnalyzerEnum.KEYWORD.value: [
         "path.keyword",
         "name.keyword",
         "raw_name.keyword",
@@ -59,7 +62,7 @@ elasticsearch_video_analyzer = {
         "labels",
         "tags.*",
     ],
-    AnalyzerEnum.NGRAM.value: [
+    ElasticsearchAnalyzerEnum.NGRAM.value: [
         "path.ngram",
         "name.ngram",
         "raw_name.ngram",
@@ -70,7 +73,7 @@ elasticsearch_video_analyzer = {
         "labels",
         "tags.*",
     ],
-    AnalyzerEnum.STANDARD.value: [
+    ElasticsearchAnalyzerEnum.STANDARD.value: [
         "path.standard",
         "name.standard",
         "raw_name.standard",
@@ -81,7 +84,7 @@ elasticsearch_video_analyzer = {
         "labels",
         "tags.*",
     ],
-    AnalyzerEnum.URL.value: ["path.url", "src.url"],
+    ElasticsearchAnalyzerEnum.URL.value: ["path.url", "src.url"],
 }
 
 
@@ -95,7 +98,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
         hosts: List[str] = None,
         size: int = 10,
         index: str = ELASTICSEARCH_INDEX_VIDEO,
-        analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         sorting: List[Any] = [
             "_score",
             {"last_updated": {"order": "desc", "unmapped_type": "long"}},
@@ -124,23 +127,23 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
         self,
         page: int = 1,
         keywords: str = None,
-        keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        keywords_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         keywords_fuzziness: int = 0,
         keywords_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         name: str = None,
-        name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         name_fuzziness: int = 0,
         name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         other_names: str = None,
-        other_names_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        other_names_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         other_names_fuzziness: int = 0,
         other_names_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         src: str = None,
-        src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
+        src_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
         src_fuzziness: int = 0,
         src_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         path: str = None,
-        path_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
+        path_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
         path_fuzziness: int = 0,
         path_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         category: str = None,
@@ -670,7 +673,7 @@ class CrudAsyncVideoSync:
                     "filter": {
                         "multi_match": {
                             "query": f"{self.storage_protocol}-{self.storage_id}",
-                            "fields": [f"path.{AnalyzerEnum.URL}"],
+                            "fields": [f"path.{ElasticsearchAnalyzerEnum.URL}"],
                         }
                     }
                 }

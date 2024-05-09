@@ -3,7 +3,7 @@ from typing import Set
 import pytest
 from pydantic import BaseModel
 
-from back.model.elasticsearch import AnalyzerEnum
+from back.model.elasticsearch import ElasticsearchAnalyzerEnum
 from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
 from tests.general.logging import logger
@@ -14,7 +14,7 @@ from tests.general.summary import print_divider
 class DataModel(BaseModel):
     index: str
     text: str
-    analyzer: AnalyzerEnum
+    analyzer: ElasticsearchAnalyzerEnum
     answer: Set[str]
 
 
@@ -22,7 +22,7 @@ raw_data = [
     {
         "index": setting.elastic_index_gallery,
         "text": "[中文] 安安\你好/3 方程式^次方 ! (唐詩三百首) info@gmail.com $1000 %2 18樓-十九 [Chinese]",
-        "analyzer": AnalyzerEnum.DEFAULT.value,
+        "analyzer": ElasticsearchAnalyzerEnum.DEFAULT.value,
         "answer": {
             "1000",
             "18樓",
@@ -44,7 +44,7 @@ raw_data = [
     {
         "index": setting.elastic_index_gallery,
         "text": "[中文] 安安\你好/3 方程式^次方 ! (唐詩三百首) info@gmail.com $1000 %2 18樓-十九 [Chinese]",
-        "analyzer": AnalyzerEnum.KEYWORD.value,
+        "analyzer": ElasticsearchAnalyzerEnum.KEYWORD.value,
         "answer": {
             "[中文] 安安\\你好/3 方程式^次方 ! (唐詩三百首) info@gmail.com $1000 %2 18樓-十九 [Chinese]",
         },
@@ -52,7 +52,7 @@ raw_data = [
     {
         "index": setting.elastic_index_gallery,
         "text": "[中文] 安安\你好/3 方程式^次方 ! (唐詩三百首) info@gmail.com $1000 %2 18樓-十九 [Chinese]",
-        "analyzer": AnalyzerEnum.NGRAM.value,
+        "analyzer": ElasticsearchAnalyzerEnum.NGRAM.value,
         "answer": {
             " ",
             "-",
@@ -107,7 +107,7 @@ raw_data = [
     {
         "index": setting.elastic_index_gallery,
         "text": "[中文] 安安\你好/3 方程式^次方 ! (唐詩三百首) info@gmail.com $1000 %2 18樓-十九 [Chinese]",
-        "analyzer": AnalyzerEnum.STANDARD.value,
+        "analyzer": ElasticsearchAnalyzerEnum.STANDARD.value,
         "answer": {
             "1000",
             "18",
@@ -138,7 +138,7 @@ raw_data = [
     {
         "index": setting.elastic_index_gallery,
         "text": "minio-1://galleries/whatever",
-        "analyzer": AnalyzerEnum.URL.value,
+        "analyzer": ElasticsearchAnalyzerEnum.URL.value,
         "answer": {
             "minio-1",
             "galleries",

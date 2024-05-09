@@ -6,7 +6,10 @@ from fastapi import APIRouter, Depends, Request
 from back.crud.async_video import CrudAsyncElasticsearchVideo
 from back.db.crud import CrudUserElasticSearchQuery
 from back.dependency.security import Token, api_security, extract_token
-from back.model.elasticsearch import AnalyzerEnum, ElasticsearchQueryBooleanEnum
+from back.model.elasticsearch import (
+    ElasticsearchAnalyzerEnum,
+    ElasticsearchQueryBooleanEnum,
+)
 from back.model.scope import ScopeEnum
 from back.model.video import VideoOrderedFieldEnum, Videos
 from back.settings import setting
@@ -24,7 +27,7 @@ ELASTIC_SIZE = setting.elastic_size
     dependencies=[api_security([ScopeEnum.video_random_get.value])],
 )
 async def get_random(
-    analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     seed: int = 1048596,
     keywords: str = "",
     page: int = 1,
@@ -52,23 +55,23 @@ async def get_advanced_search(
     page: int = 1,
     size: int = ELASTIC_SIZE,
     keywords: str = None,
-    keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    keywords_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     keywords_fuzziness: int = 0,
     keywords_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     name: str = None,
-    name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     name_fuzziness: int = 0,
     name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     other_names: str = None,
-    other_names_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    other_names_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     other_names_fuzziness: int = 0,
     other_names_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     src: str = None,
-    src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
+    src_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
     src_fuzziness: int = 0,
     src_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     path: str = None,
-    path_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
+    path_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
     path_fuzziness: int = 0,
     path_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     category: str = None,
@@ -145,7 +148,7 @@ async def get_advanced_search(
     dependencies=[api_security([ScopeEnum.video_search_get.value])],
 )
 async def get_search(
-    analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     token: Token = Depends(extract_token),
     query_id: int = None,
     keywords: str = "",

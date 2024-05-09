@@ -2,13 +2,13 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from back.model.elasticsearch import AnalyzerEnum, ElasticsearchField
+from back.model.elasticsearch import ElasticsearchAnalyzerEnum, ElasticsearchField
 from back.settings import AppModeEnum
 
 
 class FrontGeneralSettingAnalyzerBase(BaseModel):
-    field: Dict[ElasticsearchField, List[AnalyzerEnum]] = {}
-    keyword: Dict[AnalyzerEnum, List[ElasticsearchField]] = {}
+    field: Dict[ElasticsearchField, List[ElasticsearchAnalyzerEnum]] = {}
+    keyword: Dict[ElasticsearchAnalyzerEnum, List[ElasticsearchField]] = {}
 
 
 class FrontGeneralSettingBase(BaseModel):

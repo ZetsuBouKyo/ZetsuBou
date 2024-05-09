@@ -19,7 +19,7 @@ from back.db.table import (
     TagTokenBase,
 )
 from back.logging import logger_zetsubou
-from back.model.elasticsearch import AnalyzerEnum
+from back.model.elasticsearch import ElasticsearchAnalyzerEnum
 from back.model.tag import (
     Tag,
     TagAttributeWithValue,
@@ -47,7 +47,7 @@ class CrudAsyncElasticsearchTag(CrudAsyncElasticsearchBase[TagElasticsearch]):
         hosts: List[str] = None,
         size: int = None,
         index: str = ELASTICSEARCH_INDEX_TAG,
-        analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         sorting: List[Any] = ["_score", "id"],
         is_from_setting_if_none: bool = False,
     ):

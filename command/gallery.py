@@ -9,7 +9,10 @@ from back.crud.async_gallery import (
     CrudAsyncGallery,
     get_gallery_by_gallery_id,
 )
-from back.model.elasticsearch import AnalyzerEnum, ElasticsearchQueryBooleanEnum
+from back.model.elasticsearch import (
+    ElasticsearchAnalyzerEnum,
+    ElasticsearchQueryBooleanEnum,
+)
 from back.settings import setting
 from lib.typer import ZetsuBouTyper
 
@@ -90,8 +93,8 @@ async def match(
         default=ElasticsearchQueryBooleanEnum.SHOULD.value,
         help="The relation between keywords.",
     ),
-    analyzer: AnalyzerEnum = typer.Option(
-        default=AnalyzerEnum.DEFAULT.value,
+    analyzer: ElasticsearchAnalyzerEnum = typer.Option(
+        default=ElasticsearchAnalyzerEnum.DEFAULT.value,
         help="See Elasticsearch analyzer (https://www.elastic.co/guide/en/elasticsearch/reference/current/analyzer.html).",  # noqa
     ),
 ):
@@ -125,8 +128,8 @@ async def random(
         default=ElasticsearchQueryBooleanEnum.SHOULD.value,
         help="The relation between keywords.",
     ),
-    analyzer: AnalyzerEnum = typer.Option(
-        default=AnalyzerEnum.DEFAULT.value,
+    analyzer: ElasticsearchAnalyzerEnum = typer.Option(
+        default=ElasticsearchAnalyzerEnum.DEFAULT.value,
         help="See Elasticsearch analyzer (https://www.elastic.co/guide/en/elasticsearch/reference/current/analyzer.html).",  # noqa
     ),
     seed: int = typer.Option(default=1048596, help="Random seed."),

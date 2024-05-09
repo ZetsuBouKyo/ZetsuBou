@@ -9,7 +9,7 @@ from back.crud.async_gallery import CrudAsyncElasticsearchGallery
 from back.db.crud import CrudUserElasticSearchQuery
 from back.dependency.security import Token, api_security, extract_token
 from back.model.elasticsearch import (
-    AnalyzerEnum,
+    ElasticsearchAnalyzerEnum,
     ElasticsearchCountResult,
     ElasticsearchQueryBooleanEnum,
 )
@@ -61,7 +61,7 @@ async def post_count(
     dependencies=[api_security([ScopeEnum.gallery_random_get.value])],
 )
 async def get_random(
-    analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     seed: int = 1048596,
     keywords: str = "",
     page: int = 1,
@@ -103,23 +103,23 @@ async def get_advanced_search(
     page: int = 1,
     size: int = ELASTIC_SIZE,
     keywords: str = None,
-    keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    keywords_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     keywords_fuzziness: int = 0,
     keywords_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     name: str = None,
-    name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     name_fuzziness: int = 0,
     name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     raw_name: str = None,
-    raw_name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    raw_name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     raw_name_fuzziness: int = 0,
     raw_name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     src: str = None,
-    src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
+    src_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
     src_fuzziness: int = 0,
     src_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     path: str = None,
-    path_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
+    path_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
     path_fuzziness: int = 0,
     path_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     category: str = None,
@@ -183,7 +183,7 @@ async def get_advanced_search(
     dependencies=[api_security([ScopeEnum.gallery_search_get.value])],
 )
 async def get_search(
-    analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     token: Token = Depends(extract_token),
     query_id: int = None,
     keywords: str = "",

@@ -11,7 +11,10 @@ from back.crud.async_progress import Progress
 from back.init.check import ping_elasticsearch, ping_storage
 from back.logging import logger_zetsubou
 from back.model.base import SourceBaseModel, SourceProtocolEnum
-from back.model.elasticsearch import AnalyzerEnum, ElasticsearchQueryBooleanEnum
+from back.model.elasticsearch import (
+    ElasticsearchAnalyzerEnum,
+    ElasticsearchQueryBooleanEnum,
+)
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
 from back.model.task import ZetsuBouTaskProgressEnum
 from back.session.async_elasticsearch import get_async_elasticsearch
@@ -37,7 +40,7 @@ TAG_FNAME = setting.gallery_tag_fname
 APP_GALLERY_SYNC_PAGES = setting.app_gallery_sync_pages
 
 elasticsearch_gallery_analyzer = {
-    AnalyzerEnum.DEFAULT.value: [
+    ElasticsearchAnalyzerEnum.DEFAULT.value: [
         "path.url",
         "name.default",
         "raw_name.default",
@@ -48,7 +51,7 @@ elasticsearch_gallery_analyzer = {
         "labels",
         "tags.*",
     ],
-    AnalyzerEnum.KEYWORD.value: [
+    ElasticsearchAnalyzerEnum.KEYWORD.value: [
         "path.keyword",
         "name.keyword",
         "raw_name.keyword",
@@ -59,7 +62,7 @@ elasticsearch_gallery_analyzer = {
         "labels",
         "tags.*",
     ],
-    AnalyzerEnum.NGRAM.value: [
+    ElasticsearchAnalyzerEnum.NGRAM.value: [
         "path.ngram",
         "name.ngram",
         "raw_name.ngram",
@@ -70,7 +73,7 @@ elasticsearch_gallery_analyzer = {
         "labels",
         "tags.*",
     ],
-    AnalyzerEnum.STANDARD.value: [
+    ElasticsearchAnalyzerEnum.STANDARD.value: [
         "path.standard",
         "name.standard",
         "raw_name.standard",
@@ -81,7 +84,7 @@ elasticsearch_gallery_analyzer = {
         "labels",
         "tags.*",
     ],
-    AnalyzerEnum.URL.value: ["path.url", "src.url"],
+    ElasticsearchAnalyzerEnum.URL.value: ["path.url", "src.url"],
 }
 
 
@@ -95,7 +98,7 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
         hosts: List[str] = None,
         size: int = None,
         index: str = ELASTICSEARCH_INDEX_GALLERY,
-        analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         sorting: List[Any] = [
             "_score",
             {"last_updated": {"order": "desc", "unmapped_type": "long"}},
@@ -124,23 +127,23 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
         self,
         page: int = 1,
         keywords: str = None,
-        keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        keywords_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         keywords_fuzziness: int = 0,
         keywords_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         name: str = None,
-        name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         name_fuzziness: int = 0,
         name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         raw_name: str = None,
-        raw_name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        raw_name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         raw_name_fuzziness: int = 0,
         raw_name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         src: str = None,
-        src_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
+        src_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
         src_fuzziness: int = 0,
         src_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         path: str = None,
-        path_analyzer: AnalyzerEnum = AnalyzerEnum.URL,
+        path_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
         path_fuzziness: int = 0,
         path_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         category: str = None,
@@ -576,7 +579,7 @@ class CrudAsyncGallerySync:
                     "filter": {
                         "multi_match": {
                             "query": f"{self.storage_protocol}-{self.storage_id}",
-                            "fields": [f"path.{AnalyzerEnum.URL}"],
+                            "fields": [f"path.{ElasticsearchAnalyzerEnum.URL}"],
                         }
                     }
                 }

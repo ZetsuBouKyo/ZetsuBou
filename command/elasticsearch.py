@@ -11,7 +11,7 @@ from back.init.async_elasticsearch import (
     create_video,
     init_indices,
 )
-from back.model.elasticsearch import AnalyzerEnum
+from back.model.elasticsearch import ElasticsearchAnalyzerEnum
 from back.session.async_elasticsearch import get_async_elasticsearch
 from lib.typer import ZetsuBouTyper
 
@@ -139,8 +139,8 @@ async def reindex(
 @app.command()
 async def analyze(
     text: str = typer.Argument(..., help="Text for analyzing."),
-    analyzer: AnalyzerEnum = typer.Option(
-        default=AnalyzerEnum.DEFAULT.value, help="Analyzer name."
+    analyzer: ElasticsearchAnalyzerEnum = typer.Option(
+        default=ElasticsearchAnalyzerEnum.DEFAULT.value, help="Analyzer name."
     ),
     index: str = typer.Option(default=None, help="Index name."),
 ):

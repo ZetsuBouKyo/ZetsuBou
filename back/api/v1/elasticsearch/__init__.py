@@ -9,7 +9,7 @@ from back.api.model.elasticsearch import (
 )
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.dependency.security import api_security
-from back.model.elasticsearch import AnalyzerEnum
+from back.model.elasticsearch import ElasticsearchAnalyzerEnum
 from back.model.scope import ScopeEnum
 from back.settings import setting
 
@@ -34,7 +34,7 @@ def get_query_examples():
     dependencies=[api_security([ScopeEnum.elasticsearch_analyzers_get.value])],
 )
 def get_analyzers():
-    return [ElasticsearchAnalyzer(name=a.value) for a in AnalyzerEnum]
+    return [ElasticsearchAnalyzer(name=a.value) for a in ElasticsearchAnalyzerEnum]
 
 
 @router.get(

@@ -7,7 +7,7 @@ from elasticsearch.helpers import async_scan
 from fastapi import HTTPException
 
 from back.model.elasticsearch import (
-    AnalyzerEnum,
+    ElasticsearchAnalyzerEnum,
     ElasticsearchCountResult,
     ElasticsearchQueryBooleanEnum,
     SourceT,
@@ -26,14 +26,14 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         hosts: List[str] = None,
         size: int = None,
         index: str = None,
-        analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+        analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         sorting: List[Any] = [
             "_score",
             {"last_updated": {"order": "desc", "unmapped_type": "long"}},
         ],
         is_from_setting_if_none: bool = False,
     ):
-        if analyzer not in [a.value for a in AnalyzerEnum]:
+        if analyzer not in [a.value for a in ElasticsearchAnalyzerEnum]:
             raise HTTPException(status=404, detail=f"Analyzer: {analyzer} not found")
         self.hosts = hosts
         self.index = index
@@ -154,7 +154,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         ngram_fields = []
         non_ngram_fields = []
         for field in self.fields:
-            if field.endswith(AnalyzerEnum.NGRAM.value):
+            if field.endswith(ElasticsearchAnalyzerEnum.NGRAM.value):
                 ngram_fields.append(field)
             else:
                 non_ngram_fields.append(field)
@@ -229,7 +229,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             + remaining_keywords_from_excludes
         )
 
-        if self.analyzer == AnalyzerEnum.NGRAM.value:
+        if self.analyzer == ElasticsearchAnalyzerEnum.NGRAM.value:
             constant_score_query = self._get_ngram_constant_score_query(
                 new_remaining_keywords, fuzziness
             )
@@ -274,7 +274,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         dsl: dict,
         keywords: str,
         field_name: str,
-        analyzer: AnalyzerEnum,
+        analyzer: ElasticsearchAnalyzerEnum,
         fuzziness: int,
         boolean: ElasticsearchQueryBooleanEnum,
     ):
@@ -290,7 +290,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
         _field_name = f"{field_name}.{_analyzer}"
 
-        if analyzer == AnalyzerEnum.NGRAM:
+        if analyzer == ElasticsearchAnalyzerEnum.NGRAM:
             _keywords = keywords.replace(" ", "")
         else:
             _keywords = keywords.split()

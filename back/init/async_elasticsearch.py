@@ -4,7 +4,7 @@ from typing import Dict, List
 
 from elasticsearch import AsyncElasticsearch
 
-from back.model.elasticsearch import AnalyzerEnum, ElasticsearchField
+from back.model.elasticsearch import ElasticsearchAnalyzerEnum, ElasticsearchField
 from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
 
@@ -17,7 +17,7 @@ indices = [
 settings = {
     "analysis": {
         "analyzer": {
-            AnalyzerEnum.DEFAULT.value: {
+            ElasticsearchAnalyzerEnum.DEFAULT.value: {
                 "tokenizer": "zetsubou_default_tokenizer",
                 "filter": [
                     "lowercase",
@@ -25,7 +25,7 @@ settings = {
                     "zetsubou_default_length",
                 ],
             },
-            AnalyzerEnum.SYNONYM.value: {
+            ElasticsearchAnalyzerEnum.SYNONYM.value: {
                 "tokenizer": "zetsubou_default_tokenizer",
                 "filter": [
                     "lowercase",
@@ -34,12 +34,12 @@ settings = {
                     "zetsubou_synonym",
                 ],
             },
-            AnalyzerEnum.STANDARD.value: {"type": "standard"},
-            AnalyzerEnum.NGRAM.value: {
+            ElasticsearchAnalyzerEnum.STANDARD.value: {"type": "standard"},
+            ElasticsearchAnalyzerEnum.NGRAM.value: {
                 "tokenizer": "zetsubou_ngram_tokenizer",
                 "filter": ["lowercase", "unique", "zetsubou_default_length"],
             },
-            AnalyzerEnum.URL.value: {
+            ElasticsearchAnalyzerEnum.URL.value: {
                 "tokenizer": "zetsubou_url_tokenizer",
                 "filter": ["lowercase", "unique", "zetsubou_default_length"],
             },
@@ -74,17 +74,17 @@ settings = {
 text_fields = {
     "default": {
         "type": "text",
-        "analyzer": AnalyzerEnum.DEFAULT.value,
-        "search_analyzer": AnalyzerEnum.SYNONYM.value,
+        "analyzer": ElasticsearchAnalyzerEnum.DEFAULT.value,
+        "search_analyzer": ElasticsearchAnalyzerEnum.SYNONYM.value,
     },
     "keyword": {"type": "keyword", "ignore_above": 256},
     "ngram": {
         "type": "text",
-        "analyzer": AnalyzerEnum.NGRAM.value,
+        "analyzer": ElasticsearchAnalyzerEnum.NGRAM.value,
     },
     "standard": {
         "type": "text",
-        "analyzer": AnalyzerEnum.STANDARD.value,
+        "analyzer": ElasticsearchAnalyzerEnum.STANDARD.value,
     },
 }
 
@@ -92,15 +92,15 @@ url_fields = {
     "keyword": {"type": "keyword", "ignore_above": 256},
     "ngram": {
         "type": "text",
-        "analyzer": AnalyzerEnum.NGRAM.value,
+        "analyzer": ElasticsearchAnalyzerEnum.NGRAM.value,
     },
     "standard": {
         "type": "text",
-        "analyzer": AnalyzerEnum.STANDARD.value,
+        "analyzer": ElasticsearchAnalyzerEnum.STANDARD.value,
     },
     "url": {
         "type": "text",
-        "analyzer": AnalyzerEnum.URL.value,
+        "analyzer": ElasticsearchAnalyzerEnum.URL.value,
     },
 }
 
@@ -158,7 +158,7 @@ tag_mappings = {
 
 def get_field_analyzer_from_mapping(
     mapping: dict,
-) -> Dict[ElasticsearchField, List[AnalyzerEnum]]:
+) -> Dict[ElasticsearchField, List[ElasticsearchAnalyzerEnum]]:
     field_analyzer = {}
     field_name = ""
     stack = deque([(mapping, field_name)])

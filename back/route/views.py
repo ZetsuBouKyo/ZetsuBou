@@ -2,7 +2,10 @@ from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 
 from back.dependency.security import view_security
-from back.model.elasticsearch import AnalyzerEnum, ElasticsearchQueryBooleanEnum
+from back.model.elasticsearch import (
+    ElasticsearchAnalyzerEnum,
+    ElasticsearchQueryBooleanEnum,
+)
 from back.model.gallery import GalleryOrderedFieldEnum
 from back.model.video import VideoOrderedFieldEnum
 from back.settings import setting
@@ -67,19 +70,19 @@ async def gallery_advanced_search(
     page: int = 1,
     size: int = None,
     keywords: str = None,
-    keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    keywords_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     keywords_fuzziness: int = 0,
     keywords_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     name: str = None,
-    name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     name_fuzziness: int = 0,
     name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     raw_name: str = None,
-    raw_name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    raw_name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     raw_name_fuzziness: int = 0,
     raw_name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     src: str = None,
-    src_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    src_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     src_fuzziness: int = 0,
     src_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     category: str = None,
@@ -128,15 +131,15 @@ async def video_advanced_search(
     page: int = 1,
     size: int = None,
     keywords: str = None,
-    keywords_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    keywords_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     keywords_fuzziness: int = 0,
     keywords_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     name: str = None,
-    name_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     name_fuzziness: int = 0,
     name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     other_names: str = None,
-    other_names_analyzer: AnalyzerEnum = AnalyzerEnum.DEFAULT,
+    other_names_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
     other_names_fuzziness: int = 0,
     other_names_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     category: str = None,

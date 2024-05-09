@@ -9,7 +9,7 @@ SourceT = TypeVar("SourceT")
 ElasticsearchField = NewType("ElasticsearchField", str)
 
 
-class AnalyzerEnum(str, Enum):
+class ElasticsearchAnalyzerEnum(str, Enum):
     DEFAULT: str = "default"
     KEYWORD: str = "keyword"
     NGRAM: str = "ngram"

@@ -15,7 +15,7 @@ class H(BaseModel):
 
 
 class J(BaseModel):
-    json: JsonStr
+    json_str: JsonStr
 
 
 def test_str():
@@ -48,17 +48,17 @@ def test_datetime_str_exception():
 def test_json_str():
     data = ["{}", '{"id":1,"name":"test"}', {"id": 1, "name": "test"}]
     for d in data:
-        J(json=d)
+        J(json_str=d)
 
 
 def test_json_str_schema():
-    j = J(json="{}")
+    j = J(json_str="{}")
     j.model_json_schema()
 
 
 def test_json_str_exception():
     with pytest.raises(TypeError):
-        J(json=1)
+        J(json_str=1)
 
 
 def test_http_url_str():

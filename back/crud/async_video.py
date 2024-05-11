@@ -1,6 +1,6 @@
 import io
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 from uuid import uuid4
 
 import cv2
@@ -15,6 +15,7 @@ from back.logging import logger_zetsubou
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import (
     ElasticsearchAnalyzerEnum,
+    ElasticsearchKeywordAnalyzers,
     ElasticsearchQueryBooleanEnum,
 )
 from back.model.task import ZetsuBouTaskProgressEnum
@@ -39,7 +40,7 @@ STORAGE_PROTOCOL = setting.storage_protocol
 STORAGE_CACHE = setting.storage_cache
 VIDEO_COVER_HOME = "video/cover"
 
-elasticsearch_video_analyzer = {
+elasticsearch_video_analyzer: ElasticsearchKeywordAnalyzers = {
     ElasticsearchAnalyzerEnum.DEFAULT.value: [
         "path.url",
         "name.default",
@@ -95,10 +96,9 @@ def get_sync_video_progress_id(protocol: SourceProtocolEnum, id: int):
 class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
     def __init__(
         self,
-        hosts: List[str] = None,
-        size: int = 10,
+        hosts: Optional[List[str]] = None,
         index: str = ELASTICSEARCH_INDEX_VIDEO,
-        analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
+        keyword_analyzers: ElasticsearchKeywordAnalyzers = elasticsearch_video_analyzer,
         sorting: List[Any] = [
             "_score",
             {"last_updated": {"order": "desc", "unmapped_type": "long"}},
@@ -109,16 +109,11 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
     ):
         super().__init__(
             hosts=hosts,
-            size=size,
             index=index,
-            analyzer=analyzer,
+            keyword_analyzers=keyword_analyzers,
             sorting=sorting,
             is_from_setting_if_none=is_from_setting_if_none,
         )
-
-    @property
-    def fields(self):
-        return elasticsearch_video_analyzer.get(self.analyzer, None)
 
     async def get_by_id(self, id: str) -> Video:
         return Video(**await self.get_source_by_id(id))
@@ -126,44 +121,45 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
     async def advanced_search(
         self,
         page: int = 1,
-        keywords: str = None,
+        size: int = ELASTICSEARCH_SIZE,
+        keywords: Optional[str] = None,
         keywords_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         keywords_fuzziness: int = 0,
         keywords_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
-        name: str = None,
+        name: Optional[str] = None,
         name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         name_fuzziness: int = 0,
         name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
-        other_names: str = None,
+        other_names: Optional[str] = None,
         other_names_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         other_names_fuzziness: int = 0,
         other_names_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
-        src: str = None,
+        src: Optional[str] = None,
         src_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
         src_fuzziness: int = 0,
         src_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
-        path: str = None,
+        path: Optional[str] = None,
         path_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
         path_fuzziness: int = 0,
         path_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
-        category: str = None,
-        uploader: str = None,
-        rating_gte: int = None,
-        rating_lte: int = None,
-        height_gte: int = None,
-        height_lte: int = None,
-        width_gte: int = None,
-        width_lte: int = None,
-        duration_gte: float = None,
-        duration_lte: float = None,
-        order_by: VideoOrderedFieldEnum = None,
+        category: Optional[str] = None,
+        uploader: Optional[str] = None,
+        rating_gte: Optional[int] = None,
+        rating_lte: Optional[int] = None,
+        height_gte: Optional[int] = None,
+        height_lte: Optional[int] = None,
+        width_gte: Optional[int] = None,
+        width_lte: Optional[int] = None,
+        duration_gte: Optional[float] = None,
+        duration_lte: Optional[float] = None,
+        order_by: Optional[VideoOrderedFieldEnum] = None,
         is_desc: bool = True,
         labels: List[str] = [],
         tags: Dict[str, List[str]] = {},
     ):
         dsl = {
             "query": {"bool": {"must": [], "should": []}},
-            "size": self.size,
+            "size": size,
             "track_total_hits": True,
         }
 
@@ -180,7 +176,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
 
         if keywords is not None:
             keywords = keywords.split()
-            self.analyzer = keywords_analyzer
+            keyword_fields = self.get_keyword_fields(keywords_analyzer)
             for keyword in keywords:
                 dsl["query"]["bool"][keywords_bool].append(
                     {
@@ -189,7 +185,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
                                 "multi_match": {
                                     "query": keyword,
                                     "fuzziness": keywords_fuzziness,
-                                    "fields": self.fields,
+                                    "fields": keyword_fields,
                                 }
                             }
                         }
@@ -325,7 +321,9 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
 
         return await self.query(page, dsl)
 
-    async def match_phrase_prefix(self, keywords: str, size: int = 5) -> Videos:
+    async def match_phrase_prefix(
+        self, keywords: str, size: int = ELASTICSEARCH_SIZE
+    ) -> Videos:
         query = {
             "bool": {
                 "should": [
@@ -407,17 +405,18 @@ async def _generate_cover(
 
 
 class CrudAsyncVideo:
+
     def __init__(
         self,
         video_id: str,
-        video: Video = None,
-        hosts: List[str] = None,
-        index: str = None,
-        cache_home: str = None,
-        cover_home: str = None,
-        app_storage_protocol: SourceProtocolEnum = None,
-        app_storage_session: AsyncS3Session = None,
-        storage_session: AsyncS3Session = None,
+        video: Optional[Video] = None,
+        hosts: Optional[List[str]] = None,
+        index: Optional[str] = None,
+        cache_home: Optional[str] = None,
+        cover_home: Optional[str] = None,
+        app_storage_protocol: Optional[SourceProtocolEnum] = None,
+        app_storage_session: Optional[AsyncS3Session] = None,
+        storage_session: Optional[AsyncS3Session] = None,
         is_from_setting_if_none: bool = False,
     ):
         self.video_id = video_id
@@ -529,7 +528,7 @@ class CrudAsyncVideo:
         new_video.labels.sort()
 
         await self.async_elasticsearch.index(
-            index=self.index, id=new_video.id, body=new_video.model_dump()
+            index=self.index, id=new_video.id, document=new_video.model_dump()
         )
 
         return new_video
@@ -573,6 +572,7 @@ async def _get_video_attrs(storage_session: AsyncS3Session, video: Video) -> Vid
 
 
 class CrudAsyncVideoSync:
+
     def __init__(
         self,
         storage_session: AsyncS3Session,
@@ -580,22 +580,22 @@ class CrudAsyncVideoSync:
         storage_id: int,
         root_source: SourceBaseModel,
         depth: int,
-        hosts: List[str] = None,
-        index: str = None,
-        target_index: str = None,
-        size: int = None,
-        batch_size: int = None,
+        hosts: Optional[List[str]] = None,
+        index: Optional[str] = None,
+        target_index: Optional[str] = None,
+        size: Optional[int] = None,
+        batch_size: Optional[int] = None,
         force: bool = ELASTICSEARCH_DELETE_REDUNDANT_DOCS,
-        cache_home: str = None,
-        cover_home: str = None,
-        app_storage_protocol: SourceProtocolEnum = None,
-        app_storage_session: AsyncS3Session = None,
-        progress_id: str = None,
+        cache_home: Optional[str] = None,
+        cover_home: Optional[str] = None,
+        app_storage_protocol: Optional[SourceProtocolEnum] = None,
+        app_storage_session: Optional[AsyncS3Session] = None,
+        progress_id: Optional[str] = None,
         progress_initial: float = 0,
         progress_final: float = 100.0,
         is_progress: bool = True,
-        callback: Callable[[Video], SourceBaseModel] = None,
-        new_video_model: SourceBaseModel = None,
+        callback: Optional[Callable[[Video], SourceBaseModel]] = None,
+        new_video_model: Optional[SourceBaseModel] = None,
         is_from_setting_if_none: bool = False,
     ):
         self.storage_session = storage_session
@@ -793,7 +793,7 @@ class CrudAsyncVideoSync:
     async def _count_elasticsearch(self):
         dsl = self.dsl
 
-        resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
+        resp = await self.async_elasticsearch.search(index=self.index, **dsl)
         self._elasticsearch_to_storage_num = resp["hits"]["total"]["value"]
 
         logger_zetsubou.debug(

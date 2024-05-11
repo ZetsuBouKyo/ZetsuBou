@@ -15,7 +15,7 @@ from back.utils.gen.gallery import (
     delete_gallery_storage,
     generate_delete_galleries,
     generate_gallery,
-    generate_nested_10001_galleries,
+    generate_nested_20200_galleries,
     generate_nested_galleries,
     generate_simple_galleries,
     nested_gallery_storage,
@@ -152,6 +152,6 @@ async def test_generate_nested_galleries():
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_generate_nested_10001_galleries():
+async def test_generate_nested_20200_galleries():
     with patch("back.utils.gen.gallery._generate_galleries"):
-        await generate_nested_10001_galleries()
+        await generate_nested_20200_galleries()

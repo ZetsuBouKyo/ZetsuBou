@@ -28,13 +28,16 @@ async def search(
 ) -> List[TagToken]:
     if not s:
         return []
-    elastic_crud = CrudAsyncElasticsearchTag(size=pagination.size)
-    results = await elastic_crud.match(pagination.page, s)
-    ids = [int(r.id) for r in results.hits.hits]
-    if len(ids) > 0:
-        return await CrudTagToken.get_rows_by_ids_order_by_id(
-            ids, skip=pagination.skip, limit=pagination.size, is_desc=pagination.is_desc
-        )
+    async with CrudAsyncElasticsearchTag(is_from_setting_if_none=True) as crud:
+        results = await crud.match(pagination.page, size=pagination.size, keywords=s)
+        ids = [int(r.id) for r in results.hits.hits]
+        if len(ids) > 0:
+            return await CrudTagToken.get_rows_by_ids_order_by_id(
+                ids,
+                skip=pagination.skip,
+                limit=pagination.size,
+                is_desc=pagination.is_desc,
+            )
     return []
 
 

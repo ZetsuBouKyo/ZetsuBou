@@ -63,14 +63,14 @@ nested_gallery_storage = StorageMinioCreate(
     secret_key=STORAGE_S3_AWS_SECRET_ACCESS_KEY,
 )
 
-nested_10001_gallery_prefix = f"{STORAGE_TESTS}/{STORAGE_TESTS_GALLERIES}/nested_10001/"
-nested_10001_gallery_storage_name = "tests nested 10001 galleries"
-nested_10001_gallery_storage = StorageMinioCreate(
+nested_20200_gallery_prefix = f"{STORAGE_TESTS}/{STORAGE_TESTS_GALLERIES}/nested_20200/"
+nested_20200_gallery_storage_name = "tests nested 20200 galleries"
+nested_20200_gallery_storage = StorageMinioCreate(
     category=StorageCategoryEnum.gallery,
-    name=nested_10001_gallery_storage_name,
+    name=nested_20200_gallery_storage_name,
     endpoint=STORAGE_S3_ENDPOINT_URL,
     bucket_name=STORAGE_CACHE,
-    prefix=nested_10001_gallery_prefix,
+    prefix=nested_20200_gallery_prefix,
     depth=2,
     access_key=STORAGE_S3_AWS_ACCESS_KEY_ID,
     secret_key=STORAGE_S3_AWS_SECRET_ACCESS_KEY,
@@ -191,9 +191,9 @@ async def generate_nested_galleries(
     return await _generate_galleries(storage, _generate_nested_galleries)
 
 
-async def generate_nested_10001_galleries(
-    storage: StorageMinioCreate = nested_10001_gallery_storage,
+async def generate_nested_20200_galleries(
+    storage: StorageMinioCreate = nested_20200_gallery_storage,
 ) -> Tuple[StorageMinio, AsyncS3Session]:
     return await _generate_galleries(
-        storage, _generate_nested_galleries, layer_1_length=100, layer_2_length=101
+        storage, _generate_nested_galleries, layer_1_length=200, layer_2_length=101
     )

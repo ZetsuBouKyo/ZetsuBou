@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 from uuid import uuid4
 
 from elasticsearch import AsyncElasticsearch
@@ -13,6 +13,7 @@ from back.logging import logger_zetsubou
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import (
     ElasticsearchAnalyzerEnum,
+    ElasticsearchKeywordAnalyzers,
     ElasticsearchQueryBooleanEnum,
 )
 from back.model.gallery import Galleries, Gallery, GalleryOrderedFieldEnum
@@ -39,7 +40,7 @@ TAG_FNAME = setting.gallery_tag_fname
 
 APP_GALLERY_SYNC_PAGES = setting.app_gallery_sync_pages
 
-elasticsearch_gallery_analyzer = {
+elasticsearch_gallery_analyzer: ElasticsearchKeywordAnalyzers = {
     ElasticsearchAnalyzerEnum.DEFAULT.value: [
         "path.url",
         "name.default",
@@ -95,10 +96,9 @@ def get_sync_gallery_progress_id(protocol: SourceProtocolEnum, id: int):
 class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
     def __init__(
         self,
-        hosts: List[str] = None,
-        size: int = None,
+        hosts: Optional[List[str]] = None,
         index: str = ELASTICSEARCH_INDEX_GALLERY,
-        analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
+        keyword_analyzers: ElasticsearchKeywordAnalyzers = elasticsearch_gallery_analyzer,
         sorting: List[Any] = [
             "_score",
             {"last_updated": {"order": "desc", "unmapped_type": "long"}},
@@ -109,16 +109,11 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
     ):
         super().__init__(
             hosts=hosts,
-            size=size,
             index=index,
-            analyzer=analyzer,
+            keyword_analyzers=keyword_analyzers,
             sorting=sorting,
             is_from_setting_if_none=is_from_setting_if_none,
         )
-
-    @property
-    def fields(self):
-        return elasticsearch_gallery_analyzer.get(self.analyzer, None)
 
     async def get_by_id(self, id: str) -> Gallery:
         return Gallery(**await self.get_source_by_id(id))
@@ -126,38 +121,43 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
     async def advanced_search(
         self,
         page: int = 1,
-        keywords: str = None,
+        size: int = ELASTICSEARCH_SIZE,
+        keywords: Optional[str] = None,
         keywords_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         keywords_fuzziness: int = 0,
         keywords_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
-        name: str = None,
+        name: Optional[str] = None,
         name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         name_fuzziness: int = 0,
         name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
-        raw_name: str = None,
+        raw_name: Optional[str] = None,
         raw_name_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         raw_name_fuzziness: int = 0,
         raw_name_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
-        src: str = None,
+        other_names: Optional[str] = None,
+        other_names_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
+        other_names_fuzziness: int = 0,
+        other_names_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
+        src: Optional[str] = None,
         src_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
         src_fuzziness: int = 0,
         src_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
-        path: str = None,
+        path: Optional[str] = None,
         path_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.URL,
         path_fuzziness: int = 0,
         path_bool: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
-        category: str = None,
-        uploader: str = None,
-        rating_gte: int = None,
-        rating_lte: int = None,
-        order_by: GalleryOrderedFieldEnum = None,
+        category: Optional[str] = None,
+        uploader: Optional[str] = None,
+        rating_gte: Optional[int] = None,
+        rating_lte: Optional[int] = None,
+        order_by: Optional[GalleryOrderedFieldEnum] = None,
         is_desc: bool = True,
         labels: List[str] = [],
         tags: Dict[str, List[str]] = {},
     ):
         dsl = {
             "query": {"bool": {"must": [], "should": []}},
-            "size": self.size,
+            "size": size,
             "track_total_hits": True,
         }
 
@@ -173,8 +173,11 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
         dsl["sort"] = sorting
 
         if keywords is not None:
+            if type(keywords_bool) is not str:
+                keywords_bool = keywords_bool.value
+
             keywords = keywords.split()
-            self.analyzer = keywords_analyzer
+            keyword_fields = self.get_keyword_fields(keywords_analyzer)
             for keyword in keywords:
                 dsl["query"]["bool"][keywords_bool].append(
                     {
@@ -183,7 +186,7 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                                 "multi_match": {
                                     "query": keyword,
                                     "fuzziness": keywords_fuzziness,
-                                    "fields": self.fields,
+                                    "fields": keyword_fields,
                                 }
                             }
                         }
@@ -202,6 +205,16 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
                 raw_name_analyzer,
                 raw_name_fuzziness,
                 raw_name_bool,
+            )
+
+        if other_names is not None:
+            self.add_advanced_query(
+                dsl,
+                other_names,
+                "other_names",
+                other_names_analyzer,
+                other_names_fuzziness,
+                other_names_bool,
             )
 
         if src is not None:
@@ -292,7 +305,9 @@ class CrudAsyncElasticsearchGallery(CrudAsyncElasticsearchBase[Gallery]):
 
         return await self.query(page, dsl)
 
-    async def match_phrase_prefix(self, keywords: str, size: int = 5) -> Galleries:
+    async def match_phrase_prefix(
+        self, keywords: str, size: int = ELASTICSEARCH_SIZE
+    ) -> Galleries:
         query = {
             "bool": {
                 "should": [
@@ -357,10 +372,10 @@ class CrudAsyncGallery:
     def __init__(
         self,
         gallery_id: str,
-        hosts: List[str] = None,
-        index: str = None,
-        dir_fname: str = None,
-        tag_fname: str = None,
+        hosts: Optional[List[str]] = None,
+        index: Optional[str] = None,
+        dir_fname: Optional[str] = None,
+        tag_fname: Optional[str] = None,
         is_from_setting_if_none: bool = False,
     ):
         self.gallery_id = gallery_id
@@ -452,7 +467,7 @@ class CrudAsyncGallery:
             )
 
             await self.async_elasticsearch.index(
-                index=self.index, id=new_gallery.id, body=new_gallery.model_dump()
+                index=self.index, id=new_gallery.id, document=new_gallery.model_dump()
             )
 
             return new_gallery
@@ -495,6 +510,7 @@ class CrudAsyncGallery:
 
 
 class CrudAsyncGallerySync:
+
     def __init__(
         self,
         storage_session: AsyncS3Session,
@@ -502,20 +518,20 @@ class CrudAsyncGallerySync:
         storage_id: int,
         root_source: SourceBaseModel,
         depth: int,
-        hosts: List[str] = None,
-        index: str = None,
-        target_index: str = None,
-        size: int = None,
-        batch_size: int = None,
+        hosts: Optional[List[str]] = None,
+        index: Optional[str] = None,
+        target_index: Optional[str] = None,
+        size: Optional[int] = None,
+        batch_size: Optional[int] = None,
         force: bool = ELASTICSEARCH_DELETE_REDUNDANT_DOCS,
-        dir_fname: str = None,
-        tag_fname: str = None,
-        progress_id: str = None,
+        dir_fname: Optional[str] = None,
+        tag_fname: Optional[str] = None,
+        progress_id: Optional[str] = None,
         progress_initial: float = 0,
         progress_final: float = 100.0,
-        sync_pages: bool = None,
-        callback: Callable[[Gallery], SourceBaseModel] = None,
-        new_gallery_model: SourceBaseModel = None,
+        sync_pages: Optional[bool] = None,
+        callback: Optional[Callable[[Gallery], SourceBaseModel]] = None,
+        new_gallery_model: Optional[SourceBaseModel] = None,
         is_progress: bool = True,
         is_from_setting_if_none: bool = False,
     ):
@@ -744,7 +760,7 @@ class CrudAsyncGallerySync:
     async def _count_docs(self):
         dsl = self.dsl
 
-        resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
+        resp = await self.async_elasticsearch.search(index=self.index, **dsl)
         self._elasticsearch_to_storage_num = resp["hits"]["total"]["value"]
 
         logger_zetsubou.debug(
@@ -756,7 +772,7 @@ class CrudAsyncGallerySync:
         if self.target_index is None:
             return
         dsl = self.dsl
-        resp = await self.async_elasticsearch.search(index=self.target_index, body=dsl)
+        resp = await self.async_elasticsearch.search(index=self.target_index, **dsl)
         total = resp["hits"]["total"]["value"]
         if total > 0:
             raise ValueError(f"Index: {self.target_index} should be empty.")

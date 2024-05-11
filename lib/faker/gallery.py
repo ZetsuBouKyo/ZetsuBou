@@ -3,6 +3,7 @@ from lib.faker.tag import (
     TagCategoryEnum,
     TagColorEnum,
     TagCountryEnum,
+    TagEnum,
     TagLanguageEnum,
     TagSubjectEnum,
 )
@@ -12,13 +13,21 @@ galleries = [
         **{
             "name": "[Zhonghua Book Company (Sun Zhu, Syu Lan Ying)] Three Hundred Tang Poems (Qing dynasty) [Chinese]",
             "raw_name": "[中華書局 (孫洙, 徐蘭英)] 唐詩三百首 (清朝) [中文]",
+            "other_names": [
+                "[章福記書局 (蘅塘退士, 章燮, 孫孝根)] 唐詩三百首註疏 (中華民國) [中文]"
+            ],
             "src": ["https://zh.wikipedia.org/wiki/唐詩三百首"],
             "labels": [TagLanguageEnum.ENGLISH.value, TagLanguageEnum.CHINESE.value],
             "tags": {
                 TagCategoryEnum.COLOR.value: [TagColorEnum.YELLOW.value],
                 TagCategoryEnum.COUNTRY.value: [TagCountryEnum.TAIWAN.value],
             },
-            "attributes": {"rating": 4, "pages": 3},
+            "attributes": {
+                "category": TagCategoryEnum.BOOK.value,
+                "rating": 4,
+                "uploader": TagEnum.ZETSUBOUKYO.value,
+                "pages": 3,
+            },
         }
     ),
     Gallery(

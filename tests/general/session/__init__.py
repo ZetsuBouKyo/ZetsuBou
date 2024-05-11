@@ -1,6 +1,7 @@
 from tests.general.session.async_elasticsearch import ElasticsearchSession
 from tests.general.session.async_integration import (
     BaseIntegrationSession,
+    Nested20200GalleryIntegrationSession,
     SimpleGalleryIntegrationSession,
     TagIntegrationSession,
 )
@@ -13,6 +14,7 @@ __all__ = [
     "DatabaseSession",
     "ElasticsearchSession",
     "ImageSession",
+    "Nested20200GalleryIntegrationSession",
     "SimpleGalleryIntegrationSession",
     "TagIntegrationSession",
     "UserSession",

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import NotFoundError
@@ -19,7 +19,10 @@ from back.db.table import (
     TagTokenBase,
 )
 from back.logging import logger_zetsubou
-from back.model.elasticsearch import ElasticsearchAnalyzerEnum
+from back.model.elasticsearch import (
+    ElasticsearchAnalyzerEnum,
+    ElasticsearchKeywordAnalyzers,
+)
 from back.model.tag import (
     Tag,
     TagAttributeWithValue,
@@ -40,29 +43,32 @@ SIZE = 100
 ES_SIZE = setting.elastic_size
 ELASTICSEARCH_INDEX_TAG = setting.elastic_index_tag
 
+elasticsearch_tag_analyzer: ElasticsearchKeywordAnalyzers = {
+    ElasticsearchAnalyzerEnum.DEFAULT.value: ["attributes.*"],
+    ElasticsearchAnalyzerEnum.KEYWORD.value: ["attributes.*"],
+    ElasticsearchAnalyzerEnum.NGRAM.value: ["attributes.*"],
+    ElasticsearchAnalyzerEnum.STANDARD.value: ["attributes.*"],
+    ElasticsearchAnalyzerEnum.URL.value: ["attributes.*"],
+}
+
 
 class CrudAsyncElasticsearchTag(CrudAsyncElasticsearchBase[TagElasticsearch]):
+
     def __init__(
         self,
         hosts: List[str] = None,
-        size: int = None,
         index: str = ELASTICSEARCH_INDEX_TAG,
-        analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
+        keyword_analyzers: ElasticsearchKeywordAnalyzers = elasticsearch_tag_analyzer,
         sorting: List[Any] = ["_score", "id"],
         is_from_setting_if_none: bool = False,
     ):
         super().__init__(
             hosts=hosts,
-            size=size,
             index=index,
-            analyzer=analyzer,
+            keyword_analyzers=keyword_analyzers,
             sorting=sorting,
             is_from_setting_if_none=is_from_setting_if_none,
         )
-
-    @property
-    def fields(self) -> List[str]:
-        return ["attributes.*"]
 
 
 class CrudTag:

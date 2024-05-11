@@ -177,3 +177,4 @@ async def test_analyzers():
             logger.debug(f"analyzer: {d.analyzer}")
             logger.debug(f"tokens: {tokens}")
             assert tokens == d.answer
+    await async_elasticsearch.close()

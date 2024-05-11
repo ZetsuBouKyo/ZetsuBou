@@ -1,13 +1,20 @@
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
+from back.crud.async_elasticsearch import ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW
+from back.crud.async_gallery import CrudAsyncElasticsearchGallery
 from back.crud.async_sync import get_crud_sync
 from back.db.model import StorageMinio
 from back.init.check import ping
 from back.model.gallery import Gallery
+from back.session.async_elasticsearch import get_async_elasticsearch
 from back.session.storage.async_s3 import AsyncS3Session
 from back.settings import setting
-from back.utils.gen.gallery import generate_delete_galleries, generate_simple_galleries
+from back.utils.gen.gallery import (
+    generate_delete_galleries,
+    generate_nested_20200_galleries,
+    generate_simple_galleries,
+)
 from back.utils.gen.tag import generate_tag_attributes, generate_tags
 from back.utils.map import BiDict
 from lib.faker import ZetsuBouFaker
@@ -84,6 +91,7 @@ class GalleryIntegrationSession(BaseIntegrationSession):
             is_progress=self.sync_is_progress,
         )
         await crud.sync()
+        await crud.async_elasticsearch.close()
 
         async with self.storage_session:
             async for gallery_source in self.storage_session.iter_directories(
@@ -104,3 +112,35 @@ class SimpleGalleryIntegrationSession(GalleryIntegrationSession):
 class DeleteGalleryIntegrationSession(GalleryIntegrationSession):
     async def generate_galleries(self) -> Tuple[StorageMinio, AsyncS3Session]:
         return await generate_delete_galleries()
+
+
+class Nested20200GalleryIntegrationSession(BaseIntegrationSession):
+
+    def __init__(
+        self,
+        sync_force: bool = True,
+        sync_is_progress: bool = False,
+    ):
+        self.sync_force = sync_force
+        self.sync_is_progress = sync_is_progress
+
+    async def enter(self):
+        self.galleries = []
+        self.storage, self.storage_session = await generate_nested_20200_galleries()
+
+        crud = await get_crud_sync(
+            self.storage.source.protocol,
+            self.storage.id,
+            force=self.sync_force,
+            is_progress=self.sync_is_progress,
+        )
+
+        async with CrudAsyncElasticsearchGallery(
+            is_from_setting_if_none=True
+        ) as crud_gallery:
+            total = await crud_gallery.get_total()
+            if total is not None and total > ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW * 2:
+                return
+
+        await crud.sync()
+        await crud.async_elasticsearch.close()

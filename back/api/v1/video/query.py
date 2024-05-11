@@ -36,11 +36,15 @@ async def get_random(
     boolean: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
 ) -> Videos:
     keywords = unquote(keywords)
-    async with CrudAsyncElasticsearchVideo(
-        size=size, analyzer=analyzer, is_from_setting_if_none=True
-    ) as crud:
+    async with CrudAsyncElasticsearchVideo(is_from_setting_if_none=True) as crud:
         docs = await crud.random(
-            page, keywords, fuzziness=fuzziness, boolean=boolean, seed=seed
+            page,
+            size=size,
+            keywords=keywords,
+            keyword_analyzer=analyzer,
+            fuzziness=fuzziness,
+            boolean=boolean,
+            seed=seed,
         )
     return docs
 
@@ -99,11 +103,10 @@ async def get_advanced_search(
     if other_names is not None:
         other_names = unquote(other_names)
 
-    async with CrudAsyncElasticsearchVideo(
-        size=size, is_from_setting_if_none=True
-    ) as crud:
+    async with CrudAsyncElasticsearchVideo(is_from_setting_if_none=True) as crud:
         docs = await crud.advanced_search(
             page=page,
+            size=size,
             keywords=keywords,
             keywords_analyzer=keywords_analyzer,
             keywords_fuzziness=keywords_fuzziness,
@@ -160,9 +163,7 @@ async def get_search(
     user_id = token.sub
     keywords = unquote(keywords)
 
-    async with CrudAsyncElasticsearchVideo(
-        size=size, analyzer=analyzer, is_from_setting_if_none=True
-    ) as crud:
+    async with CrudAsyncElasticsearchVideo(is_from_setting_if_none=True) as crud:
         if query_id is not None:
             user_es_query = await CrudUserElasticSearchQuery.get_row_by_id_and_user_id(
                 query_id, user_id
@@ -171,9 +172,14 @@ async def get_search(
             body = query.get("body", None)
             if body is None:
                 return []
-            docs = await crud.match_by_query(body, page)
+            docs = await crud.match_by_query(body, page, size=size)
         else:
             docs = await crud.match(
-                page, keywords, fuzziness=fuzziness, boolean=boolean
+                page,
+                size=size,
+                keywords=keywords,
+                keyword_analyzer=analyzer,
+                fuzziness=fuzziness,
+                boolean=boolean,
             )
     return docs

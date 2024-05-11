@@ -101,13 +101,18 @@ async def match(
     """
     Search.
     """
-    crud = CrudAsyncElasticsearchGallery(
-        size=size, index=index, analyzer=analyzer, is_from_setting_if_none=True
-    )
-    resp = await crud.match(
-        page, keywords=keywords, fuzziness=fuzziness, boolean=boolean
-    )
-    resp.print()
+    async with CrudAsyncElasticsearchGallery(
+        index=index, is_from_setting_if_none=True
+    ) as crud:
+        resp = await crud.match(
+            page,
+            size=size,
+            keywords=keywords,
+            keyword_analyzer=analyzer,
+            fuzziness=fuzziness,
+            boolean=boolean,
+        )
+        resp.print()
 
 
 @app.command()
@@ -138,10 +143,16 @@ async def random(
     Random search.
     """
     async with CrudAsyncElasticsearchGallery(
-        size=size, index=index, analyzer=analyzer, is_from_setting_if_none=True
+        index=index, is_from_setting_if_none=True
     ) as crud:
         resp = await crud.random(
-            page, keywords=keywords, fuzziness=fuzziness, boolean=boolean, seed=seed
+            page,
+            size=size,
+            keywords=keywords,
+            keyword_analyzer=analyzer,
+            fuzziness=fuzziness,
+            boolean=boolean,
+            seed=seed,
         )
         resp.print()
 

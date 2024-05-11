@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Any, AsyncGenerator, Generic, List, Set, Tuple
+from typing import Any, AsyncGenerator, Dict, Generic, List, Optional, Set, Tuple
 
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import NotFoundError
@@ -23,25 +23,27 @@ ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000
 class CrudAsyncElasticsearchBase(Generic[SourceT]):
     def __init__(
         self,
-        hosts: List[str] = None,
-        size: int = None,
-        index: str = None,
-        analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
+        hosts: Optional[List[str]] = None,
+        index: Optional[str] = None,
+        keyword_analyzers: Dict[ElasticsearchAnalyzerEnum, List[str]] = {},
         sorting: List[Any] = [
             "_score",
             {"last_updated": {"order": "desc", "unmapped_type": "long"}},
         ],
         is_from_setting_if_none: bool = False,
     ):
-        if analyzer not in [a.value for a in ElasticsearchAnalyzerEnum]:
-            raise HTTPException(status=404, detail=f"Analyzer: {analyzer} not found")
+        for analyzer in keyword_analyzers.keys():
+            if analyzer not in [a.value for a in ElasticsearchAnalyzerEnum]:
+                raise HTTPException(
+                    status_code=404, detail=f"Analyzer: {analyzer} not found"
+                )
+        self.keyword_analyzers = keyword_analyzers
+
         self.hosts = hosts
         self.index = index
         self.async_elasticsearch = AsyncElasticsearch(hosts=hosts)
 
-        self.analyzer = analyzer.value
         self.sorting = sorting
-        self.size = size
 
         if is_from_setting_if_none:
             self.init_from_setting()
@@ -49,8 +51,6 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
     def init_from_setting(self):
         if self.hosts is None:
             self.async_elasticsearch = get_async_elasticsearch()
-        if self.size is None:
-            self.size = ELASTICSEARCH_SIZE
 
     async def close(self):
         await self.async_elasticsearch.close()
@@ -61,22 +61,18 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
     async def __aexit__(self, exc_type, exc, tb):
         await self.close()
 
-    @property
-    def fields(self) -> List[str]:
-        raise NotImplementedError()
-
-    async def get_by_id(self) -> SourceT:
+    async def get_by_id(self, id: str) -> SourceT:
         raise NotImplementedError()
 
     async def advanced_search(self, *args, **kwargs):
         raise NotImplementedError()
 
-    async def match_phrase_prefix(self, keywords: str, size: int = 5):
+    async def match_phrase_prefix(self, keywords: str, size: int = ELASTICSEARCH_SIZE):
         raise NotImplementedError()
 
-    async def iter(self) -> AsyncGenerator[dict, None]:
+    async def iter(self, size) -> AsyncGenerator[dict, None]:
         dsl = {
-            "size": self.size,
+            "size": size,
             "query": {"match_all": {}},
             "track_total_hits": True,
             "sort": [
@@ -88,6 +84,11 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         ):
             # resp = ElasticsearchSearchResult[SourceT](**doc)
             yield doc
+
+    def get_keyword_fields(self, analyzer: ElasticsearchAnalyzerEnum) -> List[str]:
+        if type(analyzer) is not str:
+            analyzer = analyzer.value
+        return self.keyword_analyzers.get(analyzer, [])
 
     async def get_field_names(self) -> Set[str]:
         resp = await self.async_elasticsearch.indices.get_mapping(index=self.index)
@@ -112,24 +113,27 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
         return field_names
 
-    def get_basic_dsl(self, dsl: dict = None) -> dict:
-        if dsl is None:
-            return {
-                "size": self.size,
-                "sort": self.sorting,
-                "track_total_hits": True,
-            }
+    def get_basic_dsl(self, size: int = ELASTICSEARCH_SIZE) -> dict:
+        return {
+            "size": size,
+            "sort": self.sorting,
+            "track_total_hits": True,
+        }
+
+    def update_dsl(
+        self, dsl: dict, size: int = ELASTICSEARCH_SIZE, track_total_hits: bool = True
+    ) -> dict:
         if dsl.get("size", None) is None:
-            dsl["size"] = self.size
+            dsl["size"] = size
         if dsl.get("sort", None) is None:
             dsl["sort"] = self.sorting
         if dsl.get("track_total_hits", None) is None:
-            dsl["track_total_hits"] = True
+            dsl["track_total_hits"] = track_total_hits
         return dsl
 
-    def get_from(self, page: int) -> int:
+    def get_from(self, page: int, size: int) -> int:
         if page > 0:
-            return (page - 1) * self.size
+            return (page - 1) * size
         return 0
 
     def _filter_field_names(
@@ -153,7 +157,8 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
         ngram_fields = []
         non_ngram_fields = []
-        for field in self.fields:
+        fields = self.get_keyword_fields(ElasticsearchAnalyzerEnum.NGRAM.value)
+        for field in fields:
             if field.endswith(ElasticsearchAnalyzerEnum.NGRAM.value):
                 ngram_fields.append(field)
             else:
@@ -191,7 +196,13 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
         return ngram_constant_score_query + non_ngram_constant_score_query
 
-    def _get_constant_score_query(self, keywords: str, fuzziness: int = 0) -> List[Any]:
+    def _get_constant_score_query(
+        self,
+        keywords: str,
+        keyword_analyzer: ElasticsearchAnalyzerEnum,
+        fuzziness: int = 0,
+    ) -> List[Any]:
+        fields = self.get_keyword_fields(keyword_analyzer)
         return [
             {
                 "constant_score": {
@@ -199,7 +210,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
                         "multi_match": {
                             "query": keyword,
                             "fuzziness": fuzziness,
-                            "fields": self.fields,
+                            "fields": fields,
                         }
                     }
                 }
@@ -210,6 +221,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
     async def get_match_query(
         self,
         keywords: str,
+        keyword_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         fuzziness: int = 0,
         boolean: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     ) -> dict:
@@ -229,13 +241,13 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             + remaining_keywords_from_excludes
         )
 
-        if self.analyzer == ElasticsearchAnalyzerEnum.NGRAM.value:
+        if keyword_analyzer == ElasticsearchAnalyzerEnum.NGRAM.value:
             constant_score_query = self._get_ngram_constant_score_query(
                 new_remaining_keywords, fuzziness
             )
         else:
             constant_score_query = self._get_constant_score_query(
-                new_remaining_keywords, fuzziness
+                new_remaining_keywords, keyword_analyzer, fuzziness
             )
 
         if type(boolean) is not str:
@@ -311,24 +323,28 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             )
 
     async def query(self, page: int, dsl: dict) -> dict:
-        target_idx = page * self.size
-        max_page = ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW // self.size
+        size = dsl.get("size", None)
+        if size is None:
+            raise ValueError("key `size` not found")
+
+        target_idx = page * size
+        max_page = ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW // size
 
         if target_idx > ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW:
             current_page = max_page
 
-            dsl["from"] = self.get_from(current_page)
+            dsl["from_"] = self.get_from(current_page, size)
 
-            _resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
+            _resp = await self.async_elasticsearch.search(index=self.index, **dsl)
             total = _resp["hits"]["total"]["value"]
 
-            if page > (total // self.size + 1):
+            if page > (total // size + 1):
                 _resp = {"hits": {}}
                 # sources = ElasticsearchSearchResult[SourceT](**{"hits": {}})
             else:
                 page -= max_page
 
-                dsl["from"] = 0
+                dsl["from_"] = 0
 
                 while page > 1:
                     if page > max_page:
@@ -336,32 +352,30 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
                     else:
                         p = page - 1
 
-                    dsl["size"] = self.size * p
+                    dsl["size"] = size * p
                     dsl["search_after"] = _resp["hits"]["hits"][-1]["sort"]
 
                     _resp = await self.async_elasticsearch.search(
-                        index=self.index, body=dsl
+                        index=self.index, **dsl
                     )
 
                     page -= p
 
-                dsl["size"] = self.size
+                dsl["size"] = size
                 dsl["search_after"] = _resp["hits"]["hits"][-1]["sort"]
 
-                _resp = await self.async_elasticsearch.search(
-                    index=self.index, body=dsl
-                )
+                _resp = await self.async_elasticsearch.search(index=self.index, **dsl)
                 # sources = ElasticsearchSearchResult[SourceT](**_resp)
 
         else:
-            dsl["from"] = self.get_from(page)
-            _resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
+            dsl["from_"] = self.get_from(page, size)
+            _resp = await self.async_elasticsearch.search(index=self.index, **dsl)
             # sources = ElasticsearchSearchResult[SourceT](**_resp)
 
         return _resp
 
     async def custom(self, body: dict) -> dict:
-        return await self.async_elasticsearch.search(index=self.index, body=body)
+        return await self.async_elasticsearch.search(index=self.index, **body)
 
     async def count(self, body: dict) -> ElasticsearchCountResult:
         _resp = await self.async_elasticsearch.count(index=self.index, body=body)
@@ -370,12 +384,14 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
     async def random(
         self,
         page: int,
+        size: int = ELASTICSEARCH_SIZE,
         keywords: str = "",
+        keyword_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         fuzziness: int = 0,
         boolean: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
         seed: int = 1048596,
     ) -> dict:
-        dsl = self.get_basic_dsl()
+        dsl = self.get_basic_dsl(size=size)
         dsl["query"] = {
             "function_score": {
                 "query": {"match_all": {}},
@@ -386,42 +402,54 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         if keywords:
             dsl["query"]["function_score"]["query"] = dsl["query"] = (
                 await self.get_match_query(
-                    keywords, fuzziness=fuzziness, boolean=boolean
+                    keywords,
+                    keyword_analyzer=keyword_analyzer,
+                    fuzziness=fuzziness,
+                    boolean=boolean,
                 )
             )
 
         return await self.query(page, dsl)
 
-    async def match_by_query(self, dsl: dict, page: int) -> dict:
-        dsl = self.get_basic_dsl(dsl=dsl)
-        return await self.query(page, dsl)
-
     async def match(
         self,
         page: int,
-        keywords: str,
+        size: int = ELASTICSEARCH_SIZE,
+        keywords: str = "",
+        keyword_analyzer: ElasticsearchAnalyzerEnum = ElasticsearchAnalyzerEnum.DEFAULT,
         fuzziness: int = 0,
         boolean: ElasticsearchQueryBooleanEnum = ElasticsearchQueryBooleanEnum.SHOULD,
     ) -> dict:
         if keywords is None or keywords == "":
-            return await self.match_all(page)
+            return await self.match_all(page, size=size)
 
-        dsl = self.get_basic_dsl()
+        dsl = self.get_basic_dsl(size=size)
 
         dsl["query"] = await self.get_match_query(
-            keywords, fuzziness=fuzziness, boolean=boolean
+            keywords,
+            keyword_analyzer=keyword_analyzer,
+            fuzziness=fuzziness,
+            boolean=boolean,
         )
 
         source = await self.query(page, dsl)
         return source
 
-    async def match_all(self, page: int) -> dict:
-        dsl = self.get_basic_dsl()
+    async def match_by_query(
+        self, dsl: dict, page: int, size: int = ELASTICSEARCH_SIZE
+    ) -> dict:
+        dsl = self.update_dsl(dsl=dsl, size=size)
+        return await self.query(page, dsl)
+
+    async def match_all(self, page: int, size: int = ELASTICSEARCH_SIZE) -> dict:
+        dsl = self.get_basic_dsl(size=size)
         dsl["query"] = {"match_all": {}}
         return await self.query(page, dsl)
 
-    async def get_total(self) -> int:
-        return await self.match_all(1).hits.total.value
+    async def get_total(self) -> Optional[int]:
+        docs = await self.match_all(1, size=1)
+        total = docs.get("hits", {}).get("total", {}).get("value", None)
+        return total
 
     async def get_source_by_id(self, id: str) -> dict:
         try:
@@ -435,9 +463,10 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         return source
 
     async def get_sources_by_ids(self, ids: List[str]) -> dict:
-        dsl = {"size": self.size, "query": {"ids": {"values": ids}}}
+        size = len(ids)
+        dsl = {"size": size, "query": {"ids": {"values": ids}}}
         try:
-            _resp = await self.async_elasticsearch.search(index=self.index, body=dsl)
+            _resp = await self.async_elasticsearch.search(index=self.index, **dsl)
         except NotFoundError:
             raise HTTPException(status_code=404, detail=f"{id} not found")
         # sources = ElasticsearchSearchResult[SourceT](**_resp)

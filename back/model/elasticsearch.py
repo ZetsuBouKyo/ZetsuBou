@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Generic, List, NewType, Optional, TypeVar
+from typing import Any, Generic, List, NewType, Optional, TypedDict, TypeVar
 
 from pydantic import BaseModel, Field
 from rich import print_json
@@ -16,6 +16,18 @@ class ElasticsearchAnalyzerEnum(str, Enum):
     STANDARD: str = "standard"
     SYNONYM: str = "synonym"
     URL: str = "url"
+
+
+ElasticsearchKeywordAnalyzers = TypedDict(
+    "ElasticsearchKeywordAnalyzers",
+    {
+        "default": List[str],
+        "keyword": List[str],
+        "ngram": List[str],
+        "standard": List[str],
+        "url": List[str],
+    },
+)
 
 
 class ElasticsearchQueryBooleanEnum(str, Enum):

@@ -46,7 +46,7 @@ async def get_detailed_gallery_bookmarks(
     gallery_ids = [bookmark.gallery_id for bookmark in bookmarks]
 
     async with CrudAsyncElasticsearchGallery(
-        size=pagination.size, is_from_setting_if_none=True
+        is_from_setting_if_none=True
     ) as elasticsearch_crud:
         _galleries = await elasticsearch_crud.get_sources_by_ids(gallery_ids)
         galleries = Galleries(**_galleries)

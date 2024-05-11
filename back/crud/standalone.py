@@ -250,7 +250,7 @@ class _SyncNewGalleries:
             await self.async_elasticsearch.index(
                 index=self.elastic_index_gallery,
                 id=gallery_tag.id,
-                body=gallery_tag.model_dump(),
+                document=gallery_tag.model_dump(),
             )
 
     async def _sync_new_storage(self):

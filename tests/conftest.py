@@ -8,9 +8,10 @@ from _pytest.reports import TestReport
 from rich.console import Console
 
 from back.init.logger import stream_handler
+from back.logging import logger_zetsubou as back_logger
 from back.logging.utils import get_all_loggers
 from lib.httpx import ZetsuBouAsyncClient
-from tests.general.logging import logger as _logger
+from tests.general.logging import logger as cli_logger
 from tests.general.summary import print_divider
 
 sys.path.append(str(Path.cwd()))
@@ -33,8 +34,10 @@ def pytest_sessionstart():
     for logger in loggers:
         logger.setLevel(logging.WARNING)
         logger.handlers = []
-    _logger.addHandler(stream_handler)
-    _logger.setLevel(logging.DEBUG)
+    back_logger.addHandler(stream_handler)
+    back_logger.setLevel(logging.DEBUG)
+    cli_logger.addHandler(stream_handler)
+    cli_logger.setLevel(logging.DEBUG)
 
 
 def pytest_report_teststatus(report: TestReport, config: Config):  # pragma: no cover

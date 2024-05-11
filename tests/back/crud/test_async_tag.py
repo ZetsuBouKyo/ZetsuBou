@@ -30,9 +30,10 @@ from tests.general.mock import (
 from tests.general.session import BaseIntegrationSession
 
 
-def test_crud_async_elasticsearch_tag():
-    crud = CrudAsyncElasticsearchTag()
-    crud.fields
+@pytest.mark.asyncio(scope="session")
+async def test_crud_async_elasticsearch_tag():
+    async with CrudAsyncElasticsearchTag() as crud:
+        crud.get_keyword_fields(None)
 
 
 @pytest.mark.asyncio(scope="session")
@@ -471,3 +472,4 @@ async def test_temp():
         hits = ElasticsearchSearchResult(**doc)
         for hit in hits.hits.hits:
             print(hit)
+    await async_elasticsearch.close()

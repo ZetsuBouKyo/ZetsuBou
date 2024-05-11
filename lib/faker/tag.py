@@ -11,6 +11,7 @@ class TagAttributeEnum(str, Enum):
 
 
 class TagCategoryEnum(str, Enum):
+    BOOK: str = "Book"
     COLOR: str = "Color"
     COUNTRY: str = "Country"
     LANGUAGE: str = "Language"
@@ -43,6 +44,10 @@ class TagSubjectEnum(str, Enum):
     PHYSICS: str = "Physics"
 
 
+class TagEnum(str, Enum):
+    ZETSUBOUKYO: str = "ZetsuBouKyo"
+
+
 class FakerTag(BaseModel):
     name: str
     categories: List[str] = []
@@ -51,6 +56,7 @@ class FakerTag(BaseModel):
 # the order matter
 tags = [
     FakerTag(name=TagCategoryEnum.TEST.value),
+    FakerTag(name=TagCategoryEnum.BOOK.value, categories=[TagCategoryEnum.TEST.value]),
     FakerTag(name=TagCategoryEnum.COLOR.value, categories=[TagCategoryEnum.TEST.value]),
     FakerTag(
         name=TagCategoryEnum.COUNTRY.value, categories=[TagCategoryEnum.TEST.value]
@@ -112,5 +118,9 @@ tags = [
     FakerTag(
         name=TagSubjectEnum.PHYSICS.value,
         categories=[TagCategoryEnum.TEST.value, TagCategoryEnum.SUBJECT.value],
+    ),
+    FakerTag(
+        name=TagEnum.ZETSUBOUKYO.value,
+        categories=[TagCategoryEnum.TEST.value],
     ),
 ]

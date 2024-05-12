@@ -1,7 +1,6 @@
 # Introduction
 
-Our search mechanism is based on Elasticsearch. We store the gallery, video, and tag
-information in JSON format.
+Our search mechanism relies on Elasticsearch, where we store gallery, video, and tag information in JSON format.
 
 There are 3 ways to search the content in the Web UI.
 
@@ -11,9 +10,8 @@ There are 3 ways to search the content in the Web UI.
 
 ## Normal search
 
-The HTML input element in the top navigation is the entry point for the text search.
-It supports some special search grammar, e.g. including or excluding field value under
-specific field name.
+The HTML input element in the top navigation serves as the entry point for text search, supporting specialized search
+grammar such as including or excluding field values under specific field names.
 
 ??? note "Field name and field value"
 
@@ -340,8 +338,8 @@ specific field name.
 
 ## With additional parameters
 
-At the end of the top input navigation, near the magnifier icon, there is a
-rounded-expand-more icon. Click on the rounded-expand-more icon to expand the dropdown.
+Near the magnifier icon at the end of the top input navigation, you'll find a rounded-expand-more icon. Click on this
+icon to expand the dropdown menu.
 
 ??? note "Web screenshot"
 
@@ -361,26 +359,24 @@ Here are the parameters.
 
 #### Base
 
-`Search` performs the default search which will split the input text with space and
-searches that splitted keywords in mutiple fields.
+`Search` performs the default search, splitting the input text by spaces and searching those separated keywords across
+multiple fields.
 
-`Random` will return the same results as Search, but they will be returned randomly.
+`Random` will yield identical results to "Search," but in a random order.
 
 #### Analyzer
 
-The word `Analyzer` has two meanings in ZetsuBou. One is the `Elasticsearch Analyzer`
-and the other is the `Web Search Analyzer`.
+The word `Analyzer` has two meanings in ZetsuBou. One is the `Elasticsearch Analyzer` and the other is the
+`Web Search Analyzer`.
 
-` Elasticsearch Analyzer` is a field name of the form `*.<analyzer>`. For example,
-`raw_name.default` means field name `raw_name` and analyzer `default`.
+`Elasticsearch Analyzer` is a field name of the form `*.<analyzer>`. For example, `raw_name.default` means field name
+`raw_name` and analyzer `default`.
 
-`Web Search Analyzer` is a dropdown list in the Web UI. It is a combination of the
-`Elasticsearch Analyzer`.
+`Web Search Analyzer` is a dropdown list in the Web UI. It is a combination of the `Elasticsearch Analyzer`.
 
 ??? note "Developer notes"
 
-    You can see the following tabs in JSON format by
-    `python cli.py build docs print-web-search-analyzer`.
+    You can see the following tabs in JSON format by `python cli.py build docs print-web-search-analyzer`.
 
 The following two tabs are the details of `Web Search Analyzer`.
 
@@ -516,19 +512,18 @@ The following two tabs are the details of `Web Search Analyzer`.
 
 #### Fuzziness
 
-The fuzziness value represents the minimum steps from one text sequence to another.^[2]
+The fuzziness value represents the minimum steps from one text sequence to another.[^2]
 
 #### Boolean
 
-The default value is `Should`, which means it will return the results that match any of
-the keywords under any of the field names.
+The default value is `Should`, which implies that results matching any of the keywords under any field name will be
+returned.
 
 `Must` means that all tokens must be hit.
 
 #### Custom
 
-Users can create their own Elasticsearch query at
-`http://localhost:3000/settings/elasticsearch-search`.
+Users can create their own Elasticsearch query at <http://localhost:3000/settings/elasticsearch-search>.
 
 ??? note "Web screenshot"
 
@@ -545,5 +540,5 @@ Similar to searching with additional parameters, but more detailed.
     ![Alt Text](../assets/user-notes/searching/search-3-1.png)
     ![Alt Text](../assets/user-notes/searching/search-3-2.png)
 
-[^1]: https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#fuzziness
-[^2]: https://en.wikipedia.org/wiki/Levenshtein_distance ↩
+[^1]: <https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#fuzziness>
+[^2]: <https://en.wikipedia.org/wiki/Levenshtein_distance>

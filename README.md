@@ -5,23 +5,42 @@
 [![chrome](https://img.shields.io/badge/Chrome-115.0.5790.99-yellow.svg)](https://www.google.com/intl/en_us/chrome/)
 [![license](https://img.shields.io/badge/License-MIT-yellow.svg)](https://www.google.com/intl/en_us/chrome/)
 
-[ZetsuBou](https://zetsuboukyo.github.io/) is a web-based app for hosting your own image galleries and videos. The app is written in Python 3 and Vue 3.
+[ZetsuBou](https://zetsuboukyo.github.io/) is a self-hosted and web-based application designed to fulfill your needs for
+managing the image galleries and videos.
+
+The application is developed using Python 3 and Vue 3. Its core search mechanism relies on the Elasticsearch engine with
+custom [analyzers, filters, and mappings](back/init/async_elasticsearch.py), enabling us to execute complex queries on
+the image, gallery, and video collections effectively.
+
+**There would be no backwards compatibility at all.**
 
 ## Previews
 
 ### Galleries
 
+On the galleries homepage, we display each gallery along with its cover image, name, page count, rating, last-modified
+date, and so on.
+
 ![demo image](docs/assets/example/preview-galleries.png)
 
 ### Gallery
 
+The left side shows the cover image, while the right side lists details such as name, raw name, source link, rating,
+labels, tags, and other relevant information. There are also buttons for various features. At the bottom of the page
+you'll find the images contained in the gallery.
+
 ![demo image](docs/assets/example/preview-gallery.png)
 
-**There would be no backwards compatibility at all.**
+### Search
+
+We offer various user interfaces (UIs) that provide different search mechanisms. Here are a few examples.
+
+![demo image](docs/assets/user-notes/searching/search-2.png)
+![demo image](docs/assets/user-notes/searching/search-3-2.png)
 
 ## ⚠️ Warning
 
-ZetsuBou would generate a `.tag` folder inside your galleries. Here is an example of the folder structure.
+ZetsuBou will create a `.tag` folder within your galleries. Here's an example of the folder structure.
 
 ```text
 <your image galleries>
@@ -59,7 +78,8 @@ make up
 make down
 ```
 
-You can find the ZetusBou webapp username (`ZETSUBOU_APP_ADMIN_EMAIL`), password (`ZETSUBOU_APP_ADMIN_PASSWORD`) and other information in `./etc/settings.env`.
+You can find the ZetusBou webapp username `ZETSUBOU_APP_ADMIN_EMAIL`, password `ZETSUBOU_APP_ADMIN_PASSWORD`, and other
+pertinent information of environement variables in `./etc/settings.env`.
 
 ## Contact
 

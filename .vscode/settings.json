@@ -76,6 +76,7 @@
     },
     "black-formatter.args": ["--line-length", "88"],
     "isort.args": ["--profile", "black"],
+    "markdownlint.lintWorkspaceGlobs": ["README.md", "docs/**/*.md"],
     "prettier.useEditorConfig": true,
     "python.defaultInterpreterPath": "./.venv/bin/python",
     "python.testing.pytestArgs": ["-s", "--ignore=dev"],

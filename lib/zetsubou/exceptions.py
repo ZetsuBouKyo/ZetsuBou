@@ -42,8 +42,15 @@ class BaseException(Exception):
 
 
 NotFoundException = BaseException
-
 ServicesNotFoundException = NotFoundException("Services not found.")
 StorageServiceNotFoundException = NotFoundException("Storage service not found.")
+
+
+class SessionNotFoundException(Exception):
+    def __init__(self):
+        super().__init__(
+            "Session not found. Please ensure that the method is called within a context manager, e.g. `async with YourClass() as session: ...`."
+        )
+
 
 NotEmptyException = BaseException("Should be empty.")

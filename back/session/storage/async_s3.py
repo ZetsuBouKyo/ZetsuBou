@@ -27,6 +27,7 @@ from back.model.storage import (
 from back.settings import setting
 from back.utils.fs import alphanum_sorting
 from back.utils.image import is_browser_image, is_image
+from back.utils.session import AsyncSession, check_session, session
 from back.utils.video import is_video
 
 BUCKET_NAMES = [setting.storage_cache]
@@ -286,7 +287,7 @@ async def delete(client, bucket_name: str, prefix: str) -> bool:
     return await delete_object(client, bucket_name, _prefix)
 
 
-class AsyncS3Session(AioSession):
+class AsyncS3Session(AioSession, AsyncSession):
     def __init__(
         self,
         session_vars=None,
@@ -313,13 +314,6 @@ class AsyncS3Session(AioSession):
             if self.endpoint_url is None:
                 self.endpoint_url = STORAGE_S3_ENDPOINT_URL
 
-    async def __aenter__(self):
-        await self.open()
-        return self
-
-    async def __aexit__(self, exc_type, exc, tb):
-        await self.close()
-
     def create_s3_client(self):
         return ClientCreatorContext(
             self._create_client(
@@ -338,6 +332,7 @@ class AsyncS3Session(AioSession):
     async def close(self):
         await self.client.close()
 
+    @session
     async def are_galleries(
         self, source: SourceBaseModel, depth: int
     ) -> StorageGalleries:
@@ -420,6 +415,7 @@ class AsyncS3Session(AioSession):
 
         raise ValueError("depth should be greater than 0.")
 
+    @session
     async def init(self):
         for bucket_name in BUCKET_NAMES:
             try:
@@ -427,6 +423,7 @@ class AsyncS3Session(AioSession):
             except self.client.exceptions.ClientError:
                 await self.client.create_bucket(Bucket=bucket_name)
 
+    @session
     async def ping(self) -> bool:
         try:
             _resp = await self.client.list_buckets()
@@ -437,20 +434,24 @@ class AsyncS3Session(AioSession):
             return True
         return False
 
+    @session
     async def get_url(self, source: SourceBaseModel) -> str:
         return await generate_presigned_url(
             self.client, source.bucket_name, source.object_name
         )
 
+    @session
     async def get_object(self, source: SourceBaseModel) -> bytes:
         return await get_object(self.client, source.bucket_name, source.object_name)
 
+    @session
     async def get_json(self, source: SourceBaseModel) -> dict:
         obj = await self.get_object(source)
         if obj is None:
             return None
         return json.loads(obj)
 
+    @session
     async def get_storage_stat(
         self, source: SourceBaseModel, depth: int
     ) -> StorageStat:
@@ -499,6 +500,7 @@ class AsyncS3Session(AioSession):
         stat.num_galleries = len(_galleries_cache)
         return stat
 
+    @session
     async def list_nested_sources(
         self, source: SourceBaseModel
     ) -> List[SourceBaseModel]:
@@ -528,9 +530,11 @@ class AsyncS3Session(AioSession):
 
         return sources
 
+    @session
     async def list_filenames(self, source: SourceBaseModel) -> List[str]:
         return await list_filenames(self.client, source.bucket_name, source.object_name)
 
+    @session
     async def list_images(self, source: SourceBaseModel) -> List[str]:
         filenames = await list_filenames(
             self.client, source.bucket_name, source.object_name
@@ -542,9 +546,11 @@ class AsyncS3Session(AioSession):
 
         return images
 
+    # TODO: @session
     async def iter_directories(
         self, source: SourceBaseModel, depth: int
     ) -> AsyncIterator[SourceBaseModel]:
+        check_session(self)
         async for obj in iter_prefixes(
             self.client, source.bucket_name, source.object_name, depth
         ):
@@ -553,9 +559,11 @@ class AsyncS3Session(AioSession):
                 obj_source = SourceBaseModel(path=obj_path)
                 yield obj_source
 
+    @session
     async def exists(self, source: SourceBaseModel) -> bool:
         return await exists(self.client, source.bucket_name, source.object_name)
 
+    @session
     async def put_object(
         self, source: SourceBaseModel, body: bytes, content_type: str = None
     ) -> S3PutObjectResponse:
@@ -567,6 +575,7 @@ class AsyncS3Session(AioSession):
             content_type=content_type,
         )
 
+    @session
     async def put_json(
         self,
         source: SourceBaseModel,
@@ -585,5 +594,6 @@ class AsyncS3Session(AioSession):
             encoding=encoding,
         )
 
+    @session
     async def delete(self, source: SourceBaseModel) -> bool:
         return await delete(self.client, source.bucket_name, source.object_name)

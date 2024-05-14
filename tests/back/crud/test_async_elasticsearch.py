@@ -8,9 +8,10 @@ from fastapi import HTTPException
 
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from lib.faker import ZetsuBouFaker
+from lib.zetsubou.exceptions import SessionNotFoundException
 
 
-def test_crud_async_elasticsearch_base_analyzer():
+def test_analyzer():
     faker = ZetsuBouFaker()
     keyword_analyzers = {faker.random_string(): []}
     with pytest.raises(HTTPException):
@@ -18,7 +19,7 @@ def test_crud_async_elasticsearch_base_analyzer():
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_crud_async_elasticsearch_base_not_implemented_error():
+async def test_not_implemented_error():
     faker = ZetsuBouFaker()
     crud = CrudAsyncElasticsearchBase()
     with pytest.raises(NotImplementedError):
@@ -32,28 +33,46 @@ async def test_crud_async_elasticsearch_base_not_implemented_error():
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_crud_async_elasticsearch_base_get_field_names():
+async def test_session_not_found_exception():
+    faker = ZetsuBouFaker()
+
     crud = CrudAsyncElasticsearchBase()
+    with pytest.raises(SessionNotFoundException):
+        await crud.get_field_names()
+
+    with pytest.raises(SessionNotFoundException):
+        await crud.get_source_by_id(faker.random_string())
+
+    with pytest.raises(SessionNotFoundException):
+        await crud.get_sources_by_ids([faker.random_string()])
+
+    with pytest.raises(SessionNotFoundException):
+        await crud.query(1, {})
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_get_field_names():
     mock_async_elasticsearch = Mock(spec=AsyncElasticsearch)
     result = Future()
     result.set_result({})
     mock_async_elasticsearch.return_value.indices.return_value.get_mapping = result
-    field_names = await crud.get_field_names()
-    assert len(field_names) == 0
+    async with CrudAsyncElasticsearchBase() as crud:
+        field_names = await crud.get_field_names()
+        assert len(field_names) == 0
 
 
 @pytest.mark.parametrize(
     ("page", "size", "from_"),
     [(1, 10, 0), (1, 100, 0), (2, 100, 100), (0, 10, 0), (0, 100, 0), (-1, 10, 0)],
 )
-def test_crud_async_elasticsearch_base_get_from(page: int, size: int, from_: int):
+def test_get_from(page: int, size: int, from_: int):
     crud = CrudAsyncElasticsearchBase()
     crud_from = crud.get_from(page, size)
     assert crud_from == from_
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_crud_async_elasticsearch_base_get_source_by_id():
+async def test_get_source_by_id():
     faker = ZetsuBouFaker()
 
     mock_async_elasticsearch = Mock(spec=AsyncElasticsearch)
@@ -61,15 +80,14 @@ async def test_crud_async_elasticsearch_base_get_source_by_id():
     result.set_result({})
     mock_async_elasticsearch.get.return_value = result
 
-    crud = CrudAsyncElasticsearchBase()
-    crud.async_elasticsearch = mock_async_elasticsearch
-
     with pytest.raises(HTTPException):
-        await crud.get_source_by_id(faker.random_string())
+        async with CrudAsyncElasticsearchBase() as crud:
+            crud.async_elasticsearch = mock_async_elasticsearch
+            await crud.get_source_by_id(faker.random_string())
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_crud_async_elasticsearch_base_get_source_by_id_exception():
+async def test_get_source_by_id_exception():
 
     def _side_effect(**kwargs):
         raise NotFoundError
@@ -81,15 +99,14 @@ async def test_crud_async_elasticsearch_base_get_source_by_id_exception():
     result.set_result({})
     mock_async_elasticsearch.get.side_effect = _side_effect
 
-    crud = CrudAsyncElasticsearchBase()
-    crud.async_elasticsearch = mock_async_elasticsearch
-
     with pytest.raises(HTTPException):
-        await crud.get_source_by_id(faker.random_string())
+        async with CrudAsyncElasticsearchBase() as crud:
+            crud.async_elasticsearch = mock_async_elasticsearch
+            await crud.get_source_by_id(faker.random_string())
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_crud_async_elasticsearch_base_get_sources_by_ids_exception():
+async def test_get_sources_by_ids_exception():
 
     def _side_effect(**kwargs):
         raise NotFoundError
@@ -101,15 +118,14 @@ async def test_crud_async_elasticsearch_base_get_sources_by_ids_exception():
     result.set_result({})
     mock_async_elasticsearch.search.side_effect = _side_effect
 
-    crud = CrudAsyncElasticsearchBase()
-    crud.async_elasticsearch = mock_async_elasticsearch
-
     with pytest.raises(HTTPException):
-        await crud.get_sources_by_ids([faker.random_string()])
+        async with CrudAsyncElasticsearchBase() as crud:
+            crud.async_elasticsearch = mock_async_elasticsearch
+            await crud.get_sources_by_ids([faker.random_string()])
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_crud_async_elasticsearch_base_query():
-    crud = CrudAsyncElasticsearchBase()
+async def test_query():
     with pytest.raises(ValueError):
-        await crud.query(1, {})
+        async with CrudAsyncElasticsearchBase() as crud:
+            await crud.query(1, {})

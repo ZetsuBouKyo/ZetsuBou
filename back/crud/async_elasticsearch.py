@@ -15,12 +15,13 @@ from back.model.elasticsearch import (
 from back.session.async_elasticsearch import get_async_elasticsearch
 from back.settings import setting
 from back.utils.keyword import KeywordParser
+from back.utils.session import AsyncSession, check_session, session
 
 ELASTICSEARCH_SIZE = setting.elastic_size
 ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000
 
 
-class CrudAsyncElasticsearchBase(Generic[SourceT]):
+class CrudAsyncElasticsearchBase(Generic[SourceT], AsyncSession):
     def __init__(
         self,
         hosts: Optional[List[str]] = None,
@@ -55,12 +56,6 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
     async def close(self):
         await self.async_elasticsearch.close()
 
-    async def __aenter__(self):
-        return self
-
-    async def __aexit__(self, exc_type, exc, tb):
-        await self.close()
-
     async def get_by_id(self, id: str) -> SourceT:
         raise NotImplementedError()
 
@@ -70,7 +65,10 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
     async def match_phrase_prefix(self, keywords: str, size: int = ELASTICSEARCH_SIZE):
         raise NotImplementedError()
 
+    # TODO: @session
+    # It seems that there is no straightforward way to directly apply a decorator to an async yield method.
     async def iter(self, size) -> AsyncGenerator[dict, None]:
+        check_session(self)
         dsl = {
             "size": size,
             "query": {"match_all": {}},
@@ -90,6 +88,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             analyzer = analyzer.value
         return self.keyword_analyzers.get(analyzer, [])
 
+    @session
     async def get_field_names(self) -> Set[str]:
         resp = await self.async_elasticsearch.indices.get_mapping(index=self.index)
         mappings = resp.get(self.index, {}).get("mappings", None)
@@ -218,6 +217,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             for keyword in keywords
         ]
 
+    @session
     async def get_match_query(
         self,
         keywords: str,
@@ -322,6 +322,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
                 }
             )
 
+    @session
     async def query(self, page: int, dsl: dict) -> dict:
         size = dsl.get("size", None)
         if size is None:
@@ -374,13 +375,16 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
         return _resp
 
+    @session
     async def custom(self, body: dict) -> dict:
         return await self.async_elasticsearch.search(index=self.index, **body)
 
+    @session
     async def count(self, body: dict) -> ElasticsearchCountResult:
         _resp = await self.async_elasticsearch.count(index=self.index, body=body)
         return ElasticsearchCountResult(**_resp)
 
+    @session
     async def random(
         self,
         page: int,
@@ -411,6 +415,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
 
         return await self.query(page, dsl)
 
+    @session
     async def match(
         self,
         page: int,
@@ -435,22 +440,26 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
         source = await self.query(page, dsl)
         return source
 
+    @session
     async def match_by_query(
         self, dsl: dict, page: int, size: int = ELASTICSEARCH_SIZE
     ) -> dict:
         dsl = self.update_dsl(dsl=dsl, size=size)
         return await self.query(page, dsl)
 
+    @session
     async def match_all(self, page: int, size: int = ELASTICSEARCH_SIZE) -> dict:
         dsl = self.get_basic_dsl(size=size)
         dsl["query"] = {"match_all": {}}
         return await self.query(page, dsl)
 
+    @session
     async def get_total(self) -> Optional[int]:
         docs = await self.match_all(1, size=1)
         total = docs.get("hits", {}).get("total", {}).get("value", None)
         return total
 
+    @session
     async def get_source_by_id(self, id: str) -> dict:
         try:
             _resp = await self.async_elasticsearch.get(index=self.index, id=id)
@@ -462,6 +471,7 @@ class CrudAsyncElasticsearchBase(Generic[SourceT]):
             raise HTTPException(status_code=404, detail=f"{id} not found")
         return source
 
+    @session
     async def get_sources_by_ids(self, ids: List[str]) -> dict:
         size = len(ids)
         dsl = {"size": size, "query": {"ids": {"values": ids}}}

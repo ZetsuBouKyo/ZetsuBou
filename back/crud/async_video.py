@@ -29,6 +29,7 @@ from back.utils.dt import (
     get_now,
     is_isoformat_with_timezone,
 )
+from back.utils.session import session
 
 ELASTICSEARCH_INDEX_VIDEO = setting.elastic_index_video
 ELASTICSEARCH_SIZE = setting.elastic_size
@@ -115,9 +116,11 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
             is_from_setting_if_none=is_from_setting_if_none,
         )
 
+    @session
     async def get_by_id(self, id: str) -> Video:
         return Video(**await self.get_source_by_id(id))
 
+    @session
     async def advanced_search(
         self,
         page: int = 1,
@@ -321,6 +324,7 @@ class CrudAsyncElasticsearchVideo(CrudAsyncElasticsearchBase[Video]):
 
         return await self.query(page, dsl)
 
+    @session
     async def match_phrase_prefix(
         self, keywords: str, size: int = ELASTICSEARCH_SIZE
     ) -> Videos:

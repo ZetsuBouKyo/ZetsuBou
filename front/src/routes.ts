@@ -6,6 +6,7 @@ import BookmarkVideo from "./views/Vertical/Bookmark/Video.vue";
 import Construction from "./views/Vertical/Construction.vue";
 import Galleries from "./views/Vertical/Galleries.vue";
 import Gallery from "./views/Vertical/Gallery/index.vue";
+import GalleryImage from "./views/Vertical/GalleryImage/index.vue";
 import ImgSvgPreview from "./views/Vertical/ImgSvgPreview/index.vue";
 import Initialization from "./views/Vertical/Initialization/index.vue";
 import Login from "./views/Login.vue";
@@ -88,7 +89,7 @@ export const routes = [
       },
       {
         path: "/g/:gallery/i/:img",
-        component: ImgSvgPreview,
+        component: GalleryImage,
         meta: { title: "Gallery", search: SearchCategory.Gallery, base: SearchBase.Search },
       },
       {

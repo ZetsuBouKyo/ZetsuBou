@@ -45,8 +45,8 @@
         "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
         "editor.codeActionsOnSave": {
             "source.fixAll": "explicit",
-            "source.organizeImports": "explicit",
-            "source.sortImports": "explicit"
+            "source.organizeImports": "never",
+            "source.sortImports": "never"
         },
         "editor.tabSize": 2
     },

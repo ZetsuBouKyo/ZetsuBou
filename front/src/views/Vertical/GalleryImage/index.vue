@@ -22,10 +22,15 @@ const state = reactive<GalleryImageState>({
     imgWidth: undefined,
     imgHeight: undefined,
     imgScale: undefined,
-    scale: 1,
-    rotation: 0,
+    defaultOriginX: 0,
+    defaultOriginY: 0,
+    defaultRotation: 0,
+    defaultScale: 1,
     originX: 0,
     originY: 0,
+    rotation: 0,
+    scale: 1,
+    scaleFactor: 1.1,
     dragStart: null,
   },
   bookmark: {
@@ -83,6 +88,10 @@ const resizeAndCenterImage = () => {
   state.container.scale = state.container.imgScale;
   state.container.originX = (canvas.value.width - state.container.imgWidth * state.container.imgScale) / 2;
   state.container.originY = (canvas.value.height - state.container.imgHeight * state.container.imgScale) / 2;
+
+  state.container.defaultScale = state.container.scale;
+  state.container.defaultOriginX = state.container.originX;
+  state.container.defaultOriginY = state.container.originY;
 };
 
 const drawGrid = () => {
@@ -139,7 +148,7 @@ function drawPolygon(polygonPoints: Array<{ x: number; y: number }>) {
 const draw = () => {
   if (!canvas.value || !ctx.value || state.container.imgWidth === undefined || state.container.imgHeight === undefined)
     return;
-  console.log(canvas.value.width, canvas.value.height);
+
   ctx.value.save();
   ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
   ctx.value.translate(
@@ -170,7 +179,7 @@ const draw = () => {
 
 const zoom = (event: WheelEvent) => {
   event.preventDefault();
-  const scaleFactor = 1.2;
+  const scaleFactor = state.container.scaleFactor;
   const mouseX = event.clientX - canvas.value.offsetLeft;
   const mouseY = event.clientY - canvas.value.offsetTop;
   const zoomIn = event.deltaY < 0;
@@ -181,7 +190,6 @@ const zoom = (event: WheelEvent) => {
   // Adjust the origin to zoom around the cursor
   state.container.originX = mouseX - (mouseX - state.container.originX) * zoomRatio;
   state.container.originY = mouseY - (mouseY - state.container.originY) * zoomRatio;
-
   state.container.scale = newScale;
   draw();
 };
@@ -251,7 +259,7 @@ watch(
 
 watch(
   () => {
-    return [state.sidebar.isRuler];
+    return [state.sidebar.isRuler, state.container.rotation];
   },
   () => {
     draw();
@@ -270,7 +278,6 @@ const rotationState = reactive({
 });
 function updateRotation() {
   state.container.rotation += Number(rotationState.degree);
-  draw();
 }
 
 onMounted(() => {

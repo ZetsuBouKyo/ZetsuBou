@@ -29,6 +29,20 @@ function toggleRuler() {
 function openRotation() {
   state.modal.rotation.open();
 }
+
+function rotateRight() {
+  state.container.rotation += 1;
+}
+
+function rotateLeft() {
+  state.container.rotation -= 1;
+}
+function reset() {
+  state.container.originX = state.container.defaultOriginX;
+  state.container.originY = state.container.defaultOriginY;
+  state.container.rotation = state.container.defaultRotation;
+  state.container.scale = state.container.defaultScale;
+}
 </script>
 
 <template>
@@ -50,6 +64,15 @@ function openRotation() {
     </slidebar-icon>
     <slidebar-icon>
       <icon-mdi-arrow-oscillating style="font-size: 1.5rem; color: white" @click="openRotation" />
+    </slidebar-icon>
+    <slidebar-icon>
+      <icon-mdi-rotate-right style="font-size: 1.5rem; color: white" @click="rotateRight" />
+    </slidebar-icon>
+    <slidebar-icon>
+      <icon-mdi-rotate-left style="font-size: 1.5rem; color: white" @click="rotateLeft" />
+    </slidebar-icon>
+    <slidebar-icon>
+      <icon-mdi-format-horizontal-align-center style="font-size: 1.5rem; color: white" @click="reset" />
     </slidebar-icon>
     <slidebar-icon :class="state.sidebar.isRuler ? 'bg-gray-500 rounded-lg' : ''">
       <icon-solar-ruler-angular-broken style="font-size: 1.5rem; color: white" @click="toggleRuler" />

@@ -34,10 +34,15 @@ export interface Container {
   imgWidth?: number;
   imgHeight?: number;
   imgScale?: number;
-  scale: number;
-  rotation: number;
+  defaultOriginX: number;
+  defaultOriginY: number;
+  defaultRotation: number;
+  defaultScale: number;
   originX: number;
   originY: number;
+  rotation: number;
+  scale: number;
+  scaleFactor: number;
   dragStart: Point | null;
 }
 
@@ -67,8 +72,13 @@ export interface Panel {
   play: ReturnType<typeof setInterval>;
 }
 
+export interface RotationModal {
+  open: () => void;
+  close: () => void;
+}
+
 export interface Modal {
-  rotation: any;
+  rotation: RotationModal | undefined;
 }
 
 export interface GalleryImageState {

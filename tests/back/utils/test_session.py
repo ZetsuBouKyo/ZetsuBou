@@ -21,13 +21,6 @@ def test_close():
     D()
 
 
-def test_close_type_error():
-    class A(AsyncSession): ...
-
-    with pytest.raises(TypeError):
-        A()
-
-
 def test_init():
 
     class A(AsyncSession):

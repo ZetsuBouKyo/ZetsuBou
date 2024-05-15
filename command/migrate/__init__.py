@@ -83,7 +83,8 @@ async def _storage(
             callback=video_callback,
             target_index=target_index,
         )
-    await crud.sync()
+    async with crud as c:
+        await crud.sync()
 
     tf = time.time()
     td = tf - ti

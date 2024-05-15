@@ -27,7 +27,7 @@ from back.utils.dt import (
     get_now,
     is_isoformat_with_timezone,
 )
-from back.utils.session import session
+from back.utils.session import AsyncSession, session
 
 ELASTICSEARCH_INDEX_MAX_RESULT_WINDOW = 10000
 ELASTICSEARCH_INDEX_GALLERY = setting.elastic_index_gallery
@@ -513,7 +513,7 @@ class CrudAsyncGallery:
         return "ok"
 
 
-class CrudAsyncGallerySync:
+class CrudAsyncGallerySync(AsyncSession):
 
     def __init__(
         self,
@@ -607,6 +607,9 @@ class CrudAsyncGallerySync:
             "track_total_hits": True,
         }
 
+    async def close(self):
+        await self.async_elasticsearch.close()
+
     async def are_galleries(self):
         async with self.storage_session:
             return await self.storage_session.are_galleries(
@@ -617,6 +620,7 @@ class CrudAsyncGallerySync:
         for batch in batches:
             yield batch
 
+    @session
     async def send_bulk(self, batches: List[dict]):
         await async_bulk(self.async_elasticsearch, batches)
         self._elasticsearch_to_storage_batches = []
@@ -817,6 +821,7 @@ class CrudAsyncGallerySync:
         if len(self._elasticsearch_to_storage_batches) > 0:
             await self.send_bulk(self._elasticsearch_to_storage_batches)
 
+    @session
     async def sync(self):
         logger_zetsubou.debug(f"storage protocol: {self.storage_protocol}")
         logger_zetsubou.debug(f"storage id: {self.storage_id}")

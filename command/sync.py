@@ -88,7 +88,8 @@ async def _storage(
         is_progress=progress,
         target_index=target_index,
     )
-    await crud.sync()
+    async with crud as c:
+        await c.sync()
 
     tf = time.time()
     td = tf - ti
@@ -151,7 +152,8 @@ async def _storages(
             force=force,
             is_progress=progress,
         )
-        await crud.sync()
+        async with crud as c:
+            await crud.sync()
 
         if i == total_storages_0:
             initial, final = final, 100.0

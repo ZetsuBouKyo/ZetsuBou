@@ -29,7 +29,7 @@ from back.utils.dt import (
     get_now,
     is_isoformat_with_timezone,
 )
-from back.utils.session import session
+from back.utils.session import AsyncSession, session
 
 ELASTICSEARCH_INDEX_VIDEO = setting.elastic_index_video
 ELASTICSEARCH_SIZE = setting.elastic_size
@@ -575,7 +575,7 @@ async def _get_video_attrs(storage_session: AsyncS3Session, video: Video) -> Vid
     )
 
 
-class CrudAsyncVideoSync:
+class CrudAsyncVideoSync(AsyncSession):
 
     def __init__(
         self,
@@ -663,11 +663,6 @@ class CrudAsyncVideoSync:
                 is_from_setting_if_none=True
             )
 
-    async def send_bulk(self, batches: List[dict]):
-        await async_bulk(self.async_elasticsearch, batches)
-        self._elasticsearch_to_storage_batches = []
-        self._storage_to_elasticsearch_batches = []
-
     @property
     def dsl(self):
         return {
@@ -684,6 +679,15 @@ class CrudAsyncVideoSync:
             },
             "track_total_hits": True,
         }
+
+    async def close(self):
+        await self.async_elasticsearch.close()
+
+    @session
+    async def send_bulk(self, batches: List[dict]):
+        await async_bulk(self.async_elasticsearch, batches)
+        self._elasticsearch_to_storage_batches = []
+        self._storage_to_elasticsearch_batches = []
 
     async def _sync_video_elasticsearch_to_storage(self, doc: dict):
         source = doc.get("_source", None)
@@ -840,6 +844,7 @@ class CrudAsyncVideoSync:
         if len(self._storage_to_elasticsearch_batches) > 0:
             await self.send_bulk(self._storage_to_elasticsearch_batches)
 
+    @session
     async def sync(self):
         logger_zetsubou.debug(f"storage protocol: {self.storage_protocol}")
         logger_zetsubou.debug(f"storage id: {self.storage_id}")

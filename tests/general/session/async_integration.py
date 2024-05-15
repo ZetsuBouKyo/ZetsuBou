@@ -90,8 +90,8 @@ class GalleryIntegrationSession(BaseIntegrationSession):
             force=self.sync_force,
             is_progress=self.sync_is_progress,
         )
-        await crud.sync()
-        await crud.async_elasticsearch.close()
+        async with crud as c:
+            await crud.sync()
 
         async with self.storage_session:
             async for gallery_source in self.storage_session.iter_directories(

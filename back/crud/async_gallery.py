@@ -8,11 +8,13 @@ from fastapi import HTTPException
 
 from back.crud.async_elasticsearch import CrudAsyncElasticsearchBase
 from back.crud.async_progress import Progress
+from back.db.crud import CrudStorageMinio
 from back.init.check import ping_elasticsearch, ping_storage
 from back.logging import logger_zetsubou
 from back.model.base import SourceBaseModel, SourceProtocolEnum
 from back.model.elasticsearch import (
     ElasticsearchAnalyzerEnum,
+    ElasticsearchCleanResult,
     ElasticsearchKeywordAnalyzers,
     ElasticsearchQueryBooleanEnum,
 )
@@ -845,3 +847,63 @@ class CrudAsyncGallerySync(AsyncSession):
             else:
                 await self._sync_storage_to_elasticsearch_without_progress()
                 await self._sync_elasticsearch_to_storage_without_progress()
+
+
+async def clean_elasticsearch_gallery(
+    async_elasticsearch: AsyncElasticsearch,
+    index: str = ELASTICSEARCH_INDEX_GALLERY,
+    batch_size: int = BATCH_SIZE,
+) -> ElasticsearchCleanResult:
+    """
+    Remove Elasticsearch gallery documents that no longer exist in the database storage table.
+
+    Caution: If `ZETSUBOU_GALLERY_DIR_FNAME` is not set, consider adding a new environment variable here to confirm the
+    removal of documents.
+    """
+    results = ElasticsearchCleanResult()
+    batches = []
+    dsl = {
+        "query": {
+            "bool": {
+                "must": {"match_all": {}},
+                "must_not": [],
+            }
+        },
+        "track_total_hits": True,
+    }
+    storages = await CrudStorageMinio.get_all_rows_order_by_id()
+    for storage in storages:
+        storage_id = storage["id"]
+        q = {
+            "constant_score": {
+                "filter": {
+                    "multi_match": {
+                        "query": f"{SourceProtocolEnum.MINIO.value}-{storage_id}",
+                        "fields": [f"path.{ElasticsearchAnalyzerEnum.URL}"],
+                    }
+                }
+            }
+        }
+        dsl["query"]["bool"]["must_not"].append(q)
+
+    async for doc in async_scan(client=async_elasticsearch, query=dsl, index=index):
+        source = doc.get("_source", None)
+        gallery = Gallery(**source)
+        results.storage[gallery._scheme] += 1
+        batches.append(
+            {
+                "_index": index,
+                "_id": gallery.id,
+                "_op_type": "delete",
+            }
+        )
+        if len(batches) >= batch_size:
+            await async_bulk(async_elasticsearch, batches)
+            results.total += len(batches)
+            batches = []
+    if len(batches) > 0:
+        results.total += len(batches)
+        await async_bulk(async_elasticsearch, batches)
+        batches = []
+
+    return results

@@ -14,6 +14,7 @@ from ..base import (
     create,
     delete_by_id,
     get_all_rows_by_condition_order_by_id,
+    get_all_rows_order_by_id,
     get_row_by_id,
     get_rows_order_by_id,
     iter_by_condition_order_by_id,
@@ -69,6 +70,10 @@ class CrudStorageMinio(StorageMinioBase):
         return await get_rows_order_by_id(
             cls, StorageMinio, skip=skip, limit=limit, is_desc=is_desc
         )
+
+    @classmethod
+    async def get_all_rows_order_by_id(cls) -> List[dict]:
+        return await get_all_rows_order_by_id(cls)
 
     @classmethod
     async def get_all_rows_by_name_order_by_id(cls, name: str) -> List[StorageMinio]:

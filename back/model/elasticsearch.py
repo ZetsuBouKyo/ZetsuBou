@@ -1,8 +1,17 @@
+from collections import defaultdict
 from enum import Enum
-from typing import Any, Generic, List, NewType, Optional, TypedDict, TypeVar
+from typing import (
+    Any,
+    DefaultDict,
+    Generic,
+    List,
+    NewType,
+    Optional,
+    TypedDict,
+    TypeVar,
+)
 
 from pydantic import BaseModel, Field
-from rich import print_json
 
 SourceT = TypeVar("SourceT")
 
@@ -62,3 +71,8 @@ class ElasticsearchCountResult(BaseModel):
 
 class ElasticsearchHealthResponse(BaseModel):
     status: str = None
+
+
+class ElasticsearchCleanResult(BaseModel):
+    total: int = 0
+    storage: DefaultDict[str, int] = defaultdict(lambda: 0)

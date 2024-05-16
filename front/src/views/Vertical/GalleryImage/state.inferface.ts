@@ -33,7 +33,6 @@ export interface Container {
   imgUrl?: string;
   imgWidth?: number;
   imgHeight?: number;
-  imgScale?: number;
   defaultGridStep: number;
   defaultOriginX: number;
   defaultOriginY: number;

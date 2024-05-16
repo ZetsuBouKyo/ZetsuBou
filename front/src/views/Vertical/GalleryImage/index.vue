@@ -21,7 +21,6 @@ const state = reactive<GalleryImageState>({
     imgUrl: undefined,
     imgWidth: undefined,
     imgHeight: undefined,
-    imgScale: undefined,
     defaultGridStep: 20,
     defaultOriginX: 0,
     defaultOriginY: 0,
@@ -82,14 +81,13 @@ const resizeAndCenterImage = () => {
   const imageAspectRatio = state.container.imgWidth / state.container.imgHeight;
 
   if (canvasAspectRatio > imageAspectRatio) {
-    state.container.imgScale = canvas.value.height / state.container.imgHeight;
+    state.container.scale = canvas.value.height / state.container.imgHeight;
   } else {
-    state.container.imgScale = canvas.value.width / state.container.imgWidth;
+    state.container.scale = canvas.value.width / state.container.imgWidth;
   }
 
-  state.container.scale = state.container.imgScale;
-  state.container.originX = (canvas.value.width - state.container.imgWidth * state.container.imgScale) / 2;
-  state.container.originY = (canvas.value.height - state.container.imgHeight * state.container.imgScale) / 2;
+  state.container.originX = (canvas.value.width - state.container.imgWidth * state.container.scale) / 2;
+  state.container.originY = (canvas.value.height - state.container.imgHeight * state.container.scale) / 2;
 
   state.container.defaultScale = state.container.scale;
   state.container.defaultOriginX = state.container.originX;
@@ -154,13 +152,13 @@ const draw = () => {
   ctx.value.save();
   ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
   ctx.value.translate(
-    state.container.originX + (state.container.imgWidth * state.container.imgScale) / 2,
-    state.container.originY + (state.container.imgHeight * state.container.imgScale) / 2,
+    state.container.originX + (state.container.imgWidth * state.container.scale) / 2,
+    state.container.originY + (state.container.imgHeight * state.container.scale) / 2,
   ); // Move to the center of the image
   ctx.value.rotate((Math.PI * state.container.rotation) / 360); // Apply rotation
   ctx.value.translate(
-    (-state.container.imgWidth * state.container.imgScale) / 2,
-    (-state.container.imgHeight * state.container.imgScale) / 2,
+    (-state.container.imgWidth * state.container.scale) / 2,
+    (-state.container.imgHeight * state.container.scale) / 2,
   ); // Move back to the top-left corner of the image
   ctx.value.scale(state.container.scale, state.container.scale);
   ctx.value.drawImage(image, 0, 0, state.container.imgWidth, state.container.imgHeight);

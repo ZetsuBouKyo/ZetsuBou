@@ -37,7 +37,17 @@ function rotateRight() {
 function rotateLeft() {
   state.container.rotation -= 1;
 }
+
+function rulerPlus1() {
+  state.container.gridStep += 1;
+}
+
+function rulerMinus1() {
+  state.container.gridStep -= 1;
+}
+
 function reset() {
+  state.container.gridStep = state.container.defaultGridStep;
   state.container.originX = state.container.defaultOriginX;
   state.container.originY = state.container.defaultOriginY;
   state.container.rotation = state.container.defaultRotation;
@@ -63,6 +73,9 @@ function reset() {
       <icon-whh-layerorderup style="font-size: 1.5rem; color: white" />
     </slidebar-icon>
     <slidebar-icon>
+      <icon-mdi-format-horizontal-align-center style="font-size: 1.5rem; color: white" @click="reset" />
+    </slidebar-icon>
+    <slidebar-icon>
       <icon-mdi-arrow-oscillating style="font-size: 1.5rem; color: white" @click="openRotation" />
     </slidebar-icon>
     <slidebar-icon>
@@ -71,11 +84,14 @@ function reset() {
     <slidebar-icon>
       <icon-mdi-rotate-left style="font-size: 1.5rem; color: white" @click="rotateLeft" />
     </slidebar-icon>
-    <slidebar-icon>
-      <icon-mdi-format-horizontal-align-center style="font-size: 1.5rem; color: white" @click="reset" />
-    </slidebar-icon>
     <slidebar-icon :class="state.sidebar.isRuler ? 'bg-gray-500 rounded-lg' : ''">
       <icon-solar-ruler-angular-broken style="font-size: 1.5rem; color: white" @click="toggleRuler" />
+    </slidebar-icon>
+    <slidebar-icon>
+      <icon-tabler-exposure-plus-1 style="font-size: 1.5rem; color: white" @click="rulerPlus1" />
+    </slidebar-icon>
+    <slidebar-icon>
+      <icon-tabler-exposure-minus-1 style="font-size: 1.5rem; color: white" @click="rulerMinus1" />
     </slidebar-icon>
   </div>
 </template>

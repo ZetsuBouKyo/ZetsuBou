@@ -22,10 +22,12 @@ const state = reactive<GalleryImageState>({
     imgWidth: undefined,
     imgHeight: undefined,
     imgScale: undefined,
+    defaultGridStep: 20,
     defaultOriginX: 0,
     defaultOriginY: 0,
     defaultRotation: 0,
     defaultScale: 1,
+    gridStep: 20,
     originX: 0,
     originY: 0,
     rotation: 0,
@@ -100,7 +102,7 @@ const drawGrid = () => {
   ctx.value.strokeStyle = "gray";
   ctx.value.lineWidth = 1;
 
-  const step = 20;
+  const step = state.container.gridStep;
   const width = canvas.value.width;
   const height = canvas.value.height;
 
@@ -259,7 +261,7 @@ watch(
 
 watch(
   () => {
-    return [state.sidebar.isRuler, state.container.rotation];
+    return [state.sidebar.isRuler, state.container.gridStep, state.container.rotation];
   },
   () => {
     draw();

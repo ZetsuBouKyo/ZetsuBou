@@ -34,10 +34,12 @@ export interface Container {
   imgWidth?: number;
   imgHeight?: number;
   imgScale?: number;
+  defaultGridStep: number;
   defaultOriginX: number;
   defaultOriginY: number;
   defaultRotation: number;
   defaultScale: number;
+  gridStep: number;
   originX: number;
   originY: number;
   rotation: number;

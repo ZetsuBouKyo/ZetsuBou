@@ -33,11 +33,15 @@ export interface Container {
   imgUrl?: string;
   imgWidth?: number;
   imgHeight?: number;
+  defaultGridAlpha: number;
+  defaultGridLineWidth: number;
   defaultGridStep: number;
   defaultOriginX: number;
   defaultOriginY: number;
   defaultRotation: number;
   defaultScale: number;
+  gridAlpha: number;
+  gridLineWidth: number;
   gridStep: number;
   originX: number;
   originY: number;
@@ -53,16 +57,21 @@ export enum GalleryImageSideBarEnum {
   Polygon = "polygon",
   Rotation = "rotation",
 }
-
+export interface SidebarGrid {
+  alpha: number | undefined;
+  lineWidth: number | undefined;
+  step: number | undefined;
+}
 export interface SidebarRotation {
   degree: number | undefined;
 }
 
 export interface Sidebar {
-  isRuler: boolean;
+  isGrid: boolean;
   isSidebar: boolean;
   isSubSidebar: boolean;
   category: GalleryImageSideBarEnum;
+  grid: SidebarGrid;
   rotation: SidebarRotation;
   activateSidebar: () => void;
   closeSidebar: () => void;

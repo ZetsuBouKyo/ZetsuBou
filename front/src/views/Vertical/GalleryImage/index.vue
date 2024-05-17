@@ -20,11 +20,15 @@ const state = reactive<GalleryImageState>({
     imgUrl: undefined,
     imgWidth: undefined,
     imgHeight: undefined,
+    defaultGridAlpha: 0.8,
+    defaultGridLineWidth: 0.5,
     defaultGridStep: 20,
     defaultOriginX: 0,
     defaultOriginY: 0,
     defaultRotation: 0,
     defaultScale: 1,
+    gridAlpha: 0.8,
+    gridLineWidth: 0.5,
     gridStep: 20,
     originX: 0,
     originY: 0,
@@ -37,10 +41,15 @@ const state = reactive<GalleryImageState>({
     isBookmark: false,
   },
   sidebar: {
-    isRuler: false,
+    isGrid: false,
     isSidebar: false,
     isSubSidebar: false,
     category: GalleryImageSideBarEnum.Cursor,
+    grid: {
+      alpha: undefined,
+      lineWidth: undefined,
+      step: undefined,
+    },
     rotation: {
       degree: undefined,
     },
@@ -97,9 +106,8 @@ const resizeAndCenterImage = () => {
 
 const drawGrid = () => {
   ctx.value.save();
-  ctx.value.globalAlpha = 0.5;
-  ctx.value.strokeStyle = "gray";
-  ctx.value.lineWidth = 1;
+  ctx.value.globalAlpha = state.container.gridAlpha;
+  ctx.value.lineWidth = state.container.gridLineWidth;
 
   const step = state.container.gridStep;
   const width = canvas.value.width;
@@ -107,15 +115,31 @@ const drawGrid = () => {
 
   for (let x = 0; x < width; x += step) {
     ctx.value.beginPath();
+    ctx.value.strokeStyle = "white";
     ctx.value.moveTo(x, 0);
     ctx.value.lineTo(x, height);
+    ctx.value.stroke();
+
+    const x2 = x + ctx.value.lineWidth;
+    ctx.value.beginPath();
+    ctx.value.strokeStyle = "black";
+    ctx.value.moveTo(x2, 0);
+    ctx.value.lineTo(x2, height);
     ctx.value.stroke();
   }
 
   for (let y = 0; y < height; y += step) {
     ctx.value.beginPath();
+    ctx.value.strokeStyle = "white";
     ctx.value.moveTo(0, y);
     ctx.value.lineTo(width, y);
+    ctx.value.stroke();
+
+    const y2 = y + ctx.value.lineWidth;
+    ctx.value.beginPath();
+    ctx.value.strokeStyle = "black";
+    ctx.value.moveTo(0, y2);
+    ctx.value.lineTo(width, y2);
     ctx.value.stroke();
   }
 
@@ -173,7 +197,7 @@ const draw = () => {
   drawPolygon(ImageRectangle);
 
   ctx.value.restore();
-  if (state.sidebar.isRuler) {
+  if (state.sidebar.isGrid) {
     drawGrid();
   }
 };
@@ -260,7 +284,13 @@ watch(
 
 watch(
   () => {
-    return [state.sidebar.isRuler, state.container.gridStep, state.container.rotation];
+    return [
+      state.container.gridAlpha,
+      state.container.gridLineWidth,
+      state.container.gridStep,
+      state.container.rotation,
+      state.sidebar.isGrid,
+    ];
   },
   () => {
     draw();

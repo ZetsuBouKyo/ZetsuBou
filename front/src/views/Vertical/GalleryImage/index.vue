@@ -2,9 +2,8 @@
 import { onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { GalleryImageState } from "./state.inferface";
+import { GalleryImageState, GalleryImageSideBarEnum } from "./state.inferface";
 
-import Modal from "@/elements/Modal/Modal.vue";
 import PlayPanel from "./PlayPanel.vue";
 import Sidebar from "./Sidebar/index.vue";
 
@@ -40,6 +39,11 @@ const state = reactive<GalleryImageState>({
   sidebar: {
     isRuler: false,
     isSidebar: false,
+    isSubSidebar: false,
+    category: GalleryImageSideBarEnum.Cursor,
+    rotation: {
+      degree: undefined,
+    },
     activateSidebar: () => {
       state.sidebar.isSidebar = true;
     },
@@ -66,9 +70,6 @@ const state = reactive<GalleryImageState>({
     },
     isEdit: false,
     layers: [],
-  },
-  modal: {
-    rotation: undefined,
   },
 });
 
@@ -272,33 +273,13 @@ function loadCanvas() {
   ctx.value = canvas.value.getContext("2d");
 }
 
-const rotation = ref();
-const rotationState = reactive({
-  degree: undefined,
-});
-function updateRotation() {
-  state.container.rotation += Number(rotationState.degree);
-}
-
 onMounted(() => {
   loadCanvas();
   draw();
-  state.modal.rotation = rotation.value;
 });
 </script>
 
 <template>
-  <modal ref="rotation" :title="'Rotation'" class="w-1/3 top-1/4 left-1/3">
-    <div class="modal-row-10">
-      <span class="w-40 mr-4 text-white">Add angle (degrees):</span>
-      <input class="flex-1 modal-input w-full" v-model="rotationState.degree" placeholder="-360 ~ 360" />
-    </div>
-    <div class="modal-row-10">
-      <div class="flex ml-auto">
-        <ripple-button class="flex btn btn-primary" @click="updateRotation"> Update </ripple-button>
-      </div>
-    </div>
-  </modal>
   <div class="h-app w-full">
     <canvas
       class="h-app w-full"

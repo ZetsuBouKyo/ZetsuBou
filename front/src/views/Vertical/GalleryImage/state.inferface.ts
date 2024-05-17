@@ -47,9 +47,23 @@ export interface Container {
   dragStart: Point | null;
 }
 
+export enum GalleryImageSideBarEnum {
+  Cursor = "cursor",
+  Grid = "grid",
+  Polygon = "polygon",
+  Rotation = "rotation",
+}
+
+export interface SidebarRotation {
+  degree: number | undefined;
+}
+
 export interface Sidebar {
   isRuler: boolean;
   isSidebar: boolean;
+  isSubSidebar: boolean;
+  category: GalleryImageSideBarEnum;
+  rotation: SidebarRotation;
   activateSidebar: () => void;
   closeSidebar: () => void;
   toggleSidebar: () => void;
@@ -73,20 +87,10 @@ export interface Panel {
   play: ReturnType<typeof setInterval>;
 }
 
-export interface RotationModal {
-  open: () => void;
-  close: () => void;
-}
-
-export interface Modal {
-  rotation: RotationModal | undefined;
-}
-
 export interface GalleryImageState {
   container: Container;
   bookmark?: Bookmark;
   sidebar: Sidebar;
   panel: Panel;
   layers: Layers;
-  modal: Modal;
 }

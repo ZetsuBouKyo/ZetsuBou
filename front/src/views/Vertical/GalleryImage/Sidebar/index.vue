@@ -1,10 +1,22 @@
 <script setup lang="ts">
-import { PropType } from "vue";
+import { PropType, watch } from "vue";
 
 import { GalleryImageState, GalleryImageSideBarEnum } from "../state.inferface";
+import { Origin } from "@/elements/Dropdown/Dropdown.interface";
+import {
+  SelectDropdownAssignedValue,
+  SelectDropdownMode,
+  SelectDropdownOnGet,
+  SelectDropdownState,
+} from "@/elements/Dropdown/SelectDropdown.interface";
+import { Polygon } from "../state.inferface";
 
+import SwitchElement from "@/elements/Switch/index.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
+import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 import SlidebarIcon from "./SlidebarIcon.vue";
+
+import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 
 const props = defineProps({
   state: {
@@ -15,13 +27,33 @@ const props = defineProps({
 
 const state = props.state;
 
-function select() {
-  state.layers.isEdit = false;
-}
-
-function edit() {
-  state.layers.isEdit = true;
-}
+const polygon = initSelectDropdownState() as SelectDropdownState;
+watch(
+  () => {
+    const pairs = [];
+    for (const key in state.sidebar.polygon.polygons) {
+      const value = state.sidebar.polygon.polygons[key].name;
+      pairs.push(`${key}${value}`);
+    }
+    return pairs;
+  },
+  () => {
+    const polygons = state.sidebar.polygon.polygons;
+    if (!polygons) {
+      return;
+    }
+    polygon.options = [];
+    for (const key in polygons) {
+      polygon.options.push({ title: polygons[key].name, value: key });
+    }
+    const id = polygon.selectedValue;
+    if (!polygons[id] || polygons[id].name == undefined) {
+      polygon.title = undefined;
+      return;
+    }
+    polygon.title = polygons[id].name;
+  },
+);
 
 function toggleGrid() {
   state.sidebar.isGrid = !state.sidebar.isGrid;
@@ -59,6 +91,7 @@ function changeCategory(category: GalleryImageSideBarEnum) {
       state.sidebar.isSubSidebar = false;
       break;
     case GalleryImageSideBarEnum.Grid:
+    case GalleryImageSideBarEnum.Polygon:
     case GalleryImageSideBarEnum.Rotation:
       if (category === state.sidebar.category) {
         state.sidebar.isSubSidebar = !state.sidebar.isSubSidebar;
@@ -73,6 +106,10 @@ function changeCategory(category: GalleryImageSideBarEnum) {
 
 function openCursor() {
   changeCategory(GalleryImageSideBarEnum.Cursor);
+}
+
+function openPolygon() {
+  changeCategory(GalleryImageSideBarEnum.Polygon);
 }
 
 function openRotation() {
@@ -99,6 +136,36 @@ function updateGridStep() {
     state.container.gridStep = Number(state.sidebar.grid.step);
   }
 }
+
+function onSelectPolygon() {
+  state.sidebar.polygon.currentID = polygon.selectedValue as number;
+}
+
+function deletePolygon() {
+  const id = state.sidebar.polygon.currentID;
+  if (id === undefined) {
+    return;
+  }
+  state.sidebar.polygon.currentID = undefined;
+  delete state.sidebar.polygon.polygons[id];
+}
+
+function addPolygon() {
+  const id = state.sidebar.polygon.startID;
+  const name = `New layer ${id}`;
+  const polygon: Polygon = {
+    id: id,
+    name: name,
+    points: [],
+    lineWidth: 2,
+    color: "red",
+    isVisible: true,
+    isCompleted: false,
+  };
+
+  state.sidebar.polygon.startID += 1;
+  state.sidebar.polygon.polygons[id] = polygon;
+}
 </script>
 
 <template>
@@ -110,17 +177,15 @@ function updateGridStep() {
       <slidebar-icon
         :class="state.sidebar.category === GalleryImageSideBarEnum.Cursor ? 'bg-indigo-500 rounded-lg' : ''"
         @click="openCursor">
-        <icon-clarity-cursor-arrow-solid style="font-size: 1.5rem; color: white" @click="select" />
+        <icon-clarity-cursor-arrow-solid style="font-size: 1.5rem; color: white" />
       </slidebar-icon>
       <slidebar-icon
-        :class="state.sidebar.category === GalleryImageSideBarEnum.Polygon ? 'bg-indigo-500 rounded-lg' : ''">
-        <icon-mdi-vector-polygon style="font-size: 1.5rem; color: white" @click="edit" />
+        :class="state.sidebar.category === GalleryImageSideBarEnum.Polygon ? 'bg-indigo-500 rounded-lg' : ''"
+        @click="openPolygon">
+        <icon-mdi-vector-polygon style="font-size: 1.5rem; color: white" />
       </slidebar-icon>
       <slidebar-icon>
         <icon-ion-ios-pricetags style="font-size: 1.5rem; color: white" />
-      </slidebar-icon>
-      <slidebar-icon>
-        <icon-whh-layerorderup style="font-size: 1.5rem; color: white" />
       </slidebar-icon>
       <slidebar-icon>
         <icon-mdi-format-horizontal-align-center style="font-size: 1.5rem; color: white" @click="reset" />
@@ -218,6 +283,52 @@ function updateGridStep() {
       </div>
       <div
         class="h-full w-full flex flex-col overflow-y-scroll scrollbar-gray-100-2"
+        :key="(state.sidebar.isSubSidebar, GalleryImageSideBarEnum.Polygon)"
+        v-else-if="state.sidebar.category === GalleryImageSideBarEnum.Polygon">
+        <div class="flex flex-col mt-2">
+          <div class="modal-row-10">
+            <select-dropdown
+              :width-class="'w-64'"
+              :options-width-class="'w-64'"
+              :origin="Origin.BottomLeft"
+              :state="polygon"
+              :mode="SelectDropdownMode.Input"
+              :on-select="onSelectPolygon" />
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="modal-row-10">
+            <div class="flex ml-auto">
+              <ripple-button class="flex btn btn-primary mr-2" @click="deletePolygon"> - </ripple-button>
+              <ripple-button class="flex btn btn-primary" @click="addPolygon"> + </ripple-button>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col" v-if="state.sidebar.polygon.currentID !== undefined">
+          <span class="modal-row-10">ID: {{ state.sidebar.polygon.currentID }}</span>
+        </div>
+        <div class="flex flex-col" v-if="state.sidebar.polygon.currentID !== undefined">
+          <span class="modal-row-10">Name:</span>
+          <input
+            class="modal-input-10"
+            v-model="state.sidebar.polygon.polygons[state.sidebar.polygon.currentID].name"
+            placeholder="" />
+        </div>
+        <div class="flex flex-row" v-if="state.sidebar.polygon.currentID !== undefined">
+          <span class="modal-row-10">Visible:</span>
+          <div class="modal-row-10">
+            <switch-element v-model="state.sidebar.polygon.polygons[state.sidebar.polygon.currentID].isVisible" />
+          </div>
+        </div>
+        <div class="flex flex-row" v-if="state.sidebar.polygon.currentID !== undefined">
+          <span class="modal-row-10">Complete:</span>
+          <div class="modal-row-10">
+            <switch-element v-model="state.sidebar.polygon.polygons[state.sidebar.polygon.currentID].isCompleted" />
+          </div>
+        </div>
+      </div>
+      <div
+        class="h-full w-full flex flex-col overflow-y-scroll scrollbar-gray-100-2"
         :key="(state.sidebar.isSubSidebar, GalleryImageSideBarEnum.Rotation)"
         v-else-if="state.sidebar.category === GalleryImageSideBarEnum.Rotation">
         <div class="flex flex-col">
@@ -226,6 +337,8 @@ function updateGridStep() {
         <div class="flex flex-col">
           <span class="modal-row-10">Add angle (degrees):</span>
           <input class="modal-input-10" v-model="state.sidebar.rotation.degree" placeholder="-360 ~ 360" />
+        </div>
+        <div class="flex flex-col">
           <div class="modal-row-10">
             <div class="flex ml-auto">
               <ripple-button class="flex btn btn-primary" @click="updateRotation"> Update </ripple-button>

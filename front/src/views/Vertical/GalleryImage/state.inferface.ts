@@ -3,30 +3,6 @@ export interface Point {
   y: number;
 }
 
-export interface Selection {
-  color: string;
-  isCompleted: boolean;
-  points: Array<Point>;
-  name?: string;
-}
-
-export interface Layer {
-  name?: string;
-  show: boolean;
-  selections: Array<Selection>;
-}
-
-export interface Current {
-  layer: number;
-  selection: number;
-}
-
-export interface Layers {
-  current: Current;
-  isEdit: boolean;
-  layers: Array<Layer>;
-}
-
 export interface Container {
   gallery: string | string[];
   imgName: string | string[];
@@ -62,6 +38,27 @@ export interface SidebarGrid {
   lineWidth: number | undefined;
   step: number | undefined;
 }
+
+export interface Polygon {
+  id: number;
+  name?: string;
+  points: Array<Point>;
+  lineWidth?: number;
+  color?: string;
+  isVisible: boolean;
+  isCompleted: boolean;
+}
+
+export interface Polygons {
+  [key: number]: Polygon;
+}
+
+export interface SidebarPolygon {
+  startID: number;
+  currentID: number | undefined;
+  polygons: Polygons;
+}
+
 export interface SidebarRotation {
   degree: number | undefined;
 }
@@ -72,6 +69,7 @@ export interface Sidebar {
   isSubSidebar: boolean;
   category: GalleryImageSideBarEnum;
   grid: SidebarGrid;
+  polygon: SidebarPolygon;
   rotation: SidebarRotation;
   activateSidebar: () => void;
   closeSidebar: () => void;
@@ -101,5 +99,4 @@ export interface GalleryImageState {
   bookmark?: Bookmark;
   sidebar: Sidebar;
   panel: Panel;
-  layers: Layers;
 }

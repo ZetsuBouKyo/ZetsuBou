@@ -2,7 +2,7 @@
 import { onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { GalleryImageState, GalleryImageSideBarEnum } from "./state.inferface";
+import { GalleryImageState, GalleryImageSideBarEnum, Polygon } from "./state.inferface";
 
 import PlayPanel from "./PlayPanel.vue";
 import Sidebar from "./Sidebar/index.vue";
@@ -50,6 +50,11 @@ const state = reactive<GalleryImageState>({
       lineWidth: undefined,
       step: undefined,
     },
+    polygon: {
+      startID: 1,
+      currentID: undefined,
+      polygons: {},
+    },
     rotation: {
       degree: undefined,
     },
@@ -71,14 +76,6 @@ const state = reactive<GalleryImageState>({
     current: undefined,
     isPlay: route.query.play as any,
     play: undefined,
-  },
-  layers: {
-    current: {
-      layer: 0,
-      selection: 0,
-    },
-    isEdit: false,
-    layers: [],
   },
 });
 
@@ -146,28 +143,81 @@ const drawGrid = () => {
   ctx.value.restore();
 };
 
-function drawPoint() {}
+function plotPoint(event: MouseEvent) {
+  const currentID = state.sidebar.polygon.currentID;
+  if (
+    currentID === undefined ||
+    state.sidebar.polygon.polygons[currentID].isCompleted ||
+    state.sidebar.category !== GalleryImageSideBarEnum.Polygon
+  ) {
+    return;
+  }
+  const rect = canvas.value!.getBoundingClientRect();
+  const x =
+    (event.clientX - rect.left - state.container.originX - (state.container.imgWidth * state.container.scale) / 2) /
+    state.container.scale;
+  const y =
+    (event.clientY - rect.top - state.container.originY - (state.container.imgHeight * state.container.scale) / 2) /
+    state.container.scale;
 
-function drawPolygon(polygonPoints: Array<{ x: number; y: number }>) {
-  if (polygonPoints.length > 1) {
+  const rotation = (Math.PI * state.container.rotation) / 360;
+  const cos = Math.cos(-rotation);
+  const sin = Math.sin(-rotation);
+
+  let transformedX = cos * x - sin * y + (state.container.imgWidth * state.container.scale) / 2 / state.container.scale;
+  let transformedY =
+    sin * x + cos * y + (state.container.imgHeight * state.container.scale) / 2 / state.container.scale;
+
+  if (transformedX < 0) {
+    transformedX = 0;
+  }
+  if (transformedY < 0) {
+    transformedY = 0;
+  }
+  const imgWidth = state.container.imgWidth;
+  const imgHeight = state.container.imgHeight;
+  if (transformedX > imgWidth) {
+    transformedX = imgWidth;
+  }
+  if (transformedY > imgHeight) {
+    transformedY = imgHeight;
+  }
+
+  const point = { x: transformedX, y: transformedY };
+  if (state.sidebar.polygon.polygons[currentID]) {
+    state.sidebar.polygon.polygons[currentID].points.push(point);
+  } else {
+    state.sidebar.polygon.polygons[currentID] = { id: currentID, points: [point], isVisible: true, isCompleted: false };
+  }
+
+  draw();
+}
+
+function drawPolygon(polygon: Polygon) {
+  if (!polygon.isVisible) {
+    return;
+  }
+  const points = polygon.points;
+  if (points.length > 1) {
     ctx.value.beginPath();
     ctx.value.strokeStyle = "red";
     ctx.value.lineWidth = 2 / state.container.scale;
-    ctx.value.moveTo(polygonPoints[0].x, polygonPoints[0].y);
-    for (let i = 1; i < polygonPoints.length; i++) {
-      ctx.value.lineTo(polygonPoints[i].x, polygonPoints[i].y);
+    ctx.value.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      ctx.value.lineTo(points[i].x, points[i].y);
     }
-    ctx.value.closePath();
+    if (polygon.isCompleted) {
+      ctx.value.closePath();
+    }
     ctx.value.stroke();
-
-    // Draw circles at each polygon point
-    polygonPoints.forEach((point) => {
-      ctx.value.beginPath();
-      ctx.value.strokeStyle = "red";
-      ctx.value.arc(point.x, point.y, 2 / state.container.scale, 0, 2 * Math.PI);
-      ctx.value.stroke();
-    });
   }
+  // Draw circles at each polygon point
+  points.forEach((point) => {
+    ctx.value.beginPath();
+    ctx.value.strokeStyle = "red";
+    ctx.value.arc(point.x, point.y, 2 / state.container.scale, 0, 2 * Math.PI);
+    ctx.value.stroke();
+  });
 }
 
 const draw = () => {
@@ -188,13 +238,9 @@ const draw = () => {
   ctx.value.scale(state.container.scale, state.container.scale);
   ctx.value.drawImage(image, 0, 0, state.container.imgWidth, state.container.imgHeight);
 
-  const ImageRectangle = [
-    { x: 0, y: state.container.imgHeight },
-    { x: state.container.imgWidth, y: state.container.imgHeight },
-    { x: state.container.imgWidth, y: 0 },
-    { x: 0, y: 0 },
-  ];
-  drawPolygon(ImageRectangle);
+  for (const [_, polygon] of Object.entries(state.sidebar.polygon.polygons)) {
+    drawPolygon(polygon);
+  }
 
   ctx.value.restore();
   if (state.sidebar.isGrid) {
@@ -266,7 +312,15 @@ function load() {
   });
   document.addEventListener.call(window, "keyup", (event) => {
     if (event.keyCode === 13) {
-      state.container.rotation += Math.PI / 6;
+      const id = state.sidebar.polygon.currentID;
+      if (id === undefined) {
+        return;
+      }
+      const polygon = state.sidebar.polygon.polygons[id];
+      if (polygon.points.length < 3) {
+        return;
+      }
+      polygon.isCompleted = true;
       draw();
     }
   });
@@ -290,6 +344,7 @@ watch(
       state.container.gridStep,
       state.container.rotation,
       state.sidebar.isGrid,
+      JSON.stringify(state.sidebar.polygon.polygons),
     ];
   },
   () => {
@@ -314,7 +369,7 @@ onMounted(() => {
     <canvas
       class="h-app w-full"
       ref="canvas"
-      @click="drawPoint"
+      @click="plotPoint"
       @mousedown="startDrag"
       @mousemove="drag"
       @mouseup="endDrag"

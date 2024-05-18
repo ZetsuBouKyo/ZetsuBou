@@ -1,23 +1,20 @@
-<script>
-export default {
-  name: "Switch",
-  props: {
-    modelValue: {
-      type: Boolean,
-      required: true,
-    },
+<script setup>
+import { computed } from "vue";
+
+const emit = defineEmits(["update:modelValue"]);
+
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: true,
   },
-  computed: {
-    isOn() {
-      return this.modelValue;
-    },
-  },
-  methods: {
-    toggleSwitch() {
-      this.$emit("update:modelValue", !this.isOn);
-    },
-  },
-};
+});
+
+const isOn = computed(() => props.modelValue);
+
+function toggleSwitch() {
+  emit("update:modelValue", !isOn.value);
+}
 </script>
 
 <template>

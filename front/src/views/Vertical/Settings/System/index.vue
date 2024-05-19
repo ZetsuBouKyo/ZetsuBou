@@ -72,7 +72,7 @@ watch(
     if (settingSystemState.data === undefined || loggingLevel.selectedValue === undefined) {
       return;
     }
-    settingSystemState.data.app_logging_level = loggingLevel.selectedValue as string;
+    settingSystemState.data.app_logging_level = loggingLevel.selectedValue as LoggingLevelEnum;
   },
 );
 

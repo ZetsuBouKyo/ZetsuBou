@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import Token from "./Token.vue";
+import BaseRating from "./Base.vue";
 
 interface Props {
-  max: number;
   filled: number;
 }
-withDefaults(defineProps<Props>(), {
-  max: 5,
-  filled: 0,
-});
+withDefaults(defineProps<Props>(), { filled: undefined });
 </script>
 
 <template>
-  <span class="flex items-center">
-    <token :isFilled="true" v-for="i in filled" :key="i"></token>
-    <token v-for="i in max - filled" :key="i" />
-  </span>
+  <div v-if="filled !== null && filled !== undefined">
+    <base-rating :filled="filled" />
+  </div>
+  <div v-else>
+    <base-rating :filled="0" />
+  </div>
 </template>

@@ -11,7 +11,7 @@ import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";
 import TextEditor from "@/components/TextEditor/index.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import StarRating from "@/elements/Rating/StarRating.vue";
+import Rating from "@/elements/Rating/index.vue";
 
 import {
   getSettingFrontVideoStartsWithCategories,
@@ -177,7 +177,7 @@ function onOverwrite(state: SourceState<Video>, data: Video) {
           <div class="flex flex-col divide-y divide-gray-500">
             <div class="flex flex-col">
               <div class="flex flex-row my-4 mr-auto">
-                <star-rating :filled="videoState.data.attributes.rating" />
+                <rating :filled="videoState.data.attributes.rating" />
               </div>
               <div class="flex flex-row-reverse">
                 <ripple-button class="flex btn hover:opacity-50 hover:bg-gray-500" @click="openEditor">
@@ -228,7 +228,7 @@ function onOverwrite(state: SourceState<Video>, data: Video) {
               <a class="w-full" :href="item.linkUrl">
                 <span class="text-white w-full truncate">{{ item.title }}</span>
               </a>
-              <star-rating class="mt-2" :filled="item.rating" />
+              <rating class="mt-2" :filled="item.rating" />
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ import { Gallery } from "@/interface/gallery";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import PaginationBase from "@/elements/Pagination/index.vue";
-import StarRating from "@/elements/Rating/StarRating.vue";
+import Rating from "@/elements/Rating/index.vue";
 
 import { getImages } from "@/api/v1/gallery/image";
 import {
@@ -157,7 +157,7 @@ function toBookmark(row: Row) {
             <span class="text-gray-500 text-sm my-1 truncate" v-if="row.gallery.raw_name">{{
               row.gallery.raw_name
             }}</span>
-            <star-rating class="my-2" :filled="row.gallery.attributes.rating" />
+            <rating class="my-2" :filled="row.gallery.attributes.rating" />
             <span class="mt-auto ml-auto">last viewed: {{ getDatetime(row.bookmark.modified) }}</span>
           </div>
         </div>

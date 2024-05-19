@@ -11,7 +11,7 @@ import Labels from "@/components/Labels/index.vue";
 import Tags from "@/components/Tags/index.vue";
 import TextEditor from "@/components/TextEditor/index.vue";
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
-import StarRating from "@/elements/Rating/StarRating.vue";
+import Rating from "@/elements/Rating/index.vue";
 import ControlPanel from "./ControlPanel.vue";
 
 import { deleteGalleryByID } from "@/api/v1/gallery/operation";
@@ -137,7 +137,7 @@ function onOverwrite(state: SourceState<Gallery>, data: Gallery) {
             {{ galleryState.data.raw_name }}
           </h2>
           <div class="flex flex-row mt-2 justify-center items-center">
-            <star-rating class="mr-auto" :filled="galleryState.data.attributes.rating" />
+            <rating class="mr-auto" :filled="galleryState.data.attributes.rating" />
           </div>
           <div class="flex flex-col my-2 justify-center items-center max-h-12">
             <a

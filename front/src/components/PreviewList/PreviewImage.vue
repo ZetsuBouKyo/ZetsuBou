@@ -3,7 +3,7 @@ import { PropType, reactive, ref, watch } from "vue";
 
 import { Item } from "./interface";
 
-import StarRating from "@/elements/Rating/StarRating.vue";
+import Rating from "@/elements/Rating/index.vue";
 
 const props = defineProps({
   item: {
@@ -64,7 +64,7 @@ watch(
         </div>
       </div>
       <div class="flex flex-row">
-        <star-rating class="mb-2" :filled="item.rating" />
+        <rating class="mb-2" :filled="item.rating" />
         <span class="ml-auto text-gray-500" v-if="item.pages">{{ item.pages }} pages</span>
       </div>
       <h2 class="text-white 3xl:text-lg text-base break-words" v-if="item.title">

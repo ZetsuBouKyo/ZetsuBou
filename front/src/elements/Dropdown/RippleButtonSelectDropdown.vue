@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from "vue";
+import { reactive, ref } from "vue";
 
 import { Origin, DropdownOnOpen } from "./Dropdown.interface";
 import {
@@ -86,12 +86,12 @@ function toggle() {
   baseSelectDropdown.value.toggle();
 }
 
-function reset() {
-  options.value = [];
-  scrollEnd.value = false;
+function clear() {
+  title.value = "";
+  selectedValue.value = undefined;
 }
 
-defineExpose({ open, close, toggle, reset });
+defineExpose({ open, close, toggle, clear });
 </script>
 
 <template>

@@ -22,17 +22,23 @@ export function getUserElasticSearchQuery(userID: string | number, queryID: stri
   });
 }
 
-export function postUserElasticSearchQuery(id: string | number, data: any) {
+export function postUserElasticSearchQuery(userID: string | number, data: any) {
+  if (data.user_id === undefined) {
+    data.user_id = userID;
+  }
   return request({
-    url: `/api/v1/user/${id}/elastic/search-query`,
+    url: `/api/v1/user/${userID}/elastic/search-query`,
     method: "post",
     data: data,
   });
 }
 
-export function putUserElasticSearchQuery(id: string | number, data: any) {
+export function putUserElasticSearchQuery(userID: string | number, data: any) {
+  if (data.user_id === undefined) {
+    data.user_id = userID;
+  }
   return request({
-    url: `/api/v1/user/${id}/elastic/search-query`,
+    url: `/api/v1/user/${userID}/elastic/search-query`,
     method: "put",
     data: data,
   });

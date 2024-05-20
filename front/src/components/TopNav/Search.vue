@@ -77,12 +77,16 @@ interface CustomT {
   name: string | number;
 }
 function convertCustom(data: Array<CustomT>, options: Ref<Array<SelectDropdownOption>>) {
-  convertArrayDataToOptions<CustomT>(data, options, (d: CustomT) => {
-    return { title: d.name, value: d.id };
-  });
+  convertArrayDataToOptions<CustomT>(
+    (d: CustomT) => {
+      return { title: d.name, value: d.id };
+    },
+    data,
+    options,
+  );
 }
 function openCustom() {
-  getFirstOptions(getCustom, customParams, convertCustom, customOptions, customLock, customScrollEnd);
+  getFirstOptions(getCustom, convertCustom, customParams, customOptions, customLock, customScrollEnd);
 }
 function getCustomTip(opt: SelectDropdownOption) {
   return opt.title as string;
@@ -96,7 +100,7 @@ function selectCustom() {
   }
 }
 function scrollCustom(event: any) {
-  scroll(event, getCustom, customParams, convertCustom, customOptions, customLock, customScrollEnd);
+  scroll(event, getCustom, convertCustom, customParams, customOptions, customLock, customScrollEnd);
 }
 
 const query = ref();

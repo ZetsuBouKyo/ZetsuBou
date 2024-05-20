@@ -151,9 +151,9 @@ export function getOptionsFromEnum(e: any): Array<SelectDropdownOption> {
 }
 
 export function convertArrayDataToOptions<T>(
+  convertToOption: SelectDropdownToOption<T>,
   data: Array<T>,
   options: Ref<Array<SelectDropdownOption>>,
-  convertToOption: SelectDropdownToOption<T>,
 ) {
   for (const d of data) {
     const opt = convertToOption(d);
@@ -163,10 +163,10 @@ export function convertArrayDataToOptions<T>(
 }
 
 export function convertArrayDataToInputChipsOptions<T>(
-  data: Array<T>,
-  chips: Ref<Array<SelectDropdownOption>>,
-  options: Ref<Array<SelectDropdownOption>>,
   convertToOption: SelectDropdownToOption<T>,
+  data: Array<T>,
+  options: Ref<Array<SelectDropdownOption>>,
+  chips: Ref<Array<SelectDropdownOption>>,
 ) {
   for (const d of data) {
     const opt = convertToOption(d);
@@ -189,8 +189,8 @@ export function convertArrayDataToInputChipsOptions<T>(
 
 export function getOptions<DataT>(
   request: SelectDropdownRequest<DataT, SelectDropdownGetParam>,
-  params: Ref<SelectDropdownGetParam>,
   convertDataToOptions: SelectDropdownDataToOptions<DataT>,
+  params: Ref<SelectDropdownGetParam>,
   options: Ref<Array<SelectDropdownOption>>,
   lock: Ref<boolean>,
   scrollEnd: Ref<boolean>,
@@ -216,8 +216,8 @@ export function getOptions<DataT>(
 
 export function getFirstOptions<DataT>(
   request: SelectDropdownRequest<DataT, SelectDropdownGetParam>,
-  params: Ref<SelectDropdownGetParam>,
   convertDataToOptions: SelectDropdownDataToOptions<DataT>,
+  params: Ref<SelectDropdownGetParam>,
   options: Ref<Array<SelectDropdownOption>>,
   lock: Ref<boolean>,
   scrollEnd: Ref<boolean>,
@@ -226,14 +226,14 @@ export function getFirstOptions<DataT>(
   options.value = [];
   scrollEnd.value = false;
 
-  getOptions(request, params, convertDataToOptions, options, lock, scrollEnd);
+  getOptions(request, convertDataToOptions, params, options, lock, scrollEnd);
 }
 
 export function scroll<DataT>(
   event: UIEvent,
   request: SelectDropdownRequest<DataT, SelectDropdownGetParam>,
-  params: Ref<SelectDropdownGetParam>,
   convertDataToOptions: SelectDropdownDataToOptions<DataT>,
+  params: Ref<SelectDropdownGetParam>,
   options: Ref<Array<SelectDropdownOption>>,
   lock: Ref<boolean>,
   scrollEnd: Ref<boolean>,
@@ -245,6 +245,6 @@ export function scroll<DataT>(
       return;
     }
     params.value.page++;
-    getOptions<DataT>(request, params, convertDataToOptions, options, lock, scrollEnd);
+    getOptions<DataT>(request, convertDataToOptions, params, options, lock, scrollEnd);
   }
 }

@@ -56,6 +56,7 @@ const prefix = reactive({
   options: [],
 });
 
+const bucket = ref();
 const bucketTitle = ref("");
 const bucketSelectedValue = ref(undefined);
 const bucketOptions = ref([]);
@@ -67,6 +68,7 @@ function selectBucket(opt: SelectDropdownOption) {
   getPrefixAutoComplete(bucketName, undefined);
 }
 
+const category = ref();
 const categoryTitle = ref("");
 const categorySelectedValue = ref(undefined);
 const categoryOptions = ref([]);
@@ -224,10 +226,8 @@ function onCloseEditor() {
     secret_key: undefined,
   };
   table.connected = ConnectionStatus.Failed;
-  bucketTitle.value = "";
-  bucketSelectedValue.value = undefined;
-  categoryTitle.value = "";
-  categorySelectedValue.value = undefined;
+  bucket.value.clear();
+  category.value.clear();
 }
 
 function sync(row: Row) {
@@ -349,6 +349,7 @@ watch(
         <div class="modal-row h-10">
           <span class="w-32 mr-4">Category:</span>
           <ripple-button-select-dropdown
+            ref="category"
             class="h-10 w-64"
             v-model:title="categoryTitle"
             v-model:selected-value="categorySelectedValue"
@@ -359,6 +360,7 @@ watch(
         <div class="modal-row h-10">
           <span class="w-32 mr-4">Bucket Name:</span>
           <ripple-button-select-dropdown
+            ref="bucket"
             class="h-10 w-64"
             v-model:title="bucketTitle"
             v-model:selected-value="bucketSelectedValue"

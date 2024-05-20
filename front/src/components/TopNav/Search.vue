@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { onBeforeMount, reactive, ref, watch } from "vue";
+import { onBeforeMount, reactive, ref, Ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
-import { SelectDropdownOption, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import {
+  SelectDropdownOption,
+  SelectDropdownState,
+  SelectDropdownGetParam,
+} from "@/elements/Dropdown/SelectDropdown.interface";
 import { PaginationGetParam } from "@/elements/Pagination/pagination.interface";
 import { SearchAnalyzer, SearchBase, SearchBoolean, SearchCategory, SearchState } from "@/interface/search";
 import {
@@ -13,9 +17,9 @@ import {
   AdvancedSearchState,
 } from "./AdvancedSearch/interface";
 
+import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import Dropdown from "@/elements/Dropdown/Dropdown.vue";
-import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 import AdvancedSearch from "./AdvancedSearch/index.vue";
 import SearchAutoComplete from "./SearchAutoComplete.vue";
 
@@ -26,6 +30,7 @@ import { userState } from "@/state/user";
 
 import { detectRouteChange } from "@/utils/route";
 import { toTitle } from "@/utils/str";
+import { getFirstOptions, scroll, convertArrayDataToOptions } from "@/elements/Dropdown/SelectDropdown";
 
 const route = useRoute();
 const router = useRouter();
@@ -49,6 +54,111 @@ const state = reactive<SearchState>({
   isOptions: undefined,
   show: undefined,
 });
+
+const custom = ref();
+const customTitle = ref("");
+const customSelectedValue = ref(undefined);
+const customOptions = ref([]);
+const customScrollEnd = ref<boolean>(false);
+
+const customParams = ref<SelectDropdownGetParam>({
+  page: 1,
+  size: 20,
+  s: "",
+});
+const customLock = ref<boolean>(false);
+
+const userID = userState.data.id;
+function getCustom(params: PaginationGetParam) {
+  return getUserElasticSearchQueries(userID, params);
+}
+interface CustomT {
+  id: number;
+  name: string | number;
+}
+function convertCustom(data: Array<CustomT>, options: Ref<Array<SelectDropdownOption>>) {
+  convertArrayDataToOptions<CustomT>(data, options, (d: CustomT) => {
+    return { title: d.name, value: d.id };
+  });
+}
+function openCustom() {
+  getFirstOptions(getCustom, customParams, convertCustom, customOptions, customLock, customScrollEnd);
+}
+function getCustomTip(opt: SelectDropdownOption) {
+  return opt.title as string;
+}
+function selectCustom() {
+  state.query.query_id = customSelectedValue.value as number;
+  if (state.query.query_id !== undefined) {
+    analyzer.value.clear();
+    query.value.clear();
+    bool.value.clear();
+  }
+}
+function scrollCustom(event: any) {
+  scroll(event, getCustom, customParams, convertCustom, customOptions, customLock, customScrollEnd);
+}
+
+const query = ref();
+const queryTitle = ref("");
+const querySelectedValue = ref(undefined);
+const queryOptions = ref([
+  { title: toTitle(SearchBase.Search), value: SearchBase.Search },
+  { title: toTitle(SearchBase.Random), value: SearchBase.Random },
+]);
+function selectQuery(opt: SelectDropdownOption) {
+  state.searchBase = opt.value as SearchBase;
+  if (state.searchBase !== undefined) {
+    custom.value.clear();
+  } else {
+    state.searchBase = SearchBase.Search;
+  }
+}
+
+const analyzer = ref();
+const analyzerTitle = ref("");
+const analyzerSelectedValue = ref(undefined);
+const analyzerOptions = ref([]);
+const elasticAnalyzers = Object.values(SearchAnalyzer);
+for (let analyzer of elasticAnalyzers) {
+  analyzerOptions.value.push({ title: toTitle(analyzer), value: analyzer });
+}
+function selectAnalyzer(opt: SelectDropdownOption) {
+  state.query.analyzer = opt.value as SearchAnalyzer;
+  if (state.query.analyzer !== undefined) {
+    custom.value.clear();
+  }
+}
+
+const fuzziness = ref();
+const fuzzinessTitle = ref<number | string>("");
+const fuzzinessSelectedValue = ref(undefined);
+const fuzzinessOptions = ref([
+  { title: 0, value: 0 },
+  { title: 1, value: 1 },
+  { title: 2, value: 2 },
+  { title: 3, value: 3 },
+]);
+function selectFuzziness(opt: SelectDropdownOption) {
+  state.query.fuzziness = opt.value as number;
+  if (state.query.fuzziness !== undefined) {
+    custom.value.clear();
+  }
+}
+
+const bool = ref();
+const boolTitle = ref("");
+const boolSelectedValue = ref(undefined);
+const boolOptions = ref([
+  { title: toTitle(SearchBoolean.Should), value: SearchBoolean.Should },
+  { title: toTitle(SearchBoolean.Must), value: SearchBoolean.Must },
+]);
+function selectBool(opt: SelectDropdownOption) {
+  state.query.boolean = opt.value as SearchBoolean;
+  if (state.query.boolean !== undefined) {
+    custom.value.clear();
+  }
+}
 
 const advancedSearch = ref();
 function advanced() {
@@ -113,70 +223,6 @@ onBeforeMount(() => {
   });
 });
 
-const queryTypeState = initSelectDropdownState() as SelectDropdownState;
-queryTypeState.options = [
-  { title: toTitle(SearchBase.Search), value: SearchBase.Search },
-  { title: toTitle(SearchBase.Random), value: SearchBase.Random },
-];
-watch(
-  () => queryTypeState.selectedValue,
-  () => {
-    state.searchBase = queryTypeState.selectedValue as SearchBase;
-    if (queryTypeState.selectedValue !== undefined) {
-      customSearchState.clear();
-    } else {
-      state.searchBase = SearchBase.Search;
-    }
-  },
-);
-
-const analyzerState = initSelectDropdownState() as SelectDropdownState;
-const elasticAnalyzers = Object.values(SearchAnalyzer);
-for (let analyzer of elasticAnalyzers) {
-  analyzerState.options.push({ title: toTitle(analyzer), value: analyzer });
-}
-watch(
-  () => analyzerState.selectedValue,
-  () => {
-    state.query.analyzer = analyzerState.selectedValue as SearchAnalyzer;
-    if (analyzerState.selectedValue !== undefined) {
-      customSearchState.clear();
-    }
-  },
-);
-
-const fuzzinessState = initSelectDropdownState() as SelectDropdownState;
-fuzzinessState.options = [
-  { title: 0, value: 0 },
-  { title: 1, value: 1 },
-  { title: 2, value: 2 },
-  { title: 3, value: 3 },
-];
-watch(
-  () => fuzzinessState.selectedValue,
-  () => {
-    state.query.fuzziness = fuzzinessState.selectedValue as number;
-    if (fuzzinessState.selectedValue !== undefined) {
-      customSearchState.clear();
-    }
-  },
-);
-
-const booleanTypeState = initSelectDropdownState() as SelectDropdownState;
-booleanTypeState.options = [
-  { title: toTitle(SearchBoolean.Should), value: SearchBoolean.Should },
-  { title: toTitle(SearchBoolean.Must), value: SearchBoolean.Must },
-];
-watch(
-  () => booleanTypeState.selectedValue,
-  () => {
-    state.query.boolean = booleanTypeState.selectedValue as SearchBoolean;
-    if (booleanTypeState.selectedValue !== undefined) {
-      customSearchState.clear();
-    }
-  },
-);
-
 function resetGeneralSearchQuery() {
   state.query.analyzer = undefined;
   state.query.boolean = undefined;
@@ -200,20 +246,20 @@ function updateSearchQuery() {
 
   if (route.query.analyzer) {
     state.query.analyzer = route.query.analyzer as any;
-    analyzerState.title = toTitle(state.query.analyzer);
-    analyzerState.selectedValue = state.query.analyzer;
+    analyzerTitle.value = toTitle(state.query.analyzer);
+    analyzerSelectedValue.value = state.query.analyzer;
   }
 
   if (route.query.boolean) {
     state.query.boolean = route.query.boolean as any;
-    booleanTypeState.title = toTitle(state.query.boolean);
-    booleanTypeState.selectedValue = state.query.boolean;
+    boolTitle.value = toTitle(state.query.boolean);
+    boolSelectedValue.value = state.query.boolean;
   }
 
   if (route.query.fuzziness) {
     state.query.fuzziness = Number(route.query.fuzziness);
-    fuzzinessState.title = state.query.fuzziness;
-    fuzzinessState.selectedValue = state.query.fuzziness;
+    fuzzinessTitle.value = state.query.fuzziness;
+    fuzzinessSelectedValue.value = state.query.fuzziness;
   }
 
   if (route.query.keywords) {
@@ -321,8 +367,8 @@ function updateByPath(path: string) {
   state.searchBase = route.meta.base as SearchBase;
   const searchBase = Object.values(SearchBase);
   if (searchBase.includes(state.searchBase)) {
-    queryTypeState.title = toTitle(state.searchBase);
-    queryTypeState.selectedValue = state.searchBase;
+    queryTitle.value = toTitle(state.searchBase);
+    querySelectedValue.value = state.searchBase;
   }
 
   updateSearchQuery();
@@ -382,36 +428,7 @@ function search() {
 }
 const customSearchState = initSelectDropdownState() as SelectDropdownState;
 
-const userID = userState.data.id;
-function onGet(params: PaginationGetParam) {
-  return getUserElasticSearchQueries(userID, params);
-}
-function onGetToOptions(data: { name: string | number; id: number }) {
-  return { title: data.name, value: data.id };
-}
-function onGetTip(opt: SelectDropdownOption) {
-  return opt.title as string;
-}
-
-watch(
-  () => customSearchState.selectedValue,
-  () => {
-    state.query.query_id = customSearchState.selectedValue as number;
-    if (customSearchState.selectedValue !== undefined) {
-      analyzerState.clear();
-      queryTypeState.clear();
-      booleanTypeState.clear();
-    }
-  },
-);
-
 const dropdown = ref();
-
-const analyzer = ref();
-const fuzziness = ref();
-const query = ref();
-const bool = ref();
-const custom = ref();
 
 function onClick() {
   try {
@@ -428,11 +445,11 @@ function onClick() {
 }
 
 function clearAll() {
-  analyzerState.clear();
-  fuzzinessState.clear();
-  queryTypeState.clear();
-  booleanTypeState.clear();
-  customSearchState.clear();
+  analyzer.value.clear();
+  fuzziness.value.clear();
+  query.value.clear();
+  bool.value.clear();
+  custom.value.clear();
 }
 
 function reset() {
@@ -469,56 +486,72 @@ function reset() {
           <div class="flex flex-col py-1">
             <div class="modal-row h-10">
               <span class="w-24 mr-4">Base:</span>
-              <select-dropdown
+              <ripple-button-select-dropdown
                 ref="query"
                 class="w-44 flex-1"
+                v-model:title="queryTitle"
+                v-model:selected-value="querySelectedValue"
+                v-model:options="queryOptions"
                 :group="'search'"
                 :options-width-class="'w-44'"
                 :origin="Origin.BottomLeft"
-                :state="queryTypeState" />
+                :on-select="selectQuery" />
             </div>
             <div class="modal-row h-10">
               <span class="w-24 mr-4">Analyzer:</span>
-              <select-dropdown
+              <ripple-button-select-dropdown
                 ref="analyzer"
                 class="w-44 flex-1"
+                v-model:title="analyzerTitle"
+                v-model:selected-value="analyzerSelectedValue"
+                v-model:options="analyzerOptions"
                 :group="'search'"
                 :options-width-class="'w-44'"
                 :origin="Origin.BottomLeft"
-                :state="analyzerState" />
+                :on-select="selectAnalyzer" />
             </div>
             <div class="modal-row h-10">
               <span class="w-24 mr-4">Fuzziness:</span>
-              <select-dropdown
+              <ripple-button-select-dropdown
                 ref="fuzziness"
                 class="w-44 flex-1"
+                v-model:title="fuzzinessTitle"
+                v-model:selected-value="fuzzinessSelectedValue"
+                v-model:options="fuzzinessOptions"
                 :group="'search'"
                 :options-width-class="'w-44'"
                 :origin="Origin.BottomLeft"
-                :state="fuzzinessState" />
+                :on-select="selectFuzziness" />
             </div>
             <div class="modal-row h-10">
               <span class="w-24 mr-4">Boolean:</span>
-              <select-dropdown
+              <ripple-button-select-dropdown
                 ref="bool"
                 class="w-44 flex-1"
+                v-model:title="boolTitle"
+                v-model:selected-value="boolSelectedValue"
+                v-model:options="boolOptions"
                 :group="'search'"
                 :options-width-class="'w-44'"
                 :origin="Origin.BottomLeft"
-                :state="booleanTypeState" />
+                :on-select="selectBool" />
             </div>
             <div class="modal-row h-10">
               <span class="w-24 mr-4">Custom:</span>
-              <select-dropdown
+              <ripple-button-select-dropdown
                 ref="custom"
                 class="w-44 flex-1"
+                v-model:title="customTitle"
+                v-model:selected-value="customSelectedValue"
+                v-model:options="customOptions"
+                v-model:scroll-end="customScrollEnd"
                 :group="'search'"
                 :options-width-class="'w-44'"
                 :origin="Origin.BottomLeft"
-                :state="customSearchState"
-                :on-get="onGet"
-                :on-get-to-options="onGetToOptions"
-                :on-get-tip="onGetTip" />
+                :on-open="openCustom"
+                :on-scroll="scrollCustom"
+                :on-select="selectCustom"
+                :on-get-tip="getCustomTip" />
             </div>
             <div class="modal-row">
               <ripple-button class="btn-dark w-full h-10" @click="clearAll">Clear</ripple-button>

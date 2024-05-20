@@ -1,4 +1,6 @@
 import { AxiosResponse } from "axios";
+import { Ref } from "vue";
+
 import { PaginationGetParam } from "@/elements/Pagination/pagination.interface";
 
 export enum SelectDropdownAssignedValue {
@@ -37,6 +39,17 @@ export interface SelectDropdownState {
 
 export interface SelectDropdownOnGet<DataT> {
   (params: SelectDropdownGetParam): Promise<AxiosResponse<Array<DataT>>>;
+}
+
+export interface SelectDropdownRequest<DataT, ParamsT> {
+  (params: ParamsT): Promise<AxiosResponse<DataT>>;
+}
+
+export interface SelectDropdownToOption<T> {
+  (data: T): SelectDropdownOption;
+}
+export interface SelectDropdownDataToOptions<DataT> {
+  (data: DataT, options: Ref<Array<SelectDropdownOption>>): void;
 }
 
 export interface SelectDropdownOnGetToOptions {

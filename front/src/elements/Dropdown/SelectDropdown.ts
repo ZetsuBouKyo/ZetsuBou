@@ -1,6 +1,14 @@
-import { reactive, watch } from "vue";
+import { reactive, Ref, watch } from "vue";
 
-import { SelectDropdownState, SelectDropdownOption, SelectDropdownAssignedValue } from "./SelectDropdown.interface";
+import {
+  SelectDropdownAssignedValue,
+  SelectDropdownOption,
+  SelectDropdownRequest,
+  SelectDropdownDataToOptions,
+  SelectDropdownState,
+  SelectDropdownToOption,
+  SelectDropdownGetParam,
+} from "./SelectDropdown.interface";
 
 import { getValue, setValue } from "@/utils/obj";
 
@@ -140,4 +148,103 @@ export function getOptionsFromEnum(e: any): Array<SelectDropdownOption> {
     options.push({ title: e[key], value: e[key] });
   }
   return options;
+}
+
+export function convertArrayDataToOptions<T>(
+  data: Array<T>,
+  options: Ref<Array<SelectDropdownOption>>,
+  convertToOption: SelectDropdownToOption<T>,
+) {
+  for (const d of data) {
+    const opt = convertToOption(d);
+    opt.raw = d;
+    options.value.push(opt);
+  }
+}
+
+export function convertArrayDataToInputChipsOptions<T>(
+  data: Array<T>,
+  chips: Ref<Array<SelectDropdownOption>>,
+  options: Ref<Array<SelectDropdownOption>>,
+  convertToOption: SelectDropdownToOption<T>,
+) {
+  for (const d of data) {
+    const opt = convertToOption(d);
+    opt.raw = d;
+
+    let skip = false;
+    for (const chip of chips.value) {
+      if (chip.title === opt.title && chip.value === opt.value) {
+        skip = true;
+        break;
+      }
+    }
+    if (skip) {
+      continue;
+    }
+
+    options.value.push(opt);
+  }
+}
+
+export function getOptions<DataT>(
+  request: SelectDropdownRequest<DataT, SelectDropdownGetParam>,
+  params: Ref<SelectDropdownGetParam>,
+  convertDataToOptions: SelectDropdownDataToOptions<DataT>,
+  options: Ref<Array<SelectDropdownOption>>,
+  lock: Ref<boolean>,
+  scrollEnd: Ref<boolean>,
+) {
+  if (lock.value) {
+    return;
+  }
+  lock.value = true;
+  request(params.value).then((response: any) => {
+    if (response.status !== 200) {
+      scrollEnd.value = false;
+    }
+    const _options = response.data;
+    if (_options) {
+      if (_options.length === 0) {
+        scrollEnd.value = true;
+      }
+      convertDataToOptions(_options, options);
+    }
+    lock.value = false;
+  });
+}
+
+export function getFirstOptions<DataT>(
+  request: SelectDropdownRequest<DataT, SelectDropdownGetParam>,
+  params: Ref<SelectDropdownGetParam>,
+  convertDataToOptions: SelectDropdownDataToOptions<DataT>,
+  options: Ref<Array<SelectDropdownOption>>,
+  lock: Ref<boolean>,
+  scrollEnd: Ref<boolean>,
+) {
+  params.value.page = 1;
+  options.value = [];
+  scrollEnd.value = false;
+
+  getOptions(request, params, convertDataToOptions, options, lock, scrollEnd);
+}
+
+export function scroll<DataT>(
+  event: UIEvent,
+  request: SelectDropdownRequest<DataT, SelectDropdownGetParam>,
+  params: Ref<SelectDropdownGetParam>,
+  convertDataToOptions: SelectDropdownDataToOptions<DataT>,
+  options: Ref<Array<SelectDropdownOption>>,
+  lock: Ref<boolean>,
+  scrollEnd: Ref<boolean>,
+) {
+  const target = event.target as HTMLElement;
+  const diff = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight);
+  if (diff <= 1) {
+    if (scrollEnd.value) {
+      return;
+    }
+    params.value.page++;
+    getOptions<DataT>(request, params, convertDataToOptions, options, lock, scrollEnd);
+  }
 }

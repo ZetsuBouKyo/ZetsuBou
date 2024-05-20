@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 
 import { ButtonColorEnum } from "@/elements/Button/button.interface";
-import { SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import { SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.interface";
 import { CrudTableState, Header } from "@/elements/Table/CrudTable/interface";
 
-import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
+import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
 import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 import CrudTable from "@/elements/Table/CrudTable/index.vue";
 
@@ -20,7 +20,6 @@ import {
 } from "@/api/v1/storage/minio/storage";
 import { postSyncStorageMinio } from "@/api/v1/task/airflow";
 
-import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { initCrudTableState } from "@/elements/Table/CrudTable/CrudTable";
 import { messageState } from "@/state/message";
 
@@ -57,20 +56,24 @@ const prefix = reactive({
   options: [],
 });
 
-const bucketsDropdown = initSelectDropdownState() as SelectDropdownState;
-const categoriesDropdown = initSelectDropdownState() as SelectDropdownState;
-watch(
-  () => table?.row?.category,
-  () => {
-    if (table?.row?.category === undefined) {
-      return;
-    }
-    const categoryID = table.row.category;
-    if (categoryID === 1) {
-      table.row.depth = -1;
-    }
-  },
-);
+const bucketTitle = ref("");
+const bucketSelectedValue = ref(undefined);
+const bucketOptions = ref([]);
+function selectBucket(opt: SelectDropdownOption) {
+  table.row.prefix = "";
+
+  const bucketName = opt.value as string;
+  table.row.bucket_name = bucketName;
+  getPrefixAutoComplete(bucketName, undefined);
+}
+
+const categoryTitle = ref("");
+const categorySelectedValue = ref(undefined);
+const categoryOptions = ref([]);
+function selectCategory(opt: SelectDropdownOption) {
+  table.row.prefix = "";
+  table.row.category = opt.value as number;
+}
 
 function updateOptions(params) {
   if (table.connected === ConnectionStatus.Connecting) {
@@ -91,7 +94,7 @@ function updateOptions(params) {
           if (s3Object.prefix.slice(-1) === "/") {
             prefix.options.push(s3Object.prefix);
           }
-          bucketsDropdown.options.push({ title: s3Object.bucket_name, value: s3Object.bucket_name });
+          bucketOptions.value.push({ title: s3Object.bucket_name, value: s3Object.bucket_name });
         }
       }
     })
@@ -156,100 +159,13 @@ function checkConnection() {
   updateOptions(params);
 }
 
-watch(
-  () => {
-    if (!table.row) {
-      return undefined;
-    }
-    return table.row.prefix;
-  },
-  () => {
-    const bucketName = bucketsDropdown.selectedValue as string;
-    let prefixName = table.row.prefix as string;
-    if (table.connected !== ConnectionStatus.Connected || bucketName === undefined) {
-      return;
-    }
-
-    if (prefixName === undefined) {
-      prefixName = "";
-    }
-
-    if (prefixName.slice(-1) === "/" || !prefixName) {
-      getPrefixAutoComplete(bucketName, prefixName);
-    }
-  },
-);
-
 function minioConnectError() {
-  bucketsDropdown.options = [];
+  bucketOptions.value = [];
   prefix.options = [];
   table.row.prefix = undefined;
   table.row.bucket_name = undefined;
   table.connected = ConnectionStatus.Failed;
 }
-function onSelectBucket() {
-  table.row.prefix = "";
-  const bucketName = bucketsDropdown.selectedValue as string;
-  table.row.bucket_name = bucketName;
-  getPrefixAutoComplete(bucketName, undefined);
-}
-
-watch(
-  () => {
-    if (table.row) {
-      return table.row.bucket_name;
-    }
-    return false;
-  },
-  () => {
-    const bucketName = table.row.bucket_name;
-    bucketsDropdown.selectedValue = bucketName;
-    bucketsDropdown.title = bucketName;
-  },
-);
-watch(
-  () => {
-    if (table.row === undefined) {
-      return false;
-    }
-    if (
-      table.row.endpoint !== undefined &&
-      table.row.access_key !== undefined &&
-      table.row.secret_key !== undefined &&
-      table.row.endpoint.length > 0 &&
-      table.row.access_key.length > 0 &&
-      table.row.secret_key.length > 0
-    ) {
-      return [table.row.endpoint, table.row.access_key, table.row.secret_key];
-    }
-    return undefined;
-  },
-  (status, _) => {
-    if (!status) {
-      return;
-    }
-    checkConnection();
-  },
-);
-
-function onSelectCategory() {
-  table.row.prefix = "";
-  const category = categoriesDropdown.selectedValue as number;
-  table.row.category = category;
-}
-watch(
-  () => {
-    if (table.row) {
-      return table.row.category;
-    }
-    return false;
-  },
-  () => {
-    const categoryID = table.row.category;
-    categoriesDropdown.selectedValue = categoryID;
-    categoriesDropdown.title = getCategoryName(categoryID);
-  },
-);
 
 const categories = reactive({});
 function getCategoryName(id: number) {
@@ -258,8 +174,8 @@ function getCategoryName(id: number) {
 
 function load() {
   const isNotCategories = Object.keys(categories).length === 0;
-  const isNotCategoriesDropdownOptions = categoriesDropdown.options.length === 0;
-  if (Object.keys(categories).length === 0 || categoriesDropdown.options.length === 0) {
+  const isNotCategoriesDropdownOptions = categoryOptions.value.length === 0;
+  if (Object.keys(categories).length === 0 || categoryOptions.value.length === 0) {
     getStorageMinioCategories().then((response) => {
       const data = response.data;
       if (data) {
@@ -268,7 +184,7 @@ function load() {
             categories[data[key]] = key;
           }
           if (isNotCategoriesDropdownOptions) {
-            categoriesDropdown.options.push({ title: key, value: data[key] });
+            categoryOptions.value.push({ title: key, value: data[key] });
           }
         }
       }
@@ -308,8 +224,10 @@ function onCloseEditor() {
     secret_key: undefined,
   };
   table.connected = ConnectionStatus.Failed;
-  categoriesDropdown.reset();
-  bucketsDropdown.reset();
+  bucketTitle.value = "";
+  bucketSelectedValue.value = undefined;
+  categoryTitle.value = "";
+  categorySelectedValue.value = undefined;
 }
 
 function sync(row: Row) {
@@ -326,6 +244,54 @@ function sync(row: Row) {
     );
   });
 }
+
+watch(
+  () => {
+    return JSON.stringify(table.row);
+  },
+  () => {
+    if (table.row === undefined) {
+      return;
+    }
+
+    if (
+      table.row.endpoint !== undefined &&
+      table.row.access_key !== undefined &&
+      table.row.secret_key !== undefined &&
+      table.row.endpoint.length > 0 &&
+      table.row.access_key.length > 0 &&
+      table.row.secret_key.length > 0
+    ) {
+      checkConnection();
+    }
+
+    if (table.row.category !== undefined) {
+      const categoryID = table.row.category;
+      categoryTitle.value = getCategoryName(categoryID);
+      categorySelectedValue.value = categoryID;
+      if (categoryID === 1) {
+        table.row.depth = -1;
+      }
+    }
+
+    const bucketName = table.row.bucket_name;
+    if (bucketName !== undefined) {
+      bucketTitle.value = bucketName;
+      bucketSelectedValue.value = bucketName;
+    }
+
+    let prefixName = table.row.prefix as string;
+    if (table.connected !== ConnectionStatus.Connected || bucketName === undefined) {
+      return;
+    }
+    if (prefixName === undefined) {
+      prefixName = "";
+    }
+    if (prefixName.slice(-1) === "/" || !prefixName) {
+      getPrefixAutoComplete(bucketName, prefixName);
+    }
+  },
+);
 </script>
 
 <template>
@@ -382,19 +348,23 @@ function sync(row: Row) {
         </div>
         <div class="modal-row h-10">
           <span class="w-32 mr-4">Category:</span>
-          <select-dropdown
+          <ripple-button-select-dropdown
             class="h-10 w-64"
+            v-model:title="categoryTitle"
+            v-model:selected-value="categorySelectedValue"
+            v-model:options="categoryOptions"
             :options-width-class="'w-64'"
-            :state="categoriesDropdown"
-            :on-select="onSelectCategory"></select-dropdown>
+            :on-select="selectCategory" />
         </div>
         <div class="modal-row h-10">
           <span class="w-32 mr-4">Bucket Name:</span>
-          <select-dropdown
+          <ripple-button-select-dropdown
             class="h-10 w-64"
+            v-model:title="bucketTitle"
+            v-model:selected-value="bucketSelectedValue"
+            v-model:options="bucketOptions"
             :options-width-class="'w-64'"
-            :state="bucketsDropdown"
-            :on-select="onSelectBucket"></select-dropdown>
+            :on-select="selectBucket" />
           <span class="ml-4 text-blue-500" v-if="table.connected === ConnectionStatus.Connected">Connected</span>
           <span class="ml-4 text-yellow-500" v-else-if="table.connected === ConnectionStatus.Connecting"
             >Connecting</span
@@ -409,7 +379,7 @@ function sync(row: Row) {
             list="admin-minio-storage-prefix"
             :placeholder="table.row.prefix"
             v-model="table.row.prefix"
-            :disabled="!bucketsDropdown.title"
+            :disabled="!bucketTitle"
             @click="updatePrefixes" />
           <datalist id="admin-minio-storage-prefix">
             <option v-for="(p, i) in prefix.options" :value="p" :key="i" />

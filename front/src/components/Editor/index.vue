@@ -6,6 +6,7 @@ import { Origin } from "@/elements/Dropdown/Dropdown.interface";
 import {
   SelectDropdownAssignedValue,
   SelectDropdownMode,
+  SelectDropdownOption,
   SelectDropdownOnGet,
   SelectDropdownState,
 } from "@/elements/Dropdown/SelectDropdown.interface";
@@ -14,6 +15,7 @@ import { SourceState } from "@/interface/state";
 import { Token } from "@/interface/tag";
 import { PrivateState } from "./interface";
 
+import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 import Modal from "@/elements/Modal/Modal.vue";
@@ -66,16 +68,19 @@ const privateState = reactive<PrivateState<Token>>({
 const category = initSelectDropdownState() as SelectDropdownState;
 category.addInputWatch(state, "data.attributes.category", SelectDropdownAssignedValue.Title);
 
-const rating = initSelectDropdownState() as SelectDropdownState;
-rating.addInputWatch(state, "data.attributes.rating", SelectDropdownAssignedValue.Title);
-rating.options = [
+const ratingTitle = ref(state.data.attributes.rating);
+const ratingSelectedValue = ref(state.data.attributes.rating);
+const ratingOptions = ref([
   { title: 0, value: 0 },
   { title: 1, value: 1 },
   { title: 2, value: 2 },
   { title: 3, value: 3 },
   { title: 4, value: 4 },
   { title: 5, value: 5 },
-];
+]);
+function selectRating(opt: SelectDropdownOption) {
+  state.data.attributes.rating = opt.value as number;
+}
 
 interface Publication {
   year: string;
@@ -242,11 +247,14 @@ defineExpose({ open, close, reset });
         :on-get-to-options="tokenToOption"
         :mode="SelectDropdownMode.Input" />
       <span class="w-16 mx-4">Rating:</span>
-      <select-dropdown
+      <ripple-button-select-dropdown
         class="ml-2"
+        v-model:title="ratingTitle"
+        v-model:selected-value="ratingSelectedValue"
+        v-model:options="ratingOptions"
+        :on-select="selectRating"
         :width-class="'w-16 xl:w-24  3xl:w-48'"
-        :options-width-class="'w-16 xl:w-24  3xl:w-48'"
-        :state="rating"></select-dropdown>
+        :options-width-class="'w-16 xl:w-24  3xl:w-48'" />
     </div>
     <div class="modal-row-10">
       <span class="w-32 mr-4">Publication:</span>

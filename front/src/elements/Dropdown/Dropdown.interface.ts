@@ -13,7 +13,12 @@ export interface OnClick {
   (): void;
 }
 
+// TODO: deprecated
 export interface OnOpen {
+  (): void;
+}
+
+export interface DropdownOnOpen {
   (): void;
 }
 

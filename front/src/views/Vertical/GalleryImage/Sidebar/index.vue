@@ -1,22 +1,14 @@
 <script setup lang="ts">
-import { PropType, watch } from "vue";
+import { ref, PropType } from "vue";
 
 import { GalleryImageState, GalleryImageSideBarEnum } from "../state.inferface";
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
-import {
-  SelectDropdownAssignedValue,
-  SelectDropdownMode,
-  SelectDropdownOnGet,
-  SelectDropdownState,
-} from "@/elements/Dropdown/SelectDropdown.interface";
 import { Polygon } from "../state.inferface";
 
 import SwitchElement from "@/elements/Switch/index.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
+import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
 import SlidebarIcon from "./SlidebarIcon.vue";
-
-import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 
 const props = defineProps({
   state: {
@@ -27,33 +19,26 @@ const props = defineProps({
 
 const state = props.state;
 
-const polygon = initSelectDropdownState() as SelectDropdownState;
-watch(
-  () => {
-    const pairs = [];
-    for (const key in state.sidebar.polygon.polygons) {
-      const value = state.sidebar.polygon.polygons[key].name;
-      pairs.push(`${key}${value}`);
-    }
-    return pairs;
-  },
-  () => {
-    const polygons = state.sidebar.polygon.polygons;
-    if (!polygons) {
-      return;
-    }
-    polygon.options = [];
-    for (const key in polygons) {
-      polygon.options.push({ title: polygons[key].name, value: key });
-    }
-    const id = polygon.selectedValue;
-    if (!polygons[id] || polygons[id].name == undefined) {
-      polygon.title = undefined;
-      return;
-    }
-    polygon.title = polygons[id].name;
-  },
-);
+const polygonTitle = ref(undefined);
+const polygonSelectedValue = ref(undefined);
+const polygonOptions = ref([]);
+
+function updatePolygonDropdown() {
+  const polygons = state.sidebar.polygon.polygons;
+  if (!polygons) {
+    return;
+  }
+  polygonOptions.value = [];
+  for (const key in polygons) {
+    polygonOptions.value.push({ title: polygons[key].name, value: key });
+  }
+  const id = polygonSelectedValue.value;
+  if (!polygons[id] || polygons[id].name == undefined) {
+    polygonTitle.value = undefined;
+    return;
+  }
+  polygonTitle.value = polygons[id].name;
+}
 
 function toggleGrid() {
   state.sidebar.isGrid = !state.sidebar.isGrid;
@@ -138,7 +123,7 @@ function updateGridStep() {
 }
 
 function onSelectPolygon() {
-  state.sidebar.polygon.currentID = polygon.selectedValue as number;
+  state.sidebar.polygon.currentID = polygonSelectedValue.value as number;
 }
 
 function deletePolygon() {
@@ -148,6 +133,7 @@ function deletePolygon() {
   }
   state.sidebar.polygon.currentID = undefined;
   delete state.sidebar.polygon.polygons[id];
+  updatePolygonDropdown();
 }
 
 function addPolygon() {
@@ -165,6 +151,7 @@ function addPolygon() {
 
   state.sidebar.polygon.startID += 1;
   state.sidebar.polygon.polygons[id] = polygon;
+  updatePolygonDropdown();
 }
 </script>
 
@@ -245,7 +232,7 @@ function addPolygon() {
       </slidebar-icon>
     </div>
     <div
-      class="h-full w-72 flex bg-gray-700 text-white"
+      class="h-full w-72 flex bg-gray-800 text-white"
       :key="(state.sidebar.isSubSidebar, state.sidebar.category)"
       v-if="state.sidebar.isSubSidebar">
       <div
@@ -287,12 +274,14 @@ function addPolygon() {
         v-else-if="state.sidebar.category === GalleryImageSideBarEnum.Polygon">
         <div class="flex flex-col mt-2">
           <div class="modal-row-10">
-            <select-dropdown
+            <ripple-button-select-dropdown
+              v-model:title="polygonTitle"
+              v-model:selected-value="polygonSelectedValue"
+              v-model:options="polygonOptions"
               :width-class="'w-64'"
               :options-width-class="'w-64'"
               :origin="Origin.BottomLeft"
-              :state="polygon"
-              :mode="SelectDropdownMode.Input"
+              :key="polygonOptions.toString()"
               :on-select="onSelectPolygon" />
           </div>
         </div>
@@ -312,7 +301,8 @@ function addPolygon() {
           <input
             class="modal-input-10"
             v-model="state.sidebar.polygon.polygons[state.sidebar.polygon.currentID].name"
-            placeholder="" />
+            placeholder=""
+            @input="updatePolygonDropdown" />
         </div>
         <div class="flex flex-row" v-if="state.sidebar.polygon.currentID !== undefined">
           <span class="modal-row-10">Visible:</span>

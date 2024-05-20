@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { watch } from "vue";
+import { ref, watch } from "vue";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
-import { SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import {
+  SelectDropdownMode,
+  SelectDropdownState,
+  SelectDropdownOption,
+} from "@/elements/Dropdown/SelectDropdown.interface";
 import { AppModeEnum, LoggingLevelEnum } from "@/interface/setting";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
+import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
 import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 
 import { getOptionsFromEnum, initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
@@ -15,8 +20,25 @@ import { getTimezoneOptions } from "@/utils/timezone";
 
 settingSystemState.init();
 
-const appMode = initSelectDropdownState() as SelectDropdownState;
-const appModeOptions = getOptionsFromEnum(AppModeEnum);
+const appModeTitle = ref(settingSystemState?.data?.app_mode);
+const appModeSelectedValue = ref(settingSystemState?.data?.app_mode);
+const appModeOptions = ref(getOptionsFromEnum(AppModeEnum));
+function selectAppMode(opt: SelectDropdownOption) {
+  settingSystemState.data.app_mode = opt.value as AppModeEnum;
+}
+
+watch(
+  () => {
+    return JSON.stringify(settingSystemState.data);
+  },
+  () => {
+    if (settingSystemState.data === undefined) {
+      return;
+    }
+    appModeTitle.value = settingSystemState?.data?.app_mode;
+    appModeSelectedValue.value = settingSystemState?.data?.app_mode;
+  },
+);
 
 const timezone = initSelectDropdownState() as SelectDropdownState;
 const timezoneOptions = getTimezoneOptions();
@@ -28,9 +50,6 @@ function init() {
   if (settingSystemState.data === undefined) {
     return;
   }
-
-  appMode.title = settingSystemState.data.app_mode;
-  appMode.selectedValue = settingSystemState.data.app_mode;
   timezone.title = settingSystemState.data.app_timezone;
   timezone.selectedValue = settingSystemState.data.app_timezone;
   loggingLevel.title = settingSystemState.data.app_logging_level;
@@ -43,16 +62,6 @@ watch(
   () => JSON.stringify(settingSystemState.data),
   () => {
     init();
-  },
-);
-
-watch(
-  () => appMode.selectedValue,
-  () => {
-    if (settingSystemState.data === undefined || appMode.selectedValue === undefined) {
-      return;
-    }
-    settingSystemState.data.app_mode = appMode.selectedValue as AppModeEnum;
   },
 );
 
@@ -88,14 +97,14 @@ function save() {
       <div class="views-setting-rows">
         <div class="views-setting-row">
           <span class="views-setting-cell w-64">Mode:&emsp;</span>
-          <select-dropdown
+          <ripple-button-select-dropdown
             class="mx-1 w-72"
+            v-model:title="appModeTitle"
+            v-model:selected-value="appModeSelectedValue"
+            v-model:options="appModeOptions"
             :options-width-class="'w-72'"
             :origin="Origin.BottomLeft"
-            :state="appMode"
-            :options="appModeOptions"
-            :is-auto-complete="true"
-            :mode="SelectDropdownMode.Button" />
+            :on-select="selectAppMode" />
         </div>
         <div class="views-setting-row">
           <span class="views-setting-cell w-64">Timezone:&emsp;</span>

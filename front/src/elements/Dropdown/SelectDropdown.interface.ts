@@ -43,6 +43,18 @@ export interface SelectDropdownOnGetToOptions {
   (data: any): SelectDropdownOption;
 }
 
+export interface SelectDropdownOnGetDataToOption {
+  (data: any): SelectDropdownOption;
+}
+
+export interface SelectDropdownOnGetOptionHandler {
+  (data: any): void;
+}
+
+export interface SelectDropdownOnScroll {
+  (event: WheelEvent): void;
+}
+
 export interface SelectDropdownOnSelect {
   (opt: SelectDropdownOption): void;
 }

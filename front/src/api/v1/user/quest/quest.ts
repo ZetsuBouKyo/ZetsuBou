@@ -15,17 +15,23 @@ export function getUserQuests(id: string | number, params: any) {
   });
 }
 
-export function postUserQuest(id: string | number, data: any) {
+export function postUserQuest(userID: string | number, data: any) {
+  if (data.user_id === undefined) {
+    data.user_id = userID;
+  }
   return request({
-    url: `/api/v1/user/${id}/quest`,
+    url: `/api/v1/user/${userID}/quest`,
     method: "post",
     data: data,
   });
 }
 
-export function putUserQuest(id: string | number, data: any) {
+export function putUserQuest(userID: string | number, data: any) {
+  if (data.user_id === undefined) {
+    data.user_id = userID;
+  }
   return request({
-    url: `/api/v1/user/${id}/quest`,
+    url: `/api/v1/user/${userID}/quest`,
     method: "put",
     data: data,
   });

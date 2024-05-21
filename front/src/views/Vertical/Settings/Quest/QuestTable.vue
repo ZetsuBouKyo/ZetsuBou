@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive, ref, Ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
-import { SelectDropdownGetParam, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import { SelectDropdownGetParam, SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.interface";
 import { CrudTableState, Header } from "@/elements/Table/CrudTable/interface";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
+import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
 import CrudTable from "@/elements/Table/CrudTable/index.vue";
 
 import { getSettingUserQuestCategories } from "@/api/v1/setting/userQuestCategory";
@@ -19,11 +19,16 @@ import {
   putUserQuest,
 } from "@/api/v1/user/quest/quest";
 
-import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { initCrudTableState } from "@/elements/Table/CrudTable/CrudTable";
 import { userState } from "@/state/user";
 
 import { getDatetime } from "@/utils/datetime";
+import { getFirstOptions, scroll, convertArrayDataToOptions } from "@/elements/Dropdown/SelectDropdown";
+
+interface T {
+  id: number;
+  name: string | number;
+}
 
 interface Row {
   id?: number;
@@ -46,31 +51,97 @@ const state = reactive({
   onGetQuest: undefined,
 });
 
-const category = initSelectDropdownState() as SelectDropdownState;
-function onGetCategory(params: SelectDropdownGetParam) {
-  return getSettingUserQuestCategories(params);
-}
-function onGetCategoryToOptions(data: { name: string | number; id: number }) {
-  return { title: data.name, value: data.id };
+function convert(data: Array<T>, options: Ref<Array<SelectDropdownOption>>) {
+  convertArrayDataToOptions<T>(
+    (d: T) => {
+      return { title: d.name, value: d.id };
+    },
+    data,
+    options,
+  );
 }
 
-const quest = initSelectDropdownState() as SelectDropdownState;
-function onGetQuest(params: SelectDropdownGetParam) {
+const category = ref();
+const categoryTitle = ref("");
+const categorySelectedValue = ref(undefined);
+const categoryOptions = ref([]);
+const categoryScrollEnd = ref<boolean>(false);
+
+const categoryParams = ref<SelectDropdownGetParam>({
+  page: 1,
+  size: 20,
+  s: "",
+});
+const categoryLock = ref<boolean>(false);
+
+function getCategory(params: SelectDropdownGetParam) {
+  return getSettingUserQuestCategories(params);
+}
+
+function openCategory() {
+  getFirstOptions(getCategory, convert, categoryParams, categoryOptions, categoryLock, categoryScrollEnd);
+}
+
+function scrollCategory(event: any) {
+  scroll(event, getQuest, convert, categoryParams, categoryOptions, categoryLock, categoryScrollEnd);
+}
+
+const quest = ref();
+const questTitle = ref("");
+const questSelectedValue = ref(undefined);
+const questOptions = ref([]);
+const questScrollEnd = ref<boolean>(false);
+
+const questParams = ref<SelectDropdownGetParam>({
+  page: 1,
+  size: 20,
+  s: "",
+});
+const questLock = ref<boolean>(false);
+
+function getQuest(params: SelectDropdownGetParam) {
   return state.onGetQuest(params);
 }
-function onGetQuestToOptions(data: { name: string | number; id: number }) {
-  return { title: data.name, value: data.id };
+
+function openQuest() {
+  getFirstOptions(getQuest, convert, questParams, questOptions, questLock, questScrollEnd);
+}
+
+function scrollQuest(event: any) {
+  scroll(event, getQuest, convert, questParams, questOptions, questLock, questScrollEnd);
+}
+
+function selectCategory(opt: SelectDropdownOption) {
+  state.questUrl = undefined;
+  questOptions.value = [];
+  if (opt.title) {
+    const categoryId = opt.value as number;
+    table.row.category_id = categoryId;
+    switch (categoryId) {
+      case 1:
+        state.onGetQuest = (params: any) => {
+          return getUserElasticCountQuests(userID, params);
+        };
+        state.questUrl = "/settings/elasticsearch-count-quest";
+        break;
+    }
+  }
+}
+
+function selectQuest(opt: SelectDropdownOption) {
+  table.row.quest_id = opt.value as number;
 }
 
 watch(
-  () => category.title,
   () => {
-    state.questUrl = undefined;
-    quest.options = [];
-    if (category.title) {
-      const categoryId = category.selectedValue as number;
-      table.row.category_id = categoryId;
-      switch (categoryId) {
+    return JSON.stringify(table.row);
+  },
+  () => {
+    const categoryID = table.row.category_id;
+    if (categoryID !== undefined) {
+      categoryTitle.value = getCategoryName(categoryID);
+      categorySelectedValue.value = categoryID;
+      switch (categoryID) {
         case 1:
           state.onGetQuest = (params: any) => {
             return getUserElasticCountQuests(userID, params);
@@ -79,45 +150,14 @@ watch(
           break;
       }
     }
-  },
-);
 
-watch(
-  () => {
-    if (table.row) {
-      return table.row.category_id;
-    }
-    return false;
-  },
-  () => {
-    const categoryID = table.row.category_id;
-    category.selectedValue = categoryID;
-    category.title = getCategoryName(categoryID);
-  },
-);
-
-watch(
-  () => quest.title,
-  () => {
-    table.row.quest_id = quest.selectedValue as number;
-  },
-);
-
-watch(
-  () => {
-    if (table.row) {
-      return table.row.quest_id;
-    }
-    return false;
-  },
-  () => {
     const questID = table.row.quest_id;
-    quest.selectedValue = questID;
-    if (questID) {
+    questSelectedValue.value = questID;
+    if (questID !== undefined) {
       getUserElasticCountQuest(userID, questID).then((response) => {
         const data = response.data;
         if (data) {
-          quest.title = data.name;
+          questTitle.value = data.name;
         }
       });
     }
@@ -135,8 +175,8 @@ function onCloseEditor() {
     quest_id: undefined,
     priority: undefined,
   };
-  category.reset();
-  quest.reset();
+  category.value.clear();
+  quest.value.clear();
 }
 
 const categoryMap = reactive({});
@@ -212,25 +252,35 @@ function onCrudDelete(id: number) {
         </div>
         <div class="modal-row h-10">
           <span class="w-20 mr-4">Category:</span>
-          <select-dropdown
+          <ripple-button-select-dropdown
+            ref="category"
             class="h-10 w-64"
+            v-model:title="categoryTitle"
+            v-model:selected-value="categorySelectedValue"
+            v-model:options="categoryOptions"
+            v-model:scroll-end="categoryScrollEnd"
             :options-width-class="'w-64'"
-            :state="category"
-            :on-get="onGetCategory"
-            :on-get-to-options="onGetCategoryToOptions"></select-dropdown>
+            :on-open="openCategory"
+            :on-scroll="scrollCategory"
+            :on-select="selectCategory" />
         </div>
-        <div class="modal-row h-10" v-if="category.title">
+        <div class="modal-row h-10" v-if="categoryTitle">
           <span class="w-20 mr-4">Quest Id:</span>
-          <select-dropdown
+          <ripple-button-select-dropdown
+            ref="quest"
             class="h-10 w-64"
+            v-model:title="questTitle"
+            v-model:selected-value="questSelectedValue"
+            v-model:options="questOptions"
+            v-model:scroll-end="questScrollEnd"
             :options-width-class="'w-64'"
-            :state="quest"
-            :on-get="onGetQuest"
-            :on-get-to-options="onGetQuestToOptions"></select-dropdown>
+            :on-open="openQuest"
+            :on-scroll="scrollQuest"
+            :on-select="selectQuest" />
           <ripple-button class="ml-2 btn btn-primary" @click="openQuestPage"> Add </ripple-button>
         </div>
         <div class="modal-row h-10" v-else></div>
-        <div class="modal-row h-10" v-if="category.title">
+        <div class="modal-row h-10" v-if="categoryTitle">
           <span class="w-20 mr-4">Priority:</span>
           <input
             class="w-1/2 modal-input"

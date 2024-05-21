@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { watch } from "vue";
+import { ref, Ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
-import { SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import { SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.interface";
 import { PaginationGetParam } from "@/elements/Pagination/pagination.interface";
 import { CrudTableState, Header } from "@/elements/Table/CrudTable/interface";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
+import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
 import CrudTable from "@/elements/Table/CrudTable/index.vue";
 
 import { getUserElasticCountQueries, getUserElasticCountQuery } from "@/api/v1/user/elasticQuery/count";
@@ -19,11 +19,16 @@ import {
   putUserElasticCountQuest,
 } from "@/api/v1/user/quest/elasticCountQuest";
 
-import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { initCrudTableState } from "@/elements/Table/CrudTable/CrudTable";
 import { userState } from "@/state/user";
 
 import { getDatetime } from "@/utils/datetime";
+import { getFirstOptions, scroll, convertArrayDataToOptions } from "@/elements/Dropdown/SelectDropdown";
+
+interface T {
+  id: number;
+  name: string | number;
+}
 
 interface Row {
   id?: number;
@@ -40,74 +45,94 @@ const router = useRouter();
 const userID = userState.data.id;
 const table = initCrudTableState() as CrudTableState<Row>;
 
-const numerator = initSelectDropdownState() as SelectDropdownState;
-const denominator = initSelectDropdownState() as SelectDropdownState;
-function onGet(params: PaginationGetParam) {
+function getQuery(params: PaginationGetParam) {
   return getUserElasticCountQueries(userID, params);
 }
-function onGetToOptions(data: { name: string | number; id: number }) {
-  return { title: data.name, value: data.id };
+function convert(data: Array<T>, options: Ref<Array<SelectDropdownOption>>) {
+  convertArrayDataToOptions<T>(
+    (d: T) => {
+      return { title: d.name, value: d.id };
+    },
+    data,
+    options,
+  );
+}
+
+const numerator = ref();
+const numeratorTitle = ref("");
+const numeratorSelectedValue = ref(undefined);
+const numeratorOptions = ref([]);
+const numeratorScrollEnd = ref<boolean>(false);
+
+const numeratorParams = ref<PaginationGetParam>({
+  page: 1,
+  size: 20,
+});
+const numeratorLock = ref<boolean>(false);
+
+function selectNumerator(opt: SelectDropdownOption) {
+  table.row.numerator_id = opt.value as number;
+}
+
+function openNumerator() {
+  getFirstOptions(getQuery, convert, numeratorParams, numeratorOptions, numeratorLock, numeratorScrollEnd);
+}
+
+function scrollNumerator(event: any) {
+  scroll(event, getQuery, convert, numeratorParams, numeratorOptions, numeratorLock, numeratorScrollEnd);
+}
+
+const denominator = ref();
+const denominatorTitle = ref("");
+const denominatorSelectedValue = ref(undefined);
+const denominatorOptions = ref([]);
+const denominatorScrollEnd = ref<boolean>(false);
+
+const denominatorParams = ref<PaginationGetParam>({
+  page: 1,
+  size: 20,
+});
+const denominatorLock = ref<boolean>(false);
+
+function selectDenominator(opt: SelectDropdownOption) {
+  table.row.denominator_id = opt.value as number;
+}
+
+function openDenominator() {
+  getFirstOptions(getQuery, convert, denominatorParams, denominatorOptions, denominatorLock, denominatorScrollEnd);
+}
+
+function scrollDenominator(event: any) {
+  scroll(event, getQuery, convert, denominatorParams, denominatorOptions, denominatorLock, denominatorScrollEnd);
 }
 
 watch(
-  () => numerator.title,
   () => {
-    if (numerator.title) {
-      const numerator_id = numerator.selectedValue as number;
-      table.row.numerator_id = numerator_id;
-    }
-  },
-);
-
-watch(
-  () => {
-    if (table.row) {
-      return table.row.numerator_id;
-    }
-    return false;
+    return JSON.stringify(table.row);
   },
   () => {
-    numerator.selectedValue = table.row.numerator_id;
-    if (!userID || !numerator.selectedValue) {
+    if (!userID) {
       return;
     }
-    getUserElasticCountQuery(userID, numerator.selectedValue).then((response) => {
-      const data = response.data;
-      if (data) {
-        numerator.title = data.name;
-      }
-    });
-  },
-);
+    numeratorSelectedValue.value = table.row.numerator_id;
+    if (numeratorSelectedValue.value !== undefined) {
+      getUserElasticCountQuery(userID, numeratorSelectedValue.value).then((response) => {
+        const data = response.data;
+        if (data) {
+          numeratorTitle.value = data.name;
+        }
+      });
+    }
 
-watch(
-  () => denominator.title,
-  () => {
-    if (denominator.title) {
-      const denominator_id = denominator.selectedValue as number;
-      table.row.denominator_id = denominator_id;
+    denominatorSelectedValue.value = table.row.denominator_id;
+    if (denominatorSelectedValue.value !== undefined) {
+      getUserElasticCountQuery(userID, denominatorSelectedValue.value).then((response) => {
+        const data = response.data;
+        if (data) {
+          denominatorTitle.value = data.name;
+        }
+      });
     }
-  },
-);
-
-watch(
-  () => {
-    if (table.row) {
-      return table.row.denominator_id;
-    }
-    return false;
-  },
-  () => {
-    denominator.selectedValue = table.row.denominator_id;
-    if (!userID || !denominator.selectedValue) {
-      return;
-    }
-    getUserElasticCountQuery(userID, denominator.selectedValue).then((response) => {
-      const data = response.data;
-      if (data) {
-        denominator.title = data.name;
-      }
-    });
   },
 );
 
@@ -142,8 +167,8 @@ function onCrudDelete(id: number) {
 
 function onCloseEditor() {
   table.row = { name: undefined, numerator_id: undefined, denominator_id: undefined };
-  numerator.reset();
-  denominator.reset();
+  numerator.value.clear();
+  denominator.value.clear();
 }
 </script>
 
@@ -168,22 +193,32 @@ function onCloseEditor() {
         </div>
         <div class="modal-row h-10">
           <span class="w-32 mr-4">Numerator Id:</span>
-          <select-dropdown
+          <ripple-button-select-dropdown
+            ref="numerator"
             class="h-10 w-64"
+            v-model:title="numeratorTitle"
+            v-model:selected-value="numeratorSelectedValue"
+            v-model:options="numeratorOptions"
+            v-model:scroll-end="numeratorScrollEnd"
             :options-width-class="'w-64'"
-            :state="numerator"
-            :on-get="onGet"
-            :on-get-to-options="onGetToOptions"></select-dropdown>
+            :on-open="openNumerator"
+            :on-scroll="scrollNumerator"
+            :on-select="selectNumerator" />
           <ripple-button class="ml-2 btn btn-primary" @click="openQueryPage"> Add </ripple-button>
         </div>
         <div class="modal-row h-10">
           <span class="w-32 mr-4">Denominator Id:</span>
-          <select-dropdown
+          <ripple-button-select-dropdown
+            ref="denominator"
             class="h-10 w-64"
+            v-model:title="denominatorTitle"
+            v-model:selected-value="denominatorSelectedValue"
+            v-model:options="denominatorOptions"
+            v-model:scroll-end="denominatorScrollEnd"
             :options-width-class="'w-64'"
-            :state="denominator"
-            :on-get="onGet"
-            :on-get-to-options="onGetToOptions"></select-dropdown>
+            :on-open="openDenominator"
+            :on-scroll="scrollDenominator"
+            :on-select="selectDenominator" />
         </div>
       </template>
     </crud-table>

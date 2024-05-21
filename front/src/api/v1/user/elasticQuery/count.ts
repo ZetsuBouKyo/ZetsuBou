@@ -22,25 +22,31 @@ export function getUserElasticCountQuery(userID: string | number, queryID: strin
   });
 }
 
-export function postUserElasticCountQuery(id: string | number, data: any) {
+export function postUserElasticCountQuery(userID: string | number, data: any) {
+  if (data.user_id === undefined) {
+    data.user_id = userID;
+  }
   return request({
-    url: `/api/v1/user/${id}/elastic/count-query`,
+    url: `/api/v1/user/${userID}/elastic/count-query`,
     method: "post",
     data: data,
   });
 }
 
-export function putUserElasticCountQuery(id: string | number, data: any) {
+export function putUserElasticCountQuery(userID: string | number, data: any) {
+  if (data.user_id === undefined) {
+    data.user_id = userID;
+  }
   return request({
-    url: `/api/v1/user/${id}/elastic/count-query`,
+    url: `/api/v1/user/${userID}/elastic/count-query`,
     method: "put",
     data: data,
   });
 }
 
-export function deleteUserElasticCountQuery(id: string | number, queryID: string | number) {
+export function deleteUserElasticCountQuery(userID: string | number, queryID: string | number) {
   return request({
-    url: `/api/v1/user/${id}/elastic/count-query/${queryID}`,
+    url: `/api/v1/user/${userID}/elastic/count-query/${queryID}`,
     method: "delete",
   });
 }

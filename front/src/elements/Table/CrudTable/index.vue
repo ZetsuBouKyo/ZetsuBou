@@ -27,6 +27,7 @@ import {
 } from "./interface";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
+import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
 import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 import Modal from "@/elements/Modal/Modal.vue";
@@ -90,28 +91,31 @@ const editor = ref();
 
 const route = useRoute();
 
-const searchFieldState = initSelectDropdownState() as SelectDropdownState;
+const searchFieldTitle = ref("");
+const searchFieldSelectedValue = ref(undefined);
+const searchFieldOptions = ref([]);
+
 if (!isEmpty(props.search)) {
   const keys = Object.keys(props.search);
   const key = keys[0];
-  searchFieldState.title = props.search[key].title;
+  searchFieldTitle.value = props.search[key].title;
 }
 for (const title in props.search) {
-  searchFieldState.options.push({ title: title, value: title });
+  searchFieldOptions.value.push({ title: title, value: title });
 }
 function onSearch(params: any) {
-  return props.search[searchFieldState.title].onSearch(params);
+  return props.search[searchFieldTitle.value].onSearch(params);
 }
 function onSearchToOptions(data: any) {
-  return props.search[searchFieldState.title].onSearchToOptions(data);
+  return props.search[searchFieldTitle.value].onSearchToOptions(data);
 }
 
 function onSearchGetTip(opt: SelectDropdownOption) {
-  return props.search[searchFieldState.title].onSearchGetTip(opt);
+  return props.search[searchFieldTitle.value].onSearchGetTip(opt);
 }
 
 function onSearchMouseoverOption(event, opt: SelectDropdownOption) {
-  return props.search[searchFieldState.title].onSearchMouseoverOption(event, opt);
+  return props.search[searchFieldTitle.value].onSearchMouseoverOption(event, opt);
 }
 
 const searchValueState = initSelectDropdownState() as SelectDropdownState;
@@ -267,7 +271,12 @@ routeState.setLoadFunction(load);
     "
     :on-confirm="onConfirm" />
   <div class="flex flex-row mx-4 my-2 items-center" v-if="!isEmpty(search)">
-    <select-dropdown class="w-64 h-10 mr-4" :options-width-class="'w-64'" :state="searchFieldState" />
+    <ripple-button-select-dropdown
+      class="w-64 h-10 mr-4"
+      v-model:title="searchFieldTitle"
+      v-model:selected-value="searchFieldSelectedValue"
+      v-model:options="searchFieldOptions"
+      :options-width-class="'w-64'" />
     <select-dropdown
       class="flex-1"
       :options-width-class="'w-64'"

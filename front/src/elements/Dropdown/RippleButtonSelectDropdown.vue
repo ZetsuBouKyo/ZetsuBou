@@ -1,22 +1,21 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 
-import { Origin, DropdownOnOpen } from "./Dropdown.interface";
+import { DropdownOnOpen, Origin } from "./Dropdown.interface";
 import {
   SelectDropdownOnGetTip,
   SelectDropdownOnMouseoverOption,
+  SelectDropdownOnScroll,
   SelectDropdownOnSelect,
   SelectDropdownOption,
-  SelectDropdownOnScroll,
 } from "./SelectDropdown.interface";
 
 import BaseSelectDropdown from "./BaseSelectDropdown.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 
-const title = defineModel<string | string[] | number>("title", { default: "" });
-const selectedValue = defineModel<any>("selectedValue", { default: undefined });
-const options = defineModel<Array<SelectDropdownOption>>("options", { default: [] });
-const scrollEnd = defineModel<boolean>("scrollEnd", { default: false });
+interface State {
+  isFocus: boolean;
+}
 
 interface Props {
   group: string;
@@ -42,9 +41,12 @@ const props = withDefaults(defineProps<Props>(), {
   onMouseoverOption: undefined,
 });
 
-interface State {
-  isFocus: boolean;
-}
+const title = defineModel<string | string[] | number>("title", { default: "" });
+const selectedValue = defineModel<any>("selectedValue", { default: undefined });
+const options = defineModel<Array<SelectDropdownOption>>("options", { default: [] });
+const scrollEnd = defineModel<boolean>("scrollEnd", { default: false });
+
+const baseSelectDropdown = ref();
 
 const state = reactive<State>({
   isFocus: false,
@@ -58,8 +60,6 @@ function select(opt: SelectDropdownOption) {
     props.onSelect(opt);
   }
 }
-
-const baseSelectDropdown = ref();
 
 function focusOpenDropdown() {
   state.isFocus = true;

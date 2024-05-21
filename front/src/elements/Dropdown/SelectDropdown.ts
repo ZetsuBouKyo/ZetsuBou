@@ -7,8 +7,8 @@ import {
   SelectDropdownDataToOptions,
   SelectDropdownState,
   SelectDropdownToOption,
-  SelectDropdownGetParam,
 } from "./SelectDropdown.interface";
+import { PaginationGetParam } from "@/elements/Pagination/pagination.interface";
 
 import { getValue, setValue } from "@/utils/obj";
 
@@ -187,10 +187,10 @@ export function convertArrayDataToInputChipsOptions<T>(
   }
 }
 
-export function getOptions<DataT>(
-  request: SelectDropdownRequest<DataT, SelectDropdownGetParam>,
+export function getOptions<DataT, ParamT extends PaginationGetParam>(
+  request: SelectDropdownRequest<DataT, ParamT>,
   convertDataToOptions: SelectDropdownDataToOptions<DataT>,
-  params: Ref<SelectDropdownGetParam>,
+  params: Ref<ParamT>,
   options: Ref<Array<SelectDropdownOption>>,
   lock: Ref<boolean>,
   scrollEnd: Ref<boolean>,
@@ -214,10 +214,10 @@ export function getOptions<DataT>(
   });
 }
 
-export function getFirstOptions<DataT>(
-  request: SelectDropdownRequest<DataT, SelectDropdownGetParam>,
+export function getFirstOptions<DataT, ParamT extends PaginationGetParam>(
+  request: SelectDropdownRequest<DataT, ParamT>,
   convertDataToOptions: SelectDropdownDataToOptions<DataT>,
-  params: Ref<SelectDropdownGetParam>,
+  params: Ref<ParamT>,
   options: Ref<Array<SelectDropdownOption>>,
   lock: Ref<boolean>,
   scrollEnd: Ref<boolean>,
@@ -229,11 +229,11 @@ export function getFirstOptions<DataT>(
   getOptions(request, convertDataToOptions, params, options, lock, scrollEnd);
 }
 
-export function scroll<DataT>(
+export function scroll<DataT, ParamT extends PaginationGetParam>(
   event: UIEvent,
-  request: SelectDropdownRequest<DataT, SelectDropdownGetParam>,
+  request: SelectDropdownRequest<DataT, ParamT>,
   convertDataToOptions: SelectDropdownDataToOptions<DataT>,
-  params: Ref<SelectDropdownGetParam>,
+  params: Ref<ParamT>,
   options: Ref<Array<SelectDropdownOption>>,
   lock: Ref<boolean>,
   scrollEnd: Ref<boolean>,
@@ -245,6 +245,6 @@ export function scroll<DataT>(
       return;
     }
     params.value.page++;
-    getOptions<DataT>(request, convertDataToOptions, params, options, lock, scrollEnd);
+    getOptions<DataT, ParamT>(request, convertDataToOptions, params, options, lock, scrollEnd);
   }
 }

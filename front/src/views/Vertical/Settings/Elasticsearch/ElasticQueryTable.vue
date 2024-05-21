@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { ref } from "vue";
+
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
-import { SelectDropdownOption, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import { SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.interface";
 import {
   CrudTableState,
   Header,
@@ -12,12 +14,11 @@ import {
 } from "@/elements/Table/CrudTable/interface";
 import { Row } from "./ElasticQueryTable.interface";
 
-import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
+import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
 import CrudTable from "@/elements/Table/CrudTable/index.vue";
 
 import { getQueryExample } from "@/api/v1/elasticsearch";
 
-import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { initCrudTableState } from "@/elements/Table/CrudTable/CrudTable";
 
 import { getDatetime } from "@/utils/datetime";
@@ -47,7 +48,10 @@ const headers: Array<Header> = [
   { title: "Modified", key: "modified", handler: getDatetime },
 ];
 
-const examples = initSelectDropdownState() as SelectDropdownState;
+const example = ref();
+const exampleTitle = ref("");
+const exampleSelectedValue = ref(undefined);
+const exampleOptions = ref([]);
 
 function onSelect(opt: SelectDropdownOption) {
   table.row.query = JSON.stringify(opt.raw.value, null, 4);
@@ -62,11 +66,15 @@ function loadExample() {
         value: q.summary,
         raw: q,
       };
-      examples.options.push(option);
+      exampleOptions.value.push(option);
     }
   });
 }
 loadExample();
+
+function onCloseEditor() {
+  example.value.clear();
+}
 </script>
 
 <template>
@@ -80,7 +88,8 @@ loadExample();
     :on-crud-get="onCrudGet"
     :on-crud-get-total="onCrudGetTotal"
     :on-crud-update="onCrudUpdate"
-    :on-crud-delete="onCrudDelete">
+    :on-crud-delete="onCrudDelete"
+    :on-close-editor="onCloseEditor">
     <template v-slot:editor>
       <div class="modal-row h-10">
         <span class="w-24 mr-4">Name:</span>
@@ -88,13 +97,15 @@ loadExample();
       </div>
       <div class="modal-row h-10">
         <span class="w-24 mr-4">Template:</span>
-        <select-dropdown
+        <ripple-button-select-dropdown
+          ref="example"
           class="h-10 w-64"
+          v-model:title="exampleTitle"
+          v-model:selected-value="exampleSelectedValue"
+          v-model:options="exampleOptions"
           :options-width-class="'w-64'"
           :origin="Origin.BottomLeft"
-          :state="examples"
-          :on-select="onSelect"
-          :enable-input-chips-enter-event="false" />
+          :on-select="onSelect" />
       </div>
       <div class="modal-row h-56">
         <textarea v-model="table.row.query" class="modal-textarea h-full" />

@@ -44,11 +44,11 @@ ES_SIZE = setting.elastic_size
 ELASTICSEARCH_INDEX_TAG = setting.elastic_index_tag
 
 elasticsearch_tag_analyzer: ElasticsearchKeywordAnalyzers = {
-    ElasticsearchAnalyzerEnum.DEFAULT.value: ["attributes.*"],
-    ElasticsearchAnalyzerEnum.KEYWORD.value: ["attributes.*"],
-    ElasticsearchAnalyzerEnum.NGRAM.value: ["attributes.*"],
-    ElasticsearchAnalyzerEnum.STANDARD.value: ["attributes.*"],
-    ElasticsearchAnalyzerEnum.URL.value: ["attributes.*"],
+    ElasticsearchAnalyzerEnum.DEFAULT.value: ["attributes.*.default"],
+    ElasticsearchAnalyzerEnum.KEYWORD.value: ["attributes.*.keyword"],
+    ElasticsearchAnalyzerEnum.NGRAM.value: ["attributes.*.ngram"],
+    ElasticsearchAnalyzerEnum.STANDARD.value: ["attributes.*.standard"],
+    ElasticsearchAnalyzerEnum.URL.value: ["attributes.*.default"],
 }
 
 
@@ -59,7 +59,7 @@ class CrudAsyncElasticsearchTag(CrudAsyncElasticsearchBase[TagElasticsearch]):
         hosts: List[str] = None,
         index: str = ELASTICSEARCH_INDEX_TAG,
         keyword_analyzers: ElasticsearchKeywordAnalyzers = elasticsearch_tag_analyzer,
-        sorting: List[Any] = ["_score", "id"],
+        sorting: List[Any] = ["_score"],
         is_from_setting_if_none: bool = False,
     ):
         super().__init__(

@@ -30,7 +30,8 @@ async def search(
         return []
     async with CrudAsyncElasticsearchTag(is_from_setting_if_none=True) as crud:
         results = await crud.match(pagination.page, size=pagination.size, keywords=s)
-        ids = [int(r.id) for r in results.hits.hits]
+        hits = results.get("hits", {}).get("hits", [])
+        ids = [int(hit.get("_source", {}).get("id")) for hit in hits]
         if len(ids) > 0:
             return await CrudTagToken.get_rows_by_ids_order_by_id(
                 ids,

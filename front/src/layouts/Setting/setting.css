@@ -11,11 +11,12 @@
   .views-setting-rows {
     @apply flex flex-col py-4 w-full;
   }
-  .views-setting-row-base {
+  .views-setting-row {
     @apply flex flex-row my-2 pl-4;
   }
-  .views-setting-row {
-    @apply h-12 flex flex-row my-2 items-center pl-4;
+  .views-setting-row-12 {
+    @apply flex flex-row my-2 pl-4;
+    @apply h-12 items-center;
   }
   div.views-setting-cell {
     @apply flex items-center mx-1 px-3;

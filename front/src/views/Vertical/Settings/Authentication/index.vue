@@ -68,19 +68,19 @@ watch(
     <div class="views-setting-section">
       <span class="views-setting-section-title">Token</span>
       <div class="views-setting-rows">
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell w-48">Email address:</div>
           <input class="views-setting-cell w-72" type="text" v-model="state.email" />
         </div>
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell w-48">Password:</div>
           <input class="views-setting-cell w-72" type="password" autocomplete="new-password" v-model="state.password" />
         </div>
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell w-48">Expires in minutes:</div>
           <input class="views-setting-cell w-72" :placeholder="state.expires" type="text" v-model="state.expires" />
         </div>
-        <div class="views-setting-row-base items-start">
+        <div class="views-setting-row items-start">
           <div class="views-setting-cell w-48 my-4">Scopes:</div>
           <select-dropdown
             class="flex-1 ml-1"
@@ -92,18 +92,18 @@ watch(
             :on-get-to-options="onGetScopesToOptions"
             :mode="SelectDropdownMode.InputChips" />
         </div>
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <ripple-button class="flex btn btn-primary ml-auto" @click="getNewToken">Get</ripple-button>
         </div>
-        <div class="views-setting-row-base items-start" v-if="state.token">
+        <div class="views-setting-row items-start" v-if="state.token">
           <div class="views-setting-cell w-48">Token:</div>
           <div class="flex w-96 2xl:w-200 break-all">{{ state.token }}</div>
         </div>
-        <div class="views-setting-row-base items-start" v-if="state.header">
+        <div class="views-setting-row items-start" v-if="state.header">
           <div class="views-setting-cell w-48">Token Header:</div>
           <pre>{{ state.header }}</pre>
         </div>
-        <div class="views-setting-row-base items-start" v-if="state.payload">
+        <div class="views-setting-row items-start" v-if="state.payload">
           <div class="views-setting-cell w-48">Token Payload:</div>
           <pre>{{ state.payload }}</pre>
         </div>

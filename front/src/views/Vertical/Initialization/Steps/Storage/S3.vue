@@ -46,7 +46,7 @@ watch(
 <template>
   <step :state="step">
     <template v-slot:body>
-      <div class="views-setting-row">
+      <div class="views-setting-row-12">
         <span class="views-setting-cell w-64">Access key ID:&emsp;</span>
         <input
           class="views-setting-cell w-72"
@@ -54,7 +54,7 @@ watch(
           autocomplete="new-password"
           v-model="step.setting.storage_s3_aws_access_key_id" />
       </div>
-      <div class="views-setting-row">
+      <div class="views-setting-row-12">
         <span class="views-setting-cell w-64">Secret access key:&emsp;</span>
         <input
           class="views-setting-cell w-72"
@@ -62,7 +62,7 @@ watch(
           autocomplete="new-password"
           v-model="step.setting.storage_s3_aws_secret_access_key" />
       </div>
-      <div class="views-setting-row">
+      <div class="views-setting-row-12">
         <span class="views-setting-cell w-64">Confirm secret access key:&emsp;</span>
         <input
           class="views-setting-cell w-72"
@@ -70,7 +70,7 @@ watch(
           autocomplete="new-password"
           v-model="state.secretAccessKey" />
       </div>
-      <div class="views-setting-row">
+      <div class="views-setting-row-12">
         <span class="views-setting-cell w-64">Volume:&emsp;</span>
         <input
           class="views-setting-cell w-72"

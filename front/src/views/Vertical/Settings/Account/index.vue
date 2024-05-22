@@ -58,7 +58,7 @@ function closeChangeUser() {
     <div class="views-setting-section">
       <span class="views-setting-section-title">Profile</span>
       <div class="views-setting-rows">
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell">Name:</div>
           <input
             class="w-72 border-2 border-gray-600 text-white placeholder-gray-400 ml-4 px-4 rounded-lg focus:outline-none hidden sm:inline-block"
@@ -73,11 +73,11 @@ function closeChangeUser() {
             <icon-ic-outline-edit style="font-size: 1.2rem; color: white" />
           </ripple-button>
         </div>
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell">Email:</div>
           <div class="views-setting-cell">{{ userState.data.email }}</div>
         </div>
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <ripple-button class="flex btn btn-primary ml-auto" @click="openChangeUser">Save</ripple-button>
         </div>
       </div>
@@ -85,7 +85,7 @@ function closeChangeUser() {
     <div class="views-setting-section">
       <span class="views-setting-section-title">Change password</span>
       <div class="views-setting-rows">
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell w-56">Old password:</div>
           <form class="h-full">
             <input
@@ -95,7 +95,7 @@ function closeChangeUser() {
               v-model="userState.data.oldPassword" />
           </form>
         </div>
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell w-56">New password:</div>
           <input
             class="views-setting-cell w-72"
@@ -103,7 +103,7 @@ function closeChangeUser() {
             autocomplete="new-password"
             v-model="userState.data.newPassword" />
         </div>
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell w-56">Confirm new password:</div>
           <input
             class="views-setting-cell w-72"
@@ -111,7 +111,7 @@ function closeChangeUser() {
             autocomplete="new-password"
             v-model="userState.data.passwordConfirmation" />
         </div>
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <ripple-button class="flex btn btn-primary ml-auto" @click="confirmChangeUser">Save</ripple-button>
         </div>
       </div>

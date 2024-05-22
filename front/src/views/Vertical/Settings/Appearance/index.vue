@@ -80,7 +80,7 @@ function save() {
     <div class="views-setting-section">
       <span class="views-setting-section-title">Gallery</span>
       <div class="views-setting-rows">
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell w-64">Preview size:</div>
           <input
             class="views-setting-cell w-72"
@@ -88,7 +88,7 @@ function save() {
             :placeholder="userState.data.frontSettings.gallery_preview_size"
             v-model="privateState.data.gallery_preview_size" />
         </div>
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell w-64">Image preview size:</div>
           <input
             class="views-setting-cell w-72"
@@ -96,7 +96,7 @@ function save() {
             :placeholder="userState.data.frontSettings.gallery_image_preview_size"
             v-model="privateState.data.gallery_image_preview_size" />
         </div>
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell w-64">Autoplay Interval (seconds):</div>
           <input
             class="views-setting-cell w-72"
@@ -109,7 +109,7 @@ function save() {
     <div class="views-setting-section">
       <span class="views-setting-section-title">Video</span>
       <div class="views-setting-rows">
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <div class="views-setting-cell w-56">Preview size:</div>
           <input
             class="views-setting-cell w-72"
@@ -117,7 +117,7 @@ function save() {
             :placeholder="userState.data.frontSettings.video_preview_size"
             v-model="privateState.data.video_preview_size" />
         </div>
-        <div class="views-setting-row">
+        <div class="views-setting-row-12">
           <ripple-button class="flex btn btn-primary ml-auto" @click="save">Save</ripple-button>
         </div>
       </div>

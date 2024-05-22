@@ -71,7 +71,7 @@ function save() {
   <div class="views-setting-section">
     <span class="views-setting-section-title">Video</span>
     <div class="views-setting-rows">
-      <div class="views-setting-row">
+      <div class="views-setting-row-12">
         <div class="views-setting-cell w-32">Categories:</div>
         <select-dropdown
           class="flex-1"
@@ -85,7 +85,7 @@ function save() {
           :on-mouseover-option="onMouseoverOption"
           :mode="SelectDropdownMode.InputChips" />
       </div>
-      <div class="views-setting-row">
+      <div class="views-setting-row-12">
         <div class="views-setting-cell w-32">Tag fields:</div>
         <select-dropdown
           class="flex-1"
@@ -99,7 +99,7 @@ function save() {
           :on-mouseover-option="onMouseoverOption"
           :mode="SelectDropdownMode.InputChips" />
       </div>
-      <div class="views-setting-row">
+      <div class="views-setting-row-12">
         <ripple-button class="flex btn btn-primary ml-auto" @click="save">Save</ripple-button>
       </div>
     </div>

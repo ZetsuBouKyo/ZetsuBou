@@ -16,7 +16,6 @@ import BaseSelectDropdown from "./BaseSelectDropdown.vue";
 
 interface State {
   scroll: SelectDropdownScroll;
-  lastChipInputTitle: any;
   lock: boolean;
   isFocus: boolean;
 }
@@ -40,7 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
   group: undefined,
   origin: Origin.BottomRight,
   isAutoCompleteOptionCaseSensitive: false,
-  isAutoComplete: false,
+  isAutoComplete: true,
   widthClass: "",
   optionsWidthClass: "w-60",
   onInput: undefined,
@@ -61,7 +60,6 @@ const baseSelectDropdown = ref();
 
 const state = reactive<State>({
   scroll: { isEnd: false },
-  lastChipInputTitle: undefined,
   lock: false,
   isFocus: false,
 });
@@ -88,45 +86,46 @@ function toggleDropdown() {
   baseSelectDropdown.value.toggle();
 }
 
-function updateOptions(title: string, prevTitle: string) {
-  if (title !== undefined) {
-    state.lastChipInputTitle = prevTitle;
-  } else {
-    state.lastChipInputTitle = undefined;
+function updateOptions(title: string) {
+  props.onInput(title);
+}
+
+function updateOptionsWithDefaultOptions(title: string) {
+  if (!defaultOptions.value || defaultOptions.value.length === 0) {
+    return;
   }
 
-  props.onInput();
+  // We cannot simply use `options.value = []` here.
+  while (options?.value.length) {
+    options.value.pop();
+  }
+  for (let option of defaultOptions.value) {
+    option = JSON.parse(JSON.stringify(option));
+    let optionTitle = option.title as string;
+    let stateTitle = title as string;
+    if (!props.isAutoCompleteOptionCaseSensitive) {
+      optionTitle = optionTitle.toLowerCase();
+      stateTitle = title.toString().toLowerCase();
+    }
+    if (optionTitle.startsWith(stateTitle)) {
+      options.value.push(option);
+    }
+  }
 }
 
 watch(
   () => {
     return title.value;
   },
-  (title, prevTitle) => {
+  (title, _) => {
+    if (!props.isAutoComplete) {
+      return;
+    }
+
     if (props.onInput !== undefined) {
-      updateOptions(title as string, prevTitle as string);
-      return;
-    }
-
-    if (!props.isAutoComplete || !defaultOptions.value || defaultOptions.value.length === 0) {
-      return;
-    }
-
-    // We cannot simply use `options.value = []` here.
-    while (options?.value.length) {
-      options.value.pop();
-    }
-    for (let option of defaultOptions.value) {
-      option = JSON.parse(JSON.stringify(option));
-      let optionTitle = option.title as string;
-      let stateTitle = title as string;
-      if (!props.isAutoCompleteOptionCaseSensitive) {
-        optionTitle = optionTitle.toLowerCase();
-        stateTitle = title.toString().toLowerCase();
-      }
-      if (optionTitle.startsWith(stateTitle)) {
-        options.value.push(option);
-      }
+      updateOptions(title as string);
+    } else {
+      updateOptionsWithDefaultOptions(title as string);
     }
     baseSelectDropdown.value.open();
   },

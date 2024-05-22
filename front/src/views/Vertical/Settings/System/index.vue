@@ -108,7 +108,6 @@ function save() {
             v-model:options="timezoneOptions"
             :options-width-class="'w-72'"
             :origin="Origin.BottomLeft"
-            :is-auto-complete="true"
             :on-select="selectTimezone" />
         </div>
         <div class="views-setting-row">
@@ -121,7 +120,6 @@ function save() {
             v-model:options="loggingLevelOptions"
             :options-width-class="'w-72'"
             :origin="Origin.BottomLeft"
-            :is-auto-complete="true"
             :on-select="selectLoggingLevel" />
         </div>
         <div class="views-setting-row">

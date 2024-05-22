@@ -65,7 +65,7 @@ export interface SelectDropdownOnGetOptionHandler {
 }
 
 export interface SelectDropdownOnInput {
-  (): void;
+  (s: string): void;
 }
 
 export interface SelectDropdownOnScroll {

@@ -104,7 +104,7 @@ defineExpose({ open, close, toggle, reset });
             class="w-full inline-block text-left text-base text-white 3xl:text-xl truncate border-0 px-4 py-3 focus:outline-none hover:bg-gray-600 focus:bg-gray-600 my-1"
             tabindex="0"
             v-for="opt in options"
-            :key="opt.value"
+            :key="String(opt.title) + String(opt.value)"
             :title="onGetTip ? onGetTip(opt) : undefined"
             @click="select(opt)"
             @mouseover="(event) => mouseoverOption(event, opt)">

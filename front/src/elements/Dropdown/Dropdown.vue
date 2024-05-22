@@ -59,41 +59,41 @@ function expandToggle() {
 
 function toggle() {
   state.popout = !state.popout;
+  update();
 }
 
 function open() {
   state.popout = true;
+  update();
 }
 
 function close() {
   state.popout = false;
+  update();
 }
 
-watch(
-  () => state.popout,
-  () => {
-    if (state.popout) {
-      if (props.onOpen) {
-        props.onOpen();
-      }
-      for (let key in dropdownsState.data) {
-        if (props.group === undefined) {
-          dropdownsState.data[key].close();
-          dropdownsState.delete(key);
-        } else if (dropdownsState.data[key] && props.group === dropdownsState.data[key].group) {
-          dropdownsState.data[key].close();
-          dropdownsState.delete(key);
-        }
-      }
-      dropdownsState.add(uid, { group: props.group, close: close });
-    } else {
-      if (props.onClose !== undefined) {
-        props.onClose();
-      }
-      dropdownsState.delete(uid);
+function update() {
+  if (state.popout) {
+    if (props.onOpen) {
+      props.onOpen();
     }
-  },
-);
+    for (let key in dropdownsState.data) {
+      if (props.group === undefined) {
+        dropdownsState.data[key].close();
+        dropdownsState.delete(key);
+      } else if (dropdownsState.data[key] && props.group === dropdownsState.data[key].group) {
+        dropdownsState.data[key].close();
+        dropdownsState.delete(key);
+      }
+    }
+    dropdownsState.add(uid, { group: props.group, close: close });
+  } else {
+    if (props.onClose !== undefined) {
+      props.onClose();
+    }
+    dropdownsState.delete(uid);
+  }
+}
 
 onBeforeMount(() => {
   document.addEventListener.call(window, "click", () => {

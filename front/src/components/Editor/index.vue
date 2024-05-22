@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { PropType, reactive, ref, watch } from "vue";
+import { PropType, reactive, ref, Ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
 import {
-  SelectDropdownAssignedValue,
   SelectDropdownMode,
   SelectDropdownOption,
+  SelectDropdownGetParam,
   SelectDropdownOnGet,
   SelectDropdownState,
+  SelectDropdownRequest,
 } from "@/elements/Dropdown/SelectDropdown.interface";
 import { Source } from "@/interface/source";
 import { SourceState } from "@/interface/state";
 import { Token } from "@/interface/tag";
 import { PrivateState } from "./interface";
 
+import InputSelectDropdown from "@/elements/Dropdown/InputSelectDropdown.vue";
 import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
@@ -31,6 +33,7 @@ import { isLeapYear } from "@/utils/datetime";
 import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
 import { pad } from "@/utils/number";
 import { watchTagFieldValues, watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
+import { getFirstOptions, scroll, convertArrayDataToOptions } from "@/elements/Dropdown/SelectDropdown";
 
 const props = defineProps({
   state: {
@@ -44,7 +47,7 @@ const props = defineProps({
     type: Object as PropType<string>,
   },
   onGetCategoryStartsWith: {
-    type: Object as PropType<SelectDropdownOnGet<Token>>,
+    type: Object as PropType<SelectDropdownRequest<Array<Token>, SelectDropdownGetParam>>,
   },
   onGetTagFieldStartsWith: {
     type: Object as PropType<SelectDropdownOnGet<Token>>,
@@ -65,8 +68,46 @@ const privateState = reactive<PrivateState<Token>>({
   onGets: {},
 });
 
-const category = initSelectDropdownState() as SelectDropdownState;
-category.addInputWatch(state, "data.attributes.category", SelectDropdownAssignedValue.Title);
+const categoryTitle = ref("");
+const categorySelectedValue = ref(undefined);
+const categoryOptions = ref([]);
+const categoryScrollEnd = ref<boolean>(false);
+
+const categoryParams = ref<SelectDropdownGetParam>({ page: 1, size: 20, s: "" });
+const categoryLock = ref<boolean>(false);
+
+function convertCategory(data: Array<Token>, options: Ref<Array<SelectDropdownOption>>) {
+  convertArrayDataToOptions<Token>(
+    (d: Token) => {
+      return { title: d.name, value: d.id };
+    },
+    data,
+    options,
+  );
+}
+function getCategory(params: SelectDropdownGetParam) {
+  return props.onGetCategoryStartsWith(params);
+}
+function inputCategory(s: string) {
+  categoryParams.value.s = s;
+  openCategory();
+}
+function openCategory() {
+  getFirstOptions<Array<Token>, SelectDropdownGetParam>(
+    getCategory,
+    convertCategory,
+    categoryParams,
+    categoryOptions,
+    categoryLock,
+    categoryScrollEnd,
+  );
+}
+function scrollCategory(event: any) {
+  scroll(event, getCategory, convertCategory, categoryParams, categoryOptions, categoryLock, categoryScrollEnd);
+}
+function selectCategory(opt: SelectDropdownOption) {
+  state.data.attributes.category = opt.title as string;
+}
 
 const ratingTitle = ref(state.data.attributes.rating);
 const ratingSelectedValue = ref(state.data.attributes.rating);
@@ -239,13 +280,17 @@ defineExpose({ open, close, reset });
     <editor-string-array :title="'Sources'" :state="state" :state-key="'data.src'"></editor-string-array>
     <div class="modal-row-10">
       <span class="w-32 mr-4">Category:</span>
-      <select-dropdown
+      <input-select-dropdown
+        v-model:title="categoryTitle"
+        v-model:selected-value="categorySelectedValue"
+        v-model:options="categoryOptions"
+        v-model:scroll-end="categoryScrollEnd"
         :width-class="'w-48 xl:w-64'"
         :options-width-class="'w-48 xl:w-64'"
-        :state="category"
-        :on-get="onGetCategoryStartsWith"
-        :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.Input" />
+        :on-input="inputCategory"
+        :on-open="openCategory"
+        :on-scroll="scrollCategory"
+        :on-select="selectCategory" />
       <span class="w-16 mx-4">Rating:</span>
       <ripple-button-select-dropdown
         class="ml-2"

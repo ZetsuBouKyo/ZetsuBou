@@ -223,7 +223,9 @@ export function getFirstOptions<DataT, ParamT extends PaginationGetParam>(
   scrollEnd: Ref<boolean>,
 ) {
   params.value.page = 1;
-  options.value = [];
+  while (options?.value.length) {
+    options.value.pop();
+  }
   scrollEnd.value = false;
 
   getOptions(request, convertDataToOptions, params, options, lock, scrollEnd);

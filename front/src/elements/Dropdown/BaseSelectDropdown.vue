@@ -75,7 +75,9 @@ function toggle() {
 }
 
 function reset() {
-  options.value = [];
+  while (options?.value.length) {
+    options.value.pop();
+  }
   scrollEnd.value = false;
 }
 

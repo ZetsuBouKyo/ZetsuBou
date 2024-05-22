@@ -1,50 +1,61 @@
 {
-    "ZetsuBou template": {
-        "scope": "vue",
-        "prefix": "<te",
-        "body": ["<template>", "</template>", "", "<script lang=\"ts\">", "\texport default {", "\t}", "</script>", ""],
-        "description": "ZetsuBou"
-    },
-    "ZetsuBou props": {
+    "zb.props": {
         "scope": "vue,javascript,typescript",
         "prefix": "pr",
         "body": ["props: {", "\t$2: {", "\t\ttype: Object as PropType<$1>,", "\t\tdefault: undefined,", "\t},", "},"],
         "description": "ZetsuBou"
     },
-    "ZetsuBou watch": {
+    "zb.props.default": {
         "scope": "vue,javascript,typescript",
-        "prefix": "wa",
-        "body": ["watch(", "\t() => $1,", "\t() => {}", ")"],
-        "description": "ZetsuBou"
-    },
-    "ZetsuBou setup": {
-        "scope": "vue,javascript,typescript",
-        "prefix": "se",
-        "body": ["setup(props) {", "\treturn {...props}", "}"],
-        "description": "ZetsuBou"
-    },
-    "ZetsuBou PropType": {
-        "scope": "vue,javascript,typescript",
-        "prefix": ["PropType", "PropType "],
-        "body": ["import { PropType } from \"vue\";"],
-        "description": "ZetsuBou"
-    },
-    "ZetsuBou props interface and withDefaults": {
-        "scope": "vue,javascript,typescript",
-        "prefix": ["i", "in", "int", "interface"],
+        "prefix": "interface Props",
         "body": ["interface Props {", "}", "const props = withDefaults(defineProps<Props>(), {", "});"],
-        "description": "ZetsuBou"
+        "description": "ZetsuBou default props"
     },
-    "ZetsuBou withDefaults": {
+    "zb.select-dropdown": {
         "scope": "vue,javascript,typescript",
-        "prefix": ["wi", "wit", "with"],
+        "prefix": "select",
+        "body": [
+            "const $1 = ref()",
+            "const $1Title = ref(\"\")",
+            "const $1SelectedValue = ref(undefined)",
+            "const $1Options = ref([])",
+            "function select$2(opt: SelectDropdownOption){}"
+        ],
+        "description": "ZetsuBou SelectDropdown"
+    },
+    "zb.select-dropdown.input.query": {
+        "scope": "vue,javascript,typescript",
+        "prefix": "select",
+        "body": [
+            "import { getFirstOptions, scroll, convertArrayDataToOptions } from \"@/elements/Dropdown/SelectDropdown\"",
+            "interface $2T {}",
+            "const $1Title = ref(\"\")",
+            "const $1SelectedValue = ref(undefined)",
+            "const $1DefaultOptions = ref([])",
+            "const $1Options = ref([])",
+            "const $1ScrollEnd = ref<boolean>(false)",
+            "",
+            "const $1Params = ref<SelectDropdownGetParam>({page:1,size:20,s:\"\",})",
+            "const $1Lock = ref<boolean>(false)",
+            "",
+            "function convert$2(data: Array<T>, options: Ref<Array<SelectDropdownOption>>){convertArrayDataToOptions<$2T>((d: $2T) => {return {title: undefined, value: undefined }},data,options)}",
+            "function get$2(params: PaginationGetParam) {}",
+            "function open$2() {getFirstOptions(get$2, convert$2, $1Params, $1Options, $1Lock, $1ScrollEnd)}",
+            "function scroll$2(event: any) {scroll(event, get$2, convert$2, $1Params, $1Options, $1Lock, $1ScrollEnd)}",
+            "function select$2(opt: SelectDropdownOption){}"
+        ],
+        "description": "ZetsuBou SelectDropdown"
+    },
+    "zb.watch": {
+        "scope": "vue,javascript,typescript",
+        "prefix": "watch",
+        "body": ["watch(", "\t() => $1,", "\t() => {}", ")"],
+        "description": "ZetsuBou watch"
+    },
+    "zb.withDefaults": {
+        "scope": "vue,javascript,typescript",
+        "prefix": "withDefaults",
         "body": ["withDefaults(defineProps<Props>(), {", "});"],
-        "description": "ZetsuBou"
-    },
-    "ZetsuBou props withDefaults": {
-        "scope": "vue,javascript,typescript",
-        "prefix": ["c", "co", "con", "const"],
-        "body": ["const props = withDefaults(defineProps<Props>(), {", "});"],
-        "description": "ZetsuBou"
+        "description": "ZetsuBou withDefaults"
     }
 }

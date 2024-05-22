@@ -64,6 +64,10 @@ export interface SelectDropdownOnGetOptionHandler {
   (data: any): void;
 }
 
+export interface SelectDropdownOnDeleteChip {
+  (title: string | number, value?: string | number | any, key?: number): void;
+}
+
 export interface SelectDropdownOnInput {
   (s: string): void;
 }

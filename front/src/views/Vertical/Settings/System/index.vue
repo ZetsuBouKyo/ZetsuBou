@@ -2,18 +2,14 @@
 import { ref, watch } from "vue";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
-import {
-  SelectDropdownMode,
-  SelectDropdownState,
-  SelectDropdownOption,
-} from "@/elements/Dropdown/SelectDropdown.interface";
+import { SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.interface";
 import { AppModeEnum, LoggingLevelEnum } from "@/interface/setting";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
+import InputSelectDropdown from "@/elements/Dropdown/InputSelectDropdown.vue";
 import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
-import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 
-import { getOptionsFromEnum, initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
+import { getOptionsFromEnum } from "@/elements/Dropdown/SelectDropdown";
 import { settingSystemState } from "@/state/Setting/system";
 
 import { getTimezoneOptions } from "@/utils/timezone";
@@ -40,20 +36,36 @@ watch(
   },
 );
 
-const timezone = initSelectDropdownState() as SelectDropdownState;
-const timezoneOptions = getTimezoneOptions();
+const timezoneTitle = ref("");
+const timezoneSelectedValue = ref(undefined);
+const timezoneDefaultOptions = ref(getTimezoneOptions());
+const timezoneOptions = ref(getTimezoneOptions());
+function selectTimezone(opt: SelectDropdownOption) {
+  if (settingSystemState.data === undefined || opt.value === undefined) {
+    return;
+  }
+  settingSystemState.data.app_timezone = opt.value as string;
+}
 
-const loggingLevel = initSelectDropdownState() as SelectDropdownState;
-const loggingLevelOptions = getOptionsFromEnum(LoggingLevelEnum);
+const loggingLevelTitle = ref("");
+const loggingLevelSelectedValue = ref(undefined);
+const loggingLevelDefaultOptions = ref(getOptionsFromEnum(LoggingLevelEnum));
+const loggingLevelOptions = ref(getOptionsFromEnum(LoggingLevelEnum));
+function selectLoggingLevel(opt: SelectDropdownOption) {
+  if (settingSystemState.data === undefined || loggingLevelSelectedValue.value === undefined) {
+    return;
+  }
+  settingSystemState.data.app_logging_level = loggingLevelSelectedValue.value as LoggingLevelEnum;
+}
 
 function init() {
   if (settingSystemState.data === undefined) {
     return;
   }
-  timezone.title = settingSystemState.data.app_timezone;
-  timezone.selectedValue = settingSystemState.data.app_timezone;
-  loggingLevel.title = settingSystemState.data.app_logging_level;
-  loggingLevel.selectedValue = settingSystemState.data.app_logging_level;
+  timezoneTitle.value = settingSystemState.data.app_timezone as string;
+  timezoneSelectedValue.value = settingSystemState.data.app_timezone as string;
+  loggingLevelTitle.value = settingSystemState.data.app_logging_level;
+  loggingLevelSelectedValue.value = settingSystemState.data.app_logging_level;
 }
 
 init();
@@ -62,26 +74,6 @@ watch(
   () => JSON.stringify(settingSystemState.data),
   () => {
     init();
-  },
-);
-
-watch(
-  () => timezone.selectedValue,
-  () => {
-    if (settingSystemState.data === undefined || timezone.selectedValue === undefined) {
-      return;
-    }
-    settingSystemState.data.app_timezone = timezone.selectedValue as string;
-  },
-);
-
-watch(
-  () => loggingLevel.selectedValue,
-  () => {
-    if (settingSystemState.data === undefined || loggingLevel.selectedValue === undefined) {
-      return;
-    }
-    settingSystemState.data.app_logging_level = loggingLevel.selectedValue as LoggingLevelEnum;
   },
 );
 
@@ -108,25 +100,29 @@ function save() {
         </div>
         <div class="views-setting-row">
           <span class="views-setting-cell w-64">Timezone:&emsp;</span>
-          <select-dropdown
+          <input-select-dropdown
             class="mx-1 w-72"
+            v-model:title="timezoneTitle"
+            v-model:selected-value="timezoneSelectedValue"
+            v-model:default-options="timezoneDefaultOptions"
+            v-model:options="timezoneOptions"
             :options-width-class="'w-72'"
             :origin="Origin.BottomLeft"
-            :state="timezone"
-            :options="timezoneOptions"
             :is-auto-complete="true"
-            :mode="SelectDropdownMode.Input" />
+            :on-select="selectTimezone" />
         </div>
         <div class="views-setting-row">
           <span class="views-setting-cell w-64">Logging level:&emsp;</span>
-          <select-dropdown
+          <input-select-dropdown
             class="mx-1 w-72"
+            v-model:title="loggingLevelTitle"
+            v-model:selected-value="loggingLevelSelectedValue"
+            v-model:default-options="loggingLevelDefaultOptions"
+            v-model:options="loggingLevelOptions"
             :options-width-class="'w-72'"
             :origin="Origin.BottomLeft"
-            :state="loggingLevel"
-            :options="loggingLevelOptions"
             :is-auto-complete="true"
-            :mode="SelectDropdownMode.Input" />
+            :on-select="selectLoggingLevel" />
         </div>
         <div class="views-setting-row">
           <span class="views-setting-cell w-64">Security expired (minutes):&emsp;</span>

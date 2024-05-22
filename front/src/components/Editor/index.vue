@@ -1,38 +1,36 @@
 <script setup lang="ts">
-import { PropType, reactive, ref, Ref, watch } from "vue";
+import { PropType, reactive, ref, Ref } from "vue";
 import { useRoute } from "vue-router";
 
-import { Origin } from "@/elements/Dropdown/Dropdown.interface";
+import { DropdownOnOpen, Origin } from "@/elements/Dropdown/Dropdown.interface";
 import {
-  SelectDropdownMode,
-  SelectDropdownOption,
   SelectDropdownGetParam,
+  SelectDropdownOnDeleteChip,
   SelectDropdownOnGet,
-  SelectDropdownState,
+  SelectDropdownOnInput,
+  SelectDropdownOnScroll,
+  SelectDropdownOnSelect,
+  SelectDropdownOption,
   SelectDropdownRequest,
 } from "@/elements/Dropdown/SelectDropdown.interface";
 import { Source } from "@/interface/source";
 import { SourceState } from "@/interface/state";
 import { Token } from "@/interface/tag";
-import { PrivateState } from "./interface";
 
+import InputChipSelectDropdown from "@/elements/Dropdown/InputChipSelectDropdown.vue";
 import InputSelectDropdown from "@/elements/Dropdown/InputSelectDropdown.vue";
 import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 import EditorStringArray from "./EditorStringArray.vue";
 
 import { getTagTokenStartsWith } from "@/api/v1/tag/token";
 
-import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { messageState } from "@/state/message";
 
 import { initRippleButtonState } from "@/elements/Button/RippleButton";
 import { isLeapYear } from "@/utils/datetime";
-import { watchLabels, watchLabelsChipsLength } from "@/utils/label";
 import { pad } from "@/utils/number";
-import { watchTagFieldValues, watchTagFieldsChipsLength, watchTags } from "@/utils/tag";
 import { getFirstOptions, scroll, convertArrayDataToOptions } from "@/elements/Dropdown/SelectDropdown";
 
 const props = defineProps({
@@ -57,26 +55,9 @@ const state = props.state;
 
 const route = useRoute();
 
-function tokenToOption(token: { id: number; name: string }) {
-  return { title: token.name, value: token.id };
-}
-
 const editor = ref();
-const privateState = reactive<PrivateState<Token>>({
-  json: undefined,
-  tagFields: {},
-  onGets: {},
-});
 
-const categoryTitle = ref("");
-const categorySelectedValue = ref(undefined);
-const categoryOptions = ref([]);
-const categoryScrollEnd = ref<boolean>(false);
-
-const categoryParams = ref<SelectDropdownGetParam>({ page: 1, size: 20, s: "" });
-const categoryLock = ref<boolean>(false);
-
-function convertCategory(data: Array<Token>, options: Ref<Array<SelectDropdownOption>>) {
+function convertToken(data: Array<Token>, options: Ref<Array<SelectDropdownOption>>) {
   convertArrayDataToOptions<Token>(
     (d: Token) => {
       return { title: d.name, value: d.id };
@@ -85,6 +66,17 @@ function convertCategory(data: Array<Token>, options: Ref<Array<SelectDropdownOp
     options,
   );
 }
+
+// Category
+const categoryTitle = ref(state.data.attributes.category);
+const categorySelectedValue = ref(state.data.attributes.category);
+const categoryOptions = ref([]);
+const categoryScrollEnd = ref<boolean>(false);
+
+const categoryParams = ref<SelectDropdownGetParam>({ page: 1, size: 20, s: "" });
+const categoryLock = ref<boolean>(false);
+
+const convertCategory = convertToken;
 function getCategory(params: SelectDropdownGetParam) {
   return props.onGetCategoryStartsWith(params);
 }
@@ -109,6 +101,7 @@ function selectCategory(opt: SelectDropdownOption) {
   state.data.attributes.category = opt.title as string;
 }
 
+// Rating
 const ratingTitle = ref(state.data.attributes.rating);
 const ratingSelectedValue = ref(state.data.attributes.rating);
 const ratingOptions = ref([
@@ -123,6 +116,7 @@ function selectRating(opt: SelectDropdownOption) {
   state.data.attributes.rating = opt.value as number;
 }
 
+// Publication
 interface Publication {
   year: string;
   month: string;
@@ -216,15 +210,187 @@ function getPublicationDatetime() {
   return `${year}-${month}-${day}T00:00:00.000000${timezone}`;
 }
 
-const labels = initSelectDropdownState() as SelectDropdownState;
-watch(...watchLabels(labels, state));
-watch(...watchLabelsChipsLength(labels, state));
+// Labels
+const labelTitle = ref("");
+const labelSelectedValue = ref(undefined);
+const labelChips = ref([]);
+const labelOptions = ref([]);
+const labelScrollEnd = ref<boolean>(false);
 
-const tagFields = initSelectDropdownState() as SelectDropdownState;
-watch(...watchTags(privateState, tagFields, state));
-watch(...watchTagFieldsChipsLength(privateState, tagFields, state));
-watch(...watchTagFieldValues(privateState, state));
+const labelParams = ref<SelectDropdownGetParam>({ page: 1, size: 20, s: "" });
+const labelLock = ref<boolean>(false);
 
+const convertLabel = convertToken;
+function getLabel(params: SelectDropdownGetParam) {
+  return getTagTokenStartsWith(params);
+}
+function deleteChipLabel(title: string, value: number, index: number) {
+  const i = state.data.labels.indexOf(title);
+  if (i === -1) {
+    return;
+  }
+  state.data.labels.splice(i, 1);
+}
+function inputLabel(s: string) {
+  labelParams.value.s = s;
+  openLabel();
+}
+function openLabel() {
+  getFirstOptions(getLabel, convertLabel, labelParams, labelOptions, labelLock, labelScrollEnd);
+}
+function scrollLabel(event: any) {
+  scroll(event, getLabel, convertLabel, labelParams, labelOptions, labelLock, labelScrollEnd);
+}
+function selectLabel(_: SelectDropdownOption) {
+  state.data.labels = [];
+  for (const chip of labelChips.value) {
+    state.data.labels.push(chip.title);
+  }
+}
+
+function loadLabel() {
+  while (labelChips.value.length) {
+    labelChips.value.pop();
+  }
+  for (const label of state.data.labels) {
+    labelChips.value.push({ title: label, id: undefined });
+  }
+}
+loadLabel();
+
+// Tag fields
+interface TagField {
+  title: Ref<string>;
+  selectedValue: Ref<number>;
+  chips: Ref<Array<SelectDropdownOption>>;
+  options: Ref<Array<SelectDropdownOption>>;
+  scrollEnd: Ref<boolean>;
+  _params: Ref<SelectDropdownGetParam>;
+  _lock: Ref<boolean>;
+  _convert: (data: Array<Token>, options: Ref<Array<SelectDropdownOption>>) => void;
+  _get: (params: SelectDropdownGetParam) => SelectDropdownRequest<Array<Token>, SelectDropdownGetParam>;
+  deleteChip: SelectDropdownOnDeleteChip;
+  input: SelectDropdownOnInput;
+  open: DropdownOnOpen;
+  scroll: SelectDropdownOnScroll;
+  select: SelectDropdownOnSelect;
+}
+interface TagFields {
+  [key: string]: TagField;
+}
+const tagFields = reactive<TagFields>({});
+const tagFieldTitle = ref("");
+const tagFieldSelectedValue = ref(undefined);
+const tagFieldChips = ref([]);
+const tagFieldOptions = ref([]);
+const tagFieldScrollEnd = ref<boolean>(false);
+
+const tagFieldParams = ref<SelectDropdownGetParam>({ page: 1, size: 20, s: "" });
+const tagFieldLock = ref<boolean>(false);
+
+const convertTagField = convertToken;
+function getTagField(params: SelectDropdownGetParam) {
+  return props.onGetTagFieldStartsWith(params);
+}
+function deleteChipTagField(title: string, value: number, index: number) {
+  delete state.data.tags[title];
+  delete tagFields[title];
+}
+function inputTagField(s: string) {
+  tagFieldParams.value.s = s;
+  openTagField();
+}
+function openTagField() {
+  getFirstOptions(getTagField, convertTagField, tagFieldParams, tagFieldOptions, tagFieldLock, tagFieldScrollEnd);
+}
+function scrollTagField(event: any) {
+  scroll(event, getTagField, convertTagField, tagFieldParams, tagFieldOptions, tagFieldLock, tagFieldScrollEnd);
+}
+
+function loadTagFieldValues(tagFieldTitle: string) {
+  const _title = ref("");
+  const _selectedValue = ref(undefined);
+  const _chips = ref([]);
+  const _options = ref([]);
+  const _scrollEnd = ref(false);
+  const _params = ref<SelectDropdownGetParam>({ page: 1, size: 20, s: "" });
+  const _lock = ref(false);
+  const _get = (params: SelectDropdownGetParam): any => {
+    return getTagTokenStartsWith(params);
+  };
+  const _convert = convertToken;
+  const _deleteChip = (title: string, value: number, index: number) => {
+    if (!state.data.tags[tagFieldTitle]) {
+      return;
+    }
+    const i = state.data.tags[tagFieldTitle].indexOf(tagFieldTitle);
+    if (i === -1) {
+      return;
+    }
+    state.data.tags[tagFieldTitle].splice(i, 1);
+  };
+  const _open = () => {
+    _params.value.category = tagFieldTitle;
+    getFirstOptions(_get, _convert, _params, _options, _lock, _scrollEnd);
+  };
+  const _input = (s: string) => {
+    _params.value.s = s;
+    _open();
+  };
+  const _scroll = (event: any) => {
+    scroll(event, _get, _convert, _params, _options, _lock, _scrollEnd);
+  };
+  const _select = (_: SelectDropdownOption) => {
+    state.data.tags[tagFieldTitle] = [];
+    for (const chip of _chips.value) {
+      state.data.tags[tagFieldTitle].push(chip.title);
+    }
+  };
+  tagFields[tagFieldTitle] = {
+    title: _title,
+    selectedValue: _selectedValue,
+    chips: _chips,
+    options: _options,
+    scrollEnd: _scrollEnd,
+    _params: _params,
+    _lock: _lock,
+    _convert: _convert,
+    _get: _get,
+    deleteChip: _deleteChip,
+    input: _input,
+    open: _open,
+    scroll: _scroll,
+    select: _select,
+  };
+
+  if (state.data.tags[tagFieldTitle].length > 0) {
+    for (const value of state.data.tags[tagFieldTitle]) {
+      _chips.value.push({ title: value, id: undefined });
+    }
+  }
+}
+
+function selectTagField(_: SelectDropdownOption) {
+  for (const chip of tagFieldChips.value) {
+    const tagFieldTitle = chip.title;
+    if (!state.data.tags[tagFieldTitle]) {
+      state.data.tags[tagFieldTitle] = [];
+    }
+    if (!tagFields[tagFieldTitle]) {
+      loadTagFieldValues(tagFieldTitle);
+    }
+  }
+}
+
+function loadTagField() {
+  for (const tagFieldTitle in state.data.tags) {
+    tagFieldChips.value.push({ title: tagFieldTitle, id: undefined });
+    loadTagFieldValues(tagFieldTitle);
+  }
+}
+loadTagField();
+
+// Methods
 const saveState = initRippleButtonState();
 function saved() {
   editor.value.close();
@@ -237,12 +403,6 @@ function save() {
   }
   state.data.publication_date = publicationDate;
 
-  for (const field in privateState.tagFields) {
-    state.data.tags[field] = [];
-    for (const chip of privateState.tagFields[field].chips) {
-      state.data.tags[field].push(chip.title as string);
-    }
-  }
   saveState.lock();
   state.save(saved).finally(() => {
     saveState.unlock();
@@ -310,42 +470,60 @@ defineExpose({ open, close, reset });
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Labels:</span>
-      <select-dropdown
+      <input-chip-select-dropdown
         class="flex-1"
+        v-model:title="labelTitle"
+        v-model:selected-value="labelSelectedValue"
+        v-model:chips="labelChips"
+        v-model:options="labelOptions"
+        v-model:scroll-end="labelScrollEnd"
         :is-input-chips-title-unique="true"
         :options-width-class="'w-64'"
         :origin="Origin.BottomLeft"
-        :state="labels"
         :enable-input-chips-enter-event="false"
-        :on-get="getTagTokenStartsWith"
-        :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.InputChips" />
+        :on-delete-chip="deleteChipLabel"
+        :on-input="inputLabel"
+        :on-open="openLabel"
+        :on-scroll="scrollLabel"
+        :on-select="selectLabel" />
     </div>
     <div class="modal-row">
       <span class="w-32 mr-4">Tag field:</span>
-      <select-dropdown
+      <input-chip-select-dropdown
         class="flex-1"
+        v-model:title="tagFieldTitle"
+        v-model:selected-value="tagFieldSelectedValue"
+        v-model:chips="tagFieldChips"
+        v-model:options="tagFieldOptions"
+        v-model:scroll-end="tagFieldScrollEnd"
         :is-input-chips-title-unique="true"
         :options-width-class="'w-64'"
         :origin="Origin.BottomLeft"
-        :state="tagFields"
         :enable-input-chips-enter-event="false"
-        :on-get="onGetTagFieldStartsWith"
-        :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.InputChips" />
+        :on-delete-chip="deleteChipTagField"
+        :on-input="inputTagField"
+        :on-open="openTagField"
+        :on-scroll="scrollTagField"
+        :on-select="selectTagField" />
     </div>
-    <div class="modal-row" v-for="(_, field) in privateState.tagFields" :key="JSON.stringify(state.data.tags[field])">
+    <div class="modal-row" v-for="(i, field) in tagFields" :key="String(i)">
       <span class="w-24 ml-8 mr-4">{{ field }}:</span>
-      <select-dropdown
+      <input-chip-select-dropdown
         class="flex-1"
+        v-model:title="tagFields[field].title"
+        v-model:selected-value="tagFields[field].selectedValue"
+        v-model:chips="tagFields[field].chips"
+        v-model:options="tagFields[field].options"
+        v-model:scroll-end="tagFields[field].scrollEnd"
         :is-input-chips-title-unique="true"
         :options-width-class="'w-64'"
         :origin="Origin.BottomLeft"
-        :state="privateState.tagFields[field]"
         :enable-input-chips-enter-event="false"
-        :on-get="privateState.onGets[field]"
-        :on-get-to-options="tokenToOption"
-        :mode="SelectDropdownMode.InputChips" />
+        :on-delete-chip="tagFields[field].deleteChip"
+        :on-input="tagFields[field].input"
+        :on-open="tagFields[field].open"
+        :on-scroll="tagFields[field].scroll"
+        :on-select="tagFields[field].select" />
     </div>
     <div class="modal-row-10">
       <div class="flex ml-auto">

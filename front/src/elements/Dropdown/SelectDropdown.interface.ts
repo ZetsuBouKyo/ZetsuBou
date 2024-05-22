@@ -64,6 +64,10 @@ export interface SelectDropdownOnGetOptionHandler {
   (data: any): void;
 }
 
+export interface SelectDropdownOnInput {
+  (): void;
+}
+
 export interface SelectDropdownOnScroll {
   (event: WheelEvent): void;
 }

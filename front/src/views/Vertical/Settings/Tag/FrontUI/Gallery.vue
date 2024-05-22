@@ -71,7 +71,7 @@ function save() {
   <div class="views-setting-section">
     <span class="views-setting-section-title">Gallery</span>
     <div class="views-setting-rows">
-      <div class="views-setting-row-12">
+      <div class="views-setting-row items-start">
         <div class="views-setting-cell w-32">Categories:</div>
         <select-dropdown
           class="flex-1"
@@ -85,7 +85,7 @@ function save() {
           :on-mouseover-option="onMouseoverOption"
           :mode="SelectDropdownMode.InputChips" />
       </div>
-      <div class="views-setting-row-12">
+      <div class="views-setting-row items-start">
         <div class="views-setting-cell w-32">Tag fields:</div>
         <select-dropdown
           class="flex-1"

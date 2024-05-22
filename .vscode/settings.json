@@ -37,6 +37,9 @@
         "editor.insertSpaces": true,
         "editor.tabSize": 4
     },
+    "[snippets]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
     "[typescript]": {
         "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
         "editor.tabSize": 2
@@ -70,7 +73,7 @@
     "editor.formatOnSaveMode": "file",
     "files.autoSave": "onFocusChange",
     "vs-code-prettier-eslint.prettierLast": false,
-    "editor.rulers": [88, 120],
+    "editor.rulers": [72, 88, 120],
     "files.exclude": {
         "frontend/node_modules": true
     },

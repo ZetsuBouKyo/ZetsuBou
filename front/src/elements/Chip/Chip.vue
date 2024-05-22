@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface OnDelete {
-  (title: string | number, value?: string | number, key?: number): void;
+  (title: string | number, value?: string | number | any, key?: number): void;
 }
 
 interface Props {

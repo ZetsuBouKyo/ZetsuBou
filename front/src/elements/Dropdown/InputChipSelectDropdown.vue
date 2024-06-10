@@ -112,40 +112,16 @@ function select(opt: SelectDropdownOption) {
 }
 
 function focusOpenDropdown() {
-  console.log(options.value);
   state.isFocus = true;
   baseSelectDropdown.value.toggle();
 }
 
-function openDropdown() {
-  baseSelectDropdown.value.open();
-}
-
 function toggleDropdown() {
-  console.log(options.value);
   if (state.isFocus) {
     state.isFocus = false;
     return;
   }
   baseSelectDropdown.value.toggle();
-}
-
-function createChip() {
-  if (!props.enableInputChipsEnterEvent || !title.value) {
-    return;
-  }
-
-  chips.value.push({ title: title.value as string, value: undefined });
-  title.value = undefined;
-}
-
-function deleteLastChip() {
-  if (!state.lastChipInputTitle) {
-    chips.value.pop();
-  }
-  if (title.value !== undefined && title.value.toString().length === 0) {
-    title.value = undefined;
-  }
 }
 
 function deleteChip(title: string | number, value: string | number, index: number) {
@@ -182,21 +158,57 @@ function updateOptionsWithDefaultOptions(title: string) {
   }
 }
 
-watch(
-  () => title.value,
-  (title, _) => {
-    if (!props.isAutoComplete) {
-      return;
-    }
+function createChip() {
+  if (!props.enableInputChipsEnterEvent || !title.value) {
+    return;
+  }
 
-    if (props.onInput !== undefined) {
-      updateOptions(title as string);
-    } else {
-      updateOptionsWithDefaultOptions(title as string);
-    }
-    baseSelectDropdown.value.open();
-  },
-);
+  chips.value.push({ title: title.value as string, value: undefined });
+  title.value = undefined;
+}
+
+function deleteLastChip() {
+  if (!state.lastChipInputTitle) {
+    chips.value.pop();
+  }
+  if (title.value !== undefined && title.value.toString().length === 0) {
+    title.value = undefined;
+  }
+}
+
+function updateInput() {
+  const text = title.value as string;
+  if (!props.isAutoComplete) {
+    return;
+  }
+
+  if (props.onInput !== undefined) {
+    updateOptions(text);
+  } else {
+    updateOptionsWithDefaultOptions(text);
+  }
+  baseSelectDropdown.value.open();
+}
+
+function keyupInput(event: any) {
+  switch (event.keyCode) {
+    case 13: // Enter
+      createChip();
+      break;
+    case 8: // Delete
+      deleteLastChip();
+      break;
+    default:
+      updateInput();
+      break;
+  }
+
+  const text = title.value as string;
+  if (state.lastChipInputTitle === text) {
+    return;
+  }
+  state.lastChipInputTitle = text;
+}
 
 function open() {
   baseSelectDropdown.value.open();
@@ -243,9 +255,7 @@ defineExpose({ open, close, toggle });
           v-model="title"
           @click.stop="toggleDropdown"
           @focus="focusOpenDropdown"
-          @keyup.delete="deleteLastChip"
-          @keyup.enter="createChip"
-          @keyup="openDropdown" />
+          @keyup="keyupInput" />
       </div>
     </template>
   </base-select-dropdown>

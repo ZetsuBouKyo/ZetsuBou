@@ -32,10 +32,10 @@ export interface DropdownComponent {
 }
 
 export interface DropdownComponents {
-  [key: number]: DropdownComponent;
+  [key: string]: DropdownComponent;
 }
 
 export interface DropdownsState extends BaseState<DropdownComponents> {
-  add: (key: number, component: DropdownComponent) => void;
-  delete: (key: string | number) => void;
+  add: (key: string, component: DropdownComponent) => void;
+  delete: (key: string) => void;
 }

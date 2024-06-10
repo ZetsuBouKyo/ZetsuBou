@@ -4,10 +4,10 @@ import { DropdownsState, DropdownComponent } from "@/elements/Dropdown/Dropdown.
 
 export const dropdownsState = reactive<DropdownsState>({
   data: {},
-  add: (key: number, dropdown: DropdownComponent) => {
+  add: (key: string, dropdown: DropdownComponent) => {
     dropdownsState.data[key] = dropdown;
   },
-  delete: (key: number) => {
+  delete: (key: string) => {
     delete dropdownsState.data[key];
   },
 });

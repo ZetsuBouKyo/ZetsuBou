@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getCurrentInstance, onBeforeMount, reactive, useSlots, watch } from "vue";
+import { getCurrentInstance, onBeforeMount, reactive, useSlots } from "vue";
 
 import { DropdownState, OnClick, OnClose, OnOpen, Origin } from "./Dropdown.interface";
 
@@ -37,7 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
   onClose: undefined,
 });
 
-const uid = getCurrentInstance().uid;
+const uid: string = getCurrentInstance().uid.toString();
 const state = reactive<DropdownState>({ popout: false }) as DropdownState;
 
 const slots = useSlots();
@@ -78,6 +78,9 @@ function update() {
       props.onOpen();
     }
     for (let key in dropdownsState.data) {
+      if (key === uid) {
+        continue;
+      }
       if (props.group === undefined) {
         dropdownsState.data[key].close();
         dropdownsState.delete(key);

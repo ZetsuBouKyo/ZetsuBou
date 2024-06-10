@@ -113,23 +113,19 @@ function updateOptionsWithDefaultOptions(title: string) {
   }
 }
 
-watch(
-  () => {
-    return title.value;
-  },
-  (title, _) => {
-    if (!props.isAutoComplete) {
-      return;
-    }
+function updateInput() {
+  const text = title.value as string;
+  if (!props.isAutoComplete) {
+    return;
+  }
 
-    if (props.onInput !== undefined) {
-      updateOptions(title as string);
-    } else {
-      updateOptionsWithDefaultOptions(title as string);
-    }
-    baseSelectDropdown.value.open();
-  },
-);
+  if (props.onInput !== undefined) {
+    updateOptions(text);
+  } else {
+    updateOptionsWithDefaultOptions(text);
+  }
+  baseSelectDropdown.value.open();
+}
 
 function open() {
   baseSelectDropdown.value.open();
@@ -173,7 +169,8 @@ defineExpose({ open, close, toggle, clear });
           :placeholder="title as string"
           v-model="title"
           @click.stop="toggleDropdown"
-          @focus="focusOpenDropdown" />
+          @focus="focusOpenDropdown"
+          @input="updateInput" />
         <icon-ic-round-expand-more class="absolute text-white right-0 ml-2 mr-3" style="font-size: 1rem" />
       </div>
     </template>

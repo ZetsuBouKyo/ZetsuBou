@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, Ref, watch } from "vue";
+import { reactive, ref, Ref } from "vue";
 
 import { DropdownOnOpen, Origin } from "./Dropdown.interface";
 import {
@@ -168,9 +168,10 @@ function createChip() {
 }
 
 function deleteLastChip() {
-  if (!state.lastChipInputTitle) {
-    chips.value.pop();
+  if (state.lastChipInputTitle) {
+    return;
   }
+  chips.value.pop();
   if (title.value !== undefined && title.value.toString().length === 0) {
     title.value = undefined;
   }
@@ -204,10 +205,9 @@ function keyupInput(event: any) {
   }
 
   const text = title.value as string;
-  if (state.lastChipInputTitle === text) {
-    return;
+  if (state.lastChipInputTitle !== text) {
+    state.lastChipInputTitle = text;
   }
-  state.lastChipInputTitle = text;
 }
 
 function open() {

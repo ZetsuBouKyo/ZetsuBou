@@ -187,19 +187,19 @@ export function convertArrayDataToInputChipsOptions<T>(
   }
 }
 
-export function getOptions<DataT, ParamT extends PaginationGetParam>(
+export async function getOptions<DataT, ParamT extends PaginationGetParam>(
   request: SelectDropdownRequest<DataT, ParamT>,
   convertDataToOptions: SelectDropdownDataToOptions<DataT>,
   params: Ref<ParamT>,
   options: Ref<Array<SelectDropdownOption>>,
   lock: Ref<boolean>,
   scrollEnd: Ref<boolean>,
-) {
+): Promise<void> {
   if (lock.value) {
     return;
   }
   lock.value = true;
-  request(params.value).then((response: any) => {
+  return request(params.value).then((response: any) => {
     if (response.status !== 200) {
       scrollEnd.value = false;
     }
@@ -221,14 +221,14 @@ export function getFirstOptions<DataT, ParamT extends PaginationGetParam>(
   options: Ref<Array<SelectDropdownOption>>,
   lock: Ref<boolean>,
   scrollEnd: Ref<boolean>,
-) {
+): Promise<any> {
   params.value.page = 1;
   while (options?.value.length) {
     options.value.pop();
   }
   scrollEnd.value = false;
 
-  getOptions(request, convertDataToOptions, params, options, lock, scrollEnd);
+  return getOptions(request, convertDataToOptions, params, options, lock, scrollEnd);
 }
 
 export function scroll<DataT, ParamT extends PaginationGetParam>(
@@ -239,7 +239,7 @@ export function scroll<DataT, ParamT extends PaginationGetParam>(
   options: Ref<Array<SelectDropdownOption>>,
   lock: Ref<boolean>,
   scrollEnd: Ref<boolean>,
-) {
+): Promise<void> | null {
   const target = event.target as HTMLElement;
   const diff = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight);
   if (diff <= 1) {
@@ -247,6 +247,6 @@ export function scroll<DataT, ParamT extends PaginationGetParam>(
       return;
     }
     params.value.page++;
-    getOptions<DataT, ParamT>(request, convertDataToOptions, params, options, lock, scrollEnd);
+    return getOptions<DataT, ParamT>(request, convertDataToOptions, params, options, lock, scrollEnd);
   }
 }

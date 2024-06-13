@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from "axios";
-import { ref, Ref, watch } from "vue";
+import { ref, Ref } from "vue";
 import { useRoute } from "vue-router";
 
 import { ButtonColorEnum } from "@/elements/Button/button.interface";
@@ -137,10 +137,21 @@ function getSearchValue(params: SelectDropdownGetParam) {
 }
 function inputSearchValue(s: string) {
   searchValueParams.value.s = s;
-  openSearchValue();
+  openSearchValue().then(() => {
+    if (searchValueTitle.value) {
+      state.pagination = undefined;
+      state.sheet.rows = [];
+
+      for (const opt of searchValueOptions.value) {
+        state.sheet.rows.push(opt.raw);
+      }
+    } else {
+      load();
+    }
+  });
 }
 function openSearchValue() {
-  getFirstOptions(
+  return getFirstOptions(
     getSearchValue,
     convertSearchValue,
     searchValueParams,
@@ -173,23 +184,6 @@ function selectSearchValue(opt: SelectDropdownOption) {
     load();
   }
 }
-watch(
-  () => {
-    return searchValueOptions.value.length;
-  },
-  () => {
-    if (searchValueTitle.value) {
-      state.pagination = undefined;
-      state.sheet.rows = [];
-
-      for (const opt of searchValueOptions.value) {
-        state.sheet.rows.push(opt.raw);
-      }
-    } else {
-      load();
-    }
-  },
-);
 
 // Load data from queries.
 function load() {

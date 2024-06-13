@@ -42,7 +42,7 @@ const props = withDefaults(defineProps<Props>(), {
   group: undefined,
   origin: Origin.BottomRight,
   isAutoCompleteOptionCaseSensitive: false,
-  isAutoComplete: false,
+  isAutoComplete: true,
   isInputChipsTitleUnique: false,
   widthClass: "",
   optionsWidthClass: "w-60",

@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import axios from "axios";
-import { ref, watch } from "vue";
+import { ref, Ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { ButtonColorEnum } from "@/elements/Button/button.interface";
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
-import {
-  SelectDropdownMode,
-  SelectDropdownOption,
-  SelectDropdownState,
-} from "@/elements/Dropdown/SelectDropdown.interface";
+import { SelectDropdownOption, SelectDropdownGetParam } from "@/elements/Dropdown/SelectDropdown.interface";
 import {
   CrudGetParam,
   CrudTableState,
@@ -26,21 +22,22 @@ import {
   Search,
 } from "./interface";
 
+import InputSelectDropdown from "@/elements/Dropdown/InputSelectDropdown.vue";
 import RippleButton from "@/elements/Button/RippleButton.vue";
 import RippleButtonSelectDropdown from "@/elements/Dropdown/RippleButtonSelectDropdown.vue";
-import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
 import ConfirmModal from "@/elements/Modal/ConfirmModal.vue";
 import Modal from "@/elements/Modal/Modal.vue";
 import PaginationBase from "@/elements/Pagination/index.vue";
 import CrudTableButton from "@/elements/Table/CrudTable/CrudTableButton.vue";
 
-import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
 import { messageState } from "@/state/message";
 import { routeState } from "@/state/route";
 
 import { getPagination } from "@/elements/Pagination/pagination";
 import { isEmpty } from "@/utils/obj";
 import { initCrudTableState } from "./CrudTable";
+
+import { getFirstOptions, scroll, convertArrayDataToOptions } from "@/elements/Dropdown/SelectDropdown";
 
 interface Props {
   state: CrudTableState<Row>;
@@ -91,10 +88,12 @@ const editor = ref();
 
 const route = useRoute();
 
+// Search field
 const searchFieldTitle = ref("");
 const searchFieldSelectedValue = ref(undefined);
 const searchFieldOptions = ref([]);
 
+// Load search fields
 if (!isEmpty(props.search)) {
   const keys = Object.keys(props.search);
   const key = keys[0];
@@ -103,6 +102,8 @@ if (!isEmpty(props.search)) {
 for (const title in props.search) {
   searchFieldOptions.value.push({ title: title, value: title });
 }
+
+// Queries for search fields
 function onSearch(params: any) {
   return props.search[searchFieldTitle.value].onSearch(params);
 }
@@ -118,18 +119,70 @@ function onSearchMouseoverOption(event, opt: SelectDropdownOption) {
   return props.search[searchFieldTitle.value].onSearchMouseoverOption(event, opt);
 }
 
-const searchValueState = initSelectDropdownState() as SelectDropdownState;
+// Search value
+interface SearchValueT {}
+const searchValueTitle = ref("");
+const searchValueSelectedValue = ref(undefined);
+const searchValueOptions = ref([]);
+const searchValueScrollEnd = ref<boolean>(false);
+
+const searchValueParams = ref<SelectDropdownGetParam>({ page: 1, size: 20, s: "" });
+const searchValueLock = ref<boolean>(false);
+
+function convertSearchValue(data: Array<any>, options: Ref<Array<SelectDropdownOption>>) {
+  convertArrayDataToOptions<SearchValueT>(onSearchToOptions, data, options);
+}
+function getSearchValue(params: SelectDropdownGetParam) {
+  return onSearch(params);
+}
+function inputSearchValue(s: string) {
+  searchValueParams.value.s = s;
+  openSearchValue();
+}
+function openSearchValue() {
+  getFirstOptions(
+    getSearchValue,
+    convertSearchValue,
+    searchValueParams,
+    searchValueOptions,
+    searchValueLock,
+    searchValueScrollEnd,
+  );
+}
+function scrollSearchValue(event: any) {
+  scroll(
+    event,
+    getSearchValue,
+    convertSearchValue,
+    searchValueParams,
+    searchValueOptions,
+    searchValueLock,
+    searchValueScrollEnd,
+  );
+}
+function selectSearchValue(opt: SelectDropdownOption) {
+  if (opt.value === undefined) {
+    load();
+    return;
+  }
+  if (typeof opt.title === "string" && opt.title.length > 0) {
+    state.pagination = undefined;
+    state.sheet.rows = [];
+    state.sheet.rows.push(opt.raw);
+  } else {
+    load();
+  }
+}
 watch(
-  () => searchValueState.options.length,
   () => {
-    if (searchValueState.title === undefined) {
-      load();
-      return;
-    }
-    if (typeof searchValueState.title === "string" && searchValueState.title.length > 0) {
+    return searchValueOptions.value.length;
+  },
+  () => {
+    if (searchValueTitle.value) {
       state.pagination = undefined;
       state.sheet.rows = [];
-      for (const opt of searchValueState.options) {
+
+      for (const opt of searchValueOptions.value) {
         state.sheet.rows.push(opt.raw);
       }
     } else {
@@ -138,6 +191,7 @@ watch(
   },
 );
 
+// Load data from queries.
 function load() {
   const params: CrudGetParam = {
     page: route.query.page ? parseInt(route.query.page as string) : 1,
@@ -159,6 +213,7 @@ function load() {
 }
 load();
 
+// Editor
 function onOpenEditor() {
   if (state.row) {
     state.cache = JSON.parse(JSON.stringify(state.row));
@@ -179,6 +234,7 @@ function onCloseEditor() {
   }
 }
 
+// CRUD
 function create() {
   state.row = {};
   state.editor.type = EditorTypeEnum.Create;
@@ -241,6 +297,7 @@ function deleteById(id: any) {
   }
 }
 
+// Confirm box
 const confirm = ref();
 
 function onConfirm() {
@@ -277,16 +334,21 @@ routeState.setLoadFunction(load);
       v-model:selected-value="searchFieldSelectedValue"
       v-model:options="searchFieldOptions"
       :options-width-class="'w-64'" />
-    <select-dropdown
+    <input-select-dropdown
       class="flex-1"
+      v-model:title="searchValueTitle"
+      v-model:selected-value="searchValueSelectedValue"
+      v-model:options="searchValueOptions"
+      v-model:scroll-end="searchValueScrollEnd"
+      :is-auto-complete="true"
       :options-width-class="'w-64'"
       :origin="Origin.BottomLeft"
-      :state="searchValueState"
-      :on-get="onSearch"
-      :on-get-to-options="onSearchToOptions"
       :on-get-tip="onSearchGetTip"
-      :on-mouseover-option="onSearchMouseoverOption"
-      :mode="SelectDropdownMode.Input" />
+      :on-input="inputSearchValue"
+      :on-open="openSearchValue"
+      :on-scroll="scrollSearchValue"
+      :on-select="selectSearchValue"
+      :on-mouseover-option="onSearchMouseoverOption" />
   </div>
   <modal
     ref="editor"

@@ -42,7 +42,7 @@ export interface SelectDropdownOnGet<DataT> {
 }
 
 export interface SelectDropdownRequest<DataT, ParamsT> {
-  (params: ParamsT): Promise<AxiosResponse<DataT>>;
+  (params: ParamsT): Promise<AxiosResponse<DataT>> | Promise<any>;
 }
 
 export interface SelectDropdownToOption<T> {

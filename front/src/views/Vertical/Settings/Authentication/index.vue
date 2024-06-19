@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive, ref, Ref } from "vue";
 
 import { Origin } from "@/elements/Dropdown/Dropdown.interface";
-import { SelectDropdownMode, SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interface";
+import { SelectDropdownOption } from "@/elements/Dropdown/SelectDropdown.interface";
+import { PaginationGetParam } from "@/elements/Pagination/pagination.interface";
 
 import RippleButton from "@/elements/Button/RippleButton.vue";
-import SelectDropdown from "@/elements/Dropdown/SelectDropdown.vue";
+import InputChipSelectDropdown from "@/elements/Dropdown/InputChipSelectDropdown.vue";
 
 import { getScopesStartsWith } from "@/api/v1/scope";
 import { getToken } from "@/api/v1/token";
 
-import { initSelectDropdownState } from "@/elements/Dropdown/SelectDropdown";
+import { getFirstOptions, scroll, convertArrayDataToOptions } from "@/elements/Dropdown/SelectDropdown";
 
 import { JWTParser } from "@/utils/jwt";
 
@@ -44,23 +45,54 @@ function getNewToken() {
   });
 }
 
-const scopes = initSelectDropdownState() as SelectDropdownState;
-const onGetScopes = (param: any) => {
-  param.name = "";
-  return getScopesStartsWith(param);
-};
-function onGetScopesToOptions(data: { id: number; name: string }) {
-  return { title: data.name, value: data.id };
+interface ScopeT {
+  id: number;
+  name: string;
 }
-watch(
-  () => scopes.chips.length,
-  () => {
-    state.scopes = [];
-    for (const chip of scopes.chips) {
-      state.scopes.push(chip.title as string);
-    }
-  },
-);
+interface ScopeSelectDropdownGetParam extends PaginationGetParam {
+  name: string;
+}
+const scopeTitle = ref("");
+const scopeSelectedValue = ref(undefined);
+const scopeChips = ref([]);
+const scopeOptions = ref([]);
+const scopeScrollEnd = ref<boolean>(false);
+
+const scopeParams = ref<ScopeSelectDropdownGetParam>({ page: 1, size: 20, name: "" });
+const scopeLock = ref<boolean>(false);
+
+function convertScope(data: Array<ScopeT>, options: Ref<Array<SelectDropdownOption>>) {
+  convertArrayDataToOptions<ScopeT>(
+    (d: ScopeT) => {
+      return { title: d.name, value: d.id };
+    },
+    data,
+    options,
+  );
+}
+async function getScope(params: PaginationGetParam) {
+  return getScopesStartsWith(params);
+}
+function deleteChipScope(title: string, _: number, __: number) {
+  const i = state.scopes.indexOf(title);
+  if (i === -1) {
+    return;
+  }
+  state.scopes.splice(i, 1);
+}
+function inputScope(s: string) {
+  scopeParams.value.name = s;
+  openScope();
+}
+function openScope() {
+  getFirstOptions(getScope, convertScope, scopeParams, scopeOptions, scopeLock, scopeScrollEnd);
+}
+function scrollScope(event: any) {
+  scroll(event, getScope, convertScope, scopeParams, scopeOptions, scopeLock, scopeScrollEnd);
+}
+function selectScope(opt: SelectDropdownOption) {
+  state.scopes.push(opt.title);
+}
 </script>
 
 <template>
@@ -82,15 +114,21 @@ watch(
         </div>
         <div class="views-setting-row items-start">
           <div class="views-setting-cell w-48 my-4">Scopes:</div>
-          <select-dropdown
+          <input-chip-select-dropdown
             class="flex-1 ml-1"
+            v-model:title="scopeTitle"
+            v-model:selected-value="scopeSelectedValue"
+            v-model:chips="scopeChips"
+            v-model:options="scopeOptions"
+            v-model:scroll-end="scopeScrollEnd"
             :options-width-class="'w-64'"
             :origin="Origin.BottomLeft"
-            :state="scopes"
             :enable-input-chips-enter-event="false"
-            :on-get="onGetScopes"
-            :on-get-to-options="onGetScopesToOptions"
-            :mode="SelectDropdownMode.InputChips" />
+            :on-delete-chip="deleteChipScope"
+            :on-input="inputScope"
+            :on-open="openScope"
+            :on-scroll="scrollScope"
+            :on-select="selectScope" />
         </div>
         <div class="views-setting-row-12">
           <ripple-button class="flex btn btn-primary ml-auto" @click="getNewToken">Get</ripple-button>

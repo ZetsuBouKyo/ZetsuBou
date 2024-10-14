@@ -1,4 +1,4 @@
 export enum RatingShapeEnum {
-  Star = "star",
-  Circle = "circle",
+    Star = "star",
+    Circle = "circle",
 }

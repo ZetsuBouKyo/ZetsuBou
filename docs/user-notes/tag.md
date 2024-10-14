@@ -2,9 +2,9 @@
 
 ## Disambiguation
 
-- Tag
-- Gallery tag
-- Video tag
+-   Tag
+-   Gallery tag
+-   Video tag
 
 ## Mechanism
 

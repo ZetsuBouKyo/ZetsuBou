@@ -1,4 +1,4 @@
 export enum localStorageKey {
-  AirflowTasks = "airflowtasks",
-  Message = "message",
+    AirflowTasks = "airflowtasks",
+    Message = "message",
 }

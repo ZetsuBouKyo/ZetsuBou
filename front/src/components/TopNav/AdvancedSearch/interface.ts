@@ -2,30 +2,30 @@ import { SelectDropdownState } from "@/elements/Dropdown/SelectDropdown.interfac
 import { SearchCategory } from "@/interface/search";
 
 export enum AdvancedSearchFieldType {
-  String,
-  Range,
-  Duration,
+    String,
+    Range,
+    Duration,
 }
 
 export enum AdvancedSearchFieldKeyEnum {
-  ElasticsearchField,
-  BuiltIn,
+    ElasticsearchField,
+    BuiltIn,
 }
 
 export interface AdvancedSearchField {
-  name: string;
-  type: AdvancedSearchFieldType;
-  value: string;
-  key?: string;
-  keyType?: AdvancedSearchFieldKeyEnum;
-  fuzziness?: SelectDropdownState;
-  analyzer?: SelectDropdownState;
-  boolean?: SelectDropdownState;
-  gte?: number | string;
-  lte?: number | string;
+    name: string;
+    type: AdvancedSearchFieldType;
+    value: string;
+    key?: string;
+    keyType?: AdvancedSearchFieldKeyEnum;
+    fuzziness?: SelectDropdownState;
+    analyzer?: SelectDropdownState;
+    boolean?: SelectDropdownState;
+    gte?: number | string;
+    lte?: number | string;
 }
 
 export interface AdvancedSearchState {
-  category: SearchCategory;
-  fields: Array<AdvancedSearchField>;
+    category: SearchCategory;
+    fields: Array<AdvancedSearchField>;
 }

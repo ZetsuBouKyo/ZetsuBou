@@ -1,59 +1,59 @@
 @layer utilities {
-  .views-setting-container {
-    @apply flex flex-col w-full ml-8 mb-8;
-  }
-  .views-setting-section {
-    @apply flex flex-col w-full divide-y divide-gray-300;
-  }
-  .views-setting-section-title {
-    @apply w-full text-xl text-white font-medium py-3 rounded-t-lg;
-  }
-  .views-setting-rows {
-    @apply flex flex-col py-4 w-full;
-  }
-  .views-setting-row {
-    @apply flex flex-row my-2 pl-4;
-  }
-  .views-setting-row-12 {
-    @apply flex flex-row my-2 pl-4;
-    @apply h-12 items-center;
-  }
-  div.views-setting-cell {
-    @apply flex items-center mx-1 px-3;
-  }
-  span.views-setting-cell {
-    @apply mx-1 my-auto px-3;
-  }
-  input.views-setting-cell {
-    @apply h-full mx-1 px-3 rounded;
-    @apply border-gray-600 bg-gray-500 text-white placeholder-gray-400;
-    @apply focus:outline-none sm:inline-block;
-  }
-  .views-setting-action-ripple-button {
-    @apply flex flex-row w-full hover:bg-gray-600 hover:text-white;
-  }
-  .views-setting-action-ripple-button-inactive {
-    @apply border-l-4 border-gray-800;
-  }
-  .views-setting-action-ripple-button-active {
-    @apply border-l-4 border-blue-500 bg-gray-600 text-white;
-  }
-  .views-setting-action {
-    @apply flex flex-row w-full p-2;
-  }
-  div.views-setting-actions {
-    @apply flex flex-col w-full;
-  }
-  span.views-setting-action-category {
-    @apply flex flex-row w-full ml-2 p-2 text-xs cursor-default font-bold text-gray-400;
-  }
-  span.views-setting-action-title {
-    @apply flex px-2 py-1 text-sm self-center;
-  }
-  span.views-setting-sub-action-title {
-    @apply flex px-2 py-1 text-xs self-center;
-  }
-  .views-setting-action-icon {
-    @apply self-center;
-  }
+    .views-setting-container {
+        @apply flex flex-col w-full ml-8 mb-8;
+    }
+    .views-setting-section {
+        @apply flex flex-col w-full divide-y divide-gray-300;
+    }
+    .views-setting-section-title {
+        @apply w-full text-xl text-white font-medium py-3 rounded-t-lg;
+    }
+    .views-setting-rows {
+        @apply flex flex-col py-4 w-full;
+    }
+    .views-setting-row {
+        @apply flex flex-row my-2 pl-4;
+    }
+    .views-setting-row-12 {
+        @apply flex flex-row my-2 pl-4;
+        @apply h-12 items-center;
+    }
+    div.views-setting-cell {
+        @apply flex items-center mx-1 px-3;
+    }
+    span.views-setting-cell {
+        @apply mx-1 my-auto px-3;
+    }
+    input.views-setting-cell {
+        @apply h-full mx-1 px-3 rounded;
+        @apply border-gray-600 bg-gray-500 text-white placeholder-gray-400;
+        @apply focus:outline-none sm:inline-block;
+    }
+    .views-setting-action-ripple-button {
+        @apply flex flex-row w-full hover:bg-gray-600 hover:text-white;
+    }
+    .views-setting-action-ripple-button-inactive {
+        @apply border-l-4 border-gray-800;
+    }
+    .views-setting-action-ripple-button-active {
+        @apply border-l-4 border-blue-500 bg-gray-600 text-white;
+    }
+    .views-setting-action {
+        @apply flex flex-row w-full p-2;
+    }
+    div.views-setting-actions {
+        @apply flex flex-col w-full;
+    }
+    span.views-setting-action-category {
+        @apply flex flex-row w-full ml-2 p-2 text-xs cursor-default font-bold text-gray-400;
+    }
+    span.views-setting-action-title {
+        @apply flex px-2 py-1 text-sm self-center;
+    }
+    span.views-setting-sub-action-title {
+        @apply flex px-2 py-1 text-xs self-center;
+    }
+    .views-setting-action-icon {
+        @apply self-center;
+    }
 }

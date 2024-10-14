@@ -3,13 +3,13 @@
         "scope": "vue,javascript,typescript",
         "prefix": "pr",
         "body": ["props: {", "\t$2: {", "\t\ttype: Object as PropType<$1>,", "\t\tdefault: undefined,", "\t},", "},"],
-        "description": "ZetsuBou"
+        "description": "ZetsuBou",
     },
     "zb.props.default": {
         "scope": "vue,javascript,typescript",
         "prefix": "interface Props",
         "body": ["interface Props {", "}", "const props = withDefaults(defineProps<Props>(), {", "});"],
-        "description": "ZetsuBou default props"
+        "description": "ZetsuBou default props",
     },
     "zb.select-dropdown": {
         "scope": "vue,javascript,typescript",
@@ -19,9 +19,9 @@
             "const $1Title = ref(\"\")",
             "const $1SelectedValue = ref(undefined)",
             "const $1Options = ref([])",
-            "function select$2(opt: SelectDropdownOption){}"
+            "function select$2(opt: SelectDropdownOption){}",
         ],
-        "description": "ZetsuBou SelectDropdown"
+        "description": "ZetsuBou SelectDropdown",
     },
     "zb.select-dropdown.input.query": {
         "scope": "vue,javascript,typescript",
@@ -42,20 +42,20 @@
             "function get$2(params: PaginationGetParam) {}",
             "function open$2() {getFirstOptions(get$2, convert$2, $1Params, $1Options, $1Lock, $1ScrollEnd)}",
             "function scroll$2(event: any) {scroll(event, get$2, convert$2, $1Params, $1Options, $1Lock, $1ScrollEnd)}",
-            "function select$2(opt: SelectDropdownOption){}"
+            "function select$2(opt: SelectDropdownOption){}",
         ],
-        "description": "ZetsuBou SelectDropdown"
+        "description": "ZetsuBou SelectDropdown",
     },
     "zb.watch": {
         "scope": "vue,javascript,typescript",
         "prefix": "watch",
         "body": ["watch(", "\t() => $1,", "\t() => {}", ")"],
-        "description": "ZetsuBou watch"
+        "description": "ZetsuBou watch",
     },
     "zb.withDefaults": {
         "scope": "vue,javascript,typescript",
         "prefix": "withDefaults",
         "body": ["withDefaults(defineProps<Props>(), {", "});"],
-        "description": "ZetsuBou withDefaults"
-    }
+        "description": "ZetsuBou withDefaults",
+    },
 }

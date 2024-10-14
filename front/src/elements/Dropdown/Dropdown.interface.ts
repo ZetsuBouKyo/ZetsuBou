@@ -1,41 +1,41 @@
 import { BaseState } from "@/interface/state";
 
 export enum Origin {
-  BottomLeft,
-  BottomRight,
+    BottomLeft,
+    BottomRight,
 }
 
 export interface DropdownState {
-  popout: boolean;
+    popout: boolean;
 }
 
 export interface OnClick {
-  (): void;
+    (): void;
 }
 
 // TODO: deprecated
 export interface OnOpen {
-  (): void;
+    (): void;
 }
 
 export interface DropdownOnOpen {
-  (): void;
+    (): void;
 }
 
 export interface OnClose {
-  (): void;
+    (): void;
 }
 
 export interface DropdownComponent {
-  close: () => void;
-  group?: string;
+    close: () => void;
+    group?: string;
 }
 
 export interface DropdownComponents {
-  [key: string]: DropdownComponent;
+    [key: string]: DropdownComponent;
 }
 
 export interface DropdownsState extends BaseState<DropdownComponents> {
-  add: (key: string, component: DropdownComponent) => void;
-  delete: (key: string) => void;
+    add: (key: string, component: DropdownComponent) => void;
+    delete: (key: string) => void;
 }

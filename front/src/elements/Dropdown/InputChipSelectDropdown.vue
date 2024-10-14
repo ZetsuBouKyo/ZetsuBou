@@ -3,57 +3,57 @@ import { reactive, ref, Ref } from "vue";
 
 import { DropdownOnOpen, Origin } from "./Dropdown.interface";
 import {
-  SelectDropdownOnDeleteChip,
-  SelectDropdownOnGetTip,
-  SelectDropdownOnInput,
-  SelectDropdownOnMouseoverOption,
-  SelectDropdownOnScroll,
-  SelectDropdownOnSelect,
-  SelectDropdownOption,
+    SelectDropdownOnDeleteChip,
+    SelectDropdownOnGetTip,
+    SelectDropdownOnInput,
+    SelectDropdownOnMouseoverOption,
+    SelectDropdownOnScroll,
+    SelectDropdownOnSelect,
+    SelectDropdownOption,
 } from "./SelectDropdown.interface";
 
 import BaseSelectDropdown from "./BaseSelectDropdown.vue";
 import Chip from "@/elements/Chip/Chip.vue";
 
 interface State {
-  lastChipInputTitle: any;
-  isFocus: boolean;
+    lastChipInputTitle: any;
+    isFocus: boolean;
 }
 
 interface Props {
-  group: string;
-  origin: Origin;
-  isAutoCompleteOptionCaseSensitive: boolean;
-  isAutoComplete: boolean;
-  isInputChipsTitleUnique: boolean;
-  widthClass: string;
-  optionsWidthClass: string;
-  enableInputChipsEnterEvent: boolean;
-  onDeleteChip: SelectDropdownOnDeleteChip;
-  onInput: SelectDropdownOnInput;
-  onOpen: DropdownOnOpen;
-  onScroll: SelectDropdownOnScroll;
-  onSelect: SelectDropdownOnSelect;
-  onGetTip: SelectDropdownOnGetTip;
-  onMouseoverOption: SelectDropdownOnMouseoverOption;
+    group: string;
+    origin: Origin;
+    isAutoCompleteOptionCaseSensitive: boolean;
+    isAutoComplete: boolean;
+    isInputChipsTitleUnique: boolean;
+    widthClass: string;
+    optionsWidthClass: string;
+    enableInputChipsEnterEvent: boolean;
+    onDeleteChip: SelectDropdownOnDeleteChip;
+    onInput: SelectDropdownOnInput;
+    onOpen: DropdownOnOpen;
+    onScroll: SelectDropdownOnScroll;
+    onSelect: SelectDropdownOnSelect;
+    onGetTip: SelectDropdownOnGetTip;
+    onMouseoverOption: SelectDropdownOnMouseoverOption;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  group: undefined,
-  origin: Origin.BottomRight,
-  isAutoCompleteOptionCaseSensitive: false,
-  isAutoComplete: true,
-  isInputChipsTitleUnique: false,
-  widthClass: "",
-  optionsWidthClass: "w-60",
-  enableInputChipsEnterEvent: true,
-  onDeleteChip: undefined,
-  onInput: undefined,
-  onOpen: undefined,
-  onScroll: undefined,
-  onSelect: undefined,
-  onGetTip: undefined,
-  onMouseoverOption: undefined,
+    group: undefined,
+    origin: Origin.BottomRight,
+    isAutoCompleteOptionCaseSensitive: false,
+    isAutoComplete: true,
+    isInputChipsTitleUnique: false,
+    widthClass: "",
+    optionsWidthClass: "w-60",
+    enableInputChipsEnterEvent: true,
+    onDeleteChip: undefined,
+    onInput: undefined,
+    onOpen: undefined,
+    onScroll: undefined,
+    onSelect: undefined,
+    onGetTip: undefined,
+    onMouseoverOption: undefined,
 });
 
 const title = defineModel<string | string[] | number | Ref<string | string[] | number>>("title", { default: "" });
@@ -66,197 +66,200 @@ const scrollEnd = defineModel<boolean | any>("scrollEnd", { default: false });
 const baseSelectDropdown = ref();
 
 const state = reactive<State>({
-  lastChipInputTitle: undefined,
-  isFocus: false,
+    lastChipInputTitle: undefined,
+    isFocus: false,
 });
 
 function getChipKey(i: number, chip: SelectDropdownOption) {
-  let _i: string;
-  if (i === undefined) {
-    _i = "";
-  } else {
-    _i = i.toString();
-  }
+    let _i: string;
+    if (i === undefined) {
+        _i = "";
+    } else {
+        _i = i.toString();
+    }
 
-  let _chipTitle: string = "";
-  let _chipValue: string = "";
-  if (chip !== undefined) {
-    if (chip.title !== undefined) {
-      _chipTitle = chip.title.toString();
+    let _chipTitle: string = "";
+    let _chipValue: string = "";
+    if (chip !== undefined) {
+        if (chip.title !== undefined) {
+            _chipTitle = chip.title.toString();
+        }
+        if (chip.value !== undefined) {
+            _chipValue = chip.value.toString();
+        }
     }
-    if (chip.value !== undefined) {
-      _chipValue = chip.value.toString();
-    }
-  }
-  return _i + _chipTitle + _chipValue;
+    return _i + _chipTitle + _chipValue;
 }
 
 function select(opt: SelectDropdownOption) {
-  for (let chip of chips.value) {
-    if (props.isInputChipsTitleUnique && chip.title === opt.title) {
-      baseSelectDropdown.value.close();
-      return;
+    for (let chip of chips.value) {
+        if (props.isInputChipsTitleUnique && chip.title === opt.title) {
+            baseSelectDropdown.value.close();
+            return;
+        }
+        if (chip.title === opt.title && chip.value === opt.value) {
+            baseSelectDropdown.value.close();
+            return;
+        }
     }
-    if (chip.title === opt.title && chip.value === opt.value) {
-      baseSelectDropdown.value.close();
-      return;
-    }
-  }
-  chips.value.push({ title: opt.title, value: opt.value });
-  title.value = undefined;
-  selectedValue.value = undefined;
+    chips.value.push({ title: opt.title, value: opt.value });
+    title.value = undefined;
+    selectedValue.value = undefined;
 
-  if (props.onSelect) {
-    props.onSelect(opt);
-  }
+    if (props.onSelect) {
+        props.onSelect(opt);
+    }
 }
 
 function focusOpenDropdown() {
-  state.isFocus = true;
-  baseSelectDropdown.value.toggle();
+    state.isFocus = true;
+    baseSelectDropdown.value.toggle();
 }
 
 function toggleDropdown() {
-  if (state.isFocus) {
-    state.isFocus = false;
-    return;
-  }
-  baseSelectDropdown.value.toggle();
+    if (state.isFocus) {
+        state.isFocus = false;
+        return;
+    }
+    baseSelectDropdown.value.toggle();
 }
 
 function deleteChip(title: string | number, value: string | number, index: number) {
-  chips.value.splice(index, 1);
-  if (props.onDeleteChip !== undefined) {
-    props.onDeleteChip(title, value, index);
-  }
+    chips.value.splice(index, 1);
+    if (props.onDeleteChip !== undefined) {
+        props.onDeleteChip(title, value, index);
+    }
 }
 
 function updateOptions(title: string) {
-  props.onInput(title);
+    props.onInput(title);
 }
 
 function updateOptionsWithDefaultOptions(title: string) {
-  if (!defaultOptions.value || defaultOptions.value.length === 0) {
-    return;
-  }
+    if (!defaultOptions.value || defaultOptions.value.length === 0) {
+        return;
+    }
 
-  // We cannot simply use `options.value = []` here.
-  while (options?.value.length) {
-    options.value.pop();
-  }
-  for (let option of defaultOptions.value) {
-    option = JSON.parse(JSON.stringify(option));
-    let optionTitle = option.title as string;
-    let stateTitle = title as string;
-    if (!props.isAutoCompleteOptionCaseSensitive) {
-      optionTitle = optionTitle.toLowerCase();
-      stateTitle = title.toString().toLowerCase();
+    // We cannot simply use `options.value = []` here.
+    while (options?.value.length) {
+        options.value.pop();
     }
-    if (optionTitle.startsWith(stateTitle)) {
-      options.value.push(option);
+    for (let option of defaultOptions.value) {
+        option = JSON.parse(JSON.stringify(option));
+        let optionTitle = option.title as string;
+        let stateTitle = title as string;
+        if (!props.isAutoCompleteOptionCaseSensitive) {
+            optionTitle = optionTitle.toLowerCase();
+            stateTitle = title.toString().toLowerCase();
+        }
+        if (optionTitle.startsWith(stateTitle)) {
+            options.value.push(option);
+        }
     }
-  }
 }
 
 function createChip() {
-  if (!props.enableInputChipsEnterEvent || !title.value) {
-    return;
-  }
+    if (!props.enableInputChipsEnterEvent || !title.value) {
+        return;
+    }
 
-  chips.value.push({ title: title.value as string, value: undefined });
-  title.value = undefined;
+    chips.value.push({ title: title.value as string, value: undefined });
+    title.value = undefined;
 }
 
 function deleteLastChip() {
-  if (state.lastChipInputTitle) {
-    return;
-  }
-  chips.value.pop();
-  if (title.value !== undefined && title.value.toString().length === 0) {
-    title.value = undefined;
-  }
+    if (state.lastChipInputTitle) {
+        return;
+    }
+    chips.value.pop();
+    if (title.value !== undefined && title.value.toString().length === 0) {
+        title.value = undefined;
+    }
 }
 
 function updateInput() {
-  const text = title.value as string;
-  if (!props.isAutoComplete) {
-    return;
-  }
+    const text = title.value as string;
+    if (!props.isAutoComplete) {
+        return;
+    }
 
-  if (props.onInput !== undefined) {
-    updateOptions(text);
-  } else {
-    updateOptionsWithDefaultOptions(text);
-  }
-  baseSelectDropdown.value.open();
+    if (props.onInput !== undefined) {
+        updateOptions(text);
+    } else {
+        updateOptionsWithDefaultOptions(text);
+    }
+    baseSelectDropdown.value.open();
 }
 
 function keyupInput(event: any) {
-  switch (event.keyCode) {
-    case 13: // Enter
-      createChip();
-      break;
-    case 8: // Delete
-      deleteLastChip();
-      break;
-    default:
-      updateInput();
-      break;
-  }
+    switch (event.keyCode) {
+        case 13: // Enter
+            createChip();
+            break;
+        case 8: // Delete
+            deleteLastChip();
+            break;
+        default:
+            updateInput();
+            break;
+    }
 
-  const text = title.value as string;
-  if (state.lastChipInputTitle !== text) {
-    state.lastChipInputTitle = text;
-  }
+    const text = title.value as string;
+    if (state.lastChipInputTitle !== text) {
+        state.lastChipInputTitle = text;
+    }
 }
 
 function open() {
-  baseSelectDropdown.value.open();
+    baseSelectDropdown.value.open();
 }
 
 function close() {
-  baseSelectDropdown.value.close();
+    baseSelectDropdown.value.close();
 }
 
 function toggle() {
-  baseSelectDropdown.value.toggle();
+    baseSelectDropdown.value.toggle();
 }
 
 defineExpose({ open, close, toggle });
 </script>
 
 <template>
-  <base-select-dropdown
-    ref="baseSelectDropdown"
-    v-model:options="options"
-    v-model:scroll-end="scrollEnd"
-    :group="group"
-    :origin="origin"
-    :width-class="widthClass"
-    :options-width-class="optionsWidthClass"
-    :on-open="onOpen"
-    :on-scroll="onScroll"
-    :on-select="select"
-    :on-get-tip="onGetTip"
-    :on-mouseover-option="onMouseoverOption">
-    <template v-slot:select>
-      <div class="flex flex-wrap min-h-14 items-center bg-gray-600 rounded px-2 py-2">
-        <chip
-          class="flex-initial m-1"
-          v-for="(chip, i) in chips"
-          :key="getChipKey(i, chip)"
-          :index="i"
-          :title="chip.title"
-          :value="chip.value"
-          :on-delete="deleteChip" />
-        <input
-          class="w-full h-10 p-0 bg-gray-600 text-base 3xl:text-xl border-0 focus:outline-none focus:ring-0 flex-1"
-          type="text"
-          v-model="title"
-          @click.stop="toggleDropdown"
-          @focus="focusOpenDropdown"
-          @keyup="keyupInput" />
-      </div>
-    </template>
-  </base-select-dropdown>
+    <base-select-dropdown
+        ref="baseSelectDropdown"
+        v-model:options="options"
+        v-model:scroll-end="scrollEnd"
+        :group="group"
+        :origin="origin"
+        :width-class="widthClass"
+        :options-width-class="optionsWidthClass"
+        :on-open="onOpen"
+        :on-scroll="onScroll"
+        :on-select="select"
+        :on-get-tip="onGetTip"
+        :on-mouseover-option="onMouseoverOption"
+    >
+        <template v-slot:select>
+            <div class="flex flex-wrap min-h-14 items-center bg-gray-600 rounded px-2 py-2">
+                <chip
+                    class="flex-initial m-1"
+                    v-for="(chip, i) in chips"
+                    :key="getChipKey(i, chip)"
+                    :index="i"
+                    :title="chip.title"
+                    :value="chip.value"
+                    :on-delete="deleteChip"
+                />
+                <input
+                    class="w-full h-10 p-0 bg-gray-600 text-base 3xl:text-xl border-0 focus:outline-none focus:ring-0 flex-1"
+                    type="text"
+                    v-model="title"
+                    @click.stop="toggleDropdown"
+                    @focus="focusOpenDropdown"
+                    @keyup="keyupInput"
+                />
+            </div>
+        </template>
+    </base-select-dropdown>
 </template>

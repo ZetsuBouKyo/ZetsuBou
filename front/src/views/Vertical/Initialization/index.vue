@@ -27,12 +27,12 @@ finished.steps = steps;
 </script>
 
 <template>
-  <div class="layout-container">
-    <ol class="relative border-l border-gray-200 dark:border-gray-700">
-      <check-host-ports-step :step="checkHostPorts" />
-      <zetsu-bou-step :step="zetsubou" />
-      <s3 :step="s3" />
-      <finished :step="finished" />
-    </ol>
-  </div>
+    <div class="layout-container">
+        <ol class="relative border-l border-gray-200 dark:border-gray-700">
+            <check-host-ports-step :step="checkHostPorts" />
+            <zetsu-bou-step :step="zetsubou" />
+            <s3 :step="s3" />
+            <finished :step="finished" />
+        </ol>
+    </div>
 </template>

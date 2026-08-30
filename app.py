@@ -1,6 +1,7 @@
 import uvicorn
 from elasticsearch.exceptions import NotFoundError, RequestError
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from minio.error import S3Error
@@ -58,6 +59,14 @@ async def startup():
 
 
 app.add_event_handler("startup", startup)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,  # Needed for cookies/auth headers
+    allow_methods=["*"],  # Allows all standard methods (GET, POST, PUT, etc.)
+    allow_headers=["*"],  # Allows all standard headers
+)
 
 
 @app.exception_handler(StarletteHTTPException)

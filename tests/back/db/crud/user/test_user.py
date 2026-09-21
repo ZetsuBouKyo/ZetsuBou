@@ -19,7 +19,7 @@ GUEST_GROUP_NAME = BuiltInGroupEnum.guest.value
 
 
 async def assert_user(
-    user: Union[UserWithGroupsCreate, UserWithGroupsUpdate]
+    user: Union[UserWithGroupsCreate, UserWithGroupsUpdate],
 ):  # pragma: no cover
     created_user = await CrudUser.get_row_with_hashed_password_by_email(user.email)
 

@@ -84,7 +84,7 @@ async def post_user(
                 },
             },
         ),
-    ]
+    ],
 ) -> UserWithGroupsCreated:
     return await CrudUser.create_with_groups(user)
 
